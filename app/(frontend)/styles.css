@@ -1,0 +1,97 @@
+@import "tailwindcss";
+
+/* Librerías y Plugins */
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+@plugin "tailwindcss-animate";
+
+@theme {
+  /* Fuentes */
+  --font-display: "Montserrat", "system-ui", "sans-serif";
+  --font-sans: "Open Sans", "system-ui", "sans-serif";
+
+  /* Colores de Marca vinculados a variables CSS */
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  
+  --color-accent: hsl(var(--accent));
+  --color-accent-foreground: hsl(var(--accent-foreground));
+
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  
+  --color-topbar: hsl(var(--topbar));
+
+  /* Ajustes de radio y breakpoints */
+  --radius-lg: var(--radius);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-sm: calc(var(--radius) - 4px);
+  
+  --breakpoint-2xl: 1400px;
+}
+
+@layer base {
+  :root {
+    /* Tu paleta de "Jornadas" en HSL */
+    --background: 0 0% 100%;
+    --foreground: 0 0% 20%;
+
+    --primary: 211 28% 25%;    /* #2d3e50 */
+    --primary-foreground: 0 0% 100%;
+
+    --accent: 187 53% 49%;     /* #3bacbd */
+    --accent-foreground: 0 0% 100%;
+
+    --muted: 210 16% 96%;
+    --muted-foreground: 0 0% 35%;
+
+    --border: 0 0% 80%;
+    --input: 0 0% 80%;
+    --ring: 187 53% 49%;
+
+    --radius: 0.5rem;
+
+    /* Efectos de marca */
+    --topbar: 187 53% 49%;
+    --hero-overlay: linear-gradient(135deg, hsl(211 28% 25% / 0.78), hsl(187 53% 35% / 0.55));
+  }
+
+  /* Aplica la fuente por defecto a todo el documento */
+  html {
+    @apply font-sans;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+
+  h1, h2, h3, h4, h5 {
+    @apply font-display tracking-tight;
+    color: hsl(var(--primary));
+  }
+}
+
+@layer components {
+  .container-narrow { 
+    @apply max-w-5xl mx-auto px-6; 
+  }
+
+  .section-title {
+    @apply text-3xl md:text-4xl font-bold text-center;
+  }
+  
+  .section-title::after {
+    content: "";
+    @apply block w-15 h-1 mx-auto mt-4;
+    background-color: hsl(var(--accent));
+  }
+
+  .hero-overlay {
+    background: var(--hero-overlay);
+  }
+}
