@@ -3,8 +3,8 @@ import { CollectionConfig } from "payload";
 export const FAQ : CollectionConfig = {
     slug: 'faq',
     labels: {
-        singular: "FAQ",
-        plural: "FAQ"
+        singular: "Preguntas Frecuentes",
+        plural: "Preguntas Frecuentes"
     },
     fields: [
         {
@@ -15,6 +15,10 @@ export const FAQ : CollectionConfig = {
         {
             name: 'faqs',
             label: 'Preguntas',
+            labels: {
+                singular: "Pregunta",
+                plural: "Preguntas"
+            },
             type: 'array',
             fields: [
                 {

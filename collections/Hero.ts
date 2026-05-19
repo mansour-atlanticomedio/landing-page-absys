@@ -3,8 +3,8 @@ import { CollectionConfig } from "payload"
 export const Hero : CollectionConfig = {
     slug: 'hero',
     labels: {
-        singular: 'Hero',
-        plural: 'Hero'
+        singular: 'Seccion Principal',
+        plural: 'Seccion Principal'
     },
     fields: [
         {

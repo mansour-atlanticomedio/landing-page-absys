@@ -6,6 +6,9 @@ export const Media: CollectionConfig = {
     singular: 'Imagen',
     plural: 'Galeria de Imagenes'
   },
+  access: {
+    read: () => true  
+  },
   fields: [
     {
       name: 'alt',

@@ -1,4 +1,5 @@
 import { CollectionConfig } from "payload";
+import { appIcons } from "./Icons";
 
 export const Statistics: CollectionConfig = {
     slug: 'statistics',
@@ -19,9 +20,11 @@ export const Statistics: CollectionConfig = {
             maxRows: 4,
             fields: [
                 {
-                    name: 'statistic_icon',
+                    name: 'icon',
                     label: 'Icono',
-                    type: 'text',
+                    type: 'select',
+                    options: appIcons,
+                    required: true,
                 },
                 {
                     name: 'value',

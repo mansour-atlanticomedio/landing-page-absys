@@ -1,29 +1,33 @@
+'use client'
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { SimpleFormProps } from "@/types/form.type";
 import { Upload } from "lucide-react";
-import { ChangeEvent, FormEvent, useEffect, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 
 interface SimpleFormInterface {
     title?: string,
+    endpoint: string,
     formEntries: SimpleFormProps[],
-    onSubmit: (e: FormEvent<HTMLFormElement>) => void,
     loading?: boolean,
     fileHandler?: (files: FileList | null) => void,
     files?: FileList
 }
 
-export default function SimpleForm({ title, formEntries, onSubmit, loading, files, fileHandler }: SimpleFormInterface) {
+export default function SimpleForm({ title, formEntries, endpoint, files, fileHandler }: SimpleFormInterface) {
     const [startTime, setStartTime] = useState<number>(0);
+    const [loading, setLoading] = useState(Boolean)
+    const ref = useRef<HTMLFormElement>(undefined);
 
     useEffect(() => {
         setStartTime(Date.now());
     }, []);
 
-    const handleLocalSubmit = (e: FormEvent<HTMLFormElement>) => {
+    const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         const endTime = Date.now();
         const duration = (endTime - startTime) / 1000;
@@ -31,22 +35,47 @@ export default function SimpleForm({ title, formEntries, onSubmit, loading, file
         if (duration < 3) {
             console.warn("Envío demasiado rápido. Posible bot.");
             toast.error('Too fast, try again')
-            return; 
+            return;
         }
 
-        onSubmit(e);
+        setLoading(true)
+
+        const formData = new FormData(ref.current)
+        const data = Object.fromEntries(formData.entries())
+
+        try {
+            const res = await fetch(endpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data),
+            })
+
+            if (!res.ok) {
+                throw new Error(`Error en el servidor: ${res.status}`)
+            }
+
+            toast.success('¡Mensaje enviado con éxito!')
+
+            ref.current?.reset()
+
+        } catch (error: any) {
+            console.error("Error capturado en el submit:", error)
+            toast.error('No se pudo enviar el mensaje')
+        } finally {
+            setLoading(false)
+        }
     };
 
     return (
-        <div className="bg-card border border-border rounded-md p-8 shadow-(--shadow-card)">
+        <div className=" max-w-xl bg-card border border-border rounded-md p-8 shadow-(--shadow-card)">
             <h3 className="font-display text-xl font-semibold mb-6">{title || ''}</h3>
-            <form onSubmit={handleLocalSubmit} className="space-y-5">
+            <form onSubmit={handleSubmit} className="space-y-5">
                 {
                     formEntries.map((entry, index) =>
                         entry.isTextArea ? (
                             <div className="space-y-2" key={index}>
                                 <Label htmlFor={entry.label}>{entry.htmlFor} {entry.isRequired && '*'}</Label>
-                                <Textarea id={entry.label} name={entry.label} rows={4} required maxLength={1000} />
+                                <Textarea id={entry.label} name={entry.label} rows={4} required maxLength={1000} className="resize-none"  />
                             </div>
 
                         ) : entry.isFileUpload ? (
@@ -62,6 +91,7 @@ export default function SimpleForm({ title, formEntries, onSubmit, loading, file
                                     </span>
                                     <input
                                         id={entry.label}
+                                        name={entry.label}
                                         type="file"
                                         multiple
                                         accept=".pdf"

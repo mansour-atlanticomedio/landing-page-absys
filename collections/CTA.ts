@@ -3,8 +3,8 @@ import { CollectionConfig } from "payload";
 export const CTA : CollectionConfig = {
     slug: 'cta',
     labels: {
-        singular: 'CTA',
-        plural: 'CTA'
+        singular: 'Sección de inscripción',
+        plural: 'Sección de inscripción'
     },
     fields : [
         {
@@ -19,7 +19,12 @@ export const CTA : CollectionConfig = {
         },
         {
             name: 'button_cta',
-            label: 'Texto del boton de accion',
+            label: 'Texto del boton de inscripcion',
+            type: 'text'
+        },
+        {
+            name: 'button_link',
+            label: 'Enlace del boton',
             type: 'text'
         },
     ]

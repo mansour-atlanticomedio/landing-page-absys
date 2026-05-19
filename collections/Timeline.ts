@@ -1,42 +1,52 @@
 import { CollectionConfig } from "payload";
 
-export const TimeStamp : CollectionConfig = {
-    slug: 'timestamp',
-    fields: [
-        {
-            name: 'title',
-            type: 'text'
-        },
-        {
-            name: 'description',
-            type: 'text'
-        },
-    ]
-}
-export const Timeline : CollectionConfig = {
+export const Timeline: CollectionConfig = {
     slug: 'timeline',
+    labels: {
+        singular: 'Línea del tiempo',
+        plural: 'Línea del tiempo'
+    },
     fields: [
         {
             name: 'title',
+            label: 'Título',
             type: 'text'
         },
         {
             name: 'calendar',
+            label: 'Calendario',
+            labels: {
+                singular: "Calendario",
+                plural: "Calendario",
+            },
             type: 'array',
             fields: [
                 {
                     name: 'day',
+                    label: 'Día',
                     type: 'text'
                 },
                 {
                     name: 'title',
+                    label: 'Título',
                     type: 'text'
                 },
                 {
-                    name: 'timestamp',
-                    type: 'relationship',
-                    relationTo: 'timestamp',
-                    hasMany: true
+                    name: 'events',
+                    label: 'Eventos',
+                    type: 'array',
+                    fields: [
+                        {
+                            name: 'title',
+                            label: 'Título',
+                            type: 'text'
+                        },
+                        {
+                            name: 'description',
+                            label: 'Descripcion',
+                            type: 'richText'
+                        },
+                    ]
                 }
             ]
         }

@@ -2,6 +2,10 @@ import { CollectionConfig } from "payload";
 
 export const About : CollectionConfig = {
     slug: 'about',
+    labels: {
+        singular: 'Información',
+        plural: 'Información'
+    },
     fields: [
         {
             name: 'title',

@@ -1,37 +1,10 @@
-'use client'
-
-import { useState } from "react";
 import { toast } from "sonner";
 import SimpleForm from "@/components/SimpleForm";
 import { SimpleFormProps } from "@/types/form.type";
 import { Clock, Mail, MapPin, Phone } from "lucide-react";
-import { ContactProps } from "@/types/contact.type";
-// import { sendMessage } from "@/services/api.service";
 import Hero from "@/components/Hero";
 
-export default function Contact() {
-    const [loading, setLoading] = useState(false);
-
-    const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
-
-        const fd = new FormData(e.currentTarget);
-        // const data: ContactProps = {
-        //   name: fd.get("name").toString(),
-        //   email: fd.get("email").toString(),
-        //   about: fd.get("about").toString(),
-        //   message: fd.get("message").toString(),
-
-        try {
-            setLoading(true);
-            //   await sendMessage(data);
-            setLoading(false);
-            toast.success("Mensaje enviado. Te responderemos lo antes posible");
-        } catch (error: any) {
-            toast.error("Error al enviar el mensaje ", error);
-        }
-    };
-
+export default async function Contact() {
 
     const formEntries: SimpleFormProps[] = [
         {
@@ -114,7 +87,7 @@ export default function Contact() {
                         </div>
                     </div>
 
-                    <SimpleForm title="Envíanos un mensaje" formEntries={formEntries} onSubmit={onSubmit} loading={loading} />
+                    <SimpleForm title="Envíanos un mensaje" formEntries={formEntries} endpoint="/api/sendEmail" />
 
                 </div>
             </section>

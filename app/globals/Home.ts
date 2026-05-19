@@ -16,7 +16,7 @@ export const Home: GlobalConfig = {
       type: 'blocks',
       blocks: [
         {
-          slug: 'statistics_home',
+          slug: 'stats_block',
           labels: {
             singular: 'Estadística',
             plural: 'Estadísticas',
@@ -31,15 +31,14 @@ export const Home: GlobalConfig = {
           ]
         },
         {
-          slug: 'speakers_home',
+          slug: 'speakers_block',
           labels: {
             singular: 'Ponentes',
             plural: 'Ponentes'
           },
           fields: [
-            { name: 'title', type: 'text' },
             {
-              name: 'speakers_home_relation',
+              name: 'speakers_relation',
               type: 'relationship',
               relationTo: 'speakers',
               hasMany: true,
@@ -47,14 +46,14 @@ export const Home: GlobalConfig = {
           ],
         },
         {
-          slug: 'about_home',
+          slug: 'about_block',
           labels: {
             singular: 'Sobre Nosotros',
             plural: 'Sobre Nosotros'
           },
           fields: [
             {
-              name: 'about_home_relation',
+              name: 'about_relation',
               type: 'relationship',
               relationTo: 'about',
               hasMany: true,
@@ -62,7 +61,7 @@ export const Home: GlobalConfig = {
           ],
         },
         {
-          slug: 'features_home',
+          slug: 'features_block',
           labels: {
             singular: 'Caracteristicas',
             plural: 'Caracteristicas',
@@ -77,7 +76,7 @@ export const Home: GlobalConfig = {
           ]
         },
         {
-          slug: 'timeline_home',
+          slug: 'timeline_block',
           labels: {
             singular: 'Linea del tiempo',
             plural: 'Linea del tiempo'
@@ -97,7 +96,7 @@ export const Home: GlobalConfig = {
               thumbnail: '/images/blocks/cta_thumbnail.jpeg'
             }
           },
-          slug: 'cta_home',
+          slug: 'cta_block',
           labels: {
             singular: 'CTA',
             plural: 'CTA'
@@ -112,7 +111,7 @@ export const Home: GlobalConfig = {
           ]
         },
         {
-          slug: 'faq_home',
+          slug: 'faq_block',
           labels: {
             singular: 'FAQ',
             plural: 'FAQ'

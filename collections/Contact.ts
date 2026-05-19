@@ -1,6 +1,6 @@
 import { CollectionConfig } from "payload";
 
-export const Contact : CollectionConfig = {
+export const Contact: CollectionConfig = {
     slug: 'contact',
     labels: {
         singular: 'Contacto',
@@ -27,6 +27,6 @@ export const Contact : CollectionConfig = {
             label: 'Horario',
             type: 'text'
         },
-         
+
     ]
 }

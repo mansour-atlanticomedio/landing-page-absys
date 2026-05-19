@@ -1,27 +1,23 @@
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@radix-ui/react-accordion"
-import ReactMarkdown from 'react-markdown';
+import { RichText } from '@payloadcms/richtext-lexical/react'
 import { Plus } from "lucide-react"
 
-export default function FAQ() {
+interface FaqProps {
+    question: string,
+    answer: any
+}
 
-    const faqs: { question: string, answer: string }[] = [
-        {
-            question: "¿A quién van dirigidas?",
-            answer: `- Profesorado universitario.
- - Equipos de gestión universitaria y responsables institucionales.
- - Profesionales de instituciones y organismos interesados en investigación e innovación.
- - Estudiantado de máster y doctorado.`
-        },
-        {
-            question: "¿Cuando se celebran?",
-            answer: `Las jornadas se celebran los días **16 y 17 de junio** de 9h a 14h en la **Universidad del Atlántico Medio**.`
-        }
-    ]
+interface FaqBoxProps {
+    title: string,
+    faqs: FaqProps[]
+}
+
+export default function FAQ({title, faqs} : FaqBoxProps) {
 
     return (
         <section className="p-16 flex flex-col gap-10" >
 
-            <h2 className="section-title text-start after:ml-0" > FAQS </h2>
+            <h2 className="section-title text-start after:ml-0" > {title} </h2>
 
             <div className="flex flex-col gap-6" >
                 {
@@ -35,15 +31,7 @@ export default function FAQ() {
                                 <AccordionContent
                                     className="mt-4" >
                                     <div className="prose prose-sm max-w-none text-gray-700">
-                                        <ReactMarkdown
-                                            components={{
-                                                strong: ({ node, ...props }) => <span className="font-bold text-accent" {...props} />,
-                                                a: ({ node, ...props }) => <a className="text-accent hover:text-blue-700" {...props} />,
-                                                ul: ({ node, ...props }) => <ul className="list-disc ml-4" {...props} />,
-                                            }}
-                                        >
-                                            {faq.answer}
-                                        </ReactMarkdown>
+                                        <RichText data={faq.answer} />
                                     </div>
                                 </AccordionContent>
                             </AccordionItem>

@@ -2,8 +2,10 @@
 
 /* Librerías y Plugins */
 @import "tw-animate-css";
+@plugin "@tailwindcss/typography";
 @import "shadcn/tailwind.css";
 @plugin "tailwindcss-animate";
+@plugin "@tailwindcss/typography";
 
 @theme {
   /* Fuentes */

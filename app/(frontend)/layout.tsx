@@ -1,4 +1,5 @@
 import React from 'react'
+import { Toaster } from 'sonner'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import './styles.css'
@@ -13,7 +14,8 @@ export default function RootLayout(props: { children: React.ReactNode }) {
 
   return (
     <html lang="en">
-      <body className='max-w-7xl min-h-screen flex flex-col bg-background' >
+      <body className='min-h-screen flex flex-col bg-background' >
+        <Toaster/>
         <Header/>
         <main>{children}</main>
         <Footer/>
