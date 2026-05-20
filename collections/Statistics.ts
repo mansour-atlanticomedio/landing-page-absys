@@ -9,13 +9,13 @@ export const Statistics: CollectionConfig = {
     },
     fields: [
         {
-            name: 'stadistic_item',
+            name: 'stats',
             labels: {
                 singular: 'Estadistica',
                 plural: 'Estadistica',
             },
             type: 'array',
-            label: 'Lista de estadisticas',
+            label: 'Listado de estadisticas',
             minRows: 1,
             maxRows: 4,
             fields: [

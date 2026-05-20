@@ -19,7 +19,6 @@ import { Timeline } from "./collections/Timeline";
 import { CTA } from "./collections/CTA";
 import { FAQ } from "./collections/FAQ";
 import { Contact } from "./app/globals/Contact";
-import { Contact as ContactSection } from "./collections/Contact"
 import { Email } from "./collections/Email";
 
 const filename = fileURLToPath(import.meta.url);
@@ -43,8 +42,7 @@ export default buildConfig({
     Features,
     Timeline,
     CTA,
-    FAQ,
-    ContactSection
+    FAQ
   ],
   globals: [Home, Contact],
   editor: lexicalEditor(),

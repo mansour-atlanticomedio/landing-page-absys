@@ -10,7 +10,8 @@ export const About : CollectionConfig = {
         {
             name: 'title',
             label: 'Título',
-            type: 'text'
+            type: 'text',
+            localized: true
         },
         {
             name: 'article',

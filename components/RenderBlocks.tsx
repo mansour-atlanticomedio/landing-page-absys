@@ -1,3 +1,4 @@
+import Stadistics from './Stadistics'
 import About from './About'
 import CTA from './CTA'
 import Features from './Features'
@@ -6,6 +7,14 @@ import Timeline from './Timeline'
 import FAQ from './FAQ'
 
 const componentsMap: Record<string, React.ElementType> = {
+  'stats_block': ({ stats_relation }) => {
+    const data = stats_relation?.[0]
+
+    if (!data) return null
+    console.log(data)
+
+    return <Stadistics {...data} />
+  },
   'about_block': ({ about_relation }) => {
     const data = about_relation?.[0]
 
