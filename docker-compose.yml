@@ -2,7 +2,7 @@ services:
   frontend:
     build: .
     ports:
-      - "8081:3000"
+      - "8085:3000"
     volumes:
       - .:/app
       - /node_modules
