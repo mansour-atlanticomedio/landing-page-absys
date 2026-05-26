@@ -1,35 +1,37 @@
 services:
   db:
-      image: postgres:16-alpine
-      container_name: next-landing-page-db-1
-      restart: always
-      environment:
-        POSTGRES_USER: postgres
-        POSTGRES_PASSWORD: 1234
-        POSTGRES_DB: payloadcms
-      ports:
-        - "5433:5432"
-      volumes:
-        - postgres_data:/var/lib/postgresql/data
+    image: postgres:16-alpine
+    container_name: next-landing-page-db-1
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: payloadcms
+    ports:
+      - "5433:5432" # Sigue disponible en el 5433 para tus programas externos
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
   frontend:
     build:
       context: .
+      dockerfile: Dockerfile
+    container_name: next-landing-page-frontend-1
     ports:
       - "8085:3000"
     volumes:
-      - .:/app
-      - /app/node_modules
-      - /app/.next
+      # En producción quitamos el bind mount completo (.:/app) para usar lo compilado en la imagen
+      - media_data:/app/media
     depends_on:
       - db
     extra_hosts:
       - "host.docker.internal:host-gateway"
     environment:
-    - WATCHPACK_POLLING=true
-    - PAYLOAD_SECRET=9fc076e667cb808e40733d2b
-    - DATABASE_URL=postgres://postgres:1234@db:5432/payloadcms
-    - DATABASE_URI=postgres://postgres:1234@db:5432/payloadcms
+      - WATCHPACK_POLLING=true
+      - PAYLOAD_SECRET=9fc076e667cb808e40733d2b
+      # CORREGIDO: Apunta al contenedor 'db' en su puerto interno 5432
+      - DATABASE_URL=postgres://postgres:1234@db:5432/payloadcms
 
 volumes:
   postgres_data:
+  media_data: # Guarda tus imágenes de Payload a salvo en el disco del servidor

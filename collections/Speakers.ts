@@ -1,5 +1,5 @@
-import { CollectionConfig } from "payload";
-import { iconsSocialMedia } from "./Icons";
+import type { CollectionConfig } from "payload";
+import { iconsSocialMedia } from "./Icons.ts";
 
 export const Speakers: CollectionConfig = {
     slug: 'speakers',

@@ -1,4 +1,4 @@
-import { CollectionSlug, GlobalConfig } from "payload";
+import type { GlobalConfig } from "payload";
 
 export const Repositories: GlobalConfig = {
     slug: 'repository',
@@ -8,7 +8,7 @@ export const Repositories: GlobalConfig = {
             name: 'hero',
             label: 'Seccion Principal',
             type: 'relationship',
-            relationTo: 'hero' as CollectionSlug,
+            relationTo: 'hero',
             hasMany: false
         },
         {
@@ -36,7 +36,7 @@ export const Repositories: GlobalConfig = {
                             name: 'cta_relation',
                             label: 'Seccion de Inscripcion',
                             type: 'relationship',
-                            relationTo: 'cta' as CollectionSlug,
+                            relationTo: 'cta',
                             hasMany: true,
                         },
                     ]

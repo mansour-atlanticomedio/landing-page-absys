@@ -1,5 +1,5 @@
-import { CollectionConfig } from "payload";
-import { appIcons } from './Icons'
+import type { CollectionConfig } from "payload";
+import { appIcons } from './Icons.ts'
 
 export const Features : CollectionConfig = {
     slug: 'features',
