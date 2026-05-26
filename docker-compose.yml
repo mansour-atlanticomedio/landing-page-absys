@@ -1,6 +1,6 @@
 services:
   frontend:
-    build: ./Dockerfile
+    build: .
     ports:
       - "8081:80"
     volumes:
