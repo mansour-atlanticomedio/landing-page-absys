@@ -30,5 +30,5 @@ services:
     - DATABASE_URL=postgres://postgres:1234@db:5432/payloadcms
     - NEXT_PUBLIC_STRAPI_URL=http://localhost:1337
 
-  volumes:
-  postgres_data:
+volumes:
+postgres_data:
