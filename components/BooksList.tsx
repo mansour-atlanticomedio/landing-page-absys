@@ -21,7 +21,7 @@ export default function BooksList() {
     const fetchData = async () => {
       try {
         setLoading(true);
-        const url = name ? `/api/library/${name}` : `/api/library/`;
+        const url = name ? `/biblioteca/api/library/${name}` : `/biblioteca/api/library/`;
         const response = await axios.get(url);
         setBooks(response.data);
       } catch (error) {

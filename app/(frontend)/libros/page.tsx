@@ -26,7 +26,7 @@ function BooksContent() {
         const fetchData = async () => {
             try {
                 setLoading(true);
-                const response = await axios.get(`/api/library/${name}`);
+                const response = await axios.get(`/biblioteca/api/library/${name}`);
                 setBooks(response.data);
             } catch (error) {
                 console.error(error);
