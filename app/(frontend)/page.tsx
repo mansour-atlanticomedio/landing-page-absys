@@ -8,7 +8,7 @@ import './styles.css'
 export default async function Home() {
   const payload = await getClient()
   const homepage = await payload.findGlobal({
-    slug: 'home',
+    slug: 'home' as never,
     draft: false,
     depth: 5
   }) as any

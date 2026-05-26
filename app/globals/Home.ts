@@ -1,4 +1,4 @@
-import { GlobalConfig } from "payload";
+import { CollectionSlug, GlobalConfig } from "payload";
 
 export const Home: GlobalConfig = {
   slug: 'home',
@@ -8,7 +8,7 @@ export const Home: GlobalConfig = {
       name: 'hero',
       label: 'Seccion Principal',
       type: 'relationship',
-      relationTo: 'hero',
+      relationTo: 'hero' as CollectionSlug,
       hasMany: false,
     },
     {
@@ -30,7 +30,7 @@ export const Home: GlobalConfig = {
             {
               name: 'stats_relation',
               type: 'relationship',
-              relationTo: 'statistics',
+              relationTo: 'statistics' as CollectionSlug,
               hasMany: true,
             },
           ]
@@ -45,7 +45,7 @@ export const Home: GlobalConfig = {
             {
               name: 'speakers_relation',
               type: 'relationship',
-              relationTo: 'speakers',
+              relationTo: 'speakers' as CollectionSlug,
               hasMany: true,
             },
           ],
@@ -60,7 +60,7 @@ export const Home: GlobalConfig = {
             {
               name: 'about_relation',
               type: 'relationship',
-              relationTo: 'about',
+              relationTo: 'about' as CollectionSlug,
               hasMany: true,
             },
           ],
@@ -75,7 +75,7 @@ export const Home: GlobalConfig = {
             {
               name: 'features_relation',
               type: 'relationship',
-              relationTo: 'features',
+              relationTo: 'features' as CollectionSlug,
               hasMany: true,
             },
           ]
@@ -90,7 +90,7 @@ export const Home: GlobalConfig = {
             {
               name: 'timeline_relation',
               type: 'relationship',
-              relationTo: 'timeline',
+              relationTo: 'timeline' as CollectionSlug,
               hasMany: true,
             },
           ]
@@ -110,7 +110,7 @@ export const Home: GlobalConfig = {
             {
               name: 'cta_relation',
               type: 'relationship',
-              relationTo: 'cta',
+              relationTo: 'cta' as CollectionSlug,
               hasMany: true,
             },
           ]
@@ -125,7 +125,7 @@ export const Home: GlobalConfig = {
             {
               name: 'faq_relation',
               type: 'relationship',
-              relationTo: 'faq',
+              relationTo: 'faq' as CollectionSlug,
               hasMany: true,
             },
           ]

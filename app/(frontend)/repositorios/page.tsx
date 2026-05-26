@@ -6,7 +6,7 @@ import { getClient } from "@/lib/payload";
 export default async function Repositories() {
     const payload = await getClient()
     const homepage = await payload.findGlobal({
-        slug: 'repository',
+        slug: 'repository' as never,
         draft: false,
         depth: 5
     }) as any
@@ -25,7 +25,7 @@ export default async function Repositories() {
             buttonText={heroData.button_cta}
             inputPlaceHolder={heroData.input_placeholder}
           />
-          
+
           <RenderBlocks blocks={pageBlocks} />
         </>
       )

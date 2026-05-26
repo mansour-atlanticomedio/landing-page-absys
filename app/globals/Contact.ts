@@ -1,4 +1,4 @@
-import { GlobalConfig } from "payload";
+import { CollectionSlug, GlobalConfig } from "payload";
 
 export const Contact: GlobalConfig = {
     slug: 'contact',
@@ -8,7 +8,7 @@ export const Contact: GlobalConfig = {
             name: 'hero',
             label: 'Seccion Principal',
             type: 'relationship',
-            relationTo: 'hero',
+            relationTo: 'hero' as CollectionSlug,
             hasMany: false
         }
     ]
