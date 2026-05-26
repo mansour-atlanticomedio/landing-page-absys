@@ -27,7 +27,7 @@ services:
     environment:
     - WATCHPACK_POLLING=true
     - PAYLOAD_SECRET=9fc076e667cb808e40733d2b
-    - DATABASE_URL=postgres://postgres:1234@db:5433/payloadcms
+    - DATABASE_URL=postgres://postgres:1234@db:5432/payloadcms
 
 volumes:
   postgres_data:
