@@ -9,9 +9,9 @@ import path from "path";
 import { fileURLToPath } from "url";
 import sharp from "sharp";
 
-import { Home } from "./app/globals/Home";
-import { Library as LibraryGlobal } from "./app/globals/Library";
-import { Contact } from "./app/globals/Contact";
+import { Home } from "./globals/Home";
+import { Library as LibraryGlobal } from "./globals/Library";
+import { Contact } from "./globals/Contact";
 
 import { Users } from "./collections/Users";
 import { Media } from "./collections/Media";
@@ -25,7 +25,7 @@ import { CTA } from "./collections/CTA";
 import { FAQ } from "./collections/FAQ";
 import { Email } from "./collections/Email";
 import { Library } from "./collections/Library";
-import { Repositories } from "./app/globals/Repositories";
+import { Repositories } from "./globals/Repositories";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
