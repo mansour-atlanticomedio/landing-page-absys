@@ -31,7 +31,7 @@ export default function Hero({ pretitle, title, subtitle, image, buttonText, inp
       {imageUrl && imageUrl !== '' && (
         <Image
           src={imageUrl}
-          alt={imageAlt || title || "Hero background"}
+          alt={imageAlt || "Hero background"}
           fill
           priority
           className="object-cover object-[center_90%] -z-10"
