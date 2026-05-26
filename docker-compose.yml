@@ -6,6 +6,8 @@ services:
     volumes:
       - .:/app
       - /app/node_modules
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     environment:
     - WATCHPACK_POLLING=true
     - PAYLOAD_SECRET=9fc076e667cb808e40733d2b
