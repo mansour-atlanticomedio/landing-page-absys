@@ -32,7 +32,7 @@ const dirname = path.dirname(filename);
 
 export default buildConfig({
   routes: {
-    admin: '/biblioteca/admin'
+    admin: '/admin'
   },
   admin: {
     user: Users.slug,
