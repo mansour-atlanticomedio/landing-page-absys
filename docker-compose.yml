@@ -2,7 +2,6 @@ services:
   frontend:
     build:
       context: .
-      target: development
     ports:
       - "8085:3000"
     volumes:
