@@ -18,9 +18,8 @@ export default function Header() {
 
     const navItems: NavLinkProps[] = [
         { to: "/", label: "Inicio" },
-        { to: "/programa", label: "Programa" },
-        { to: "/inscripcion", label: "Inscripción" },
-        { to: "/documentacion", label: "Documentación" },
+        { to: "/biblioteca", label: "Biblioteca" },
+        { to: "/repositorios", label: "Repositorios" },
         { to: "/contacto", label: "Contacto" },
     ];
 

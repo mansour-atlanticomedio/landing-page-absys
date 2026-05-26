@@ -1,7 +1,13 @@
 import { CollectionConfig } from "payload"
 
-export const Hero : CollectionConfig = {
+export const Hero: CollectionConfig = {
     slug: 'hero',
+    admin: {
+        useAsTitle: 'title'
+    },
+    access: {
+        read: () => true,
+    },
     labels: {
         singular: 'Seccion Principal',
         plural: 'Seccion Principal'
@@ -20,6 +26,7 @@ export const Hero : CollectionConfig = {
             type: 'text',
         },
         {
+
             name: 'title',
             label: 'Título',
             type: 'text',
@@ -32,8 +39,13 @@ export const Hero : CollectionConfig = {
         },
         {
             name: 'button_cta',
-            label: 'Texto del boton',
+            label: 'Texto del boton (Opcional)',
             type: 'text'
-        }
+        },
+        {
+            name: 'input_placeholder',
+            label: 'Texto del input (Opcional)',
+            type: 'text'
+        },
     ]
 }

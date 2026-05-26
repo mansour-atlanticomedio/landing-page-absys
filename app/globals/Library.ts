@@ -1,12 +1,11 @@
 import { GlobalConfig } from "payload";
 
-export const Contact: GlobalConfig = {
-    slug: 'contact',
-    label: "Contacto",
+export const Library : GlobalConfig = {
+    slug: 'library',
+    label: 'Biblioteca',
     fields: [
         {
             name: 'hero',
-            label: 'Seccion Principal',
             type: 'relationship',
             relationTo: 'hero',
             hasMany: false

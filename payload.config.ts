@@ -1,16 +1,21 @@
+import { buildConfig } from "payload";
+
 import { postgresAdapter } from "@payloadcms/db-postgres";
 import { lexicalEditor } from "@payloadcms/richtext-lexical";
 import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
+import { es } from '@payloadcms/translations/languages/es';
+import { en } from '@payloadcms/translations/languages/en';
 import path from "path";
 import { fileURLToPath } from "url";
 import sharp from "sharp";
 
-import { buildConfig } from "payload";
+import { Home } from "./app/globals/Home";
+import { Library as LibraryGlobal } from "./app/globals/Library";
+import { Contact } from "./app/globals/Contact";
 
 import { Users } from "./collections/Users";
 import { Media } from "./collections/Media";
 import { Hero } from "./collections/Hero";
-import { Home } from "./app/globals/Home";
 import { Speakers } from "./collections/Speakers";
 import { Statistics } from "./collections/Statistics";
 import { About } from "./collections/About";
@@ -18,8 +23,9 @@ import { Features } from "./collections/Features";
 import { Timeline } from "./collections/Timeline";
 import { CTA } from "./collections/CTA";
 import { FAQ } from "./collections/FAQ";
-import { Contact } from "./app/globals/Contact";
 import { Email } from "./collections/Email";
+import { Library } from "./collections/Library";
+import { Repositories } from "./app/globals/Repositories";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -38,13 +44,14 @@ export default buildConfig({
     Speakers,
     Statistics,
     About,
-    Email,
     Features,
     Timeline,
     CTA,
-    FAQ
+    FAQ,
+    Email,
+    Library
   ],
-  globals: [Home, Contact],
+  globals: [Home, LibraryGlobal, Repositories, Contact],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",
   typescript: {
@@ -74,4 +81,7 @@ export default buildConfig({
       }
     },
   }),
+  i18n: {
+    supportedLanguages: { en, es },
+  }
 });

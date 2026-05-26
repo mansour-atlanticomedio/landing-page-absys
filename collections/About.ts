@@ -3,20 +3,33 @@ import { CollectionConfig } from "payload";
 export const About : CollectionConfig = {
     slug: 'about',
     labels: {
-        singular: 'Información',
-        plural: 'Información'
+        singular: {
+            es: 'Información',
+            en: 'About Info'
+        },
+        plural: {
+            es: 'Información',
+            en: 'About Info',
+        }
     },
     fields: [
         {
             name: 'title',
-            label: 'Título',
+            label: {
+                es: 'Título',
+                en: 'Title'
+            },
             type: 'text',
             localized: true
         },
         {
             name: 'article',
-            label: 'Artículo',
-            type: 'richText'
+            label:  {
+                es: 'Artículo',
+                en: 'Article'
+            },
+            type: 'richText',
+            localized: true
         }
     ]
 }

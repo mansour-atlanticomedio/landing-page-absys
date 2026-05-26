@@ -1,12 +1,15 @@
 import { CollectionConfig } from "payload";
 
-export const CTA : CollectionConfig = {
+export const CTA: CollectionConfig = {
     slug: 'cta',
+    admin: {
+        useAsTitle: 'title'
+    },
     labels: {
         singular: 'Sección de inscripción',
         plural: 'Sección de inscripción'
     },
-    fields : [
+    fields: [
         {
             name: 'title',
             label: 'Titulo',

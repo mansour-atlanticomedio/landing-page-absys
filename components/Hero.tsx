@@ -1,8 +1,7 @@
-'use client'
-import { ReactNode } from "react";
 import Image from "next/image";
 import { Button } from "./ui/button";
-import Link from "next/link";
+
+import InputComponent from "./Input";
 
 interface PayloadImage {
   id: string,
@@ -16,13 +15,13 @@ interface HeroProps {
   pretitle?: string,
   title: string,
   subtitle?: string,
-  image: PayloadImage | string,
+  image?: PayloadImage | string,
   buttonText?: string,
+  inputPlaceHolder?: string,
   toPage?: string,
-  children?: ReactNode,
 }
 
-export default function Hero({ pretitle, title, subtitle, image, buttonText, toPage, children }: HeroProps) {
+export default function Hero({ pretitle, title, subtitle, image, buttonText, inputPlaceHolder, toPage }: HeroProps) {
   const imageUrl = typeof image === "object" ? image?.url : image;
   const imageAlt = typeof image === "object" ? image?.alt : "Imagen de fondo";
 
@@ -41,7 +40,7 @@ export default function Hero({ pretitle, title, subtitle, image, buttonText, toP
 
       <div className="absolute inset-0 hero-overlay -z-10" />
       <div className="relative z-10 max-w-4xl px-6 py-20">
-        {pretitle && (
+        {pretitle && pretitle !== '' && (
           <p className="text-md md:text-lg text-primary-foreground/90 mb-4">
             {pretitle}
           </p>
@@ -49,20 +48,22 @@ export default function Hero({ pretitle, title, subtitle, image, buttonText, toP
         <h1 className="font-display text-3xl md:text-5xl font-bold uppercase tracking-wide text-primary-foreground mb-4">
           {title}
         </h1>
-        {subtitle && (
+        {subtitle && subtitle !== '' && (
           <p className="text-lg md:text-xl text-primary-foreground/90">
             {subtitle}
           </p>
         )}
-        {children && <div className="mt-8">{children}</div>}
-        {buttonText &&
+        {buttonText && inputPlaceHolder !== '' &&
           <Button
             variant="outline"
             className="mt-8 rounded-b-md py-5 px-6 border-2 border-primary-foreground text-primary-foreground bg-transparent cursor-pointer hover:bg-primary-foreground hover:text-primary uppercase tracking-wider">
-            <Link href={toPage as string}>
+            <a href={toPage as string}>
               {buttonText}
-            </Link>
+            </a>
           </Button>
+        }
+        {inputPlaceHolder && inputPlaceHolder !== '' &&
+            <InputComponent placeholder={inputPlaceHolder} />
         }
       </div>
     </section>

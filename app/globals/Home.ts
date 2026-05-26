@@ -6,13 +6,18 @@ export const Home: GlobalConfig = {
   fields: [
     {
       name: 'hero',
+      label: 'Seccion Principal',
       type: 'relationship',
       relationTo: 'hero',
-      hasMany: false
+      hasMany: false,
     },
     {
       name: 'layout',
-      label: 'Estructura',
+      labels: {
+        singular: 'bloque',
+        plural: 'bloques'
+      },
+      label: 'Bloques',
       type: 'blocks',
       blocks: [
         {

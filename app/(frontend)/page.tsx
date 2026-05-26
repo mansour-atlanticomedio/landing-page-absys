@@ -15,10 +15,8 @@ export default async function Home() {
 
   const heroData = homepage?.hero
   const pageBlocks = homepage?.layout
-
-  const cta_button: string = 'https://forms.cloud.microsoft/pages/responsepage.aspx?id=XY9FITLOIEKpKiuDNuULSADr381rgy1HsyQ7GPxGWOpUMDNUMFIwV0JJM05ZR1VFR1c3UDFMRFhMMS4u&route=shorturl'
-
   const imageUrl = typeof heroData.background_image === 'object' && heroData.background_image !== null ? heroData.background_image.url : null;
+
   return (
     <>
       <Hero
@@ -26,8 +24,8 @@ export default async function Home() {
         title={heroData.title}
         subtitle={heroData.subtitle}
         image={imageUrl}
-        buttonText="Inscríbete"
-        toPage={cta_button}
+        buttonText={heroData.button_cta}
+        inputPlaceHolder={heroData.input_placeholder}
       />
       <RenderBlocks blocks={pageBlocks} />
     </>
