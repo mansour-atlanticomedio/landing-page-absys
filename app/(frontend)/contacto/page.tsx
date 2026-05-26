@@ -1,4 +1,3 @@
-import { toast } from "sonner";
 import SimpleForm from "@/components/SimpleForm";
 import { SimpleFormProps } from "@/types/form.type";
 import { Clock, Mail, MapPin, Phone } from "lucide-react";

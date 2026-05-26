@@ -1,8 +1,6 @@
 import Hero from '@/components/Hero'
 import '../styles.css'
 
-import { getClient } from '@/lib/payload'
-
 const cta_button: string = 'https://forms.cloud.microsoft/pages/responsepage.aspx?id=XY9FITLOIEKpKiuDNuULSADr381rgy1HsyQ7GPxGWOpUMDNUMFIwV0JJM05ZR1VFR1c3UDFMRFhMMS4u&route=shorturl'
 
 

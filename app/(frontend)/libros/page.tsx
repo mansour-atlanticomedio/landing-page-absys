@@ -5,6 +5,8 @@ import axios from "axios";
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState, Suspense } from "react";
 
+export const dynamic = 'force-dynamic';
+
 interface BooksInterface {
     titulo: string,
     autor: string,

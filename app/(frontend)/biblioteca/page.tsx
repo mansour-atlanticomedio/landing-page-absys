@@ -3,6 +3,8 @@ import { getClient } from "@/lib/payload";
 import BooksList from "@/components/BooksList";
 import { Suspense } from "react";
 
+export const dynamic = 'force-dynamic';
+
 export default async function LibraryPage() {
 
   const payload = await getClient();
