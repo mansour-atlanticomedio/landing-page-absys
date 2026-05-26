@@ -11,4 +11,3 @@ services:
     environment:
     - WATCHPACK_POLLING=true
     restart: always
-    restart: always
