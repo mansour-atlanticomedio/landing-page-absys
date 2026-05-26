@@ -17,11 +17,11 @@ RUN sed -i \
     -e '/<Directory "\/usr\/local\/apache2\/htdocs">/,/<\/Directory>/ s/AllowOverride None/AllowOverride All/' \
     conf/httpd.conf
 
-RUN echo "FallbackResource /jornadas/index.html" >> /usr/local/apache2/conf/httpd.conf
+RUN echo "FallbackResource /biblioteca/index.html" >> /usr/local/apache2/conf/httpd.conf
 
 RUN rm -rf /usr/local/apache2/htdocs/*
-RUN mkdir -p /usr/local/apache2/htdocs/jornadas
+RUN mkdir -p /usr/local/apache2/htdocs/biblioteca
 
-COPY --from=build-stage /app/dist/ /usr/local/apache2/htdocs/jornadas/
+COPY --from=build-stage /app/dist/ /usr/local/apache2/htdocs/biblioteca/
 
 EXPOSE 80
