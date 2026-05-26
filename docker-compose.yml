@@ -2,10 +2,10 @@ services:
   frontend:
     build: .
     ports:
-      - "8081:80"
+      - "8081:3000"
     volumes:
-      - ./frontend:/app
-      - /app/node_modules
+      - .:/app
+      - /node_modules
     environment:
     - WATCHPACK_POLLING=true
     restart: always

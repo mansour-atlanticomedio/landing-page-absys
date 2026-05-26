@@ -1,27 +1,17 @@
-FROM node:20-alpine as build-stage
+FROM node:20-alpine
 
 WORKDIR /app
 
 COPY package*.json ./
-
 RUN npm install
 
 COPY . .
 
+ENV PAYLOAD_SECRET=un_secret_temporal_para_el_build
+ENV DATABASE_URL=postgresql://mock:mock@localhost:5432/mock
+
 RUN npm run build
 
-FROM httpd:2.4-alpine
+EXPOSE 3000
 
-RUN sed -i \
-    -e 's/^#LoadModule rewrite_module/LoadModule rewrite_module/' \
-    -e '/<Directory "\/usr\/local\/apache2\/htdocs">/,/<\/Directory>/ s/AllowOverride None/AllowOverride All/' \
-    conf/httpd.conf
-
-RUN echo "FallbackResource /biblioteca/index.html" >> /usr/local/apache2/conf/httpd.conf
-
-RUN rm -rf /usr/local/apache2/htdocs/*
-RUN mkdir -p /usr/local/apache2/htdocs/biblioteca
-
-COPY --from=build-stage /app/dist/ /usr/local/apache2/htdocs/biblioteca/
-
-EXPOSE 80
+CMD ["npm", "start"]
