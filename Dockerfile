@@ -5,7 +5,7 @@ WORKDIR /app
 # Instalar dependencias esenciales para compilar ciertos paquetes de Node si hiciera falta
 RUN apk add --no-cache libc6-compat
 
-COPY package*.json ./
+COPY package*.json tsconfig.json ./
 RUN npm ci
 
 # Copiar el código fuente
