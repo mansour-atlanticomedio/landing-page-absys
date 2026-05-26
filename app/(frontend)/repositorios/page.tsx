@@ -1,7 +1,8 @@
 import Hero from "@/components/Hero";
 import { RenderBlocks } from "@/components/RenderBlocks";
-
 import { getClient } from "@/lib/payload";
+
+export const dynamic = 'force-dynamic';
 
 export default async function Repositories() {
     const payload = await getClient()
