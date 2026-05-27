@@ -40,6 +40,7 @@ COPY --from=builder /app/public ./public
 COPY --from=builder /app/app ./app
 COPY --from=builder /app/collections ./collections
 COPY --from=builder /app/globals ./globals
+COPY --from=builder /app/migrations ./migrations
 
 EXPOSE 3000
 
