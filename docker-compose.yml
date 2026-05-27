@@ -22,13 +22,13 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        # Se mantienen para la etapa de build
         NEXT_PUBLIC_SERVER_URL: https://www.atlanticomedio.es/biblioteca
         PAYLOAD_PUBLIC_SERVER_URL: https://www.atlanticomedio.es/biblioteca
     container_name: next-landing-page-frontend-1
     ports:
       - "8085:3000"
     volumes:
+      - .:/app
       - media_data:/app/media
     depends_on:
       db:

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-import { Mail, Phone } from "lucide-react";
+import { ChevronDown, Mail, Phone } from "lucide-react";
 import logo from "@/public/logos/logo.png";
 import Image from "next/image";
 
@@ -21,6 +21,29 @@ export default function Header() {
         { to: "/biblioteca", label: "Biblioteca" },
         { to: "/repositorios", label: "Repositorios" },
         { to: "/contacto", label: "Contacto" },
+    ];
+
+    const MENU: { label: string; items: string[] }[] = [
+        {
+            label: "La Biblioteca",
+            items: ["Conócenos", "Bibliotecas", "Normativa", "Directorio", "Compromiso y proyección social", "Evaluación y calidad", "Archivo Universitario"],
+        },
+        {
+            label: "Encuentra",
+            items: ["Faro", "Catálogo - Mi Biblioteca", "Recursos-e (Lista A-Z)", "Publicaciones e. (revistas y libros electrónicos)", "Biblioteca A-Z", "e-BUlibros: préstamo de libros-e"],
+        },
+        {
+            label: "Servicios",
+            items: ["Formación", "Préstamo y acceso al documento", "Apoyo a la investigación", "Reprografía e Impresión 3D", "BUstreaming: autopublicación de audio y vídeo", "Pregúntanos"],
+        },
+        {
+            label: "Espacios",
+            items: ["Espacio Pósit", "Sala Pino Ojeda", "Salas de lectura", "Espacios de trabajo colaborativo", "Espacio Violeta", "Espacio Internacional", "MakerSpace", "Espacio de grabación", "Sala La Isleta", "Cabina para videoconferencias", "Sala Natalia Sosa Ayala", "Korea Corner", "Sala Josefina Plá", "Travel Tech School by Amadeus", "Sala Lothar Siemens", "Mediateca"],
+        },
+        {
+            label: "Portales",
+            items: ["accedaCRIS", "Archivo Gráfico Institucional", "Biblioteca Musicológica Lothar Siemens", "CraaL", "Enrique Copeiro", "Exlibris", "Los Guanchismos", "Jable", "Memoria digital de Canarias", "PAMEV", "SUdocument@", "Toponimia de Canarias"],
+        },
     ];
 
     return (
@@ -51,8 +74,8 @@ export default function Header() {
                                     key={item.to}
                                     href={item.to}
                                     className={`uppercase text-sm font-semibold tracking-wider transition-colors ${isActive
-                                            ? "text-accent"
-                                            : "text-foreground hover:text-accent"
+                                        ? "text-accent"
+                                        : "text-foreground hover:text-accent"
                                         }`}
                                 >
                                     {item.label}
@@ -64,20 +87,39 @@ export default function Header() {
                 {/* Mobile nav */}
                 <nav className="md:hidden border-t border-border flex justify-around py-2">
                     {navItems.map((item) => {
-                            const isActive = pathname === item.to;
+                        const isActive = pathname === item.to;
 
-                            return (
-                                <Link
-                                    key={item.to}
-                                    href={item.to}
-                                    className={ `text-xs uppercase font-semibold ${isActive ? "text-accent" : "text-foreground"}`}
-                                >
-                                    {item.label}
-                                </Link>
-                            );
-                        })}
+                        return (
+                            <Link
+                                key={item.to}
+                                href={item.to}
+                                className={`text-xs uppercase font-semibold ${isActive ? "text-accent" : "text-foreground"}`}
+                            >
+                                {item.label}
+                            </Link>
+                        );
+                    })}
                 </nav>
             </header>
+            {MENU.map((section) => (
+                <div key={section.label} className="group relative">
+                    <button className="flex h-12 items-center gap-1 px-4 text-sm font-bold tracking-wide transition group-hover:bg-primary-foreground/10">
+                        {section.label}
+                        <ChevronDown className="h-3.5 w-3.5 opacity-70" />
+                    </button>
+                    <div className="invisible absolute left-0 top-full z-30 w-72 -translate-y-1 border border-border bg-card text-card-foreground opacity-0 shadow-xl transition-all duration-150 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
+                        <ul className="py-2">
+                            {section.items.map((it) => (
+                                <li key={it}>
+                                    <a href="#" className="block border-l-2 border-transparent px-4 py-2 text-sm transition hover:border-primary hover:bg-primary/5 hover:text-primary">
+                                        {it}
+                                    </a>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                </div>
+            ))}
         </section>
     )
 }
