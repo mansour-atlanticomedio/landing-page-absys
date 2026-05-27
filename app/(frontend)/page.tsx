@@ -5,6 +5,7 @@ import { getClient } from "@/lib/payload";
 export const dynamic = 'force-dynamic';
 
 import './styles.css'
+import { FlaskConical, LayoutGrid, Newspaper, PenLine, Sparkles } from "lucide-react";
 
 export default async function Home() {
   const payload = await getClient()
@@ -66,6 +67,104 @@ export default async function Home() {
         buttonText={heroData.button_cta}
         inputPlaceHolder={heroData.input_placeholder}
       />
+
+      <section id="noticias" className="bg-background py-20">
+        <div className="mx-auto max-w-7xl px-6">
+          <div className="mb-10 flex items-end justify-between">
+            <h2 className="flex items-center gap-3 text-3xl font-bold text-primary">
+              Noticias
+            </h2>
+            <a href="#" className="text-sm font-semibold text-primary hover:underline">Ver todas las noticias →</a>
+          </div>
+          <div className="grid gap-8 md:grid-cols-3">
+            {NOTICIAS.map((n) => (
+              <article key={n.title} className="group overflow-hidden rounded-lg border border-border bg-card transition hover:shadow-lg">
+                <div className="h-44 bg-linear-to-br from-primary/30 via-primary/10 to-accent/20" />
+                <div className="p-5">
+                  <span className="text-[11px] font-bold uppercase tracking-widest text-primary">{n.tag}</span>
+                  <h3 className="mt-2 text-lg font-bold leading-snug text-foreground group-hover:text-primary">{n.title}</h3>
+                  <p className="mt-2 text-sm text-muted-foreground">{n.desc}</p>
+                </div>
+              </article>
+            ))}
+          </div>
+          <div className="mt-10 h-px w-full bg-accent/40" />
+        </div>
+      </section>
+
+      <section className="bg-background pb-20">
+        <div className="mx-auto max-w-7xl px-6">
+          <h2 className="mb-10 flex items-center gap-3 text-3xl font-bold text-primary">
+            Te recomendamos
+          </h2>
+          <div className="grid gap-8 md:grid-cols-3">
+            {RECOMENDADOS.map((r) => (
+              <article key={r.title} className="rounded-lg border border-border bg-card p-6 transition hover:border-primary hover:shadow-md">
+                <div className="mb-4 h-36 rounded-md bg-linear-to-br from-accent/30 to-primary/20" />
+                <h3 className="text-lg font-bold leading-snug text-foreground">{r.title}</h3>
+                <p className="mt-2 text-sm text-muted-foreground">{r.desc}</p>
+              </article>
+            ))}
+          </div>
+          <div className="mt-10 h-px w-full bg-accent/40" />
+        </div>
+      </section>
+
+      <section className="bg-background pb-20">
+        <div className="mx-auto max-w-7xl px-6">
+          <h2 className="mb-10 flex items-center gap-3 text-3xl font-bold text-primary">
+            Portales y herramientas
+          </h2>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            {PORTALES.map((p) => (
+              <a key={p} href="#" className="flex h-32 items-center justify-center rounded-lg border border-border bg-card p-6 text-center text-sm font-bold text-primary transition hover:border-primary hover:shadow-md">
+                {p}
+              </a>
+            ))}
+          </div>
+          <div className="mt-10 h-px w-full bg-accent/40" />
+        </div>
+      </section>
+
+      <section className="bg-background pb-20">
+        <div className="mx-auto max-w-7xl px-6">
+          <h2 className="mb-10 flex items-center gap-3 text-3xl font-bold text-primary">
+            <FlaskConical className="h-7 w-7" /> Apoyo a la investigación
+          </h2>
+          <div className="grid gap-8 md:grid-cols-3">
+            {INVESTIGACION.map((r) => (
+              <article key={r.title} className="rounded-lg border border-border bg-card p-6 transition hover:border-primary hover:shadow-md">
+                <div className="mb-4 h-36 rounded-md bg-linear-to-br from-primary/20 to-accent/30" />
+                <h3 className="text-lg font-bold leading-snug text-foreground">{r.title}</h3>
+                <p className="mt-2 text-sm text-muted-foreground">{r.desc}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="bg-secondary py-20">
+        <div className="mx-auto max-w-7xl px-6">
+          <h2 className="mb-10 flex items-center gap-3 text-3xl font-bold text-primary">
+            Blogs
+          </h2>
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            {BLOGS.map((b) => (
+              <article key={b.title} className="border-b border-border pb-5">
+                <div className="text-xs font-bold tracking-widest text-muted-foreground">{b.date}</div>
+                <h3 className="mt-2 text-lg font-bold leading-snug text-primary hover:underline">
+                  <a href="#">{b.title}</a>
+                </h3>
+                <div className="mt-2 text-sm italic text-muted-foreground">{b.blog}</div>
+              </article>
+            ))}
+          </div>
+          <div className="mt-10 text-right">
+            <a href="#" className="text-sm font-semibold text-primary hover:underline">Ver todos los artículos →</a>
+          </div>
+        </div>
+      </section>
+
       <RenderBlocks blocks={pageBlocks} />
     </>
   )

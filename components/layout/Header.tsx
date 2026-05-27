@@ -101,25 +101,29 @@ export default function Header() {
                     })}
                 </nav>
             </header>
-            {MENU.map((section) => (
-                <div key={section.label} className="group relative">
-                    <button className="flex h-12 items-center gap-1 px-4 text-sm font-bold tracking-wide transition group-hover:bg-primary-foreground/10">
-                        {section.label}
-                        <ChevronDown className="h-3.5 w-3.5 opacity-70" />
-                    </button>
-                    <div className="invisible absolute left-0 top-full z-30 w-72 -translate-y-1 border border-border bg-card text-card-foreground opacity-0 shadow-xl transition-all duration-150 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
-                        <ul className="py-2">
-                            {section.items.map((it) => (
-                                <li key={it}>
-                                    <a href="#" className="block border-l-2 border-transparent px-4 py-2 text-sm transition hover:border-primary hover:bg-primary/5 hover:text-primary">
-                                        {it}
-                                    </a>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
+            <div className="border-t border-border bg-primary text-primary-foreground">
+                <div className="max-w-7xl flex items-center justify-evenly px-6 md:flex">
+                    {MENU.map((section) => (
+                        <div key={section.label} className="group relative">
+                            <button className="flex h-12 items-center gap-1 px-4 text-sm font-bold tracking-wide transition group-hover:bg-primary-foreground/10">
+                                {section.label}
+                                <ChevronDown className="h-3.5 w-3.5 opacity-70" />
+                            </button>
+                            <div className="invisible bg-white absolute -left-6/12 top-full z-30 w-72 -translate-y-1 border border-border bg-card text-card-foreground opacity-0 shadow-xl transition-all duration-150 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
+                                <ul className="py-2">
+                                    {section.items.map((it) => (
+                                        <li key={it}>
+                                            <a href="#" className="block border-l-2 border-transparent px-4 py-2 text-sm transition hover:border-primary hover:bg-primary/5 text-primary">
+                                                {it}
+                                            </a>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
+                    ))}
                 </div>
-            ))}
+            </div>
         </section>
     )
 }

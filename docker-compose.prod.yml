@@ -1,0 +1,27 @@
+services:
+  db:
+    image: postgres:16-alpine
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: payloadcms
+    volumes:
+      - postgres_prod_data:/var/lib/postgresql/data
+
+  frontend:
+    build:
+      context: .
+      target: runner
+    restart: always
+    ports:
+      - "80:3000"
+    env_file:
+      - .env
+    environment:
+      DATABASE_URI: "postgres://postgres:${DATABASE_PASSWORD}@db:5432/payloadcms"
+      NODE_ENV: production
+    depends_on:
+      - db
+
+volumes:
+  postgres_prod_data:
