@@ -48,4 +48,4 @@ ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
 # Ejecuta las migraciones y arranca la aplicación si la base de datos responde
-CMD ["sh", "-c", "npx payload migrate && npm run start"]
+CMD ["sh", "-c", "npx payload migrate && node .next/standalone/server.js"]

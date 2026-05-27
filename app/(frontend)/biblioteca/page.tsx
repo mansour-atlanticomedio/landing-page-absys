@@ -15,9 +15,15 @@ export default async function LibraryPage() {
   }) as any;
 
   const heroData = homepage?.hero || {};
-  const imageUrl = typeof heroData.background_image === 'object' && heroData.background_image !== null
+  const pretitle = heroData?.pretitle || "Próximo Evento";
+  const title = heroData?.title || "Bienvenidos a la Biblioteca";
+  const subtitle = heroData?.subtitle || "Explora nuestros recursos y repositorios académicos.";
+  const buttonText = heroData?.button_cta || "Ver Programa";
+  const inputPlaceHolder = heroData?.input_placeholder || "Tu correo electrónico...";
+
+  const imageUrl = heroData?.background_image && typeof heroData.background_image === 'object'
     ? heroData.background_image.url
-    : null;
+    : '/images/app/campus.jpg';
 
   return (
     <section>
