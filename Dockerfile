@@ -2,16 +2,16 @@
 FROM node:24-alpine AS builder
 WORKDIR /app
 
-# Instalar dependencias esenciales para compilar ciertos paquetes de Node si hiciera falta
+# Instalar dependencias esenciales para compilar ciertos paquetes de Node
 RUN apk add --no-cache libc6-compat
 
 COPY package*.json tsconfig.json ./
 RUN npm ci
 
-# Copiar el código fuente
+# Copiar el código fuente completo
 COPY . .
 
-# Desactivar telemetría de Next.js en la compilación
+# Desactivar telemetría de Next.js en la compilación y asignar el secreto
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV PAYLOAD_SECRET=9fc076e667cb808e40733d2b
 
@@ -24,16 +24,22 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# Copiamos solo lo necesario para ejecutar la app
+# Copiamos lo estrictamente necesario para ejecutar la app y las migraciones
 COPY --from=builder /app/package*.json ./
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/payload.config.ts ./
+
+# Añadimos la carpeta app y el resto de recursos para evitar errores de importación en runtime
+COPY --from=builder /app/app ./app
 COPY --from=builder /app/collections ./collections
 COPY --from=builder /app/globals ./globals
 
 EXPOSE 3000
 
-# comando clave: Primero corre las migraciones hacia la DB, y si todo va bien, arranca Next.js
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
+
+# Ejecuta las migraciones y arranca la aplicación si la base de datos responde
 CMD ["sh", "-c", "npx payload migrate && npm run start"]
