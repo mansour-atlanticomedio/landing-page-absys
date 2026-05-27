@@ -24,14 +24,19 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 
-# Copiamos lo estrictamente necesario para ejecutar la app y las migraciones
+ENV NODE_ENV=production
+ENV NEXT_TELEMETRY_DISABLED=1
+
+# Copiamos los archivos de configuración base de la raíz
 COPY --from=builder /app/package*.json ./
+COPY --from=builder /app/tsconfig.json ./
+COPY --from=builder /app/payload.config.ts ./
+COPY --from=builder /app/next.config.ts ./
+
+# Copiamos los directorios del compilado y código fuente necesario
 COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/payload.config.ts ./
-
-# Añadimos la carpeta app y el resto de recursos para evitar errores de importación en runtime
 COPY --from=builder /app/app ./app
 COPY --from=builder /app/collections ./collections
 COPY --from=builder /app/globals ./globals
