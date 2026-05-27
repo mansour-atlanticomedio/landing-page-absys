@@ -81,6 +81,36 @@ export const Home: GlobalConfig = {
           ]
         },
         {
+          slug: 'news_block',
+          labels: {
+            singular: 'Noticias',
+            plural: 'Noticias',
+          },
+          fields: [
+            {
+              name: 'news_relation',
+              type: 'relationship',
+              relationTo: 'news',
+              hasMany: true,
+            },
+          ]
+        },
+        {
+          slug: 'blogs_block',
+          labels: {
+            singular: 'Blogs',
+            plural: 'Blogs',
+          },
+          fields: [
+            {
+              name: 'blogs_relation',
+              type: 'relationship',
+              relationTo: 'blogs',
+              hasMany: true,
+            },
+          ]
+        },
+        {
           slug: 'timeline_block',
           labels: {
             singular: 'Linea del tiempo',
@@ -91,6 +121,21 @@ export const Home: GlobalConfig = {
               name: 'timeline_relation',
               type: 'relationship',
               relationTo: 'timeline',
+              hasMany: true,
+            },
+          ]
+        },
+        {
+          slug: 'partners_block',
+          labels: {
+            singular: 'Patrocinador',
+            plural: 'Patrocinadores',
+          },
+          fields: [
+            {
+              name: 'partners_relation',
+              type: 'relationship',
+              relationTo: 'partners',
               hasMany: true,
             },
           ]

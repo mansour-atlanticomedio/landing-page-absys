@@ -26,6 +26,9 @@ import { CTA } from "./collections/CTA.ts";
 import { FAQ } from "./collections/FAQ.ts";
 import { Email } from "./collections/Email.ts";
 import { Library } from "./collections/Library.ts";
+import { NewsCollection } from "./collections/News.ts";
+import { BlogsCollection } from "./collections/Blogs.ts";
+import { PartnersCollection } from "./collections/Partners.ts";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -52,6 +55,9 @@ export default buildConfig({
     CTA,
     FAQ,
     Email,
+    BlogsCollection,
+    PartnersCollection,
+    NewsCollection,
     Library
   ],
   globals: [Home, LibraryGlobal, Repositories, Contact],

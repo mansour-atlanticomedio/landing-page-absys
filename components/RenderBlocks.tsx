@@ -5,6 +5,9 @@ import Features from './Features'
 import Speakers from './Speakers'
 import Timeline from './Timeline'
 import FAQ from './FAQ'
+import News from './News'
+import Blogs from './Blogs'
+import Partners from './Partners'
 
 const componentsMap: Record<string, React.ElementType> = {
   'stats_block': ({ stats_relation }) => {
@@ -28,6 +31,18 @@ const componentsMap: Record<string, React.ElementType> = {
     if (!data) return null
     return <Features {...data} />
   },
+  'news_block': ({ news_relation }) => {
+    const data = news_relation?.[0]
+
+    if (!data) return null
+    return <News {...data} />
+  },
+  'blogs_block': ({ blogs_relation }) => {
+    const data = blogs_relation?.[0]
+
+    if (!data) return null
+    return <Blogs {...data} />
+  },
   'cta_block': ({ cta_relation }) => {
     const data = cta_relation?.[0]
 
@@ -45,6 +60,12 @@ const componentsMap: Record<string, React.ElementType> = {
 
     if (!data) return null
     return <Timeline  {...data} />
+  },
+  'partners_block': ({ partners_relation }) => {
+    const data = partners_relation?.[0]
+
+    if (!data) return null
+    return <Partners  {...data} />
   },
   'faq_block': ({ faq_relation }) => {
     const data = faq_relation?.[0]

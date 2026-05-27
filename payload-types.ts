@@ -78,6 +78,9 @@ export interface Config {
     cta: Cta;
     faq: Faq;
     sendEmail: SendEmail;
+    blogs: Blog;
+    partners: Partner;
+    news: News;
     library: Library;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
@@ -97,6 +100,9 @@ export interface Config {
     cta: CtaSelect<false> | CtaSelect<true>;
     faq: FaqSelect<false> | FaqSelect<true>;
     sendEmail: SendEmailSelect<false> | SendEmailSelect<true>;
+    blogs: BlogsSelect<false> | BlogsSelect<true>;
+    partners: PartnersSelect<false> | PartnersSelect<true>;
+    news: NewsSelect<false> | NewsSelect<true>;
     library: LibrarySelect<false> | LibrarySelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
@@ -448,6 +454,63 @@ export interface SendEmail {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "blogs".
+ */
+export interface Blog {
+  id: number;
+  title: string;
+  blogItems?:
+    | {
+        title: string;
+        blog: string;
+        date: string;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "partners".
+ */
+export interface Partner {
+  id: number;
+  partners_item?:
+    | {
+        name?: string | null;
+        image: number | Media;
+        link?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "news".
+ */
+export interface News {
+  id: number;
+  /**
+   * Define cómo se verá la sección de noticias en el frontend.
+   */
+  style?: ('0' | '1' | '2' | '3') | null;
+  newsItems?:
+    | {
+        tag: string;
+        title: string;
+        description: string;
+        image?: (number | null) | Media;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "library".
  */
 export interface Library {
@@ -523,6 +586,18 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'sendEmail';
         value: number | SendEmail;
+      } | null)
+    | ({
+        relationTo: 'blogs';
+        value: number | Blog;
+      } | null)
+    | ({
+        relationTo: 'partners';
+        value: number | Partner;
+      } | null)
+    | ({
+        relationTo: 'news';
+        value: number | News;
       } | null)
     | ({
         relationTo: 'library';
@@ -772,6 +847,57 @@ export interface SendEmailSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "blogs_select".
+ */
+export interface BlogsSelect<T extends boolean = true> {
+  title?: T;
+  blogItems?:
+    | T
+    | {
+        title?: T;
+        blog?: T;
+        date?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "partners_select".
+ */
+export interface PartnersSelect<T extends boolean = true> {
+  partners_item?:
+    | T
+    | {
+        name?: T;
+        image?: T;
+        link?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "news_select".
+ */
+export interface NewsSelect<T extends boolean = true> {
+  style?: T;
+  newsItems?:
+    | T
+    | {
+        tag?: T;
+        title?: T;
+        description?: T;
+        image?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "library_select".
  */
 export interface LibrarySelect<T extends boolean = true> {
@@ -853,10 +979,28 @@ export interface Home {
             blockType: 'features_block';
           }
         | {
+            news_relation?: (number | News)[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'news_block';
+          }
+        | {
+            blogs_relation?: (number | Blog)[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'blogs_block';
+          }
+        | {
             timeline_relation?: (number | Timeline)[] | null;
             id?: string | null;
             blockName?: string | null;
             blockType: 'timeline_block';
+          }
+        | {
+            partners_relation?: (number | Partner)[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'partners_block';
           }
         | {
             cta_relation?: (number | Cta)[] | null;
@@ -940,10 +1084,31 @@ export interface HomeSelect<T extends boolean = true> {
               id?: T;
               blockName?: T;
             };
+        news_block?:
+          | T
+          | {
+              news_relation?: T;
+              id?: T;
+              blockName?: T;
+            };
+        blogs_block?:
+          | T
+          | {
+              blogs_relation?: T;
+              id?: T;
+              blockName?: T;
+            };
         timeline_block?:
           | T
           | {
               timeline_relation?: T;
+              id?: T;
+              blockName?: T;
+            };
+        partners_block?:
+          | T
+          | {
+              partners_relation?: T;
               id?: T;
               blockName?: T;
             };
