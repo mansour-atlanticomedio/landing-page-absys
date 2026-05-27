@@ -41,6 +41,8 @@ COPY --from=builder /app/app ./app
 COPY --from=builder /app/collections ./collections
 COPY --from=builder /app/globals ./globals
 COPY --from=builder /app/migrations ./migrations
+COPY --from=builder /app/.next/static ./.next/standalone/.next/static
+COPY --from=builder /app/public ./.next/standalone/public
 
 EXPOSE 3000
 
