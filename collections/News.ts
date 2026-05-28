@@ -59,7 +59,7 @@ export const NewsCollection: CollectionConfig = {
                     label: 'Imagen de la Noticia',
                     type: 'upload',
                     relationTo: 'media',
-                    required: false,
+                    required: true,
                 },
             ]
         }

@@ -21,8 +21,8 @@ export default async function Home() {
   const pretitle = heroData?.pretitle || "Próximo Evento";
   const title = heroData?.title || "Bienvenidos a la Biblioteca";
   const subtitle = heroData?.subtitle || "Explora nuestros recursos y repositorios académicos.";
-  const buttonText = heroData?.button_cta || "Ver Programa";
-  const inputPlaceHolder = heroData?.input_placeholder || "Tu correo electrónico...";
+  const buttonText = heroData?.button_cta || "";
+  const inputPlaceHolder = heroData?.input_placeholder || "";
 
   const imageUrl = heroData?.background_image && typeof heroData.background_image === 'object'
     ? heroData.background_image.url
@@ -31,12 +31,12 @@ export default async function Home() {
   return (
     <>
       <Hero
-        pretitle={heroData.pretitle}
-        title={heroData.title}
-        subtitle={heroData.subtitle}
+        pretitle={pretitle}
+        title={title}
+        subtitle={subtitle}
         image={imageUrl}
-        buttonText={heroData.button_cta}
-        inputPlaceHolder={heroData.input_placeholder}
+        buttonText={buttonText}
+        inputPlaceHolder={inputPlaceHolder}
       />
 
       <RenderBlocks blocks={pageBlocks} />

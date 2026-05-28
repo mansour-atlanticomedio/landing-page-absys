@@ -502,7 +502,7 @@ export interface News {
         tag: string;
         title: string;
         description: string;
-        image?: (number | null) | Media;
+        image: number | Media;
         id?: string | null;
       }[]
     | null;
