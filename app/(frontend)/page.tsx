@@ -5,7 +5,6 @@ import { getClient } from "@/lib/payload";
 export const dynamic = 'force-dynamic';
 
 import './styles.css'
-import { FlaskConical, LayoutGrid, Newspaper, PenLine, Sparkles } from "lucide-react";
 
 export default async function Home() {
   const payload = await getClient()

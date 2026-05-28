@@ -2,6 +2,7 @@ import SimpleForm from "@/components/SimpleForm";
 import { SimpleFormProps } from "@/types/form.type";
 import { Clock, Mail, MapPin, Phone } from "lucide-react";
 import Hero from "@/components/Hero";
+import { getClient } from "@/lib/payload";
 
 export default async function Contact() {
 
@@ -28,9 +29,36 @@ export default async function Contact() {
         },
     ]
 
-    return (
-        <>
-            <Hero title="Contacto" subtitle="Estamos a tu disposición para resolver cualquier duda" image={'/images/app/hero-jornadas.jpg'} />
+const payload = await getClient()
+  const homepage = await payload.findGlobal({
+    slug: 'contact' as never,
+    draft: false,
+    depth: 5
+  }) as any
+
+  const heroData = homepage?.hero
+  const pageBlocks = homepage?.layout
+
+  const pretitle = heroData?.pretitle || "Próximo Evento";
+  const title = heroData?.title || "Bienvenidos a la Biblioteca";
+  const subtitle = heroData?.subtitle || "Explora nuestros recursos y repositorios académicos.";
+  const buttonText = heroData?.button_cta || "";
+  const inputPlaceHolder = heroData?.input_placeholder || "";
+
+  const imageUrl = heroData?.background_image && typeof heroData.background_image === 'object'
+    ? heroData.background_image.url
+    : '/images/app/campus.jpg';
+
+  return (
+    <>
+      <Hero
+        pretitle={pretitle}
+        title={title}
+        subtitle={subtitle}
+        image={imageUrl}
+        buttonText={buttonText}
+        inputPlaceHolder={inputPlaceHolder}
+      />
 
             <section className="py-16">
                 <div className="max-w-6xl mx-auto px-6 grid md:grid-cols-2 gap-12">
