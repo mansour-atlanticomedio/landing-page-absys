@@ -14,7 +14,7 @@ services:
       target: runner
     restart: always
     ports:
-      - "80:3000"
+      - "8085:3000"
     env_file:
       - .env
     environment:
