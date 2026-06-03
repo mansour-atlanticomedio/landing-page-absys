@@ -4,6 +4,8 @@ import { Clock, Mail, MapPin, Phone } from "lucide-react";
 import Hero from "@/components/Hero";
 import { getClient } from "@/lib/payload";
 
+export const dynamic = 'force-dynamic';
+
 export default async function Contact() {
 
     const formEntries: SimpleFormProps[] = [
