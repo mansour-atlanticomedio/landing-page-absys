@@ -17,9 +17,9 @@ export default async function Home() {
   const heroData = homepage?.hero
   const pageBlocks = homepage?.layout
 
-  const pretitle = heroData?.pretitle || "Próximo Evento";
-  const title = heroData?.title || "Bienvenidos a la Biblioteca";
-  const subtitle = heroData?.subtitle || "Explora nuestros recursos y repositorios académicos.";
+  const pretitle = heroData?.pretitle || "";
+  const title = heroData?.title || "a";
+  const subtitle = heroData?.subtitle || "";
   const buttonText = heroData?.button_cta || "";
   const inputPlaceHolder = heroData?.input_placeholder || "";
 
