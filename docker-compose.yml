@@ -1,51 +1,41 @@
 services:
-  db:
+  bibliotecadb:
     image: postgres:16-alpine
-    container_name: next-landing-page-db-1
-    restart: always
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 1234
-      POSTGRES_DB: payloadcms
+    container_name: biblioteca-db
+    env_file:
+      - .env.local
     ports:
       - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres -d payloadcms"]
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER"]
       interval: 5s
       timeout: 5s
       retries: 5
+    restart: always
 
   frontend:
     build:
       context: .
-      dockerfile: Dockerfile
-      args:
-        # Se mantienen para la etapa de build
-        NEXT_PUBLIC_SERVER_URL: https://www.atlanticomedio.es/biblioteca
-        PAYLOAD_PUBLIC_SERVER_URL: https://www.atlanticomedio.es/biblioteca
-    container_name: next-landing-page-frontend-1
+      dockerfile: Dockerfile.dev
+    container_name: biblioteca-frontend
+    env_file:
+      .env.local
     ports:
       - "8085:3000"
     volumes:
+      - .:/app
+      - /app/node_modules
+      - /app/.next
       - media_data:/app/media
     depends_on:
-      db:
+      bibliotecadb:
         condition: service_healthy
     extra_hosts:
       - "host.docker.internal:host-gateway"
     environment:
-      # Como usamos 'npm run start', el servidor leerá esto dinámicamente sin problema
-      - NEXT_PUBLIC_SERVER_URL=https://www.atlanticomedio.es/biblioteca
-      - PAYLOAD_PUBLIC_SERVER_URL=https://www.atlanticomedio.es/biblioteca
-      - DATABASE_URL=postgres://postgres:1234@db:5432/payloadcms
-      - PAYLOAD_SECRET=9fc076e667cb808e40733d2b
-      - WATCHPACK_POLLING=true
-      - SMTP_HOST=${SMTP_HOST}
-      - SMTP_PORT=${SMTP_PORT}
-      - SMTP_USER=${SMTP_USER}
-      - SMTP_PASS=${SMTP_PASS}
+    - WATCHPACK_POLLING=true
 
 volumes:
   postgres_data:

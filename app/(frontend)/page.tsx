@@ -18,7 +18,7 @@ export default async function Home() {
   const pageBlocks = homepage?.layout
 
   const pretitle = heroData?.pretitle || "";
-  const title = heroData?.title || "a";
+  const title = heroData?.title || "";
   const subtitle = heroData?.subtitle || "";
   const buttonText = heroData?.button_cta || "";
   const inputPlaceHolder = heroData?.input_placeholder || "";

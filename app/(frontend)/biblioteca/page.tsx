@@ -14,12 +14,14 @@ export default async function LibraryPage() {
     depth: 5
   }) as any;
 
-  const heroData = homepage?.hero || {};
-  const pretitle = heroData?.pretitle || "Próximo Evento";
-  const title = heroData?.title || "Bienvenidos a la Biblioteca";
-  const subtitle = heroData?.subtitle || "Explora nuestros recursos y repositorios académicos.";
-  const buttonText = heroData?.button_cta || "Ver Programa";
-  const inputPlaceHolder = heroData?.input_placeholder || "Tu correo electrónico...";
+  const heroData = homepage?.hero
+  const pageBlocks = homepage?.layout
+
+  const pretitle = heroData?.pretitle || "";
+  const title = heroData?.title || "";
+  const subtitle = heroData?.subtitle || "";
+  const buttonText = heroData?.button_cta || "";
+  const inputPlaceHolder = heroData?.input_placeholder || "";
 
   const imageUrl = heroData?.background_image && typeof heroData.background_image === 'object'
     ? heroData.background_image.url
@@ -28,12 +30,12 @@ export default async function LibraryPage() {
   return (
     <section>
       <Hero
-        pretitle={heroData.pretitle}
-        title={heroData.title}
-        subtitle={heroData.subtitle}
+        pretitle={pretitle}
+        title={title}
+        subtitle={subtitle}
         image={imageUrl}
-        buttonText={heroData.button_cta}
-        inputPlaceHolder={heroData.input_placeholder}
+        buttonText={buttonText}
+        inputPlaceHolder={inputPlaceHolder}
       />
 
       <div className="my-8 w-11/12 flex flex-col gap-4 justify-center items-start mx-auto" >
