@@ -1,27 +1,30 @@
 services:
-  db:
+  bibliotecadb:
     image: postgres:16-alpine
-    restart: always
-    environment:
-      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
-      POSTGRES_DB: payloadcms
+    env_file:
+      - .env.prod
     volumes:
       - postgres_prod_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: always
+    restart: always
 
   frontend:
     build:
       context: .
-      target: runner
-    restart: always
+      dockerfile: Dockerfile
     ports:
       - "8085:3000"
     env_file:
-      - .env
-    environment:
-      DATABASE_URI: "postgres://postgres:${DATABASE_PASSWORD}@db:5432/payloadcms"
-      NODE_ENV: production
+      - .env.prod
     depends_on:
-      - db
+      bibliotecadb:
+        condition: service_healthy
+    restart: always
 
 volumes:
   postgres_prod_data:
