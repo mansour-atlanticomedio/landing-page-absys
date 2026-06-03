@@ -54,7 +54,7 @@ export default function Header() {
                         <Phone className="w-4 h-4" /> +34 828 019 019
                     </a>
                     <a href="mailto:jornadas@atlanticomedio.es" className="flex items-center gap-2 hover:opacity-80">
-                        <Mail className="w-4 h-4" /> investigacion@atlanticomedio.es
+                        <Mail className="w-4 h-4" /> biblioteca@atlanticomedio.es
                     </a>
                 </div>
             </div>
@@ -101,7 +101,7 @@ export default function Header() {
                     })}
                 </nav>
             </header>
-            <div className="border-t border-border bg-primary text-primary-foreground">
+            {/* <div className="border-t border-border bg-primary text-primary-foreground">
                 <div className="max-w-7xl flex items-center justify-evenly px-6 md:flex">
                     {MENU.map((section) => (
                         <div key={section.label} className="group relative">
@@ -123,7 +123,7 @@ export default function Header() {
                         </div>
                     ))}
                 </div>
-            </div>
+            </div> */}
         </section>
     )
 }
