@@ -1,4 +1,8 @@
-import { title } from "process";
+'use client'
+
+import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 interface NewsProps {
     tag: string,
@@ -15,6 +19,26 @@ interface NewsBoxProps {
 
 export default function News({ title, style, newsItems }: NewsBoxProps) {
     const styleType = parseInt(style ?? '0', 10);
+    const items = newsItems ?? [];
+    const isCarousel = items.length > 3;
+    const [currentIndex, setCurrentIndex] = useState(0);
+    const totalSlides = Math.max(1, Math.ceil(items.length / 3));
+
+    const goToSlide = (index: number) => {
+        setCurrentIndex(index);
+    };
+
+    const prevSlide = () => {
+        setCurrentIndex(prev => (prev === 0 ? totalSlides - 1 : prev - 1));
+    };
+
+    const nextSlide = () => {
+        setCurrentIndex(prev => (prev === totalSlides - 1 ? 0 : prev + 1));
+    };
+
+    const visibleItems = isCarousel
+        ? items.slice(currentIndex * 3, currentIndex * 3 + 3)
+        : items;
 
     return (
         <section id="noticias" className="bg-background py-10">
@@ -25,17 +49,63 @@ export default function News({ title, style, newsItems }: NewsBoxProps) {
                             {title}
                         </h2>
                     }
+                    {isCarousel && totalSlides > 1 && (
+                        <div className="flex gap-2">
+                            <button
+                                onClick={prevSlide}
+                                className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card text-foreground transition hover:bg-accent"
+                                aria-label="Anterior"
+                            >
+                                <ChevronLeft className="h-5 w-5" />
+                            </button>
+                            <button
+                                onClick={nextSlide}
+                                className="flex h-10 w-10 items-center justify-center rounded-full border border-border bg-card text-foreground transition hover:bg-accent"
+                                aria-label="Siguiente"
+                            >
+                                <ChevronRight className="h-5 w-5" />
+                            </button>
+                        </div>
+                    )}
                 </div>
 
-                <div className="grid gap-8 md:grid-cols-3">
-                    {newsItems?.map((item, index) => (
-                        <NewsCard
-                            key={item.title + index}
-                            new={item}
-                            style={styleType}
-                        />
-                    ))}
+                <div className={isCarousel ? 'overflow-hidden' : 'grid gap-8 md:grid-cols-3'}>
+                    <AnimatePresence mode="wait">
+                        <motion.div
+                            key={currentIndex}
+                            initial={{ opacity: 0, x: 50 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: -50 }}
+                            transition={{ duration: 0.3, ease: 'easeInOut' }}
+                            className={isCarousel ? 'grid gap-8 md:grid-cols-3' : 'contents'}
+                        >
+                            {visibleItems.map((item, index) => (
+                                <NewsCard
+                                    key={item.title + index}
+                                    new={item}
+                                    style={styleType}
+                                />
+                            ))}
+                        </motion.div>
+                    </AnimatePresence>
                 </div>
+
+                {isCarousel && totalSlides > 1 && (
+                    <div className="mt-6 flex justify-center gap-2">
+                        {Array.from({ length: totalSlides }, (_, i) => (
+                            <button
+                                key={i}
+                                onClick={() => goToSlide(i)}
+                                className={`h-2 rounded-full transition-all ${
+                                    i === currentIndex
+                                        ? 'w-6 bg-primary'
+                                        : 'w-2 bg-accent/40'
+                                }`}
+                                aria-label={`Ir a slide ${i + 1}`}
+                            />
+                        ))}
+                    </div>
+                )}
 
                 <div className="mt-10 h-px w-full bg-accent/40" />
             </div>
