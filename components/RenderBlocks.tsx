@@ -8,6 +8,7 @@ import FAQ from './FAQ'
 import News from './News'
 import Blogs from './Blogs'
 import Partners from './Partners'
+import InputComponent from './Input'
 
 const componentsMap: Record<string, React.ElementType> = {
   'stats_block': ({ stats_relation }) => {
@@ -54,6 +55,12 @@ const componentsMap: Record<string, React.ElementType> = {
 
     if (!data) return null
     return <Speakers {...data} />
+  },
+  'input_block': ({ input_relation }) => {
+    const data = input_relation?.[0]
+
+    if (!data) return null
+    return <InputComponent {...data} />
   },
   'timeline_block': ({ timeline_relation }) => {
     const data = timeline_relation?.[0]

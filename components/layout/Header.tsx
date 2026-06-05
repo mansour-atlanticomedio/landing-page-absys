@@ -2,10 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Separator } from "radix-ui";
 
-import { ChevronDown, Mail, Phone } from "lucide-react";
+import { ChevronDown, Mail, Phone, User } from "lucide-react";
 import logo from "@/public/logos/logo.png";
 import Image from "next/image";
+import { Button } from "../ui/button";
 
 interface NavLinkProps {
     to: string,
@@ -23,26 +25,35 @@ export default function Header() {
         { to: "/contacto", label: "Contacto" },
     ];
 
-    const MENU: { label: string; items: string[] }[] = [
+    const MENU: { label: string; items: { label: string, to: string }[] }[] = [
         {
-            label: "La Biblioteca",
-            items: ["Conócenos", "Bibliotecas", "Normativa", "Directorio", "Compromiso y proyección social", "Evaluación y calidad", "Archivo Universitario"],
+            label: "Inicio",
+            items: [
+                { to: "/", label: "Inicio" },
+                { to: "/biblioteca", label: "Biblioteca" },
+                { to: "/repositorios", label: "Repositorios" },
+                { to: "/contacto", label: "Contacto" },
+            ]
         },
         {
-            label: "Encuentra",
-            items: ["Faro", "Catálogo - Mi Biblioteca", "Recursos-e (Lista A-Z)", "Publicaciones e. (revistas y libros electrónicos)", "Biblioteca A-Z", "e-BUlibros: préstamo de libros-e"],
+            label: "Conócenos",
+            items: [],
         },
         {
             label: "Servicios",
-            items: ["Formación", "Préstamo y acceso al documento", "Apoyo a la investigación", "Reprografía e Impresión 3D", "BUstreaming: autopublicación de audio y vídeo", "Pregúntanos"],
+            items: [],
         },
         {
-            label: "Espacios",
-            items: ["Espacio Pósit", "Sala Pino Ojeda", "Salas de lectura", "Espacios de trabajo colaborativo", "Espacio Violeta", "Espacio Internacional", "MakerSpace", "Espacio de grabación", "Sala La Isleta", "Cabina para videoconferencias", "Sala Natalia Sosa Ayala", "Korea Corner", "Sala Josefina Plá", "Travel Tech School by Amadeus", "Sala Lothar Siemens", "Mediateca"],
+            label: "Recursos",
+            items: [],
         },
         {
-            label: "Portales",
-            items: ["accedaCRIS", "Archivo Gráfico Institucional", "Biblioteca Musicológica Lothar Siemens", "CraaL", "Enrique Copeiro", "Exlibris", "Los Guanchismos", "Jable", "Memoria digital de Canarias", "PAMEV", "SUdocument@", "Toponimia de Canarias"],
+            label: "Investigacion",
+            items: [],
+        },
+        {
+            label: "Formación",
+            items: [],
         },
     ];
 
@@ -61,11 +72,23 @@ export default function Header() {
             <header className="bg-background border-b border-border sticky top-0 z-40">
                 <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between gap-6">
                     <a href="/" className="flex items-center gap-3">
-                        <Image
-                            src={logo} alt="logo atlantico medio" width={130}
-                        />
+                        <div className="w-full flex" >
+                            <Image
+                                src={logo} alt="logo atlantico medio" width={130}
+                            />
+                            <Separator.Root
+                                className="SeparatorRoot"
+                                decorative
+                                orientation="vertical"
+                                style={{ margin: "0 15px", backgroundColor: "var(--color-accent)", width: "2px" }}
+                            />
+                            <div>
+                                <h2 className="text-2xl font-bold" > Universidad Atlantico Medio </h2>
+                                <h2 className="text-xl font-light" > Biblioteca </h2>
+                            </div>
+                        </div>
                     </a>
-                    <nav className="hidden md:flex items-center gap-8">
+                    {/* <nav className="hidden md:flex items-center gap-8">
                         {navItems.map((item) => {
                             const isActive = pathname === item.to;
 
@@ -82,7 +105,13 @@ export default function Header() {
                                 </Link>
                             );
                         })}
-                    </nav>
+                    </nav> */}
+                    {/* <div className="p-2 bg-blue-500" >
+                    </div> */}
+                    <Button className="p-5" >
+                        <User />
+                        Mi Cuenta
+                    </Button>
                 </div>
                 {/* Mobile nav */}
                 <nav className="md:hidden border-t border-border flex justify-around py-2">
@@ -101,7 +130,7 @@ export default function Header() {
                     })}
                 </nav>
             </header>
-            {/* <div className="border-t border-border bg-primary text-primary-foreground">
+            <div className="border-t border-border bg-primary text-primary-foreground">
                 <div className="max-w-7xl flex items-center justify-evenly px-6 md:flex">
                     {MENU.map((section) => (
                         <div key={section.label} className="group relative">
@@ -109,21 +138,35 @@ export default function Header() {
                                 {section.label}
                                 <ChevronDown className="h-3.5 w-3.5 opacity-70" />
                             </button>
-                            <div className="invisible bg-white absolute -left-6/12 top-full z-30 w-72 -translate-y-1 border border-border bg-card text-card-foreground opacity-0 shadow-xl transition-all duration-150 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
-                                <ul className="py-2">
-                                    {section.items.map((it) => (
-                                        <li key={it}>
-                                            <a href="#" className="block border-l-2 border-transparent px-4 py-2 text-sm transition hover:border-primary hover:bg-primary/5 text-primary">
-                                                {it}
-                                            </a>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
+                            {section.items.length > 0 &&
+
+                                <div className="invisible bg-white absolute -left-6/12 top-full z-30 w-72 -translate-y-1 border border-border bg-card text-card-foreground opacity-0 shadow-xl transition-all duration-150 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
+                                    <ul className="py-2">
+                                        {section.items.map((it, index) => {
+                                            const isActive = pathname === it.to;
+
+                                            return (
+                                                <li key={index}>
+                                                    <Link
+                                                        key={it.to}
+                                                        href={it.to}
+                                                        className={`uppercase text-sm font-semibold tracking-wider transition-colors block border-l-2 border-transparent px-4 py-2 text-sm transition hover:border-primary hover:bg-primary/5 text-primary ${isActive
+                                                            ? "text-accent"
+                                                            : "text-foreground hover:text-accent"
+                                                            }`}
+                                                    >
+                                                        {it.label}
+                                                    </Link>
+                                                </li>
+                                            )
+                                        })}
+                                    </ul>
+                                </div>
+                            }
                         </div>
                     ))}
                 </div>
-            </div> */}
+            </div>
         </section>
     )
 }

@@ -29,6 +29,7 @@ import { Library } from "./collections/Library.ts";
 import { NewsCollection } from "./collections/News.ts";
 import { BlogsCollection } from "./collections/Blogs.ts";
 import { PartnersCollection } from "./collections/Partners.ts";
+import { Input } from "./collections/Input.ts";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -52,6 +53,7 @@ export default buildConfig({
     About,
     Features,
     Timeline,
+    Input,
     CTA,
     FAQ,
     Email,

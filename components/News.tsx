@@ -1,3 +1,5 @@
+import { title } from "process";
+
 interface NewsProps {
     tag: string,
     title: string,
@@ -6,27 +8,26 @@ interface NewsProps {
 }
 
 interface NewsBoxProps {
+    title: string,
     style: '0' | '1' | '2' | '3',
     newsItems: NewsProps[]
 }
 
-export default function News({ style, newsItems }: NewsBoxProps) {
+export default function News({ title, style, newsItems }: NewsBoxProps) {
     const styleType = parseInt(style ?? '0', 10);
 
     return (
         <section id="noticias" className="bg-background py-10">
             <div className="mx-auto max-w-7xl px-6">
                 <div className="mb-10 flex items-end justify-between">
-                    <h2 className="flex items-center gap-3 text-3xl font-bold text-primary">
-                        Noticias
-                    </h2>
-                    <a href="#" className="text-sm font-semibold text-primary hover:underline">
-                        Ver todas las noticias →
-                    </a>
+                    { title != null && title != '' &&
+                        <h2 className="flex items-center gap-3 text-3xl font-bold text-primary">
+                            {title}
+                        </h2>
+                    }
                 </div>
 
                 <div className="grid gap-8 md:grid-cols-3">
-                    {/* Cambiado de news.map a newsItems.map */}
                     {newsItems?.map((item, index) => (
                         <NewsCard
                             key={item.title + index}
@@ -49,7 +50,7 @@ function NewsCard({ new: { tag, title, description, image }, style }: { new: New
         return (
             <article className="group overflow-hidden rounded-lg border border-border bg-card transition hover:shadow-lg">
                 <div className="h-52 bg-linear-to-br from-primary/30 via-primary/10 to-accent/20" >
-                    { imageUrl && (
+                    {imageUrl && (
                         <img
                             src={imageUrl}
                             alt={title || "Noticia"}
@@ -71,7 +72,7 @@ function NewsCard({ new: { tag, title, description, image }, style }: { new: New
         return (
             <article className="rounded-lg border border-border bg-card p-6 transition hover:border-primary hover:shadow-md">
                 <div className="mb-4 h-52 rounded-lg bg-linear-to-br from-accent/30 to-primary/20 overflow-hidden">
-                { imageUrl && (
+                    {imageUrl && (
                         <img
                             src={imageUrl}
                             alt={title || "Noticia"}
@@ -89,7 +90,7 @@ function NewsCard({ new: { tag, title, description, image }, style }: { new: New
         return (
             <article className="group w-full flex flex-col gap-6 overflow-hidden rounded-xl border border-border bg-card p-4 transition hover:bg-accent/5 md:flex-row md:items-center">
                 <div className="h-40 shrink-0 rounded-lg bg-linear-to-br from-primary/20 to-accent/30 md:w-60">
-                    { imageUrl && (
+                    {imageUrl && (
                         <img
                             src={imageUrl}
                             alt={title || "Noticia"}

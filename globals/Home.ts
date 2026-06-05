@@ -66,6 +66,21 @@ export const Home: GlobalConfig = {
           ],
         },
         {
+          slug: 'input_block',
+          labels: {
+            singular: 'Entrada de texto',
+            plural: 'Entrada de texto'
+          },
+          fields: [
+            {
+              name: 'input_relation',
+              type: 'relationship',
+              relationTo: 'input',
+              hasMany: true,
+            },
+          ],
+        },
+        {
           slug: 'features_block',
           labels: {
             singular: 'Caracteristicas',

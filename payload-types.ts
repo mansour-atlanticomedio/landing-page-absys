@@ -75,6 +75,7 @@ export interface Config {
     about: About;
     features: Feature;
     timeline: Timeline;
+    input: Input;
     cta: Cta;
     faq: Faq;
     sendEmail: SendEmail;
@@ -97,6 +98,7 @@ export interface Config {
     about: AboutSelect<false> | AboutSelect<true>;
     features: FeaturesSelect<false> | FeaturesSelect<true>;
     timeline: TimelineSelect<false> | TimelineSelect<true>;
+    input: InputSelect<false> | InputSelect<true>;
     cta: CtaSelect<false> | CtaSelect<true>;
     faq: FaqSelect<false> | FaqSelect<true>;
     sendEmail: SendEmailSelect<false> | SendEmailSelect<true>;
@@ -383,6 +385,17 @@ export interface Timeline {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "input".
+ */
+export interface Input {
+  id: number;
+  title?: string | null;
+  placeholder?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "cta".
  */
 export interface Cta {
@@ -493,6 +506,7 @@ export interface Partner {
  */
 export interface News {
   id: number;
+  title?: string | null;
   /**
    * Define cómo se verá la sección de noticias en el frontend.
    */
@@ -574,6 +588,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'timeline';
         value: number | Timeline;
+      } | null)
+    | ({
+        relationTo: 'input';
+        value: number | Input;
       } | null)
     | ({
         relationTo: 'cta';
@@ -807,6 +825,16 @@ export interface TimelineSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "input_select".
+ */
+export interface InputSelect<T extends boolean = true> {
+  title?: T;
+  placeholder?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "cta_select".
  */
 export interface CtaSelect<T extends boolean = true> {
@@ -883,6 +911,7 @@ export interface PartnersSelect<T extends boolean = true> {
  * via the `definition` "news_select".
  */
 export interface NewsSelect<T extends boolean = true> {
+  title?: T;
   style?: T;
   newsItems?:
     | T
@@ -973,6 +1002,12 @@ export interface Home {
             blockType: 'about_block';
           }
         | {
+            input_relation?: (number | Input)[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'input_block';
+          }
+        | {
             features_relation?: (number | Feature)[] | null;
             id?: string | null;
             blockName?: string | null;
@@ -1027,12 +1062,74 @@ export interface Repository {
   id: number;
   hero?: (number | null) | Hero;
   layout?:
-    | {
-        cta_relation?: (number | Cta)[] | null;
-        id?: string | null;
-        blockName?: string | null;
-        blockType: 'cta_block';
-      }[]
+    | (
+        | {
+            stats_relation?: (number | Statistic)[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'stats_block';
+          }
+        | {
+            speakers_relation?: (number | Speaker)[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'speakers_block';
+          }
+        | {
+            about_relation?: (number | About)[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'about_block';
+          }
+        | {
+            input_relation?: (number | Input)[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'input_block';
+          }
+        | {
+            features_relation?: (number | Feature)[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'features_block';
+          }
+        | {
+            news_relation?: (number | News)[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'news_block';
+          }
+        | {
+            blogs_relation?: (number | Blog)[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'blogs_block';
+          }
+        | {
+            timeline_relation?: (number | Timeline)[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'timeline_block';
+          }
+        | {
+            partners_relation?: (number | Partner)[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'partners_block';
+          }
+        | {
+            cta_relation?: (number | Cta)[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'cta_block';
+          }
+        | {
+            faq_relation?: (number | Faq)[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'faq_block';
+          }
+      )[]
     | null;
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -1074,6 +1171,13 @@ export interface HomeSelect<T extends boolean = true> {
           | T
           | {
               about_relation?: T;
+              id?: T;
+              blockName?: T;
+            };
+        input_block?:
+          | T
+          | {
+              input_relation?: T;
               id?: T;
               blockName?: T;
             };
@@ -1140,10 +1244,80 @@ export interface RepositorySelect<T extends boolean = true> {
   layout?:
     | T
     | {
+        stats_block?:
+          | T
+          | {
+              stats_relation?: T;
+              id?: T;
+              blockName?: T;
+            };
+        speakers_block?:
+          | T
+          | {
+              speakers_relation?: T;
+              id?: T;
+              blockName?: T;
+            };
+        about_block?:
+          | T
+          | {
+              about_relation?: T;
+              id?: T;
+              blockName?: T;
+            };
+        input_block?:
+          | T
+          | {
+              input_relation?: T;
+              id?: T;
+              blockName?: T;
+            };
+        features_block?:
+          | T
+          | {
+              features_relation?: T;
+              id?: T;
+              blockName?: T;
+            };
+        news_block?:
+          | T
+          | {
+              news_relation?: T;
+              id?: T;
+              blockName?: T;
+            };
+        blogs_block?:
+          | T
+          | {
+              blogs_relation?: T;
+              id?: T;
+              blockName?: T;
+            };
+        timeline_block?:
+          | T
+          | {
+              timeline_relation?: T;
+              id?: T;
+              blockName?: T;
+            };
+        partners_block?:
+          | T
+          | {
+              partners_relation?: T;
+              id?: T;
+              blockName?: T;
+            };
         cta_block?:
           | T
           | {
               cta_relation?: T;
+              id?: T;
+              blockName?: T;
+            };
+        faq_block?:
+          | T
+          | {
+              faq_relation?: T;
               id?: T;
               blockName?: T;
             };

@@ -8,6 +8,11 @@ export const NewsCollection: CollectionConfig = {
     },
     fields: [
         {
+            name: 'title',
+            label: 'Titulo',
+            type: 'text'
+        },
+        {
             name: 'style',
             label: 'Estilo de Diseño',
             type: 'select',
