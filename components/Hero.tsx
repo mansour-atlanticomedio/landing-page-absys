@@ -34,6 +34,7 @@ export default function Hero({ pretitle, title, subtitle, image, buttonText, inp
           alt={imageAlt || "Hero background"}
           fill
           priority
+          
           className="object-cover object-[center_90%] -z-10"
         />
       )}

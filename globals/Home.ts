@@ -12,6 +12,13 @@ export const Home: GlobalConfig = {
       hasMany: false,
     },
     {
+      name: 'hero_carrusel',
+      label: 'Seccion de Carrusel Principal',
+      type: 'relationship',
+      relationTo: 'hero_carrusel',
+      hasMany: false,
+    },
+    {
       name: 'layout',
       labels: {
         singular: 'bloque',
@@ -61,6 +68,21 @@ export const Home: GlobalConfig = {
               name: 'about_relation',
               type: 'relationship',
               relationTo: 'about',
+              hasMany: true,
+            },
+          ],
+        },
+        {
+          slug: 'input_block',
+          labels: {
+            singular: 'Entrada de texto',
+            plural: 'Entrada de texto'
+          },
+          fields: [
+            {
+              name: 'input_relation',
+              type: 'relationship',
+              relationTo: 'input',
               hasMany: true,
             },
           ],
@@ -141,7 +163,7 @@ export const Home: GlobalConfig = {
           ]
         },
         {
-           admin: {
+          admin: {
             images: {
               thumbnail: '/images/blocks/cta_thumbnail.jpeg'
             }

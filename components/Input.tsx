@@ -4,10 +4,11 @@ import { Search, ChevronDown, ChevronUp } from "lucide-react";
 import { FormEvent, useState } from "react";
 
 interface InputProps {
+  title?: string,
   placeholder?: string,
 }
 
-export default function InputComponent({ placeholder }: InputProps) {
+export default function InputComponent({ title, placeholder }: InputProps) {
   const router = useRouter()
   const [showAdvanced, setShowAdvanced] = useState(false)
 
