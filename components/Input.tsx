@@ -47,15 +47,15 @@ export default function InputComponent({ title, placeholder }: InputProps) {
   }
 
   return (
-    <form onSubmit={handleInput} className="bg-white flex flex-col rounded-lg mt-8 overflow-hidden">
-      <div className="flex justify-between items-center h-12">
+    <form onSubmit={handleInput} className=" mx-auto max-w-7xl px-6 flex justify-center flex-col rounded-lg mt-8">
+      <div className="flex bg-gray-300 rounded-xl max-w-7xl justify-between items-center h-12">
         <input
           className="flex-5 ml-4 text-gray-600 font-bold h-full outline-none focus:outline-none focus:ring-0"
           type="text"
           name="input_hero"
           id="input_hero"
           placeholder={placeholder || 'Buscar título, autor o ISBN...'} />
-        <button type="submit" className="flex-1 flex gap-2 justify-center items-center bg-blue-500 h-full cursor-pointer" >
+        <button type="submit" className="flex-1 flex gap-2 justify-center items-center rounded-r-xl bg-blue-500 h-full cursor-pointer" >
           <Search size={16} className="text-white" />
           <span className="text-white">Buscar</span>
         </button>
@@ -64,16 +64,16 @@ export default function InputComponent({ title, placeholder }: InputProps) {
       <button
         type="button"
         onClick={() => setShowAdvanced(!showAdvanced)}
-        className="flex items-center gap-2 px-4 py-2 text-sm text-gray-500 hover:text-gray-700 border-t cursor-pointer"
+        className="flex max-w-7xl items-center gap-2 py-2 text-sm text-gray-500 hover:text-gray-700 cursor-pointer"
       >
         {showAdvanced ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
         Búsqueda avanzada
       </button>
 
       {showAdvanced && (
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 p-4 border-t bg-gray-50">
+        <div className="grid max-w-7xl grid-cols-2 md:grid-cols-3 gap-4 py-2">
           <div className="flex flex-col gap-1">
-            <label htmlFor="titulo" className="text-xs text-gray-500 font-medium">Título</label>
+            <label htmlFor="titulo" className="text-xs text-gray-500 font-bold">Título</label>
             <input
               className="px-3 py-2 text-sm border rounded-md outline-none focus:ring-2 focus:ring-blue-500"
               type="text"
@@ -83,7 +83,7 @@ export default function InputComponent({ title, placeholder }: InputProps) {
             />
           </div>
           <div className="flex flex-col gap-1">
-            <label htmlFor="autor" className="text-xs text-gray-500 font-medium">Autor</label>
+            <label htmlFor="autor" className="text-xs text-gray-500 font-bold">Autor</label>
             <input
               className="px-3 py-2 text-sm border rounded-md outline-none focus:ring-2 focus:ring-blue-500"
               type="text"
@@ -93,7 +93,7 @@ export default function InputComponent({ title, placeholder }: InputProps) {
             />
           </div>
           <div className="flex flex-col gap-1">
-            <label htmlFor="isbn" className="text-xs text-gray-500 font-medium">ISBN</label>
+            <label htmlFor="isbn" className="text-xs text-gray-500 font-bold">ISBN</label>
             <input
               className="px-3 py-2 text-sm border rounded-md outline-none focus:ring-2 focus:ring-blue-500"
               type="text"
@@ -103,7 +103,7 @@ export default function InputComponent({ title, placeholder }: InputProps) {
             />
           </div>
           <div className="flex flex-col gap-1">
-            <label htmlFor="editorial" className="text-xs text-gray-500 font-medium">Editorial</label>
+            <label htmlFor="editorial" className="text-xs text-gray-500 font-bold">Editorial</label>
             <input
               className="px-3 py-2 text-sm border rounded-md outline-none focus:ring-2 focus:ring-blue-500"
               type="text"
@@ -113,7 +113,7 @@ export default function InputComponent({ title, placeholder }: InputProps) {
             />
           </div>
           <div className="flex flex-col gap-1">
-            <label htmlFor="anio" className="text-xs text-gray-500 font-medium">Año de publicación</label>
+            <label htmlFor="anio" className="text-xs text-gray-500 font-bold">Año de publicación</label>
             <input
               className="px-3 py-2 text-sm border rounded-md outline-none focus:ring-2 focus:ring-blue-500"
               type="text"
@@ -123,7 +123,7 @@ export default function InputComponent({ title, placeholder }: InputProps) {
             />
           </div>
           <div className="flex flex-col gap-1">
-            <label htmlFor="materia" className="text-xs text-gray-500 font-medium">Materia</label>
+            <label htmlFor="materia" className="text-xs text-gray-500 font-bold">Materia</label>
             <input
               className="px-3 py-2 text-sm border rounded-md outline-none focus:ring-2 focus:ring-blue-500"
               type="text"
