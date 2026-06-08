@@ -29,22 +29,21 @@ export default function FooterSimple() {
   ]
 
   return (
-    <footer className="bg-primary text-primary-foreground bottom-0" >
-      <div className="flex flex-col items-center justify-center max-w-7xl my-20 mx-14 gap-10 text-center">
+    <footer className="flex flex-col items-center justify-center bg-primary text-primary-foreground bottom-0" >
+      <div className="flex flex-col items-center justify-center max-w-7xl my-20 gap-10 text-center">
         <h2 className="text-white text-3xl font-bold">
           Servicio de Bibliotecas
         </h2>
 
         <div className="text-white space-y-1 text-sm md:text-base">
-          <p>Campus Miguel de Unamuno. Facultad de Derecho.</p>
-          <p>Planta Baja. 37007 Salamanca, España</p>
+          <p>Carretera de Quílmes, 37 · 35017 Tafira Baja · Las Palmas de Gran Canaria</p>
           <p className="text-gray-400 font-medium">Horario de atención: L-V 9:00-14:00 h</p>
-          <p>+34 923 294 500 ext. 3055</p>
+          <p> +34 828 019 019</p>
           <a
-            href="mailto:sabus@usal.es"
+            href="mailto:biblioteca@atlanticomedio.es"
             className="italic hover:underline block mt-2 text-gray-400"
           >
-            sabus@usal.es
+            biblioteca@atlanticomedio.es
           </a>
         </div>
         <div className="flex gap-3">

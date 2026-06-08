@@ -13,6 +13,11 @@ export const NewsCollection: CollectionConfig = {
             type: 'text'
         },
         {
+            name: 'visible_cards',
+            label: 'Cartas visibles',
+            type: 'number'
+        },
+        {
             name: 'style',
             label: 'Estilo de Diseño',
             type: 'select',

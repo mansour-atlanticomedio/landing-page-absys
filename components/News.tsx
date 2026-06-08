@@ -14,16 +14,17 @@ interface NewsProps {
 
 interface NewsBoxProps {
     title: string,
+    visible_cards: number,
     style: '0' | '1' | '2' | '3',
     newsItems: NewsProps[]
 }
 
-export default function News({ title, style, newsItems }: NewsBoxProps) {
+export default function News({ title, visible_cards, style, newsItems }: NewsBoxProps) {
     const styleType = parseInt(style ?? '0', 10);
     const items = newsItems ?? [];
-    const isCarousel = items.length > 3;
+    const isCarousel = items.length >= visible_cards;
     const [currentIndex, setCurrentIndex] = useState(0);
-    const totalSlides = Math.max(1, Math.ceil(items.length / 3));
+    const totalSlides = Math.max(1, Math.ceil(items.length / visible_cards));
 
     const goToSlide = (index: number) => {
         setCurrentIndex(index);
@@ -38,7 +39,7 @@ export default function News({ title, style, newsItems }: NewsBoxProps) {
     };
 
     const visibleItems = isCarousel
-        ? items.slice(currentIndex * 3, currentIndex * 3 + 3)
+        ? items.slice(currentIndex * visible_cards, currentIndex * visible_cards + visible_cards)
         : items;
 
     return (
@@ -70,7 +71,7 @@ export default function News({ title, style, newsItems }: NewsBoxProps) {
                     )}
                 </div>
 
-                <div className={isCarousel ? 'overflow-hidden' : 'grid gap-8 md:grid-cols-3'}>
+                <div className={isCarousel ? 'overflow-hidden' : `grid gap-6 grid-cols-${visible_cards}`}>
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={currentIndex}
@@ -78,7 +79,8 @@ export default function News({ title, style, newsItems }: NewsBoxProps) {
                             animate={{ opacity: 1, x: 0 }}
                             exit={{ opacity: 0, x: -50 }}
                             transition={{ duration: 0.3, ease: 'easeInOut' }}
-                            className={isCarousel ? 'grid gap-8 md:grid-cols-3' : 'contents'}
+                            style={{ gridTemplateColumns: `repeat(${visible_cards}, minmax(0, 1fr))` }}
+                            className="grid gap-6"
                         >
                             {visibleItems.map((item, index) => (
                                 <NewsCard

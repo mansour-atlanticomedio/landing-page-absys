@@ -526,13 +526,15 @@ export interface Partner {
 export interface News {
   id: number;
   title?: string | null;
+  visible_cards?: number | null;
   /**
    * Define cómo se verá la sección de noticias en el frontend.
    */
   style?: ('0' | '1' | '2' | '3') | null;
   newsItems?:
     | {
-        tag: string;
+        tag?: string | null;
+        link?: string | null;
         title: string;
         description: string;
         image: number | Media;
@@ -951,11 +953,13 @@ export interface PartnersSelect<T extends boolean = true> {
  */
 export interface NewsSelect<T extends boolean = true> {
   title?: T;
+  visible_cards?: T;
   style?: T;
   newsItems?:
     | T
     | {
         tag?: T;
+        link?: T;
         title?: T;
         description?: T;
         image?: T;
