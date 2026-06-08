@@ -5,6 +5,7 @@ import { getClient } from "@/lib/payload";
 export const dynamic = 'force-dynamic';
 
 import './styles.css'
+import HeroCarrousel from "@/components/heroCarrusel";
 
 export default async function Home() {
   const payload = await getClient()
@@ -15,6 +16,7 @@ export default async function Home() {
   }) as any
 
   const heroData = homepage?.hero
+  const heroCarruselData = homepage?.hero_carrusel
   const pageBlocks = homepage?.layout
 
   const pretitle = heroData?.pretitle || "";
@@ -29,18 +31,28 @@ export default async function Home() {
 
   return (
     <>
-      <Hero
-        pretitle={pretitle}
-        title={title}
-        subtitle={subtitle}
-        image={imageUrl}
-        buttonText={buttonText}
-        inputPlaceHolder={inputPlaceHolder}
-      />
+      {heroData !== null &&
+        <Hero
+          pretitle={pretitle}
+          title={title}
+          subtitle={subtitle}
+          image={imageUrl}
+          buttonText={buttonText}
+          inputPlaceHolder={inputPlaceHolder}
+        />
+
+      }
+      {heroCarruselData !== null &&
+        <HeroCarrousel
+          title=""
+          items={heroCarruselData.items}
+        />
+      }
 
       <RenderBlocks blocks={pageBlocks} />
 
     </>
+
   )
 }
 

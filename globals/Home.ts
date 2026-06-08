@@ -12,6 +12,13 @@ export const Home: GlobalConfig = {
       hasMany: false,
     },
     {
+      name: 'hero_carrusel',
+      label: 'Seccion de Carrusel Principal',
+      type: 'relationship',
+      relationTo: 'hero_carrusel',
+      hasMany: false,
+    },
+    {
       name: 'layout',
       labels: {
         singular: 'bloque',
@@ -156,7 +163,7 @@ export const Home: GlobalConfig = {
           ]
         },
         {
-           admin: {
+          admin: {
             images: {
               thumbnail: '/images/blocks/cta_thumbnail.jpeg'
             }

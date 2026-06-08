@@ -70,6 +70,7 @@ export interface Config {
     users: User;
     media: Media;
     hero: Hero;
+    hero_carrusel: HeroCarrusel;
     speakers: Speaker;
     statistics: Statistic;
     about: About;
@@ -93,6 +94,7 @@ export interface Config {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     hero: HeroSelect<false> | HeroSelect<true>;
+    hero_carrusel: HeroCarruselSelect<false> | HeroCarruselSelect<true>;
     speakers: SpeakersSelect<false> | SpeakersSelect<true>;
     statistics: StatisticsSelect<false> | StatisticsSelect<true>;
     about: AboutSelect<false> | AboutSelect<true>;
@@ -221,6 +223,23 @@ export interface Hero {
   subtitle?: string | null;
   button_cta?: string | null;
   input_placeholder?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "hero_carrusel".
+ */
+export interface HeroCarrusel {
+  id: number;
+  items?:
+    | {
+        title?: string | null;
+        description?: string | null;
+        image?: (number | null) | Media;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -570,6 +589,10 @@ export interface PayloadLockedDocument {
         value: number | Hero;
       } | null)
     | ({
+        relationTo: 'hero_carrusel';
+        value: number | HeroCarrusel;
+      } | null)
+    | ({
         relationTo: 'speakers';
         value: number | Speaker;
       } | null)
@@ -728,6 +751,22 @@ export interface HeroSelect<T extends boolean = true> {
   subtitle?: T;
   button_cta?: T;
   input_placeholder?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "hero_carrusel_select".
+ */
+export interface HeroCarruselSelect<T extends boolean = true> {
+  items?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -981,6 +1020,7 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
 export interface Home {
   id: number;
   hero?: (number | null) | Hero;
+  hero_carrusel?: (number | null) | HeroCarrusel;
   layout?:
     | (
         | {
@@ -1150,6 +1190,7 @@ export interface Contact {
  */
 export interface HomeSelect<T extends boolean = true> {
   hero?: T;
+  hero_carrusel?: T;
   layout?:
     | T
     | {

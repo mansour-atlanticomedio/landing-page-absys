@@ -9,8 +9,26 @@ import News from './News'
 import Blogs from './Blogs'
 import Partners from './Partners'
 import InputComponent from './Input'
+import HeroCarrousel from './heroCarrusel'
+import Hero from './Hero'
 
 const componentsMap: Record<string, React.ElementType> = {
+  'hero_block': ({ hero_relation }) => {
+    const data = hero_relation?.[0]
+
+    if (!data) return null
+    console.log(data)
+
+    return <Hero {...data} />
+  },
+  'hero_carrusel_block': ({ hero_carrusel_relation }) => {
+    const data = hero_carrusel_relation?.[0]
+
+    if (!data) return null
+    console.log(data)
+
+    return <HeroCarrousel {...data} />
+  },
   'stats_block': ({ stats_relation }) => {
     const data = stats_relation?.[0]
 

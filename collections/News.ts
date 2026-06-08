@@ -42,10 +42,16 @@ export const NewsCollection: CollectionConfig = {
                     name: 'tag',
                     label: 'Etiqueta (Tag)',
                     type: 'text',
-                    required: true,
+                    required: false,
                     admin: {
                         placeholder: 'EJ: EVENTO, EXPOSICIÓN...'
                     }
+                },
+                {
+                    name: 'link',
+                    label: 'Enlace de la Noticia',
+                    type: 'text',
+                    required: false,
                 },
                 {
                     name: 'title',
@@ -66,6 +72,7 @@ export const NewsCollection: CollectionConfig = {
                     relationTo: 'media',
                     required: true,
                 },
+
             ]
         }
     ]
