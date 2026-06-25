@@ -10,14 +10,20 @@ import Image from "next/image";
 import { Button } from "../ui/button";
 
 interface NavLinkProps {
-    to: string,
+    to?: string,
     label: string,
 }
 
+interface navMenuLinks {
+    to?: string,
+    label: string,
+    items: NavLinkProps[]
+}
+
 export default function Header() {
-
+    
     const pathname = usePathname();
-
+    
     const navItems: NavLinkProps[] = [
         { to: "/", label: "Inicio" },
         { to: "/biblioteca", label: "Biblioteca" },
@@ -25,33 +31,41 @@ export default function Header() {
         { to: "/contacto", label: "Contacto" },
     ];
 
-    const MENU: { label: string; items: { label: string, to: string }[] }[] = [
+    const MENU: navMenuLinks[] = [
+
         {
+            to: "/",
             label: "Inicio",
-            items: [
-                { to: "/", label: "Inicio" },
-                { to: "/biblioteca", label: "Biblioteca" },
-                { to: "/repositorios", label: "Repositorios" },
-                { to: "/contacto", label: "Contacto" },
-            ]
+            items: []
         },
         {
             label: "Conócenos",
-            items: [],
+            items: [
+                { label: "Quiénes somos" },
+                { label: "Horarios, ubicación y contacto", to: "/contact" },
+                { label: "Normativa y condiciones de uso" },
+            ],
         },
         {
+            to: "/servicios",
             label: "Servicios",
             items: [],
         },
         {
             label: "Recursos",
-            items: [],
+            items: [
+                { label: "Catálogo", to: "/biblioteca" },
+                { label: "Recursos electrónicos."},
+                { label: "Repositorio institucional", to: "/repositorios" },
+            ],
         },
         {
+            to: "/investigacion",
             label: "Investigacion",
             items: [],
         },
         {
+            to: "/formacion",
             label: "Formación",
             items: [],
         },
@@ -121,7 +135,7 @@ export default function Header() {
                         return (
                             <Link
                                 key={item.to}
-                                href={item.to}
+                                href={item.to ?? ''}
                                 className={`text-xs uppercase font-semibold ${isActive ? "text-accent" : "text-foreground"}`}
                             >
                                 {item.label}
@@ -149,8 +163,8 @@ export default function Header() {
                                                 <li key={index}>
                                                     <Link
                                                         key={it.to}
-                                                        href={it.to}
-                                                        className={`uppercase text-sm font-semibold tracking-wider transition-colors block border-l-2 border-transparent px-4 py-2 text-sm transition hover:border-primary hover:bg-primary/5 text-primary ${isActive
+                                                        href={it.to ?? ''}
+                                                        className={`uppercase text-sm font-semibold tracking-wider transition-colors block border-l-2 border-transparent px-4 py-2 hover:border-primary hover:bg-primary/5 text-primary ${isActive
                                                             ? "text-accent"
                                                             : "text-foreground hover:text-accent"
                                                             }`}
