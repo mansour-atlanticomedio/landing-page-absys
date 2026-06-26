@@ -12,7 +12,10 @@ import sharp from "sharp";
 import { Home } from "./globals/Home.ts";
 import { Library as LibraryGlobal } from "./globals/Library.ts";
 import { Contact } from "./globals/Contact.ts";
+import { Services } from "./globals/Services.ts";
 import { Repositories } from "./globals/Repositories.ts";
+import { Investigation } from "./globals/Investigation.ts";
+import { Formation } from "./globals/Formation.ts";
 
 import { Users } from "./collections/Users.ts";
 import { Media } from "./collections/Media.ts";
@@ -64,7 +67,7 @@ export default buildConfig({
     NewsCollection,
     Library
   ],
-  globals: [Home, LibraryGlobal, Repositories, Contact],
+  globals: [Home, LibraryGlobal, Services, Investigation, Repositories, Formation, Contact],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",
   typescript: {

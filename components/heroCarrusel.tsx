@@ -57,7 +57,7 @@ export default function HeroCarrousel({ title, items, autoPlayInterval = 5000 }:
           {imageUrl ? (
             <img
               src={imageUrl}
-              alt={current.title}
+              alt={current.title+" hero carousel"}
               className="h-full w-full object-cover"
             />
           ) : (

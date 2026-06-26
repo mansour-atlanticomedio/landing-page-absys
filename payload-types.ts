@@ -120,13 +120,19 @@ export interface Config {
   globals: {
     home: Home;
     library: Library;
+    services: Service;
+    investigation: Investigation;
     repository: Repository;
+    formation: Formation;
     contact: Contact;
   };
   globalsSelect: {
     home: HomeSelect<false> | HomeSelect<true>;
     library: LibrarySelect<false> | LibrarySelect<true>;
+    services: ServicesSelect<false> | ServicesSelect<true>;
+    investigation: InvestigationSelect<false> | InvestigationSelect<true>;
     repository: RepositorySelect<false> | RepositorySelect<true>;
+    formation: FormationSelect<false> | FormationSelect<true>;
     contact: ContactSelect<false> | ContactSelect<true>;
   };
   locale: null;
@@ -1100,11 +1106,254 @@ export interface Home {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "services".
+ */
+export interface Service {
+  id: number;
+  hero?: (number | null) | Hero;
+  hero_carrusel?: (number | null) | HeroCarrusel;
+  layout?:
+    | (
+        | {
+            stats_relation?: (number | Statistic)[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'stats_block';
+          }
+        | {
+            speakers_relation?: (number | Speaker)[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'speakers_block';
+          }
+        | {
+            about_relation?: (number | About)[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'about_block';
+          }
+        | {
+            input_relation?: (number | Input)[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'input_block';
+          }
+        | {
+            features_relation?: (number | Feature)[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'features_block';
+          }
+        | {
+            news_relation?: (number | News)[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'news_block';
+          }
+        | {
+            blogs_relation?: (number | Blog)[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'blogs_block';
+          }
+        | {
+            timeline_relation?: (number | Timeline)[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'timeline_block';
+          }
+        | {
+            partners_relation?: (number | Partner)[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'partners_block';
+          }
+        | {
+            cta_relation?: (number | Cta)[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'cta_block';
+          }
+        | {
+            faq_relation?: (number | Faq)[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'faq_block';
+          }
+      )[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "investigation".
+ */
+export interface Investigation {
+  id: number;
+  hero?: (number | null) | Hero;
+  hero_carrusel?: (number | null) | HeroCarrusel;
+  layout?:
+    | (
+        | {
+            stats_relation?: (number | Statistic)[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'stats_block';
+          }
+        | {
+            speakers_relation?: (number | Speaker)[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'speakers_block';
+          }
+        | {
+            about_relation?: (number | About)[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'about_block';
+          }
+        | {
+            input_relation?: (number | Input)[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'input_block';
+          }
+        | {
+            features_relation?: (number | Feature)[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'features_block';
+          }
+        | {
+            news_relation?: (number | News)[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'news_block';
+          }
+        | {
+            blogs_relation?: (number | Blog)[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'blogs_block';
+          }
+        | {
+            timeline_relation?: (number | Timeline)[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'timeline_block';
+          }
+        | {
+            partners_relation?: (number | Partner)[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'partners_block';
+          }
+        | {
+            cta_relation?: (number | Cta)[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'cta_block';
+          }
+        | {
+            faq_relation?: (number | Faq)[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'faq_block';
+          }
+      )[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "repository".
  */
 export interface Repository {
   id: number;
   hero?: (number | null) | Hero;
+  layout?:
+    | (
+        | {
+            stats_relation?: (number | Statistic)[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'stats_block';
+          }
+        | {
+            speakers_relation?: (number | Speaker)[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'speakers_block';
+          }
+        | {
+            about_relation?: (number | About)[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'about_block';
+          }
+        | {
+            input_relation?: (number | Input)[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'input_block';
+          }
+        | {
+            features_relation?: (number | Feature)[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'features_block';
+          }
+        | {
+            news_relation?: (number | News)[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'news_block';
+          }
+        | {
+            blogs_relation?: (number | Blog)[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'blogs_block';
+          }
+        | {
+            timeline_relation?: (number | Timeline)[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'timeline_block';
+          }
+        | {
+            partners_relation?: (number | Partner)[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'partners_block';
+          }
+        | {
+            cta_relation?: (number | Cta)[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'cta_block';
+          }
+        | {
+            faq_relation?: (number | Faq)[] | null;
+            id?: string | null;
+            blockName?: string | null;
+            blockType: 'faq_block';
+          }
+      )[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "formation".
+ */
+export interface Formation {
+  id: number;
+  hero?: (number | null) | Hero;
+  hero_carrusel?: (number | null) | HeroCarrusel;
   layout?:
     | (
         | {
@@ -1282,10 +1531,286 @@ export interface HomeSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "services_select".
+ */
+export interface ServicesSelect<T extends boolean = true> {
+  hero?: T;
+  hero_carrusel?: T;
+  layout?:
+    | T
+    | {
+        stats_block?:
+          | T
+          | {
+              stats_relation?: T;
+              id?: T;
+              blockName?: T;
+            };
+        speakers_block?:
+          | T
+          | {
+              speakers_relation?: T;
+              id?: T;
+              blockName?: T;
+            };
+        about_block?:
+          | T
+          | {
+              about_relation?: T;
+              id?: T;
+              blockName?: T;
+            };
+        input_block?:
+          | T
+          | {
+              input_relation?: T;
+              id?: T;
+              blockName?: T;
+            };
+        features_block?:
+          | T
+          | {
+              features_relation?: T;
+              id?: T;
+              blockName?: T;
+            };
+        news_block?:
+          | T
+          | {
+              news_relation?: T;
+              id?: T;
+              blockName?: T;
+            };
+        blogs_block?:
+          | T
+          | {
+              blogs_relation?: T;
+              id?: T;
+              blockName?: T;
+            };
+        timeline_block?:
+          | T
+          | {
+              timeline_relation?: T;
+              id?: T;
+              blockName?: T;
+            };
+        partners_block?:
+          | T
+          | {
+              partners_relation?: T;
+              id?: T;
+              blockName?: T;
+            };
+        cta_block?:
+          | T
+          | {
+              cta_relation?: T;
+              id?: T;
+              blockName?: T;
+            };
+        faq_block?:
+          | T
+          | {
+              faq_relation?: T;
+              id?: T;
+              blockName?: T;
+            };
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "investigation_select".
+ */
+export interface InvestigationSelect<T extends boolean = true> {
+  hero?: T;
+  hero_carrusel?: T;
+  layout?:
+    | T
+    | {
+        stats_block?:
+          | T
+          | {
+              stats_relation?: T;
+              id?: T;
+              blockName?: T;
+            };
+        speakers_block?:
+          | T
+          | {
+              speakers_relation?: T;
+              id?: T;
+              blockName?: T;
+            };
+        about_block?:
+          | T
+          | {
+              about_relation?: T;
+              id?: T;
+              blockName?: T;
+            };
+        input_block?:
+          | T
+          | {
+              input_relation?: T;
+              id?: T;
+              blockName?: T;
+            };
+        features_block?:
+          | T
+          | {
+              features_relation?: T;
+              id?: T;
+              blockName?: T;
+            };
+        news_block?:
+          | T
+          | {
+              news_relation?: T;
+              id?: T;
+              blockName?: T;
+            };
+        blogs_block?:
+          | T
+          | {
+              blogs_relation?: T;
+              id?: T;
+              blockName?: T;
+            };
+        timeline_block?:
+          | T
+          | {
+              timeline_relation?: T;
+              id?: T;
+              blockName?: T;
+            };
+        partners_block?:
+          | T
+          | {
+              partners_relation?: T;
+              id?: T;
+              blockName?: T;
+            };
+        cta_block?:
+          | T
+          | {
+              cta_relation?: T;
+              id?: T;
+              blockName?: T;
+            };
+        faq_block?:
+          | T
+          | {
+              faq_relation?: T;
+              id?: T;
+              blockName?: T;
+            };
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "repository_select".
  */
 export interface RepositorySelect<T extends boolean = true> {
   hero?: T;
+  layout?:
+    | T
+    | {
+        stats_block?:
+          | T
+          | {
+              stats_relation?: T;
+              id?: T;
+              blockName?: T;
+            };
+        speakers_block?:
+          | T
+          | {
+              speakers_relation?: T;
+              id?: T;
+              blockName?: T;
+            };
+        about_block?:
+          | T
+          | {
+              about_relation?: T;
+              id?: T;
+              blockName?: T;
+            };
+        input_block?:
+          | T
+          | {
+              input_relation?: T;
+              id?: T;
+              blockName?: T;
+            };
+        features_block?:
+          | T
+          | {
+              features_relation?: T;
+              id?: T;
+              blockName?: T;
+            };
+        news_block?:
+          | T
+          | {
+              news_relation?: T;
+              id?: T;
+              blockName?: T;
+            };
+        blogs_block?:
+          | T
+          | {
+              blogs_relation?: T;
+              id?: T;
+              blockName?: T;
+            };
+        timeline_block?:
+          | T
+          | {
+              timeline_relation?: T;
+              id?: T;
+              blockName?: T;
+            };
+        partners_block?:
+          | T
+          | {
+              partners_relation?: T;
+              id?: T;
+              blockName?: T;
+            };
+        cta_block?:
+          | T
+          | {
+              cta_relation?: T;
+              id?: T;
+              blockName?: T;
+            };
+        faq_block?:
+          | T
+          | {
+              faq_relation?: T;
+              id?: T;
+              blockName?: T;
+            };
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "formation_select".
+ */
+export interface FormationSelect<T extends boolean = true> {
+  hero?: T;
+  hero_carrusel?: T;
   layout?:
     | T
     | {

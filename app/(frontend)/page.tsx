@@ -7,6 +7,7 @@ export const dynamic = 'force-dynamic';
 import './styles.css'
 import HeroCarrousel from "@/components/heroCarrusel";
 
+
 export default async function Home() {
   const payload = await getClient()
   const homepage = await payload.findGlobal({
@@ -40,11 +41,10 @@ export default async function Home() {
           buttonText={buttonText}
           inputPlaceHolder={inputPlaceHolder}
         />
-
       }
-      {heroCarruselData !== null &&
+      { heroCarruselData !== undefined && heroCarruselData !== null  &&
         <HeroCarrousel
-          title=""
+          title={heroCarruselData.title}
           items={heroCarruselData.items}
         />
       }

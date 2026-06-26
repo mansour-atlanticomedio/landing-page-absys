@@ -31,7 +31,7 @@ export default function Hero({ pretitle, title, subtitle, image, buttonText, inp
       {imageUrl && imageUrl !== '' && (
         <Image
           src={imageUrl}
-          alt={imageAlt || "Hero background"}
+          alt={imageAlt+" hero" || "Hero background"}
           fill
           priority
           
