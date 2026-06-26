@@ -142,7 +142,7 @@ export default function Header() {
                     })}
                 </nav> */}
             </header>
-            <div className="border-t border-border bg-primary text-primary-foreground flex  items-center justify-end">
+            <div className="border-t border-border bg-primary text-primary-foreground flex  items-center justify-center">
                 <div className="max-w-7xl flex items-center justify-center px-6 md:flex">
                     {MENU.map((section) => (
                         <button key={section.label} onClick={() => handleNavLink(section.to)} >
