@@ -142,12 +142,12 @@ export default function Header() {
                     })}
                 </nav> */}
             </header>
-            <div className="border-t border-border bg-primary text-primary-foreground">
-                <div className="max-w-7xl flex items-center justify-start px-6 md:flex">
+            <div className="border-t border-border bg-primary text-primary-foreground flex  items-center justify-end">
+                <div className="max-w-7xl flex items-center justify-center px-6 md:flex">
                     {MENU.map((section) => (
                         <button key={section.label} onClick={() => handleNavLink(section.to)} >
                             <div className="group relative">
-                                <div className="flex h-12 items-center gap-1 px-6 text-sm font-bold tracking-wide transition cursor-pointer group-hover:bg-primary-foreground/10">
+                                <div className="flex h-12 items-center gap-1 px-10 text-sm font-bold tracking-wide transition cursor-pointer group-hover:bg-primary-foreground/10">
                                     {section.label}
                                     {
                                         section.items.length > 0 && (
