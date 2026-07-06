@@ -7,6 +7,25 @@ export type CardProps = {
   description?: string
 }
 
+export interface SocialMediaProps {
+  icon: any,
+  link: string
+}
+
+export interface ItemProps {
+  icon: string,
+  label: string,
+  url: string
+}
+
+export interface PayloadImage {
+  id: string,
+  url: string,
+  alt?: string,
+  width?: number,
+  height?: number,
+}
+
 export type InfoProps = {
   icon: LucideIcon,
   title: string,

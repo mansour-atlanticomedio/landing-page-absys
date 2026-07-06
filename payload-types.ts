@@ -70,6 +70,7 @@ export interface Config {
     users: User;
     media: Media;
     hero: Hero;
+    header: Header;
     hero_carrusel: HeroCarrusel;
     speakers: Speaker;
     statistics: Statistic;
@@ -84,6 +85,7 @@ export interface Config {
     partners: Partner;
     news: News;
     library: Library;
+    footer: Footer;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -94,6 +96,7 @@ export interface Config {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
     hero: HeroSelect<false> | HeroSelect<true>;
+    header: HeaderSelect<false> | HeaderSelect<true>;
     hero_carrusel: HeroCarruselSelect<false> | HeroCarruselSelect<true>;
     speakers: SpeakersSelect<false> | SpeakersSelect<true>;
     statistics: StatisticsSelect<false> | StatisticsSelect<true>;
@@ -108,6 +111,7 @@ export interface Config {
     partners: PartnersSelect<false> | PartnersSelect<true>;
     news: NewsSelect<false> | NewsSelect<true>;
     library: LibrarySelect<false> | LibrarySelect<true>;
+    footer: FooterSelect<false> | FooterSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -120,6 +124,7 @@ export interface Config {
   globals: {
     home: Home;
     library: Library;
+    layout: Layout;
     services: Service;
     investigation: Investigation;
     repository: Repository;
@@ -129,6 +134,7 @@ export interface Config {
   globalsSelect: {
     home: HomeSelect<false> | HomeSelect<true>;
     library: LibrarySelect<false> | LibrarySelect<true>;
+    layout: LayoutSelect<false> | LayoutSelect<true>;
     services: ServicesSelect<false> | ServicesSelect<true>;
     investigation: InvestigationSelect<false> | InvestigationSelect<true>;
     repository: RepositorySelect<false> | RepositorySelect<true>;
@@ -229,6 +235,32 @@ export interface Hero {
   subtitle?: string | null;
   button_cta?: string | null;
   input_placeholder?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "header".
+ */
+export interface Header {
+  id: number;
+  type?: ('0' | '1' | '2') | null;
+  phone?: string | null;
+  email?: string | null;
+  navbar?:
+    | {
+        name?: string | null;
+        to?: string | null;
+        items?:
+          | {
+              to?: string | null;
+              label?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -562,6 +594,54 @@ export interface Library {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "footer".
+ */
+export interface Footer {
+  id: number;
+  type?: ('0' | '1' | '2') | null;
+  logo?: (number | null) | Media;
+  social_medias?:
+    | {
+        icon?: ('FaFacebook' | 'FaTwitter' | 'FaInstagram' | 'FaLinkedin' | 'FaYoutube' | 'Globe') | null;
+        link?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  seccion_info?:
+    | {
+        title?: string | null;
+        information?:
+          | {
+              icon?:
+                | (
+                    | 'Lightbulb'
+                    | 'BookOpen'
+                    | 'Microscope'
+                    | 'Star'
+                    | 'User'
+                    | 'Briefcase'
+                    | 'Phone'
+                    | 'Mail'
+                    | 'MapPin'
+                    | 'Calendar'
+                  )
+                | null;
+              label?: string | null;
+              url?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  legal_advice?: string | null;
+  privacy_policie?: string | null;
+  privacy_cookies?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -595,6 +675,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'hero';
         value: number | Hero;
+      } | null)
+    | ({
+        relationTo: 'header';
+        value: number | Header;
       } | null)
     | ({
         relationTo: 'hero_carrusel';
@@ -651,6 +735,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'library';
         value: number | Library;
+      } | null)
+    | ({
+        relationTo: 'footer';
+        value: number | Footer;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -759,6 +847,31 @@ export interface HeroSelect<T extends boolean = true> {
   subtitle?: T;
   button_cta?: T;
   input_placeholder?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "header_select".
+ */
+export interface HeaderSelect<T extends boolean = true> {
+  type?: T;
+  phone?: T;
+  email?: T;
+  navbar?:
+    | T
+    | {
+        name?: T;
+        to?: T;
+        items?:
+          | T
+          | {
+              to?: T;
+              label?: T;
+              id?: T;
+            };
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }
@@ -985,6 +1098,40 @@ export interface LibrarySelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "footer_select".
+ */
+export interface FooterSelect<T extends boolean = true> {
+  type?: T;
+  logo?: T;
+  social_medias?:
+    | T
+    | {
+        icon?: T;
+        link?: T;
+        id?: T;
+      };
+  seccion_info?:
+    | T
+    | {
+        title?: T;
+        information?:
+          | T
+          | {
+              icon?: T;
+              label?: T;
+              url?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  legal_advice?: T;
+  privacy_policie?: T;
+  privacy_cookies?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv_select".
  */
 export interface PayloadKvSelect<T extends boolean = true> {
@@ -1101,6 +1248,17 @@ export interface Home {
           }
       )[]
     | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "layout".
+ */
+export interface Layout {
+  id: number;
+  header?: (number | null) | Header;
+  footer?: (number | null) | Footer;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1525,6 +1683,17 @@ export interface HomeSelect<T extends boolean = true> {
               blockName?: T;
             };
       };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "layout_select".
+ */
+export interface LayoutSelect<T extends boolean = true> {
+  header?: T;
+  footer?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

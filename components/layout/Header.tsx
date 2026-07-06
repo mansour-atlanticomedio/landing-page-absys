@@ -9,61 +9,30 @@ import logo from "@/public/logos/logo.png";
 import Image from "next/image";
 import { Button } from "../ui/button";
 
+interface HeaderProps {
+    type: string,
+    phone?: string,
+    email?: string,
+    navbar: navMenuLinks[]
+}
+
+interface navMenuLinks {
+    to?: string,
+    name: string,
+    items: NavLinkProps[]
+}
+
 interface NavLinkProps {
     to?: string,
     label: string,
 }
 
-interface navMenuLinks {
-    to?: string,
-    label: string,
-    items: NavLinkProps[]
-}
 
-export default function Header() {
+export default function Header({ type, phone, email, navbar } : HeaderProps) {
     const router = useRouter()
-
     const pathname = usePathname();
-
-    const MENU: navMenuLinks[] = [
-
-        {
-            to: "/",
-            label: "Inicio",
-            items: []
-        },
-        {
-            label: "Conócenos",
-            items: [
-                { label: "Quiénes somos" },
-                { label: "Horarios, ubicación y contacto", to: "/contacto" },
-                { label: "Normativa y condiciones de uso" },
-            ],
-        },
-        {
-            to: "/servicios",
-            label: "Servicios",
-            items: [],
-        },
-        {
-            label: "Recursos",
-            items: [
-                { label: "Catálogo", to: "/biblioteca" },
-                { label: "Recursos electrónicos." },
-                { label: "Repositorio institucional", to: "/repositorios" },
-            ],
-        },
-        {
-            to: "/investigacion",
-            label: "Investigacion",
-            items: [],
-        },
-        {
-            to: "/formacion",
-            label: "Formación",
-            items: [],
-        },
-    ];
+    
+    const navbarMenu = navbar ?? []
 
     const handleNavLink = (url?: string) => {
         if (url !== null && url !== undefined) router.push(url)
@@ -71,16 +40,16 @@ export default function Header() {
 
     return (
         <section>
-            <div id="top-arrow" className="bg-topbar text-primary-foreground text-sm">
-                <div className="max-w-7xl mx-auto px-6 py-4 flex flex-wrap items-center justify-center gap-x-10 gap-y-1">
-                    <a href="tel:+34828019019" className="flex items-center gap-2 hover:opacity-80">
-                        <Phone className="w-4 h-4" /> +34 828 019 019
-                    </a>
-                    <a href="mailto:jornadas@atlanticomedio.es" className="flex items-center gap-2 hover:opacity-80">
-                        <Mail className="w-4 h-4" /> biblioteca@atlanticomedio.es
-                    </a>
+            { (phone || email) && <div id="top-arrow" className="bg-topbar text-primary-foreground text-sm">
+                <div className="max-w-7xl mx-auto px-6 py-2 flex flex-wrap items-center justify-center gap-x-10 gap-y-1">
+                    { phone && <a href="tel:+34828019019" className="flex items-center gap-2 hover:opacity-80">
+                        <Phone className="w-4 h-4" /> {phone}
+                    </a>}
+                    { email && <a href="mailto:jornadas@atlanticomedio.es" className="flex items-center gap-2 hover:opacity-80">
+                        <Mail className="w-4 h-4" /> {email}
+                    </a>}
                 </div>
-            </div>
+            </div>}
             <header className="bg-background border-b border-border sticky top-0 z-40">
                 <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between gap-6">
                     <a href="/biblioteca" className="flex items-center gap-3">
@@ -144,11 +113,11 @@ export default function Header() {
             </header>
             <div className="border-t border-border bg-primary text-primary-foreground flex  items-center justify-center">
                 <div className="max-w-7xl flex items-center justify-center px-6 md:flex">
-                    {MENU.map((section) => (
-                        <button key={section.label} onClick={() => handleNavLink(section.to)} >
+                    {navbarMenu.map((section, index) => (
+                        <button key={section.name + section.to + index} onClick={() => handleNavLink(section.to)} >
                             <div className="group relative">
                                 <div className="flex h-12 items-center gap-1 px-10 text-sm font-bold tracking-wide transition cursor-pointer group-hover:bg-primary-foreground/10">
-                                    {section.label}
+                                    {section.name}
                                     {
                                         section.items.length > 0 && (
                                             <ChevronDown className="h-3.5 w-3.5 opacity-70" />

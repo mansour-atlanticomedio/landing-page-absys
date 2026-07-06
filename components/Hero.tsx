@@ -2,14 +2,7 @@ import Image from "next/image";
 import { Button } from "./ui/button";
 
 import InputComponent from "./Input";
-
-interface PayloadImage {
-  id: string,
-  url: string,
-  alt?: string,
-  width?: number,
-  height?: number,
-}
+import { PayloadImage } from "@/types/common.type";
 
 interface HeroProps {
   pretitle?: string,

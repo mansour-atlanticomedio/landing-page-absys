@@ -18,7 +18,7 @@ export const iconMap: Record<string, React.ElementType> = {
   Phone: Phone,
   Mail: Mail,
   MapPin: MapPin,
-  Calendar: Calendar
+  Calendar: Calendar,
 }
 
 export const iconsSocialMediaMap: Record<string, React.ElementType> = {

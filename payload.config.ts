@@ -16,6 +16,7 @@ import { Services } from "./globals/Services.ts";
 import { Repositories } from "./globals/Repositories.ts";
 import { Investigation } from "./globals/Investigation.ts";
 import { Formation } from "./globals/Formation.ts";
+import { Layout } from "./globals/Layout.ts";
 
 import { Users } from "./collections/Users.ts";
 import { Media } from "./collections/Media.ts";
@@ -34,6 +35,8 @@ import { BlogsCollection } from "./collections/Blogs.ts";
 import { PartnersCollection } from "./collections/Partners.ts";
 import { Input } from "./collections/Input.ts";
 import { HeroCarrusel } from "./collections/HeroCarrusel.ts";
+import { Header } from "./collections/Header.ts";
+import { Footer } from "./collections/Footer.ts";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -52,6 +55,7 @@ export default buildConfig({
     Users,
     Media,
     Hero,
+    Header,
     HeroCarrusel,
     Speakers,
     Statistics,
@@ -65,9 +69,19 @@ export default buildConfig({
     BlogsCollection,
     PartnersCollection,
     NewsCollection,
-    Library
+    Library,
+    Footer,
   ],
-  globals: [Home, LibraryGlobal, Services, Investigation, Repositories, Formation, Contact],
+  globals: [
+    Home,
+    LibraryGlobal,
+    Layout,
+    Services,
+    Investigation,
+    Repositories,
+    Formation,
+    Contact
+  ],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",
   typescript: {

@@ -28,13 +28,15 @@ export default function FooterSimple() {
     },
   ]
 
+  const title = 'Servicio de biblioteca'
+
   return (
     <footer className="flex flex-col items-center justify-center bg-primary text-primary-foreground bottom-0" >
       <div className="flex flex-col items-center justify-center max-w-7xl my-20 gap-10 text-center">
         <h2 className="text-white text-3xl font-bold">
-          Servicio de Bibliotecas
+          {title}
         </h2>
-
+        
         <div className="text-white space-y-1 text-sm md:text-base">
           <p>Carretera de Quílmes, 37 · 35017 Tafira Baja · Las Palmas de Gran Canaria</p>
           <p className="text-gray-400 font-medium">Horario de atención: L-V 9:00-14:00 h</p>
