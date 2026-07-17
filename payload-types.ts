@@ -84,8 +84,8 @@ export interface Config {
     blogs: Blog;
     partners: Partner;
     news: News;
-    library: Library;
     footer: Footer;
+    absys_service: AbsysService;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -110,8 +110,8 @@ export interface Config {
     blogs: BlogsSelect<false> | BlogsSelect<true>;
     partners: PartnersSelect<false> | PartnersSelect<true>;
     news: NewsSelect<false> | NewsSelect<true>;
-    library: LibrarySelect<false> | LibrarySelect<true>;
     footer: FooterSelect<false> | FooterSelect<true>;
+    absys_service: AbsysServiceSelect<false> | AbsysServiceSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -584,16 +584,6 @@ export interface News {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "library".
- */
-export interface Library {
-  id: number;
-  name?: string | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "footer".
  */
 export interface Footer {
@@ -637,6 +627,18 @@ export interface Footer {
   legal_advice?: string | null;
   privacy_policie?: string | null;
   privacy_cookies?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "absys_service".
+ */
+export interface AbsysService {
+  id: number;
+  isbn?: string | null;
+  title?: string | null;
+  author?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -733,12 +735,12 @@ export interface PayloadLockedDocument {
         value: number | News;
       } | null)
     | ({
-        relationTo: 'library';
-        value: number | Library;
-      } | null)
-    | ({
         relationTo: 'footer';
         value: number | Footer;
+      } | null)
+    | ({
+        relationTo: 'absys_service';
+        value: number | AbsysService;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -1089,15 +1091,6 @@ export interface NewsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "library_select".
- */
-export interface LibrarySelect<T extends boolean = true> {
-  name?: T;
-  updatedAt?: T;
-  createdAt?: T;
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "footer_select".
  */
 export interface FooterSelect<T extends boolean = true> {
@@ -1127,6 +1120,17 @@ export interface FooterSelect<T extends boolean = true> {
   legal_advice?: T;
   privacy_policie?: T;
   privacy_cookies?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "absys_service_select".
+ */
+export interface AbsysServiceSelect<T extends boolean = true> {
+  isbn?: T;
+  title?: T;
+  author?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1248,6 +1252,16 @@ export interface Home {
           }
       )[]
     | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "library".
+ */
+export interface Library {
+  id: number;
+  hero?: (number | null) | Hero;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1683,6 +1697,16 @@ export interface HomeSelect<T extends boolean = true> {
               blockName?: T;
             };
       };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "library_select".
+ */
+export interface LibrarySelect<T extends boolean = true> {
+  hero?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
