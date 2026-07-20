@@ -1,50 +1,117 @@
 import { BookInterface, TagProps } from "@/types/absys.type";
 
 export const transformMarcToBook = (datafields: TagProps[]): BookInterface => {
+  // 1. Inicializamos el objeto con valores por defecto seguros para evitar 'undefined' en la UI
   const book: BookInterface = {
     isbn: '',
-    author: '',
-    title: '',
+    author: 'Autor desconocido',
+    title: 'Título no disponible',
+    year: '',
+    synopsis: 'Sinopsis no disponible.',
+    editorial: '',
+    published: '',
+    language: 'Español', // Idioma por defecto o recuperado de la 041/008
+    tags: [],
+    available: true,     // Valor por defecto, idealmente vendrá de otro endpoint de ejemplares
+    location: 'Biblioteca Central',
+    signature: 'N/A',
+    authorBio: 'Biografía del autor no disponible.'
   };
 
-  datafields.forEach((field) => {
-    // 1. Normalizamos el tag a string con ceros a la izquierda (ej: 100 -> "100", 20 -> "020")
-    const tagStr = String(field.tag).padStart(3, '0');
+  // Auxiliares para procesar campos de publicación (260/264)
+  let pubPlace = '';
+  let pubName = '';
+  let pubDate = '';
 
-    // 2. Normalizamos subfield para que SIEMPRE sea un Array, evitando el fallo de Baratz
+  datafields.forEach((field) => {
+    const tagStr = String(field.tag).padStart(3, '0');
     if (!field.subfield) return;
+    
     const subfields = Array.isArray(field.subfield) ? field.subfield : [field.subfield];
 
-    // 3. Mapeo de etiquetas MARC21
     switch (tagStr) {
-      case '020': // ISBN
+      case '020': // --- ISBN ---
         const isbnSub = subfields.find(s => s.code === 'a');
-        if (isbnSub) book.isbn = String(isbnSub.content).trim();
+        if (isbnSub) {
+          // Limpiamos posibles textos adjuntos que a veces vienen en el ISBN (ej: " (rúst.)")
+          book.isbn = String(isbnSub.content).split(' ')[0].trim();
+        }
         break;
 
-      case '100': // Autor Principal
+      case '100': // --- AUTOR PRINCIPAL ---
         const autorSub = subfields.find(s => s.code === 'a');
-        if (autorSub) book.author = String(autorSub.content).replace(/,\s*$/, '').trim().replace(".", ""); // Limpia comas finales
+        if (autorSub) {
+          book.author = String(autorSub.content).replace(/,\s*$/, '').trim();
+        }
         break;
 
-      case '245': // Título y Subtítulo
+      case '245': // --- TÍTULO Y SUBTÍTULO ---
         const tituloSub = subfields.find(s => s.code === 'a');
         const subtituloSub = subfields.find(s => s.code === 'b');
         
         if (tituloSub) {
-          book.title = String(tituloSub.content).trim();
+          // Limpiamos barras o signos de puntuación finales típicos de MARC21
+          book.title = String(tituloSub.content).replace(/[:.\s\/]+$/, '').trim();
         }
         if (subtituloSub) {
-          // Limpiamos los caracteres de puntuación raros que mete MARC21 al inicio (como los dos puntos ":")
-          book.description = String(subtituloSub.content)
-            .replace(/^[:\s\/]+/, '') 
-            .replace(/[\s\/]+$/, '')
-            .trim();
+          const subClean = String(subtituloSub.content).replace(/^[:\s\/]+/, '').replace(/[:.\s\/]+$/, '').trim();
+          if (subClean) {
+            // Es mejor concatenar el subtítulo al título principal (ej: "El Quijote: Edición escolar")
+            book.title = `${book.title}: ${subClean}`;
+          }
         }
         break;
-        
+
+      case '260': // --- PUBLICACIÓN (Tradicional) ---
+      case '264': // --- PUBLICACIÓN (Moderna / RDA) ---
+        const place = subfields.find(s => s.code === 'a');
+        const expr = subfields.find(s => s.code === 'b');
+        const date = subfields.find(s => s.code === 'c');
+
+        if (place) pubPlace = String(place.content).replace(/[;:\s,]+$/, '').trim();
+        if (expr) pubName = String(expr.content).replace(/[;:\s,]+$/, '').trim();
+        if (date) {
+          pubDate = String(date.content).replace(/[.\s[\]\(\)]+/g, '').trim(); // Limpia corchetes/puntos del año
+          book.year = pubDate;
+        }
+
+        // Construimos una cadena legible para el campo 'published' (Ej: "Madrid : Alfaguara, 2021")
+        if (pubPlace || pubName) {
+          book.editorial = pubName || 'Editorial no disponible';
+          book.published = `${pubPlace}${pubPlace && pubName ? ' : ' : ''}${pubName}${pubDate ? ', ' + pubDate : ''}`;
+        }
+        break;
+
+      case '520': // --- SINOPSIS / RESUMEN ---
+        const resumenSub = subfields.find(s => s.code === 'a');
+        if (resumenSub) {
+          book.synopsis = String(resumenSub.content).trim();
+        }
+        break;
+
+      case '650': // --- MATERIAS / TAGS (Repetible) ---
+      case '653': // --- TÉRMINOS NO CONTROLADOS ---
+        const tagSub = subfields.find(s => s.code === 'a');
+        if (tagSub) {
+          const cleanTag = String(tagSub.content).replace(/[.\s]+$/, '').trim();
+          // Evitamos duplicados en el array de tags
+          if (book.tags && !book.tags.includes(cleanTag)) {
+            book.tags.push(cleanTag);
+          }
+        }
+        break;
+
+      case '041': // --- IDIOMA ---
+        const langSub = subfields.find(s => s.code === 'a');
+        if (langSub) {
+          const langCode = String(langSub.content).toLowerCase().trim();
+          // Mapeo rápido de códigos comunes a nombres legibles
+          const langMap: Record<string, string> = { spa: 'Español', eng: 'Inglés', cat: 'Catalán', glg: 'Gallego', eus: 'Euskera', fre: 'Francés' };
+          book.language = langMap[langCode] || langCode.toUpperCase();
+        }
+        break;
+
       default:
-        // Puedes añadir más casos si necesitas más campos (como el año en la 260)
         break;
     }
   });

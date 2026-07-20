@@ -5,9 +5,9 @@ export interface AbsysInterface {
     count: number,
     description: string,
     subcode: number,
-    collection: {
+    collection?: {
         xmlns: string,
-        record: RecordInterface[]
+        record: RecordInterface | RecordInterface[]
     },
     version: string,
 }
@@ -38,8 +38,13 @@ export interface BookInterface {
     author: string,
     year?: string,
     isbn: string,
-    description?: string,
+    synopsis?: string,
     editorial?: string,
     published?: string,
-    themes?: string[]
+    language?: string,
+    tags?: string[] | null,
+    available?: boolean,
+    location?: string,
+    signature?: string,
+    authorBio?: string,
 }

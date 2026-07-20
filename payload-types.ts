@@ -86,6 +86,7 @@ export interface Config {
     news: News;
     footer: Footer;
     absys_service: AbsysService;
+    book_cover_service: BookCoverService;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -112,6 +113,7 @@ export interface Config {
     news: NewsSelect<false> | NewsSelect<true>;
     footer: FooterSelect<false> | FooterSelect<true>;
     absys_service: AbsysServiceSelect<false> | AbsysServiceSelect<true>;
+    book_cover_service: BookCoverServiceSelect<false> | BookCoverServiceSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -644,6 +646,16 @@ export interface AbsysService {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "book_cover_service".
+ */
+export interface BookCoverService {
+  id: number;
+  name?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -741,6 +753,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'absys_service';
         value: number | AbsysService;
+      } | null)
+    | ({
+        relationTo: 'book_cover_service';
+        value: number | BookCoverService;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -1131,6 +1147,15 @@ export interface AbsysServiceSelect<T extends boolean = true> {
   isbn?: T;
   title?: T;
   author?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "book_cover_service_select".
+ */
+export interface BookCoverServiceSelect<T extends boolean = true> {
+  name?: T;
   updatedAt?: T;
   createdAt?: T;
 }

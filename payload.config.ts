@@ -37,6 +37,7 @@ import { HeroCarrusel } from "./collections/HeroCarrusel.ts";
 import { Header } from "./collections/Header.ts";
 import { Footer } from "./collections/Footer.ts";
 import { AbsysService } from "./collections/Absys.service.ts";
+import { BookCoverService } from "./collections/BookCovers.service.ts";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -70,7 +71,8 @@ export default buildConfig({
     PartnersCollection,
     NewsCollection,
     Footer,
-    AbsysService
+    AbsysService,
+    BookCoverService
   ],
   globals: [
     Home,

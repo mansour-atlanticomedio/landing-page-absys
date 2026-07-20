@@ -1,9 +1,19 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationNext,
+  PaginationPrevious,
+  PaginationLink,
+  PaginationEllipsis
+} from "@/components/ui/pagination.tsx"
+
+import { useEffect, useState, useCallback } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { motion } from "framer-motion"
-import { Search, X, Book, SlidersHorizontal, ChevronDown } from "lucide-react"
+import { Search, X, Book, SlidersHorizontal, ChevronDown, ChevronLeft, ChevronRight } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
@@ -21,6 +31,8 @@ import axios from "axios"
 
 import { AbsysInterface, RecordInterface } from "@/types/absys.type"
 import { transformMarcToBook } from "@/lib/marc21handler"
+import BookCard from "@/components/BookCard"
+import { getPageNumbers } from "@/lib/utils"
 
 const categories = [
   { name: "Literatura", count: 142 },
@@ -66,10 +78,13 @@ export default function BusquedaPage() {
   const router = useRouter()
   const initialQuery = searchParams.get("q") || ""
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false)
   const [bookResults, setBookResults] = useState(0)
   const [records, setRecords] = useState<RecordInterface[]>([])
   const [hasSearched, setHasSearched] = useState(false)
+  const [currentPage, setCurrentPage] = useState(1);
+  const PAGE_SIZE = 12;
+  const totalPages = Math.ceil(bookResults / PAGE_SIZE);
 
   const [searchQuery, setSearchQuery] = useState(initialQuery)
   const [activeFilters, setActiveFilters] = useState<ActiveFilter[]>([
@@ -85,30 +100,57 @@ export default function BusquedaPage() {
   const [onlyAvailable, setOnlyAvailable] = useState(true)
   const [sortBy, setSortBy] = useState("relevancia")
 
-  useEffect(() => {
+  // Función encargada de hablar con la API
+  const fetchData = useCallback(async (query: string, page: number = 1) => {
     const BASE_API_URL = process.env.NEXT_PUBLIC_API_URL
+    const PAGE_SIZE = 12
 
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        setHasSearched(true);
-        // const response = await axios.get(`${BASE_API_URL}/absys_service/search?${initialQuery}`);
-        const response = await axios.get(`${BASE_API_URL}/absys_service/`);
-        const responseAbsys : AbsysInterface = response.data.message.response
-        setBookResults(responseAbsys.count);
-        const recordsResult : RecordInterface[] = responseAbsys.collection.record
-        setRecords(recordsResult);
+    try {
+      setLoading(true)
+      setHasSearched(true)
 
-        console.log(recordsResult);
-      } catch (error) {
-        console.error(error);
-      } finally {
-        setLoading(false);
-      }
-    };
+      const basePath = query
+        ? `${BASE_API_URL}/absys_service/${encodeURIComponent(query)}`
+        : `${BASE_API_URL}/absys_service/`
 
-    fetchData();
-  }, []);
+      const endpoint = `${basePath}?page=${page}&limit=${PAGE_SIZE}`
+
+      const response = await axios.get(endpoint)
+      const responseAbsys: AbsysInterface = response.data.message.response
+
+      const rawRecord = responseAbsys.collection?.record
+
+      const recordsResult: RecordInterface[] = rawRecord
+        ? (Array.isArray(rawRecord) ? rawRecord : [rawRecord])
+        : []
+
+      setBookResults(responseAbsys.count)
+      setRecords(recordsResult)
+      setCurrentPage(page)
+    } catch (error) {
+      console.error("Error en la búsqueda:", error)
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  // Ejecuta la búsqueda al enviar el formulario (Click o Enter)
+  const handleManualSearch = () => {
+    fetchData(searchQuery)
+
+    // Sincronizamos la URL de manera silenciosa para que se pueda compartir el enlace
+    const newUrl = searchQuery
+      ? `/recursos/catalogo/busqueda?q=${encodeURIComponent(searchQuery)}`
+      : `/recursos/catalogo/busqueda`
+    window.history.replaceState({ ...window.history.state }, "", newUrl)
+  }
+
+  // Búsqueda inicial única: Si entran con ?q=algo en la URL, lo busca al montar el componente
+  useEffect(() => {
+    if (initialQuery) {
+      fetchData(initialQuery)
+    }
+  }, [initialQuery, fetchData])
 
   const removeFilter = (filter: ActiveFilter) => {
     setActiveFilters((prev) => prev.filter((f) => !(f.type === filter.type && f.value === filter.value)))
@@ -137,14 +179,6 @@ export default function BusquedaPage() {
     }
   }
 
-  const filteredBooks = allBooks.filter((book) => {
-    if (searchQuery && !book.title.toLowerCase().includes(searchQuery.toLowerCase()) && !book.author.toLowerCase().includes(searchQuery.toLowerCase())) {
-      return false
-    }
-    if (onlyAvailable && !book.available) return false
-    return true
-  })
-
   return (
     <div className="min-h-screen bg-background">
       <section className="bg-gradient-to-b from-primary/5 to-background py-10 px-4">
@@ -168,14 +202,17 @@ export default function BusquedaPage() {
                 placeholder="Título, autor, materia o ISBN..."
                 className="pl-12 h-12 text-base rounded-xl border-2 focus-visible:border-accent focus-visible:ring-accent/20"
                 value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                onChange={(e) => setSearchQuery(e.target.value)} // Solo actualiza el texto, no dispara peticiones
+                onKeyDown={(e) => e.key === "Enter" && handleManualSearch()} // Lanza la búsqueda al pulsar Enter
               />
             </div>
             <Button
               size="lg"
               className="h-12 px-8 rounded-xl bg-accent hover:bg-accent/90 text-white font-semibold"
+              onClick={handleManualSearch} // Lanza la búsqueda al hacer click
+              disabled={loading}
             >
-              Buscar
+              {loading ? "Buscando..." : "Buscar"}
             </Button>
           </div>
 
@@ -329,7 +366,7 @@ export default function BusquedaPage() {
           >
             <div className="flex items-center justify-between mb-6">
               <p className="text-sm text-muted-foreground font-medium">
-                {bookResults} resultados
+                {loading ? "Cargando..." : `${bookResults} resultados`}
               </p>
               <div className="flex items-center gap-2">
                 <Label className="text-sm text-muted-foreground whitespace-nowrap">Ordenar por</Label>
@@ -347,53 +384,65 @@ export default function BusquedaPage() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
+            <div className={`grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 transition-opacity ${loading ? 'opacity-50' : 'opacity-100'}`}>
               {records.map((record, i) => {
-
                 const book = transformMarcToBook(record.datafield);
-                console.log("book", book);
 
                 return (
-                <motion.div
-                  key={book.isbn + i}
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.3, delay: i * 0.05 }}
-                >
-                  <Card
-                    className="h-full group hover:shadow-lg transition-all cursor-pointer border-border/50 hover:border-accent/30"
-                    onClick={() => router.push(`/recursos/catalogo/libro/${encodeURIComponent(book.title)}`)}
-                  >
-                    <CardContent className="p-4">
-                      <div className="w-full h-44 rounded-lg bg-muted/50 flex items-center justify-center mb-4 overflow-hidden">
-                        <Book className="h-14 w-14 text-muted-foreground/40" />
-                      </div>
-                      <h3 className="font-bold text-sm group-hover:text-accent transition-colors line-clamp-1">
-                        {book.title}
-                      </h3>
-                      <p className="text-xs text-muted-foreground mt-1">{book.author}</p>
-                      <div className="flex items-center justify-between mt-3">
-                        <span className="text-xs text-muted-foreground">{book.year}</span>
-                        {/* {book.available && (
-                          <Badge variant="secondary" className="bg-accent/10 text-accent text-xs border-0">
-                            Disponible
-                          </Badge>
-                        )} */}
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              )
-              } )}
+                  <BookCard
+                    key={book.isbn + i}
+                    book={book}
+                    index={i}
+                    router={router}
+                  />
+                );
+              })}
 
-              {bookResults === 0 && (
+              {bookResults === 0 && !loading && hasSearched && (
                 <div className="col-span-full text-center py-16">
                   <Book className="h-12 w-12 mx-auto text-muted-foreground/30 mb-4" />
                   <p className="text-muted-foreground">No se encontraron resultados para tu búsqueda.</p>
                 </div>
               )}
             </div>
+
+            {bookResults > 0 && (
+              <Pagination className="mt-12">
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      onClick={() => fetchData(searchQuery, currentPage - 1)}
+                      className={currentPage === 1 || loading ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                    />
+                  </PaginationItem>
+
+                  {getPageNumbers(currentPage, totalPages).map((page, i) =>
+                    page === "ellipsis" ? (
+                      <PaginationItem key={`ellipsis-${i}`}>
+                        <PaginationEllipsis />
+                      </PaginationItem>
+                    ) : (
+                      <PaginationItem key={page}>
+                        <PaginationLink
+                          isActive={page === currentPage}
+                          onClick={() => fetchData(searchQuery, page)}
+                          className="cursor-pointer"
+                        >
+                          {page}
+                        </PaginationLink>
+                      </PaginationItem>
+                    )
+                  )}
+
+                  <PaginationItem>
+                    <PaginationNext
+                      onClick={() => fetchData(searchQuery, currentPage + 1)}
+                      className={currentPage === totalPages || loading ? "pointer-events-none opacity-50" : "cursor-pointer"}
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            )}
           </motion.div>
         </div>
       </section>

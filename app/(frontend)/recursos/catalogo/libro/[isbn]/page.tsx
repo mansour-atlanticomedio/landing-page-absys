@@ -1,56 +1,45 @@
 "use client"
-
+import Image from "next/image"
 import { useParams } from "next/navigation"
 import { motion } from "framer-motion"
-import { Book, Calendar, Globe, Hash, MapPin, CheckCircle2, BookmarkPlus, ArrowLeft } from "lucide-react"
+import { Book, Calendar, Globe, Hash, MapPin, CheckCircle2, BookmarkPlus, ArrowLeft, Copyright } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { useEffect, useState } from "react"
+import { AbsysInterface, BookInterface, RecordInterface } from "@/types/absys.type"
+import axios from "axios"
+import { transformMarcToBook } from "@/lib/marc21handler"
 
-
-const booksData: Record<string, {
-  title: string
-  author: string
-  year: number
-  isbn: string
-  language: string
-  tags: string[]
-  available: boolean
-  location: string
-  signature: string
-  synopsis: string
-  authorBio: string
-}> = {
-  "Cien años de soledad": {
-    title: "Cien años de soledad",
-    author: "Gabriel García Márquez",
-    year: 1967,
-    isbn: "978-84-376-0494-7",
-    language: "Español",
-    tags: ["Realismo Mágico", "Literatura Latinoamericana", "Saga Familiar", "Colombia"],
-    available: true,
-    location: "Biblioteca Central · Planta 2 · Estantería Literaturas Hispánicas",
-    signature: "N GAR cie",
-    synopsis:
-      "La obra maestra de Gabriel García Márquez narra la historia de la familia Buendía a lo largo de siete generaciones en el pueblo ficticio de Macondo. A través de un lenguaje poético y lleno de elementos fantásticos, el autor colombianoexplora temas como el amor, la soledad, el destino y la repetición cíclica de la historia. Una novela que ha trascendido fronteras y generaciones, convirtiéndose en una de las lecturas más importantes de la literatura universal.",
-    authorBio:
-      "Gabriel García Márquez (1927-2014) fue un escritor y periodista colombiano, considerado uno de los autores más importantes del siglo XX. Ganador del Premio Nobel de Literatura en 1982, es conocido por su maestría del realismo mágico. Entre sus obras destacadas se encuentran 'El amor en los tiempos del cólera', 'Crónica de una muerte anunciada' y 'Cien años de soledad'.",
-  },
-}
-
-const defaultBook = {
-  title: "Libro",
-  author: "Autor",
-  year: 2000,
-  isbn: "978-000-000-000-0",
-  language: "Español",
-  tags: ["Literatura", "Ficción"],
-  available: true,
-  location: "Biblioteca Central · Planta 1",
-  signature: "N GEN lib",
-  synopsis: "Sinopsis del libro no disponible.",
-  authorBio: "Biografía del autor no disponible.",
-}
+// const booksData: Record<string, {
+//   title: string
+//   author: string
+//   year: number
+//   isbn: string
+//   language: string
+//   tags: string[]
+//   available: boolean
+//   location: string
+//   signature: string
+//   synopsis: string
+//   authorBio: string
+// }> = {
+//   "Cien años de soledad": {
+//     title: "Cien años de soledad",
+//     author: "Gabriel García Márquez",
+//     year: 1967,
+//     isbn: "978-84-376-0494-7",
+//     language: "Español",
+//     tags: ["Realismo Mágico", "Literatura Latinoamericana", "Saga Familiar", "Colombia"],
+//     available: true,
+//     location: "Biblioteca Central · Planta 2 · Estantería Literaturas Hispánicas",
+//     signature: "N GAR cie",
+//     synopsis:
+//       "La obra maestra de Gabriel García Márquez narra la historia de la familia Buendía a lo largo de siete generaciones en el pueblo ficticio de Macondo. A través de un lenguaje poético y lleno de elementos fantásticos, el autor colombianoexplora temas como el amor, la soledad, el destino y la repetición cíclica de la historia. Una novela que ha trascendido fronteras y generaciones, convirtiéndose en una de las lecturas más importantes de la literatura universal.",
+//     authorBio:
+//       "Gabriel García Márquez (1927-2014) fue un escritor y periodista colombiano, considerado uno de los autores más importantes del siglo XX. Ganador del Premio Nobel de Literatura en 1982, es conocido por su maestría del realismo mágico. Entre sus obras destacadas se encuentran 'El amor en los tiempos del cólera', 'Crónica de una muerte anunciada' y 'Cien años de soledad'.",
+//   },
+// }
 
 const relatedBooks = [
   { title: "La casa de los espíritus", author: "Isabel Allende" },
@@ -68,8 +57,98 @@ const recommendations = [
 
 export default function LibroPage() {
   const params = useParams()
-  const titulo = decodeURIComponent(params.titulo as string)
-  const book = booksData[titulo] || { ...defaultBook, title: titulo }
+  const isbn = params.isbn as string
+  const BASE_API_URL = process.env.NEXT_PUBLIC_API_URL
+
+  const [loading, setLoading] = useState(true);
+  const [book, setBook] = useState<BookInterface | null>(null)
+  const [bookCoverURL, setBookCoverURL] = useState<string | null>(null);
+  const [bookCoverCredit, setBookCoverCredit] = useState<string | null>();
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageError, setImageError] = useState(false);
+  const [isApiLoading, setIsApiLoading] = useState(true);
+
+  useEffect(() => {
+
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(`${BASE_API_URL}/absys_service/${isbn}`);
+        const responseAbsys: AbsysInterface = response.data.message.response
+
+        const rawRecord = responseAbsys.collection?.record
+
+        const recordsResult: RecordInterface[] = rawRecord
+          ? (Array.isArray(rawRecord) ? rawRecord : [rawRecord])
+          : [];
+
+        if (recordsResult.length > 0 && recordsResult[0].datafield) {
+          setBook(transformMarcToBook(recordsResult[0].datafield));
+        } else {
+          setBook(null);
+        }
+
+        console.log(recordsResult);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [isbn]);
+
+  useEffect(() => {
+    // 1. Si no hay libro o no tiene ISBN, cancelamos y quitamos estados de carga
+    if (!book?.isbn) {
+      setBookCoverURL(null);
+      setIsApiLoading(false);
+      return;
+    }
+
+    // 2. Reset de estados para el nuevo libro (Evita flashes de portadas anteriores)
+    setBookCoverURL(null);
+    setImageLoaded(false);
+    setImageError(false);
+    setIsApiLoading(true);
+
+    const fetchBookCover = async () => {
+      try {
+        // Usamos axios.get de forma explícita
+        const res = await axios.get(
+          `${BASE_API_URL}/book_cover_service/cover/${book.isbn}`
+        );
+
+        // Cambio clave: Axios mete el cuerpo de la respuesta en res.data automáticamente
+        const data = res.data;
+
+        if (data.success && data.url) {
+          setBookCoverURL(data.url);
+          setBookCoverCredit(data.source)
+        } else {
+          setBookCoverURL(null);
+        }
+      } catch (error) {
+        console.error("Error consultando el servicio de portadas:", error);
+        setBookCoverURL(null);
+      } finally {
+        // Apagamos la carga de la API, ahora le toca el turno a la etiqueta <Image>
+        setIsApiLoading(false);
+      }
+    };
+
+    fetchBookCover();
+  }, [book?.isbn]); // Reacciona de forma segura si cambia el identificador del libro
+
+  if (loading || !book) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-[#f9f9f9] text-muted-foreground gap-3">
+        <Book className="h-8 w-8 animate-pulse text-accent" />
+        <p className="text-sm font-medium">Cargando los detalles del libro...</p>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-[#f9f9f9]">
@@ -95,14 +174,53 @@ export default function LibroPage() {
           transition={{ duration: 0.5 }}
         >
           <div className="lg:col-span-4">
-            <div className="flex gap-3">
-              <div className="w-48 h-72 rounded-lg bg-gradient-to-br from-green-800 to-green-950 flex items-center justify-center shadow-lg overflow-hidden shrink-0">
-                <div className="text-center px-4">
-                  <Book className="h-10 w-10 text-green-300/50 mx-auto mb-3" />
-                  <p className="text-green-200/70 text-xs font-medium leading-tight">{book.title}</p>
-                </div>
+            <div className="flex gap-3 justify-center">
+              {/* 
+    1. Quitamos 'h-98' para eliminar la altura fija.
+    2. Mientras carga (isApiLoading o !imageLoaded), le aplicamos 'aspect-[2/3]' para que el esqueleto tenga forma de libro.
+    3. Una vez cargada la imagen, pasa a 'h-auto' y el borde se acopla milimétricamente a la portada.
+  */}
+              <div className={`w-70 rounded-lg bg-blue-400 flex items-center justify-center shadow-lg overflow-hidden shrink-0 relative transition-all duration-300 ${(!imageLoaded || isApiLoading) && !imageError ? "aspect-[2/3]" : "h-auto"
+                }`}>
+
+                {/* Renderiza el contenedor si la API está buscando O si ya tenemos una URL válida (sin errores) */}
+                {(isApiLoading || bookCoverURL) && !imageError ? (
+                  <>
+                    {/* El Placeholder se muestra si la API está trabajando O si la imagen de Next.js aún no se ha bajado del todo */}
+                    {(!imageLoaded || isApiLoading) && (
+                      <div className="absolute inset-0 bg-gradient-to-br from-green-800 to-green-950 flex flex-col items-center justify-center animate-pulse z-10 px-4 text-center">
+                        <Book className="h-8 w-8 text-green-300/30 animate-bounce mb-2" />
+                        <p className="text-[10px] text-green-200/40 font-medium uppercase tracking-wider">
+                          Cargando portada...
+                        </p>
+                      </div>
+                    )}
+
+                    {/* Si ya terminó la API y tenemos URL, montamos la imagen con redimensionamiento fluido */}
+                    {bookCoverURL && (
+                      <Image
+                        src={bookCoverURL}
+                        alt={`Portada de ${book.title}`}
+                        width={0}
+                        height={0}
+                        sizes="280px" // Especifica el ancho aproximado de tu 'w-70' para optimizar la descarga
+                        priority // Descarga prioritaria para evitar parpadeos visuales
+                        className={`w-full h-auto transition-all duration-500 ease-in-out ${imageLoaded ? "scale-100 blur-0" : "scale-105 blur-lg"
+                          }`}
+                        onLoad={() => setImageLoaded(true)}
+                        onError={() => setImageError(true)}
+                      />
+                    )}
+                  </>
+                ) : (
+                  /* PLAN B: Si no hay portada o da error, le forzamos la proporción de libro para que el recuadro no quede plano */
+                  <div className="text-center px-4 py-8 animate-fadeIn aspect-[2/3] flex flex-col items-center justify-center w-full">
+                    <Book className="h-10 w-10 text-green-300/50 mx-auto mb-3" />
+                    <p className="text-green-200/70 text-xs font-medium leading-tight">{book.title}</p>
+                  </div>
+                )}
+
               </div>
-              <div className="w-6 h-72 rounded-sm bg-gradient-to-b from-green-900 to-green-950 shadow-md" />
             </div>
 
             <div className="flex gap-3 mt-5">
@@ -135,17 +253,25 @@ export default function LibroPage() {
                 <Globe className="h-4 w-4" />
                 {book.language}
               </span>
+              {bookCoverCredit && <span className="flex items-center gap-1.5">
+                <Copyright className="h-4 w-4" />
+                {bookCoverCredit}
+              </span>}
             </div>
 
             <div className="flex flex-wrap gap-2 mb-8">
-              {book.tags.map((tag) => (
-                <Badge
-                  key={tag}
-                  className="bg-accent/10 text-accent border border-accent/20 rounded-full px-4 py-1.5 text-sm font-medium"
-                >
-                  {tag}
-                </Badge>
-              ))}
+              {book.tags && book.tags.length > 0 && (
+                <div className="flex flex-wrap gap-2 mb-8">
+                  {book.tags.map((tag, index) => (
+                    <Badge
+                      key={`${tag}-${index}`}
+                      className="bg-accent/10 text-accent border border-accent/20 rounded-full px-4 py-1.5 text-sm font-medium"
+                    >
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
+              )}
             </div>
 
             <Card className={`border-2 ${book.available ? "border-green-200 bg-green-50/50" : "border-red-200 bg-red-50/50"}`}>

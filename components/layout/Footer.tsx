@@ -172,7 +172,7 @@ function FooterVertical({ title, logoUrl, logoAlt, social_medias, seccion_info }
 
         <div className="flex gap-3">
           {social_medias.map(({ icon, link }, i) => {
-            const IconComponent = iconsSocialMediaMap[icon]
+            const IconComponent = iconsSocialMediaMap[icon] ?? Link;
 
             return (
               <a
@@ -182,7 +182,7 @@ function FooterVertical({ title, logoUrl, logoAlt, social_medias, seccion_info }
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                <IconComponent className="w-4 h-4" />
+                {IconComponent && <IconComponent className="w-4 h-4" />}
               </a>
             );
           })}
