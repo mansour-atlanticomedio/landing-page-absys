@@ -13,7 +13,7 @@ class AbsysError extends Error {}
 
 const getAbsysHeaders = (): Headers => {
   const user = process.env.NEXT_ABSYS_USERNAME;
-  const pass = process.env.NEXT_ABSYS_PASSWORD;
+  const pass = Buffer.from(process.env.NEXT_ABSYS_PASSWORD || '', 'base64').toString('utf-8');
 
   if (!user || !pass) {
     throw new AbsysError("Credenciales de ABSYS no configuradas");
