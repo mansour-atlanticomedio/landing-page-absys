@@ -411,6 +411,7 @@ export default function BusquedaPage() {
                 <PaginationContent>
                   <PaginationItem>
                     <PaginationPrevious
+                      text="Anterior"
                       onClick={() => fetchData(searchQuery, currentPage - 1)}
                       className={currentPage === 1 || loading ? "pointer-events-none opacity-50" : "cursor-pointer"}
                     />
@@ -436,6 +437,7 @@ export default function BusquedaPage() {
 
                   <PaginationItem>
                     <PaginationNext
+                      text="Siguiente"
                       onClick={() => fetchData(searchQuery, currentPage + 1)}
                       className={currentPage === totalPages || loading ? "pointer-events-none opacity-50" : "cursor-pointer"}
                     />

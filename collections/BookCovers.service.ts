@@ -56,25 +56,7 @@ export const BookCoverService: CollectionConfig = {
                     return Response.json({ error: 'El parámetro ISBN es requerido' }, { status: 400 });
                 }
 
-                // ─── PRUEBA 1: OPEN LIBRARY (Máxima resolución '-L') ───
-                try {
-                    const openLibraryUrl = `https://covers.openlibrary.org/b/isbn/${isbn}-L.jpg?default=false`;
-                    
-                    // HEAD solo descarga las cabeceras para verificar el estado 200/404 sin bajar la imagen entera
-                    const olResponse = await fetch(openLibraryUrl, { method: 'HEAD' });
-                    
-                    if (olResponse.ok) {
-                        return Response.json({ 
-                            url: openLibraryUrl, 
-                            source: 'openlibrary',
-                            success: true 
-                        });
-                    }
-                } catch (error) {
-                    console.error("BookCoverService: Falló OpenLibrary ->", error);
-                }
-
-                // ─── PRUEBA 2: AMAZON CDN (Resolución estándar / Alta estabilidad) ───
+                // ─── PRUEBA 1: AMAZON CDN (Resolución estándar / Alta estabilidad) ───
                 try {
                     const isbn10 = convertIsbn13To10(isbn);
                     
@@ -107,7 +89,7 @@ export const BookCoverService: CollectionConfig = {
                     console.error("BookCoverService: Falló Amazon CDN ->", error);
                 }
 
-                // ─── PRUEBA 3: GOOGLE BOOKS API ───
+                // ─── PRUEBA 2: GOOGLE BOOKS API ───
                 try {
                     const googleResponse = await fetch(`https://www.googleapis.com/books/v1/volumes?q=isbn:${isbn}`);
                     
@@ -121,12 +103,30 @@ export const BookCoverService: CollectionConfig = {
                             return Response.json({ 
                                 url: secureCoverUrl, 
                                 source: 'google_books',
-                                success: true 
+                                success: true
                              });
                         }
                     }
                 } catch (error) {
                     console.error("BookCoverService: Falló Google Books ->", error);
+                }
+
+                // ─── PRUEBA 3: OPEN LIBRARY (Máxima resolución '-L') ───
+                try {
+                    const openLibraryUrl = `https://covers.openlibrary.org/b/isbn/${isbn}-L.jpg?default=false`;
+                    
+                    // HEAD solo descarga las cabeceras para verificar el estado 200/404 sin bajar la imagen entera
+                    const olResponse = await fetch(openLibraryUrl, { method: 'HEAD' });
+                    
+                    if (olResponse.ok) {
+                        return Response.json({ 
+                            url: openLibraryUrl, 
+                            source: 'openlibrary',
+                            success: true 
+                        });
+                    }
+                } catch (error) {
+                    console.error("BookCoverService: Falló OpenLibrary ->", error);
                 }
 
                 // ─── PRUEBA 4: FALLBACK CONTROLADO (Sin portada) ───
