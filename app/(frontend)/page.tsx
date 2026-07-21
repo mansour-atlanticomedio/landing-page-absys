@@ -79,7 +79,7 @@ export default function InicioPage() {
         </div>
       </section>
 
-      <section className="py-20 px-4 max-w-7xl mx-auto">
+      <section className="py-10 px-4 w-8/12 mx-auto">
         <motion.div
           className="text-center mb-16"
           initial={{ opacity: 0, y: 20 }}

@@ -180,7 +180,7 @@ export default function LibroPage() {
     2. Mientras carga (isApiLoading o !imageLoaded), le aplicamos 'aspect-[2/3]' para que el esqueleto tenga forma de libro.
     3. Una vez cargada la imagen, pasa a 'h-auto' y el borde se acopla milimétricamente a la portada.
   */}
-              <div className={`w-70 rounded-lg bg-blue-400 flex items-center justify-center shadow-lg overflow-hidden shrink-0 relative transition-all duration-300 ${(!imageLoaded || isApiLoading) && !imageError ? "aspect-[2/3]" : "h-auto"
+              <div className={`w-70 rounded-lg bg-primary flex items-center justify-center shadow-lg overflow-hidden shrink-0 relative transition-all duration-300 ${(!imageLoaded || isApiLoading) && !imageError ? "aspect-[2/3]" : "h-auto"
                 }`}>
 
                 {/* Renderiza el contenedor si la API está buscando O si ya tenemos una URL válida (sin errores) */}
@@ -188,9 +188,9 @@ export default function LibroPage() {
                   <>
                     {/* El Placeholder se muestra si la API está trabajando O si la imagen de Next.js aún no se ha bajado del todo */}
                     {(!imageLoaded || isApiLoading) && (
-                      <div className="absolute inset-0 bg-gradient-to-br from-green-800 to-green-950 flex flex-col items-center justify-center animate-pulse z-10 px-4 text-center">
-                        <Book className="h-8 w-8 text-green-300/30 animate-bounce mb-2" />
-                        <p className="text-[10px] text-green-200/40 font-medium uppercase tracking-wider">
+                      <div className="absolute inset-0 bg-gradient-to-br from-bg-primary to-bg-secondary flex flex-col items-center justify-center animate-pulse z-10 px-4 text-center">
+                        <Book className="h-8 w-8 text-white animate-bounce mb-2" />
+                        <p className="text-[10px] text-accent font-medium uppercase tracking-wider">
                           Cargando portada...
                         </p>
                       </div>
@@ -215,8 +215,8 @@ export default function LibroPage() {
                 ) : (
                   /* PLAN B: Si no hay portada o da error, le forzamos la proporción de libro para que el recuadro no quede plano */
                   <div className="text-center px-4 py-8 animate-fadeIn aspect-[2/3] flex flex-col items-center justify-center w-full">
-                    <Book className="h-10 w-10 text-green-300/50 mx-auto mb-3" />
-                    <p className="text-green-200/70 text-xs font-medium leading-tight">{book.title}</p>
+                    <Book className="h-10 w-10 text-accent mx-auto mb-3" />
+                    <p className="text-white text-xs font-medium leading-tight">{book.title}</p>
                   </div>
                 )}
 
@@ -259,19 +259,17 @@ export default function LibroPage() {
               </span>}
             </div>
 
-            <div className="flex flex-wrap gap-2 mb-8">
-              {book.tags && book.tags.length > 0 && (
-                <div className="flex flex-wrap gap-2 mb-8">
-                  {book.tags.map((tag, index) => (
-                    <Badge
-                      key={`${tag}-${index}`}
-                      className="bg-accent/10 text-accent border border-accent/20 rounded-full px-4 py-1.5 text-sm font-medium"
-                    >
-                      {tag}
-                    </Badge>
-                  ))}
-                </div>
-              )}
+
+            <div className="flex flex-wrap items-center gap-2 text-sm text-muted-foreground mb-6">
+              {book.tags?.map((tag, index) => (
+                <span
+                  key={`${tag}-${index}`}
+                  className="inline-flex items-center gap-1 rounded-md border border-border px-2.5 py-0.5 text-xs font-normal hover:border-primary/50 hover:text-foreground transition-colors"
+                >
+                  <span className="opacity-50">#</span>
+                  {tag}
+                </span>
+              ))}
             </div>
 
             <Card className={`border-2 ${book.available ? "border-green-200 bg-green-50/50" : "border-red-200 bg-red-50/50"}`}>

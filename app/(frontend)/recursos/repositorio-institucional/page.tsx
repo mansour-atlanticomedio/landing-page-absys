@@ -44,7 +44,7 @@ export default function RepositorioInstitucionalPage() {
             Repositorio Institucional
           </motion.h1>
           <motion.p
-            className="text-xl text-gray-200 mb-8"
+            className="text-xl text-gray-800 mb-8"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
@@ -58,13 +58,13 @@ export default function RepositorioInstitucionalPage() {
             transition={{ duration: 0.6, delay: 0.3 }}
           >
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-black" />
               <Input
                 placeholder="Buscar en el repositorio..."
-                className="pl-10 h-12 text-base bg-white/20 backdrop-blur-sm border-white/30 text-white placeholder:text-gray-300"
+                className="pl-10 h-12 text-base bg-white/20 border-white/80 text-white text-gray-800"
               />
             </div>
-            <Button size="lg" variant="secondary">
+            <Button size="lg" variant="default">
               Buscar
             </Button>
           </motion.div>
