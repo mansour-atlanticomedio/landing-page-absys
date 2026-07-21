@@ -3,12 +3,18 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   basePath: '/biblioteca',
-  allowedDevOrigins: ['192.168.0.236', 'localhost'],
+  allowedDevOrigins: ['192.168.0.236', 'localhost', '172.23.2.44'],
   images: {
     remotePatterns: [
       {
         protocol: "http",
         hostname: "localhost",
+        port: "3000",
+        pathname: "/**",
+      },
+      {
+        protocol: "http",
+        hostname: "172.23.2.44",
         port: "3000",
         pathname: "/**",
       },
