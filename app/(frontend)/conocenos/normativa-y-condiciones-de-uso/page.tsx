@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { FileText, Shield, AlertTriangle, CheckCircle, BookX } from "lucide-react"
+import { FileText, Shield, AlertTriangle, CheckCircle, BookX, Download, Monitor, Library, Users } from "lucide-react"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 
@@ -37,73 +37,97 @@ const policies = [
 
 export default function NormativaPage() {
   return (
-    <div className="min-h-screen">
-      <section className="bg-gradient-to-b from-primary/10 to-background py-20 px-4">
-        <motion.div
-          className="max-w-4xl mx-auto text-center"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          <FileText className="h-16 w-16 mx-auto mb-6 text-primary" />
-          <h1 className="text-5xl font-bold mb-4">Normativa y condiciones de uso</h1>
-          <p className="text-xl text-muted-foreground">
-            Conoce las reglas y políticas para el uso de nuestros servicios
-          </p>
-        </motion.div>
-      </section>
+    <div className="min-h-screen bg-white">
+      {/* <SiteHeader active="CONÓCENOS" /> */}
 
-      <section className="py-16 px-4 max-w-6xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-          >
-            <h2 className="text-3xl font-bold mb-8">Reglamento</h2>
-            <Accordion type="single" collapsible className="w-full">
-              {regulations.map((item, i) => (
-                <AccordionItem key={item.title} value={`item-${i}`}>
-                  <AccordionTrigger className="text-lg font-medium">
-                    {item.title}
-                  </AccordionTrigger>
-                  <AccordionContent className="text-muted-foreground">
-                    {item.content}
-                  </AccordionContent>
-                </AccordionItem>
-              ))}
-            </Accordion>
-          </motion.div>
+      <section className="mx-auto max-w-6xl px-6 py-14">
+        <h1 className="text-4xl font-extrabold text-slate-800">Normativa y condiciones de uso</h1>
+        <p className="mt-3 text-slate-600 max-w-3xl">
+          La Biblioteca Universitaria proporciona espacios, colecciones y servicios para apoyar
+          el aprendizaje, la docencia y la investigación. El uso responsable de estos recursos
+          garantiza un entorno óptimo para toda la comunidad académica.
+        </p>
 
-          <motion.div
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-          >
-            <h2 className="text-3xl font-bold mb-8">Políticas</h2>
-            <div className="space-y-4">
-              {policies.map((policy) => {
-                const Icon = policy.icon
-                return (
-                  <Card key={policy.title}>
-                    <CardHeader className="flex flex-row items-center gap-4">
-                      <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                        <Icon className="h-5 w-5 text-primary" />
-                      </div>
-                      <div>
-                        <CardTitle className="text-lg">{policy.title}</CardTitle>
-                        <CardContent className="p-0 text-muted-foreground">
-                          {policy.desc}
-                        </CardContent>
-                      </div>
-                    </CardHeader>
-                  </Card>
-                )
-              })}
+        <div className="mt-10 grid grid-cols-2 gap-6">
+          <div className="border rounded-lg p-6">
+            <div className="bg-sky-100 text-sky-700 rounded-md h-10 w-10 flex items-center justify-center mb-4">
+              <Users className="h-5 w-5" />
             </div>
-          </motion.div>
+            <h2 className="font-bold text-slate-800 mb-2">Personas usuarias</h2>
+            <p className="text-sm text-slate-600">
+              Tienen acceso a los servicios de la Biblioteca todos los miembros de la comunidad
+              universitaria (estudiantes, PDI, PTGAS). Otras personas pueden acceder en
+              condiciones específicas según los convenios vigentes, requiriendo acreditación
+              mediante la tarjeta universitaria o documento equivalente.
+            </p>
+          </div>
+
+          <div className="border rounded-lg p-6 relative">
+            <span className="absolute top-6 right-6 bg-slate-800 text-white text-xs rounded-full px-3 py-1">
+              Próximamente
+            </span>
+            <div className="bg-slate-100 text-slate-700 rounded-md h-10 w-10 flex items-center justify-center mb-4">
+              <FileText className="h-5 w-5" />
+            </div>
+            <h2 className="font-bold text-slate-800 mb-2">Préstamos y renovaciones</h2>
+            <p className="text-sm text-slate-600">
+              Información detallada sobre plazos, límites de ejemplares y procesos de renovación
+              estará disponible en esta sección en la próxima actualización de la normativa.
+            </p>
+          </div>
+
+          <div className="border rounded-lg p-6">
+            <div className="bg-sky-100 text-sky-700 rounded-md h-10 w-10 flex items-center justify-center mb-4">
+              <Library className="h-5 w-5" />
+            </div>
+            <h2 className="font-bold text-slate-800 mb-4">Espacios y recursos</h2>
+            <ul className="space-y-3 text-sm text-slate-600">
+              <li>✓ Mantener un ambiente de estudio silencioso en las salas de lectura generales.</li>
+              <li>✓ Respetar las normas de uso de las salas de trabajo en grupo (reserva previa necesaria).</li>
+              <li>✓ No consumir alimentos o bebidas (excepto agua en envases con cierre) en las zonas de estudio.</li>
+              <li>✓ Hacer un uso adecuado de los equipos informáticos y de reproducción.</li>
+            </ul>
+          </div>
+
+          <div className="border rounded-lg p-6">
+            <div className="bg-sky-100 text-sky-700 rounded-md h-10 w-10 flex items-center justify-center mb-4">
+              <Monitor className="h-5 w-5" />
+            </div>
+            <h2 className="font-bold text-slate-800 mb-2">Recursos electrónicos</h2>
+            <p className="text-sm text-slate-600 mb-4">
+              El acceso a las bases de datos, revistas y libros electrónicos suscritos está
+              sujeto a las licencias de uso firmadas con los proveedores.
+            </p>
+            <div className="bg-slate-50 border rounded-md p-4">
+              <p className="text-sm font-semibold text-slate-800 mb-1">Restricciones importantes:</p>
+              <p className="text-sm text-slate-600">
+                Se prohíbe la descarga masiva de contenidos y el uso de los recursos para fines
+                comerciales o ajenos a las actividades académicas de la institución.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="mt-6 border rounded-lg p-6">
+          <h2 className="flex items-center gap-2 font-bold text-slate-800 mb-3">
+            <AlertTriangle className="h-5 w-5 text-red-500" /> Responsabilidad sobre los materiales
+          </h2>
+          <p className="text-sm text-slate-600">
+            Las personas usuarias son responsables de la conservación de los fondos y
+            equipamientos de la Biblioteca. El deterioro, mutilación o pérdida de las obras
+            prestadas obligará a su reposición o, en caso de estar agotadas, al pago de su valor
+            estimado o a la entrega de una obra de similares características.
+          </p>
+        </div>
+
+        <div className="mt-10 flex justify-center">
+          <button className="bg-slate-800 text-white rounded-md px-6 py-3 font-medium flex items-center gap-2">
+            <Download className="h-4 w-4" /> Descargar normativa completa (PDF)
+          </button>
         </div>
       </section>
+
+      {/* <SiteFooter /> */}
     </div>
-  )
+  );
 }
