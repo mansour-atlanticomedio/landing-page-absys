@@ -38,6 +38,7 @@ import { Header } from "./collections/Header.ts";
 import { Footer } from "./collections/Footer.ts";
 import { AbsysService } from "./collections/Absys.service.ts";
 import { BookCoverService } from "./collections/BookCovers.service.ts";
+import { AuthorService } from "./collections/Author.service.ts";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -72,7 +73,8 @@ export default buildConfig({
     NewsCollection,
     Footer,
     AbsysService,
-    BookCoverService
+    BookCoverService,
+    AuthorService
   ],
   globals: [
     Home,

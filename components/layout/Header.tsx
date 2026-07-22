@@ -29,23 +29,31 @@ interface NavLinkProps {
 
 
 export default function Header({ type, phone, email, navbar } : HeaderProps) {
-    const router = useRouter()
+    const router = useRouter();
     const pathname = usePathname();
     
-    const navbarMenu = navbar ?? []
+    const navbarMenu = navbar ?? [];
 
+    // Manejo de clicks en el botón principal de cada sección
     const handleNavLink = (url?: string) => {
-        if (url !== null && url !== undefined) router.push(url)
-    }
+        if (!url) return;
+
+        const isExternal = /^https?:\/\//i.test(url);
+        if (isExternal) {
+            window.open(url, "_blank", "noopener,noreferrer");
+        } else {
+            router.push(url);
+        }
+    };
 
     return (
         <section>
             { (phone || email) && <div id="top-arrow" className="bg-topbar text-primary-foreground text-sm">
                 <div className="max-w-7xl mx-auto px-6 py-2 flex flex-wrap items-center justify-center gap-x-10 gap-y-1">
-                    { phone && <a href="tel:+34828019019" className="flex items-center gap-2 hover:opacity-80">
+                    { phone && <a href={`tel:${phone}`} className="flex items-center gap-2 hover:opacity-80">
                         <Phone className="w-4 h-4" /> {phone}
                     </a>}
-                    { email && <a href="mailto:jornadas@atlanticomedio.es" className="flex items-center gap-2 hover:opacity-80">
+                    { email && <a href={`mailto:${email}`} className="flex items-center gap-2 hover:opacity-80">
                         <Mail className="w-4 h-4" /> {email}
                     </a>}
                 </div>
@@ -69,49 +77,13 @@ export default function Header({ type, phone, email, navbar } : HeaderProps) {
                             </div>
                         </div>
                     </a>
-                    {/* <nav className="hidden md:flex items-center gap-8">
-                        {navItems.map((item) => {
-                            const isActive = pathname === item.to;
-
-                            return (
-                                <Link
-                                    key={item.to}
-                                    href={item.to}
-                                    className={`uppercase text-sm font-semibold tracking-wider transition-colors ${isActive
-                                        ? "text-accent"
-                                        : "text-foreground hover:text-accent"
-                                        }`}
-                                >
-                                    {item.label}
-                                </Link>
-                            );
-                        })}
-                    </nav> */}
-                    {/* <div className="p-2 bg-blue-500" >
-                    </div> */}
                     <Button className="p-5 cursor-pointer font-bold hover:p-5.5" >
                         <User />
                         Mi Cuenta
                     </Button>
                 </div>
-                {/* Mobile nav */}
-                {/* <nav className="md:hidden border-t border-border flex justify-around py-2">
-                    {navItems.map((item) => {
-                        const isActive = pathname === item.to;
-
-                        return (
-                            <Link
-                                key={item.to}
-                                href={item.to ?? ''}
-                                className={`text-xs uppercase font-semibold ${isActive ? "text-accent" : "text-foreground"}`}
-                            >
-                                {item.label}
-                            </Link>
-                        );
-                    })}
-                </nav> */}
             </header>
-            <div className="border-t border-border bg-primary text-primary-foreground flex  items-center justify-center">
+            <div className="border-t border-border bg-primary text-primary-foreground flex items-center justify-center">
                 <div className="max-w-7xl flex items-center justify-center px-6 md:flex">
                     {navbarMenu.map((section, index) => (
                         <button key={section.name + section.to + index} onClick={() => handleNavLink(section.to)} >
@@ -128,21 +100,38 @@ export default function Header({ type, phone, email, navbar } : HeaderProps) {
 
                                     <div className="invisible bg-white absolute -left-6/12 top-full z-30 w-72 -translate-y-1 border border-border bg-card text-card-foreground opacity-0 shadow-xl transition-all duration-150 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
                                         <ul className="py-2">
-                                            {section.items.map((it, index) => {
-                                                const isActive = pathname === it.to;
+                                            {section.items.map((it, itemIndex) => {
+                                                const url = it.to ?? '';
+                                                const isExternal = /^https?:\/\//i.test(url);
+                                                const isActive = pathname === url;
+
+                                                const linkClasses = `uppercase text-start text-sm font-semibold tracking-wider transition-colors block border-l-2 border-transparent px-4 py-2 hover:border-primary hover:bg-primary/5 text-primary ${
+                                                    isActive
+                                                        ? "text-accent"
+                                                        : "text-foreground hover:text-accent"
+                                                }`;
 
                                                 return (
-                                                    <li key={index}>
-                                                        <Link
-                                                            key={it.to}
-                                                            href={it.to ?? ''}
-                                                            className={`uppercase text-start text-sm font-semibold tracking-wider transition-colors block border-l-2 border-transparent px-4 py-2 hover:border-primary hover:bg-primary/5 text-primary ${isActive
-                                                                ? "text-accent"
-                                                                : "text-foreground hover:text-accent"
-                                                                }`}
-                                                        >
-                                                            {it.label}
-                                                        </Link>
+                                                    <li key={itemIndex}>
+                                                        {isExternal ? (
+                                                            /* Enlace Externo */
+                                                            <a
+                                                                href={url}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className={linkClasses}
+                                                            >
+                                                                {it.label}
+                                                            </a>
+                                                        ) : (
+                                                            /* Enlace Interno de la App */
+                                                            <Link
+                                                                href={url}
+                                                                className={linkClasses}
+                                                            >
+                                                                {it.label}
+                                                            </Link>
+                                                        )}
                                                     </li>
                                                 )
                                             })}

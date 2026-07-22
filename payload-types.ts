@@ -87,6 +87,7 @@ export interface Config {
     footer: Footer;
     absys_service: AbsysService;
     book_cover_service: BookCoverService;
+    author_service: AuthorService;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -114,6 +115,7 @@ export interface Config {
     footer: FooterSelect<false> | FooterSelect<true>;
     absys_service: AbsysServiceSelect<false> | AbsysServiceSelect<true>;
     book_cover_service: BookCoverServiceSelect<false> | BookCoverServiceSelect<true>;
+    author_service: AuthorServiceSelect<false> | AuthorServiceSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -656,6 +658,18 @@ export interface BookCoverService {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "author_service".
+ */
+export interface AuthorService {
+  id: number;
+  authorName?: string | null;
+  bio?: string | null;
+  image?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -757,6 +771,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'book_cover_service';
         value: number | BookCoverService;
+      } | null)
+    | ({
+        relationTo: 'author_service';
+        value: number | AuthorService;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -1156,6 +1174,17 @@ export interface AbsysServiceSelect<T extends boolean = true> {
  */
 export interface BookCoverServiceSelect<T extends boolean = true> {
   name?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "author_service_select".
+ */
+export interface AuthorServiceSelect<T extends boolean = true> {
+  authorName?: T;
+  bio?: T;
+  image?: T;
   updatedAt?: T;
   createdAt?: T;
 }

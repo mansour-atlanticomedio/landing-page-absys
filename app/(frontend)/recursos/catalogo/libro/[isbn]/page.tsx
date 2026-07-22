@@ -5,41 +5,11 @@ import { motion } from "framer-motion"
 import { Book, Calendar, Globe, Hash, MapPin, CheckCircle2, BookmarkPlus, ArrowLeft, Copyright } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { useEffect, useState } from "react"
 import { AbsysInterface, BookInterface, RecordInterface } from "@/types/absys.type"
 import axios from "axios"
 import { transformMarcToBook } from "@/lib/marc21handler"
-
-// const booksData: Record<string, {
-//   title: string
-//   author: string
-//   year: number
-//   isbn: string
-//   language: string
-//   tags: string[]
-//   available: boolean
-//   location: string
-//   signature: string
-//   synopsis: string
-//   authorBio: string
-// }> = {
-//   "Cien años de soledad": {
-//     title: "Cien años de soledad",
-//     author: "Gabriel García Márquez",
-//     year: 1967,
-//     isbn: "978-84-376-0494-7",
-//     language: "Español",
-//     tags: ["Realismo Mágico", "Literatura Latinoamericana", "Saga Familiar", "Colombia"],
-//     available: true,
-//     location: "Biblioteca Central · Planta 2 · Estantería Literaturas Hispánicas",
-//     signature: "N GAR cie",
-//     synopsis:
-//       "La obra maestra de Gabriel García Márquez narra la historia de la familia Buendía a lo largo de siete generaciones en el pueblo ficticio de Macondo. A través de un lenguaje poético y lleno de elementos fantásticos, el autor colombianoexplora temas como el amor, la soledad, el destino y la repetición cíclica de la historia. Una novela que ha trascendido fronteras y generaciones, convirtiéndose en una de las lecturas más importantes de la literatura universal.",
-//     authorBio:
-//       "Gabriel García Márquez (1927-2014) fue un escritor y periodista colombiano, considerado uno de los autores más importantes del siglo XX. Ganador del Premio Nobel de Literatura en 1982, es conocido por su maestría del realismo mágico. Entre sus obras destacadas se encuentran 'El amor en los tiempos del cólera', 'Crónica de una muerte anunciada' y 'Cien años de soledad'.",
-//   },
-// }
+import { AuthorCard } from "@/components/AuthorCard"
 
 const relatedBooks = [
   { title: "La casa de los espíritus", author: "Isabel Allende" },
@@ -312,22 +282,7 @@ export default function LibroPage() {
             viewport={{ once: true }}
             transition={{ duration: 0.5 }}
           >
-            <Card className="border-border/50">
-              <CardContent className="py-6 px-6">
-                <h3 className="font-bold text-primary mb-4">Sobre el Autor</h3>
-                <div className="flex items-center gap-4 mb-4">
-                  <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center shrink-0 overflow-hidden">
-                    <Book className="h-7 w-7 text-muted-foreground/40" />
-                  </div>
-                  <div>
-                    <p className="font-semibold text-sm">{book.author}</p>
-                  </div>
-                </div>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  {book.authorBio}
-                </p>
-              </CardContent>
-            </Card>
+            <AuthorCard name={book.author}  />
           </motion.div>
 
           <motion.div
