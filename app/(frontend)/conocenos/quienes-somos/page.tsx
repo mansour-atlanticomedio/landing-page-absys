@@ -73,7 +73,7 @@ export default async function QuienesSomosPage() {
             </p>
           </div>
           <div className="relative h-72 rounded-lg overflow-hidden">
-            <Image src={imageHeroURL} alt="" fill className="object-cover" />
+            { imageHeroURL != "" && <Image src={imageHeroURL} alt="" fill className="object-cover" />}
           </div>
         </div>
       </section>

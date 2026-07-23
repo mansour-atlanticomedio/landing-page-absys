@@ -29,7 +29,7 @@ export default async function HorariosUbicacionContactoPage() {
   }) as any
 
   const horarios = aboutUs?.horarios || []
-  const imageHeroURL = horarios[0].images?.url || ""
+  const imageHeroURL = horarios[0]?.images?.url || ""
 
   return (
     <div className="min-h-screen bg-white">
@@ -87,7 +87,7 @@ export default async function HorariosUbicacionContactoPage() {
 
           <div className="space-y-6">
             <div className="relative h-72 rounded-lg overflow-hidden">
-               <Image src={imageHeroURL} alt="" fill className="object-cover" />
+              {imageHeroURL != "" && <Image src={imageHeroURL} alt="" fill className="object-cover" />}
               <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/70 to-transparent p-5 text-white">
                 <p className="font-bold text-lg">Edificio EMU de Usos Múltiples</p>
                 <p className="text-sm">🏛 Campus Universitario</p>
