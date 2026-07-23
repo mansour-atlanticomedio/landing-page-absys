@@ -17,6 +17,7 @@ export default async function Home() {
 
   const heroData = homepage?.hero
   const heroCarruselData = homepage?.hero_carrusel
+  const carruselItems = heroCarruselData?.items || []
   const pageBlocks = homepage?.layout
 
   const pretitle = heroData?.pretitle || "";
@@ -42,10 +43,10 @@ export default async function Home() {
         />
 
       }
-      {heroCarruselData !== null &&
+      {carruselItems !== null &&
         <HeroCarrousel
           title=""
-          items={heroCarruselData.items}
+          items={carruselItems}
         />
       }
 

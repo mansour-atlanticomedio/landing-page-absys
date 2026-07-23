@@ -2,6 +2,7 @@ import { buildConfig } from "payload";
 
 import { postgresAdapter } from "@payloadcms/db-postgres";
 import { lexicalEditor } from "@payloadcms/richtext-lexical";
+import { importExportPlugin } from '@payloadcms/plugin-import-export'
 import { nodemailerAdapter } from '@payloadcms/email-nodemailer'
 import { es } from '@payloadcms/translations/languages/es';
 import { en } from '@payloadcms/translations/languages/en';
@@ -100,7 +101,11 @@ export default buildConfig({
     },
   }),
   sharp,
-  plugins: [],
+  plugins: [
+    importExportPlugin({
+      collections: [],
+    })
+  ],
   email: nodemailerAdapter({
     defaultFromAddress: process.env.SMTP_USER as string,
     defaultFromName: 'Mansour Lo Lo',
