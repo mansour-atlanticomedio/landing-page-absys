@@ -134,6 +134,7 @@ export interface Config {
     repository: Repository;
     formation: Formation;
     contact: Contact;
+    about_us: AboutUs;
   };
   globalsSelect: {
     home: HomeSelect<false> | HomeSelect<true>;
@@ -144,6 +145,7 @@ export interface Config {
     repository: RepositorySelect<false> | RepositorySelect<true>;
     formation: FormationSelect<false> | FormationSelect<true>;
     contact: ContactSelect<false> | ContactSelect<true>;
+    about_us: AboutUsSelect<false> | AboutUsSelect<true>;
   };
   locale: null;
   widgets: {
@@ -663,8 +665,6 @@ export interface BookCoverService {
 export interface AuthorService {
   id: number;
   authorName?: string | null;
-  bio?: string | null;
-  image?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1183,8 +1183,6 @@ export interface BookCoverServiceSelect<T extends boolean = true> {
  */
 export interface AuthorServiceSelect<T extends boolean = true> {
   authorName?: T;
-  bio?: T;
-  image?: T;
   updatedAt?: T;
   createdAt?: T;
 }
@@ -1660,6 +1658,33 @@ export interface Formation {
 export interface Contact {
   id: number;
   hero?: (number | null) | Hero;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "about_us".
+ */
+export interface AboutUs {
+  id: number;
+  quienes_somos?:
+    | {
+        images?: (number | null) | Media;
+        id?: string | null;
+      }[]
+    | null;
+  horarios?:
+    | {
+        images?: (number | null) | Media;
+        id?: string | null;
+      }[]
+    | null;
+  normativa?:
+    | {
+        images?: (number | null) | Media;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -2149,6 +2174,33 @@ export interface FormationSelect<T extends boolean = true> {
  */
 export interface ContactSelect<T extends boolean = true> {
   hero?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "about_us_select".
+ */
+export interface AboutUsSelect<T extends boolean = true> {
+  quienes_somos?:
+    | T
+    | {
+        images?: T;
+        id?: T;
+      };
+  horarios?:
+    | T
+    | {
+        images?: T;
+        id?: T;
+      };
+  normativa?:
+    | T
+    | {
+        images?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

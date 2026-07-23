@@ -17,6 +17,7 @@ import { Repositories } from "./globals/Repositories.ts";
 import { Investigation } from "./globals/Investigation.ts";
 import { Formation } from "./globals/Formation.ts";
 import { Layout } from "./globals/Layout.ts";
+import { AboutUs } from "./globals/AboutUs.ts";
 
 import { Users } from "./collections/Users.ts";
 import { Media } from "./collections/Media.ts";
@@ -84,7 +85,8 @@ export default buildConfig({
     Investigation,
     Repositories,
     Formation,
-    Contact
+    Contact,
+    AboutUs
   ],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",
@@ -92,6 +94,7 @@ export default buildConfig({
     outputFile: path.resolve(dirname, "payload-types.ts"),
   },
   db: postgresAdapter({
+    push: false,
     pool: {
       connectionString: process.env.DATABASE_URI || process.env.DATABASE_URL || "",
     },

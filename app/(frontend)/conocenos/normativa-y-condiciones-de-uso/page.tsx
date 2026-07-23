@@ -1,9 +1,8 @@
-"use client"
-
 import { motion } from "framer-motion"
 import { FileText, Shield, AlertTriangle, CheckCircle, BookX, Download, Monitor, Library, Users } from "lucide-react"
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { getClient } from "@/lib/payload"
 
 const regulations = [
   {
@@ -35,7 +34,17 @@ const policies = [
   { icon: BookX, title: "Material restringido", desc: "Algunos documentos solo están disponibles para consulta en sala." },
 ]
 
-export default function NormativaPage() {
+export default async function NormativaPage() {
+  const payload = await getClient()
+  const aboutUs = await payload.findGlobal({
+    slug: 'about_us' as never,
+    draft: false,
+    depth: 2
+  }) as any
+
+  const normativa = aboutUs?.normativa || []
+  const imageHeroURL = normativa[0]?.images?.url || ""
+  
   return (
     <div className="min-h-screen bg-white">
       {/* <SiteHeader active="CONÓCENOS" /> */}

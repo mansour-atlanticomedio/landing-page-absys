@@ -1,9 +1,9 @@
-"use client"
 import Image from "next/image";
 import { Info, Clock, MapPin, HelpCircle as PhoneHelp, Mail, Navigation, CircleHelp, Phone, Building2 } from "lucide-react";
 import { motion } from "framer-motion"
 // import { MapPin, Clock, Phone, Mail, Calendar, Building2 } from "lucide-react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { getClient } from "@/lib/payload";
 
 const schedules = [
   { day: "Lunes a viernes", hours: "08:00 - 20:00", type: "regular" },
@@ -20,7 +20,17 @@ const contactInfo = [
   { icon: Building2, label: "Edificio", value: "Edificio de Bibliotecas, Planta Baja" },
 ]
 
-export default function HorariosUbicacionContactoPage() {
+export default async function HorariosUbicacionContactoPage() {
+  const payload = await getClient()
+  const aboutUs = await payload.findGlobal({
+    slug: 'about_us' as never,
+    draft: false,
+    depth: 2
+  }) as any
+
+  const horarios = aboutUs?.horarios || []
+  const imageHeroURL = horarios[0].images?.url || ""
+
   return (
     <div className="min-h-screen bg-white">
       {/* <SiteHeader active="CONÓCENOS" /> */}
@@ -77,14 +87,17 @@ export default function HorariosUbicacionContactoPage() {
 
           <div className="space-y-6">
             <div className="relative h-72 rounded-lg overflow-hidden">
-              <Image src="/img/edificio-emu.jpg" alt="" fill className="object-cover" />
+               <Image src={imageHeroURL} alt="" fill className="object-cover" />
               <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/70 to-transparent p-5 text-white">
                 <p className="font-bold text-lg">Edificio EMU de Usos Múltiples</p>
                 <p className="text-sm">🏛 Campus Universitario</p>
               </div>
             </div>
             <div className="relative h-72 rounded-lg overflow-hidden bg-slate-100">
-              <Image src="/img/mapa.jpg" alt="" fill className="object-cover" />
+              <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2562.3405726995734!2d-15.452000045269175!3d28.06915669043545!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xc409577ccdecaa7%3A0x225708319a137012!2sUniversidad%20del%20Atl%C3%A1ntico%20Medio%20(UNAM)!5e0!3m2!1ses!2ses!4v1784738876377!5m2!1ses!2ses"
+                className="w-full h-full"
+                loading="lazy"
+              ></iframe>
             </div>
           </div>
         </div>

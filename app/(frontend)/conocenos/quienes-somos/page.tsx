@@ -1,9 +1,6 @@
-"use client"
-
 import Image from "next/image"
-import { motion } from "framer-motion"
-import { Building2, BookHeart, Target, Eye, BookOpen, User, FlaskConical, GraduationCap } from "lucide-react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { BookOpen, User, FlaskConical, GraduationCap } from "lucide-react"
+import { getClient } from "@/lib/payload";
 
 // const teamMembers = [
 //   { name: "Dra. María García", role: "Directora de Biblioteca", image: "/team/directora.jpg" },
@@ -48,7 +45,19 @@ const DIRIGIDOS = [
   },
 ];
 
-export default function QuienesSomosPage() {
+export default async function QuienesSomosPage() {
+  const payload = await getClient()
+  const aboutUs = await payload.findGlobal({
+    slug: 'about_us' as never,
+    draft: false,
+    depth: 2
+  }) as any
+
+  const quienes_somos = aboutUs?.quienes_somos || []
+  const imageHeroURL = quienes_somos[0]?.images?.url || ""
+
+  console.log("Info: ", imageHeroURL)
+
   return (
     <div className="min-h-screen bg-white">
       {/* <SiteHeader active="CONÓCENOS" /> */}
@@ -64,7 +73,7 @@ export default function QuienesSomosPage() {
             </p>
           </div>
           <div className="relative h-72 rounded-lg overflow-hidden">
-            <Image src="/img/quienes-somos.jpg" alt="" fill className="object-cover" />
+            <Image src={imageHeroURL} alt="" fill className="object-cover" />
           </div>
         </div>
       </section>

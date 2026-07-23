@@ -48,7 +48,7 @@ export default function InputComponent({ title, placeholder }: InputProps) {
 
   return (
     <form onSubmit={handleInput} className=" mx-auto max-w-7xl px-6 flex justify-center flex-col rounded-lg mt-8">
-      <div className="flex bg-gray-300 rounded-xl max-w-7xl justify-between items-center h-12">
+      {/* <div className="flex bg-gray-300 rounded-xl max-w-7xl justify-between items-center h-12">
         <input
           className="flex-5 ml-4 text-gray-600 font-bold h-full outline-none focus:outline-none focus:ring-0"
           type="text"
@@ -59,6 +59,16 @@ export default function InputComponent({ title, placeholder }: InputProps) {
           <Search size={16} className="text-white" />
           <span className="text-white">Buscar</span>
         </button>
+      </div> */}
+      <div className="mt-8 flex gap-2">
+        <div className="flex-1 flex items-center gap-2 border rounded-md px-4">
+          <Search className="h-4 w-4 text-slate-400" />
+          <input
+            placeholder="Título, autor, materia o ISBN..."
+            className="flex-1 py-3 outline-none text-sm"
+          />
+        </div>
+        <button className="bg-accent text-white font-medium px-6 rounded-md"><a href="https://demo.baratz.es/opac">Buscar</a></button>
       </div>
 
       <button
