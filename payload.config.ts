@@ -102,10 +102,32 @@ export default buildConfig({
   }),
   sharp,
   plugins: [
-    importExportPlugin({
-      collections: [],
-    })
-  ],
+  importExportPlugin({
+    collections: [
+      Users.slug,
+      Media.slug,
+      Hero.slug,
+      Header.slug,
+      HeroCarrusel.slug,
+      Speakers.slug,
+      Statistics.slug,
+      About.slug,
+      Features.slug,
+      Timeline.slug,
+      Input.slug,
+      CTA.slug,
+      FAQ.slug,
+      Email.slug,
+      BlogsCollection.slug,
+      PartnersCollection.slug,
+      NewsCollection.slug,
+      Footer.slug,
+      AbsysService.slug,
+      BookCoverService.slug,
+      AuthorService.slug,
+    ],
+  }),
+],
   email: nodemailerAdapter({
     defaultFromAddress: process.env.SMTP_USER as string,
     defaultFromName: 'Mansour Lo Lo',
