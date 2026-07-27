@@ -4,7 +4,7 @@ import { getClient } from "@/lib/payload";
 
 export const dynamic = 'force-dynamic';
 
-import './styles.css'
+import '../styles.css'
 import HeroCarrousel from "@/components/heroCarrusel";
 
 export default async function Home() {
