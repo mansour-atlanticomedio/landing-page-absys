@@ -32,6 +32,7 @@ import {
   AlertCircle,
   CheckCircle2,
 } from "lucide-react";
+import axios from "axios";
 
 // Valores fijos de la institución (no se piden al lector)
 const LECOBI = "B1";
@@ -73,6 +74,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ className = "" }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
   const [loginData, setLoginData] = useState<LoginData>(initialLogin);
   const [registerData, setRegisterData] = useState<RegisterData>(initialRegister);
@@ -91,6 +93,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ className = "" }) => {
     setRegisterData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   }
 
+
   async function handleLoginSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
@@ -101,23 +104,30 @@ export const LoginPage: React.FC<LoginPageProps> = ({ className = "" }) => {
       return;
     }
 
+    const params = new URLSearchParams();
+    params.set('lenlec', loginData.lenlec);
+    params.set('lepass', loginData.lepass);
+
+    // NOTA: En navegadores modernos se usa btoa() en vez de Buffer
+    const userEncoded = btoa(params.toString());
+
     try {
       setIsLoading(true);
-      const url = new URL("/webresources/service", window.location.origin);
-      url.searchParams.set("operation", "search");
-      url.searchParams.set("table", "lector");
-      url.searchParams.set("lenlec", loginData.lenlec);
-      url.searchParams.set("lepass", loginData.lepass);
 
-      const res = await fetch(url.toString());
-      const data = await res.json();
+      const res = await axios.post(`${API_URL}/loginAbsys_service/login/${userEncoded}`);
 
-      if (data.response?.code !== "0") {
-        throw new Error(data.response?.description ?? "Credenciales incorrectas");
-      }
+      // Si la respuesta fue 200/201:
       setSuccessMessage("Sesión iniciada correctamente.");
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Error al iniciar sesión.");
+
+    } catch (e: any) {
+      // Si el servidor devolvió un error (401, 400, 500, etc.)
+      if (axios.isAxiosError(e) && e.response) {
+        const serverMessage = e.response.data?.message;
+        setError(serverMessage || "Credenciales incorrectas o error en la solicitud.");
+      } else {
+        // Error de red, sin conexión o servidor caído
+        setError("No se pudo conectar con el servidor.");
+      }
     } finally {
       setIsLoading(false);
     }

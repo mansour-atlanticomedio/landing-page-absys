@@ -47,25 +47,25 @@ export const handleLoginLector: PayloadHandler = async (req) => {
     const searchParams = Buffer.from(credentials || '', 'base64').toString('utf-8');
     const params = new URLSearchParams(searchParams);
 
-    const { lector_id, password } = Object.fromEntries(params);
+    const { lenlec, lepass } = Object.fromEntries(params);
 
     console.log("Credentials:", credentials)
-    console.log("Informacion:", lector_id, password)
+    console.log("Informacion:", lenlec, lepass)
 
     const addParams = new URLSearchParams();
     addParams.set("operation", "search");
     addParams.set("table", "lector");
-    addParams.set("lenlec", lector_id);
+    addParams.set("lenlec", lenlec);
 
     const result = await fetchAbsys(addParams);
 
     const response = result.response
 
-    if (!response.lector) return jsonError('Usuario invalido', 500)
+    if (!response.lector) return jsonError('Usuario invalido', 404)
 
     const lector = response.lector
 
-    if (lector.lepass !== password) return jsonError('Contraseña incorrecta', 500)
+    if (lector.lepass !== lepass) return jsonError('Contraseña incorrecta', 401)
 
     const user = {
       lenomb: lector.lenomb,
