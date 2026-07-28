@@ -34,10 +34,6 @@ import {
 } from "lucide-react";
 import axios from "axios";
 
-// Valores fijos de la institución (no se piden al lector)
-const LECOBI = "B1";
-const LECART = "1";
-
 interface LoginData {
   lenlec: string;
   lepass: string;
@@ -145,30 +141,26 @@ export const LoginPage: React.FC<LoginPageProps> = ({ className = "" }) => {
 
     try {
       setIsLoading(true);
-      const url = new URL("/webresources/service", window.location.origin);
-      url.searchParams.set("operation", "add");
-      url.searchParams.set("table", "lector");
-      url.searchParams.set("lenlec", "0");
-      url.searchParams.set("leapel", registerData.leapel);
-      url.searchParams.set("lenomb", registerData.lenomb);
-      url.searchParams.set("lecolp", registerData.lecolp);
-      url.searchParams.set("lecobi", LECOBI);
-      url.searchParams.set("lecart", LECART);
-      url.searchParams.set("ledi11", registerData.ledi11);
-      if (registerData.lepass) url.searchParams.set("lepass", registerData.lepass);
-      if (registerData.lemail) url.searchParams.set("lemail", registerData.lemail);
-      if (registerData.letfn1) url.searchParams.set("letfn1", registerData.letfn1);
 
-      const res = await fetch(url.toString());
-      const data = await res.json();
+      const res = await axios.post(`${API_URL}/loginAbsys_service/signin`, {
+        leapel: registerData.leapel,
+        lenomb: registerData.lenomb,
+        lecolp: registerData.lecolp,
+        ledi11: registerData.ledi11,
+        lepass: registerData.lepass || undefined,
+        lemail: registerData.lemail || undefined,
+        letfn1: registerData.letfn1 || undefined,
+      });
 
-      if (data.response?.code !== "0") {
-        throw new Error(data.response?.description ?? "No se ha podido crear el lector");
-      }
-      setSuccessMessage(`Lector creado correctamente. Nº de lector: ${data.response.lenlec}`);
+      const lenlec = res.data?.data?.lenlec;
+      setSuccessMessage(`Lector creado correctamente. Nº de lector: ${lenlec}`);
       setRegisterData(initialRegister);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Error al crear la cuenta.");
+    } catch (e: any) {
+      if (axios.isAxiosError(e) && e.response) {
+        setError(e.response.data?.message || "No se ha podido crear el lector.");
+      } else {
+        setError("No se pudo conectar con el servidor.");
+      }
     } finally {
       setIsLoading(false);
     }
@@ -406,10 +398,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({ className = "" }) => {
                       <SelectValue placeholder="Selecciona el lector" />
                     </SelectTrigger>
                     <SelectContent className="bg-white" >
-                      <SelectItem value="ALU">Estudiante</SelectItem>
+                      <SelectItem value="ALUMN">Estudiante</SelectItem>
                       <SelectItem value="PDI">PDI (Docente e Investigador)</SelectItem>
-                      <SelectItem value="AD">PAS (Administración y Servicios)</SelectItem>
-                      <SelectItem value="EXT">Usuario Externo Conveniado</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

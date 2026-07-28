@@ -1,6 +1,27 @@
+import { AbsysAddLectorPayload, AbsysAddLectorResponse } from "@/types/absys.type";
 import type { CollectionConfig, PayloadHandler } from "payload";
 
 class AbsysError extends Error { }
+
+const COLECTIVOS = {
+  ALUMN: { lecolp: "ALUMN", lecocf: "ALIM", maxPrestamos: 3, diasPrestamo: 15 },
+  PDI: { lecolp: "PDI", lecocf: "PDIM", maxPrestamos: 10, diasPrestamo: 30 },
+} as const;
+
+type Colectivo = keyof typeof COLECTIVOS;
+
+const LECOBI = "BIEURO";
+const LECOSU = "MADRID";
+const LECART = "1";
+
+function formatAbsysDateTime(date: Date): string {
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${pad(date.getDate())}/${pad(date.getMonth() + 1)}/${date.getFullYear()} ${pad(
+    date.getHours()
+  )}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
+}
+
+const REQUIRED_FIELDS = ["leapel", "lenomb", "lepass", "lecolp", "ledi11"] as const;
 
 const getAbsysHeaders = (): Headers => {
   const user = process.env.NEXT_ABSYS_USERNAME;
@@ -40,9 +61,54 @@ const fetchAbsys = async (params: URLSearchParams): Promise<any> => {
   return data;
 };
 
+const postAbsys = async (
+  operation: string,
+  table: string,
+  bodyParams: Record<string, string | undefined>
+): Promise<any> => {
+  const baseUrl = process.env.NEXT_ABSYS_API;
+  if (!baseUrl) throw new AbsysError("NEXT_ABSYS_API no configurada");
+ 
+  const user = process.env.NEXT_ABSYS_USERNAME;
+  const pass = Buffer.from(process.env.NEXT_ABSYS_PASSWORD || "", "base64").toString("utf-8");
+ 
+  if (!user || !pass) {
+    throw new AbsysError("Credenciales de ABSYS no configuradas");
+  }
+ 
+  const auth = Buffer.from(`${user}:${pass}`).toString("base64");
+ 
+  const query = new URLSearchParams({ operation, table });
+ 
+  const body = new URLSearchParams();
+  for (const [key, value] of Object.entries(bodyParams)) {
+    if (value !== undefined && value !== null) body.set(key, String(value));
+  }
+ 
+  const response = await fetch(`${baseUrl}?${query.toString()}`, {
+    method: "POST",
+    headers: {
+      Authorization: `Basic ${auth}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+      Accept: "*/*",
+      "Cache-Control": "no-cache",
+    },
+    body: body.toString(),
+    cache: "no-store",
+  });
+ 
+  const data = await response.json();
+ 
+  if (!response.ok) {
+    throw new AbsysError(`Absys API Error: ${response.statusText} - ${JSON.stringify(data)}`);
+  }
+ 
+  return data;
+};
+ 
+
 export const handleLoginLector: PayloadHandler = async (req) => {
   try {
-
     const { credentials } = req.routeParams as { credentials: string };
     const searchParams = Buffer.from(credentials || '', 'base64').toString('utf-8');
     const params = new URLSearchParams(searchParams);
@@ -92,81 +158,60 @@ const jsonError = (message: string, status = 500) =>
 
 export const handleCreateLector: PayloadHandler = async (req) => {
   try {
-    const body = await req.json?.();
-    if (!body || !body.email || !body.dni || !body.password) {
-      return jsonError("Campos obligatorios incompletos (email, dni, password)", 400);
-    }
-
-    // const existingUser = await req.payload.find({
-    //   collection: "lectores",
-    //   where: {
-    //     or: [
-    //       { email: { equals: body.email } },
-    //       { dni: { equals: body.dni } },
-    //     ],
-    //   },
-    // });
-
-    // if (existingUser.docs.length > 0) {
-    //   return jsonError("El DNI o Email ya se encuentra registrado", 409);
-    // }
-
-    const colectivo = body.colectivo || "ALUMN";
-    const maxPrestamos = colectivo === "PDI" ? 10 : 3;
-    const diasPrestamo = colectivo === "PDI" ? 30 : 15;
-
-    let lenlec = "0";
-    let isOfflineData = false;
-
-    try {
-      const searchParams = new URLSearchParams();
-      searchParams.set("operation", "search");
-      searchParams.set("table", "lector");
-      searchParams.set("search", body.dni);
-
-      const searchRes = await fetchAbsys(searchParams);
-      if (searchRes?.response?.lector?.lenlec) {
-        lenlec = String(searchRes.response.lector.lenlec);
-      } else {
-        const addParams = new URLSearchParams();
-        addParams.set("operation", "add");
-        addParams.set("table", "lector");
-        addParams.set("lenlec", "0");
-        addParams.set("leapel", body.apellidos || "");
-        addParams.set("lenomb", body.nombre || "");
-        addParams.set("lepass", body.password);
-        addParams.set("lecolp", colectivo);
-        addParams.set("lecobi", body.bibliotecaOrigen || "BIEURO");
-        addParams.set("lecart", "1");
-        addParams.set("lecosu", body.sucursal || "MADRID");
-
-        const addRes = await fetchAbsys(addParams);
-        if (addRes?.response?.lenlec) {
-          lenlec = String(addRes.response.lenlec);
+    let body: Record<string, any> = {};
+ 
+    if ((req as any).data && Object.keys((req as any).data).length > 0) {
+      body = (req as any).data;
+    } else {
+      const contentType = req.headers.get("content-type") || "";
+ 
+      if (contentType.includes("application/x-www-form-urlencoded")) {
+        if (typeof req.formData === "function") {
+          const formData = await req.formData();
+          body = Object.fromEntries(formData);
+        } else if (typeof req.text === "function") {
+          const rawText = await req.text();
+          body = Object.fromEntries(new URLSearchParams(rawText));
         }
+      } else if (contentType.includes("application/json") && typeof req.json === "function") {
+        body = await req.json();
       }
-    } catch (err) {
-      req.payload.logger.error(err);
-      isOfflineData = true;
     }
-
-    // const newLector = await req.payload.create({
-    //   collection: "lectores",
-    //   data: {
-    //     email: body.email,
-    //     password: body.password,
-    //     // dni: body.dni,
-    //     nombre: body.nombre,
-    //     apellidos: body.apellidos,
-    //     numeroCarnet: lenlec,
-    //     colectivo,
-    //     maxPrestamos,
-    //     diasPrestamo,
-    //     isOfflineData,
-    //   },
-    // });
-
-    return jsonOk({}, 201);
+ 
+    const missing = REQUIRED_FIELDS.filter((field) => !body[field]);
+    if (missing.length > 0) {
+      return jsonError(`Campos obligatorios incompletos: ${missing.join(", ")}`, 400);
+    }
+ 
+    const lecolpVal = body.lecolp as string;
+    const colectivo: Colectivo = lecolpVal in COLECTIVOS ? (lecolpVal as Colectivo) : "ALUMN";
+    const { lecolp, lecocf } = COLECTIVOS[colectivo];
+ 
+    const payload: AbsysAddLectorPayload = {
+      lenlec: "0",
+      leapel: body.leapel,
+      lenomb: body.lenomb,
+      lepass: body.lepass,
+      lecolp,
+      lecobi: LECOBI,
+      lecosu: LECOSU,
+      lecart: LECART,
+      ledi11: body.ledi11,
+      lecocf,
+      leacpd: "1",
+      lefepd: formatAbsysDateTime(new Date()),
+      lemail: body.lemail,
+      letfn1: body.letfn1,
+    };
+ 
+    const result = await postAbsys("add", "lector", payload as unknown as Record<string, string>);
+ 
+    if (result?.response?.code !== 0) {
+      req.payload.logger.error(result?.response?.description);
+      return jsonError(result?.response?.description ?? "No se ha podido crear el lector", 502);
+    }
+ 
+    return jsonOk({ lenlec: result.response.lenlec }, 201);
   } catch (error) {
     req.payload.logger.error(error);
     return jsonError("Error interno del servidor al procesar el alta", 500);
@@ -250,7 +295,7 @@ export const LoginAbsysService: CollectionConfig = {
     { name: "isOfflineData", type: "checkbox", defaultValue: false },
   ],
   endpoints: [
-    { path: "/register", method: "post", handler: handleCreateLector },
+    { path: "/signin", method: "post", handler: handleCreateLector },
     { path: "/login/:credentials", method: "post", handler: handleLoginLector },
     { path: "/me", method: "get", handler: handleGetLectorMe },
   ],
