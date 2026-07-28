@@ -167,7 +167,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ className = "" }) => {
   return (
     <div className={`h-screen w-screen bg-slate-50 flex justify-center items-center ${className}`}>
       <div className="flex-1 h-full relative hidden md:block">
-        <Image src="/biblioteca/api/media/file/screen-inicio-hero-12.png" fill alt="" className="object-cover" />
+        {/* <Image src="/biblioteca/api/media/file/screen-inicio-hero-12.png" fill alt="" className="object-cover" /> */}
       </div>
 
       <div className="flex-1 flex flex-col justify-center items-center h-full px-6">

@@ -38,9 +38,12 @@ import { Input } from "./collections/Input.ts";
 import { HeroCarrusel } from "./collections/HeroCarrusel.ts";
 import { Header } from "./collections/Header.ts";
 import { Footer } from "./collections/Footer.ts";
+
+
 import { AbsysService } from "./collections/Absys.service.ts";
 import { BookCoverService } from "./collections/BookCovers.service.ts";
 import { AuthorService } from "./collections/Author.service.ts";
+import { LoginAbsysService } from "./collections/LoginAbsys.service.ts";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -76,7 +79,8 @@ export default buildConfig({
     Footer,
     AbsysService,
     BookCoverService,
-    AuthorService
+    AuthorService,
+    LoginAbsysService
   ],
   globals: [
     Home,
@@ -101,33 +105,7 @@ export default buildConfig({
     },
   }),
   sharp,
-  plugins: [
-  importExportPlugin({
-    collections: [
-      Users.slug,
-      Media.slug,
-      Hero.slug,
-      Header.slug,
-      HeroCarrusel.slug,
-      Speakers.slug,
-      Statistics.slug,
-      About.slug,
-      Features.slug,
-      Timeline.slug,
-      Input.slug,
-      CTA.slug,
-      FAQ.slug,
-      Email.slug,
-      BlogsCollection.slug,
-      PartnersCollection.slug,
-      NewsCollection.slug,
-      Footer.slug,
-      AbsysService.slug,
-      BookCoverService.slug,
-      AuthorService.slug,
-    ],
-  }),
-],
+  plugins: [],
   email: nodemailerAdapter({
     defaultFromAddress: process.env.SMTP_USER as string,
     defaultFromName: 'Mansour Lo Lo',

@@ -1,6 +1,6 @@
 import type { CollectionConfig, PayloadHandler } from "payload";
 
-class AbsysError extends Error {}
+class AbsysError extends Error { }
 
 const getAbsysHeaders = (): Headers => {
   const user = process.env.NEXT_ABSYS_USERNAME;
@@ -40,11 +40,55 @@ const fetchAbsys = async (params: URLSearchParams): Promise<any> => {
   return data;
 };
 
+export const handleLoginLector: PayloadHandler = async (req) => {
+  try {
+
+    const { credentials } = req.routeParams as { credentials: string };
+    const searchParams = Buffer.from(credentials || '', 'base64').toString('utf-8');
+    const params = new URLSearchParams(searchParams);
+
+    const { lector_id, password } = Object.fromEntries(params);
+
+    console.log("Credentials:", credentials)
+    console.log("Informacion:", lector_id, password)
+
+    const addParams = new URLSearchParams();
+    addParams.set("operation", "search");
+    addParams.set("table", "lector");
+    addParams.set("lenlec", lector_id);
+
+    const result = await fetchAbsys(addParams);
+
+    const response = result.response
+
+    if (!response.lector) return jsonError('Usuario invalido', 500)
+
+    const lector = response.lector
+
+    if (lector.lepass !== password) return jsonError('Contraseña incorrecta', 500)
+
+    const user = {
+      lenomb: lector.lenomb,
+      leapel: lector.leapel,
+      lefubi: lector.lefubi,
+      lenlec: lector.lenlec
+    }
+
+    return jsonOk(user);
+
+  } catch (e) {
+    console.error("Error with login: ", e)
+    req.payload.logger.error(e);
+    return jsonError("Error interno del servidor al procesar el login", 500);
+  }
+}
+
 const jsonOk = (data: unknown, status = 200) =>
   Response.json({ success: true, data }, { status });
 
 const jsonError = (message: string, status = 500) =>
   Response.json({ success: false, message }, { status });
+
 
 export const handleCreateLector: PayloadHandler = async (req) => {
   try {
@@ -53,19 +97,19 @@ export const handleCreateLector: PayloadHandler = async (req) => {
       return jsonError("Campos obligatorios incompletos (email, dni, password)", 400);
     }
 
-    const existingUser = await req.payload.find({
-      collection: "lectores",
-      where: {
-        or: [
-          { email: { equals: body.email } },
-          { dni: { equals: body.dni } },
-        ],
-      },
-    });
+    // const existingUser = await req.payload.find({
+    //   collection: "lectores",
+    //   where: {
+    //     or: [
+    //       { email: { equals: body.email } },
+    //       { dni: { equals: body.dni } },
+    //     ],
+    //   },
+    // });
 
-    if (existingUser.docs.length > 0) {
-      return jsonError("El DNI o Email ya se encuentra registrado", 409);
-    }
+    // if (existingUser.docs.length > 0) {
+    //   return jsonError("El DNI o Email ya se encuentra registrado", 409);
+    // }
 
     const colectivo = body.colectivo || "ALUMN";
     const maxPrestamos = colectivo === "PDI" ? 10 : 3;
@@ -106,23 +150,23 @@ export const handleCreateLector: PayloadHandler = async (req) => {
       isOfflineData = true;
     }
 
-    const newLector = await req.payload.create({
-      collection: "lectores",
-      data: {
-        email: body.email,
-        password: body.password,
-        dni: body.dni,
-        nombre: body.nombre,
-        apellidos: body.apellidos,
-        numeroCarnet: lenlec,
-        colectivo,
-        maxPrestamos,
-        diasPrestamo,
-        isOfflineData,
-      },
-    });
+    // const newLector = await req.payload.create({
+    //   collection: "lectores",
+    //   data: {
+    //     email: body.email,
+    //     password: body.password,
+    //     // dni: body.dni,
+    //     nombre: body.nombre,
+    //     apellidos: body.apellidos,
+    //     numeroCarnet: lenlec,
+    //     colectivo,
+    //     maxPrestamos,
+    //     diasPrestamo,
+    //     isOfflineData,
+    //   },
+    // });
 
-    return jsonOk(newLector, 201);
+    return jsonOk({}, 201);
   } catch (error) {
     req.payload.logger.error(error);
     return jsonError("Error interno del servidor al procesar el alta", 500);
@@ -138,12 +182,12 @@ export const handleGetLectorMe: PayloadHandler = async (req) => {
     let absysProfile = null;
     let isOfflineData = false;
 
-    if (req.user.numeroCarnet) {
+    if (req.user.id) {
       try {
         const params = new URLSearchParams();
         params.set("operation", "search");
         params.set("table", "lector");
-        params.set("lenlec", String(req.user.numeroCarnet));
+        params.set("lenlec", String(req.user.id));
 
         const res = await fetchAbsys(params);
         if (res?.response?.lector) {
@@ -166,8 +210,8 @@ export const handleGetLectorMe: PayloadHandler = async (req) => {
   }
 };
 
-export const Lectores: CollectionConfig = {
-  slug: "lectores",
+export const LoginAbsysService: CollectionConfig = {
+  slug: "loginAbsys_service",
   auth: {
     tokenExpiration: 1800,
     cookies: {
@@ -206,7 +250,8 @@ export const Lectores: CollectionConfig = {
     { name: "isOfflineData", type: "checkbox", defaultValue: false },
   ],
   endpoints: [
-    { path: "/registro", method: "post", handler: handleCreateLector },
+    { path: "/register", method: "post", handler: handleCreateLector },
+    { path: "/login/:credentials", method: "post", handler: handleLoginLector },
     { path: "/me", method: "get", handler: handleGetLectorMe },
   ],
 };
