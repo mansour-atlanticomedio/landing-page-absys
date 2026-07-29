@@ -95,7 +95,7 @@ export default function Header({ type, phone, email, navbar }: HeaderProps) {
                         !isAccount ? <Button onClick={() => router.push("/login")} className="p-5 cursor-pointer font-bold hover:p-5.5" >
                             <User />
                             Mi Cuenta
-                        </Button> : <Button className="p-5 cursor-pointer text-primary bg-transparent border-primary font-bold hover:p-5.5" >
+                        </Button> : <Button className="p-5 cursor-pointer text-primary bg-transparent border-primary font-bold hover:p-5.5 hover:border-0 hover:bg-primary hover:text-white" >
                             <User />
                             Mi Perfil
                         </Button>
@@ -125,8 +125,8 @@ export default function Header({ type, phone, email, navbar }: HeaderProps) {
                                                 const isActive = pathname === url;
 
                                                 const linkClasses = `uppercase text-start text-sm font-semibold tracking-wider transition-colors block border-l-2 border-transparent px-4 py-2 hover:border-primary hover:bg-primary/5 text-primary ${isActive
-                                                        ? "text-accent"
-                                                        : "text-foreground hover:text-accent"
+                                                    ? "text-accent"
+                                                    : "text-foreground hover:text-accent"
                                                     }`;
 
                                                 return (

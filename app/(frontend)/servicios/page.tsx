@@ -3,6 +3,7 @@ import Image from "next/image";
 import { RenderBlocks } from "@/components/RenderBlocks";
 import { getClient } from "@/lib/payload";
 import { Bookmark, BookOpen, Headphones, LibraryBig, RefreshCw, Search, User } from "lucide-react";
+import Link from "next/link";
 
 export const dynamic = 'force-dynamic';
 
@@ -72,10 +73,12 @@ export default async function Servicios() {
               <p className="text-sm text-slate-600 mb-4">
                 Consulta el catálogo para localizar los libros y recursos disponibles y comprobar
                 su ubicación y disponibilidad.
-              </p>
-              <button className="bg-slate-800 text-white text-sm font-medium rounded-md px-4 py-2">
-                Ir al Catálogo
-              </button>
+              </p> 
+              <Link href={'/recursos/catalogo'}  >
+                <button className="bg-slate-800 text-white text-sm font-medium rounded-md px-4 py-2 cursor-pointer">
+                  Ir al Catálogo
+                </button>
+              </Link>
             </div>
 
             <div className="border rounded-lg p-6">
@@ -141,9 +144,11 @@ export default async function Servicios() {
               <p className="text-sm text-slate-600 mb-4">
                 Encuentra libros, revistas y otros recursos en nuestra colección.
               </p>
-              <button className="w-full border-2 border-teal-700 text-teal-700 rounded-md py-2.5 font-medium">
-                Buscar en Catálogo
-              </button>
+              <Link href={'/recursos/catalogo'} >
+                <button className="w-full border-2 border-teal-700 text-teal-700 rounded-md py-2.5 font-medium cursor-pointer">
+                  Buscar en Catálogo
+                </button>
+              </Link>
             </div>
 
             <div className="bg-slate-800 text-white rounded-lg p-6">
@@ -153,9 +158,11 @@ export default async function Servicios() {
               <p className="text-sm text-slate-300 mb-4">
                 Accede a tu perfil para gestionar tus préstamos y renovaciones.
               </p>
-              <button className="w-full bg-teal-700 rounded-md py-2.5 font-medium">
-                Iniciar Sesión
-              </button>
+              <Link href={'/login'} >
+                <button className="w-full bg-teal-700 rounded-md py-2.5 font-medium cursor-pointer">
+                  Iniciar Sesión
+                </button>
+              </Link>
             </div>
           </div>
         </div>

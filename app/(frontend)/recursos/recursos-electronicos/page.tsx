@@ -121,9 +121,11 @@ export default function RecursosElectronicosPage() {
             <p className="text-sm text-slate-600 my-3">
               Inicie sesión para habilitar el acceso integral a todos los recursos.
             </p>
-            <button className="w-full bg-teal-700 text-white rounded-md py-2.5 font-medium">
-              Iniciar Sesión Institucional
-            </button>
+            <Link href={'/login'} >
+              <button className="w-full bg-teal-700 text-white rounded-md py-2.5 font-medium cursor-pointer">
+                Iniciar Sesión Institucional
+              </button>
+            </Link>
           </div>
         </div>
 

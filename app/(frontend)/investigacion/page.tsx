@@ -13,6 +13,7 @@ import {
   Landmark,
   Mail,
 } from "lucide-react";
+import Link from "next/link";
 
 export const dynamic = 'force-dynamic';
 
@@ -115,9 +116,11 @@ export default async function Investigation() {
               Encuentra información sobre repositorios, versiones de los documentos, licencias,
               derechos de autor y posibilidades de difusión en acceso abierto.
             </p>
-            <button className="w-full bg-slate-100 rounded-md py-2.5 text-sm font-medium text-slate-700 flex items-center justify-center gap-2">
-              <Landmark className="h-4 w-4" /> Acceder al Repositorio institucional
-            </button>
+            <Link href={'http://172.23.2.44:4000/dspace'} >
+              <button className="w-full bg-slate-100 rounded-md py-2.5 text-sm font-medium text-slate-700 flex items-center justify-center gap-2 cursor-pointer hover:bg-primary hover:text-white">
+                <Landmark className="h-4 w-4" /> Acceder al Repositorio institucional
+              </button>
+            </Link>
           </div>
 
           <div className="border rounded-lg p-6">

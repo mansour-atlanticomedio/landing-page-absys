@@ -41,7 +41,7 @@ function FooterHorizontal({ logoUrl, logoAlt, social_medias, seccion_info }: Foo
     <footer className="bg-primary text-primary-foreground bottom-0" >
       <div className="max-w-7xl my-36 mx-14 grid md:grid-cols-3 gap-10">
         <div>
-          <a href="https://www.universidadatlanticomedio.es/">
+          <a href="/biblioteca/">
             {logoUrl && logoUrl !== '' && (
               <Image
                 src={logoUrl}
@@ -123,7 +123,7 @@ function FooterVertical({ title, logoUrl, logoAlt, social_medias, seccion_info }
           </h2>
         }
 
-        <a href="https://www.universidadatlanticomedio.es/">
+        <a href="/biblioteca/">
           {logoUrl && logoUrl !== '' && (
             <Image
               src={logoUrl}
