@@ -8,6 +8,7 @@ import { ChevronDown, Mail, Phone, User } from "lucide-react";
 import logo from "@/public/logos/logo.png";
 import Image from "next/image";
 import { Button } from "../ui/button";
+import { useEffect, useState } from "react";
 
 interface HeaderProps {
     type: string,
@@ -28,11 +29,23 @@ interface NavLinkProps {
 }
 
 
-export default function Header({ type, phone, email, navbar } : HeaderProps) {
+export default function Header({ type, phone, email, navbar }: HeaderProps) {
     const router = useRouter();
     const pathname = usePathname();
-    
+    const [isAccount, setIsAccount] = useState<string | null>()
+
     const navbarMenu = navbar ?? [];
+
+    useEffect(() => {
+
+        const checkAccount = () => {
+            const lenlec = localStorage.getItem('lenlec')
+            console.log("user: ", lenlec)
+            setIsAccount(lenlec)
+        }
+
+        checkAccount()
+    }, [])
 
     // Manejo de clicks en el botón principal de cada sección
     const handleNavLink = (url?: string) => {
@@ -48,12 +61,12 @@ export default function Header({ type, phone, email, navbar } : HeaderProps) {
 
     return (
         <section>
-            { (phone || email) && <div id="top-arrow" className="bg-topbar text-primary-foreground text-sm">
+            {(phone || email) && <div id="top-arrow" className="bg-topbar text-primary-foreground text-sm">
                 <div className="max-w-7xl mx-auto px-6 py-2 flex flex-wrap items-center justify-center gap-x-10 gap-y-1">
-                    { phone && <a href={`tel:${phone}`} className="flex items-center gap-2 hover:opacity-80">
+                    {phone && <a href={`tel:${phone}`} className="flex items-center gap-2 hover:opacity-80">
                         <Phone className="w-4 h-4" /> {phone}
                     </a>}
-                    { email && <a href={`mailto:${email}`} className="flex items-center gap-2 hover:opacity-80">
+                    {email && <a href={`mailto:${email}`} className="flex items-center gap-2 hover:opacity-80">
                         <Mail className="w-4 h-4" /> {email}
                     </a>}
                 </div>
@@ -77,10 +90,16 @@ export default function Header({ type, phone, email, navbar } : HeaderProps) {
                             </div>
                         </div>
                     </a>
-                    <Button className="p-5 cursor-pointer font-bold hover:p-5.5" >
-                        <User />
-                        Mi Cuenta
-                    </Button>
+
+                    {
+                        !isAccount ? <Button onClick={() => router.push("/login")} className="p-5 cursor-pointer font-bold hover:p-5.5" >
+                            <User />
+                            Mi Cuenta
+                        </Button> : <Button className="p-5 cursor-pointer text-primary bg-transparent border-primary font-bold hover:p-5.5" >
+                            <User />
+                            Mi Perfil
+                        </Button>
+                    }
                 </div>
             </header>
             <div className="border-t border-border bg-primary text-primary-foreground flex items-center justify-center">
@@ -105,11 +124,10 @@ export default function Header({ type, phone, email, navbar } : HeaderProps) {
                                                 const isExternal = /^https?:\/\//i.test(url);
                                                 const isActive = pathname === url;
 
-                                                const linkClasses = `uppercase text-start text-sm font-semibold tracking-wider transition-colors block border-l-2 border-transparent px-4 py-2 hover:border-primary hover:bg-primary/5 text-primary ${
-                                                    isActive
+                                                const linkClasses = `uppercase text-start text-sm font-semibold tracking-wider transition-colors block border-l-2 border-transparent px-4 py-2 hover:border-primary hover:bg-primary/5 text-primary ${isActive
                                                         ? "text-accent"
                                                         : "text-foreground hover:text-accent"
-                                                }`;
+                                                    }`;
 
                                                 return (
                                                     <li key={itemIndex}>

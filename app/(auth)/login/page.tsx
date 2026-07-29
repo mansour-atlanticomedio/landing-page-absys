@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import { useRouter } from "next/navigation";
 import Image from "next/image";
 import {
   Card,
@@ -66,6 +67,7 @@ interface LoginPageProps {
 }
 
 export const LoginPage: React.FC<LoginPageProps> = ({ className = "" }) => {
+  const router = useRouter();
   const [mode, setMode] = useState<"login" | "register" | "reset">("login");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -94,6 +96,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ className = "" }) => {
     e.preventDefault();
     setError(null);
     setSuccessMessage(null);
+    
 
     if (!loginData.lenlec || !loginData.lepass) {
       setError("Introduce tu número de lector y tu contraseña.");
@@ -114,6 +117,11 @@ export const LoginPage: React.FC<LoginPageProps> = ({ className = "" }) => {
 
       // Si la respuesta fue 200/201:
       setSuccessMessage("Sesión iniciada correctamente.");
+
+      localStorage.setItem("lenlec", loginData.lenlec)
+      localStorage.setItem("lepass", loginData.lepass)
+
+      router.push("/");
 
     } catch (e: any) {
       // Si el servidor devolvió un error (401, 400, 500, etc.)
@@ -154,7 +162,9 @@ export const LoginPage: React.FC<LoginPageProps> = ({ className = "" }) => {
 
       const lenlec = res.data?.data?.lenlec;
       setSuccessMessage(`Lector creado correctamente. Nº de lector: ${lenlec}`);
+      setSuccessMessage(`Inicia sesion con tu numero de lector`);
       setRegisterData(initialRegister);
+
     } catch (e: any) {
       if (axios.isAxiosError(e) && e.response) {
         setError(e.response.data?.message || "No se ha podido crear el lector.");
@@ -165,6 +175,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ className = "" }) => {
       setIsLoading(false);
     }
   }
+
 
   return (
     <div className={`h-screen w-screen bg-slate-50 flex justify-center items-center ${className}`}>
