@@ -34,5 +34,10 @@ COPY --from=builder /app/types ./types
 COPY --from=builder /app/lib ./lib
 COPY --from=builder /app/seeds ./seeds
 COPY --from=builder /app/payload-types.ts ./
+COPY --from=builder /app/.next/static ./.next/standalone/.next/static
+COPY --from=builder /app/public ./.next/standalone/public
+
+ENV HOSTNAME="0.0.0.0"
+ENV NODE_ENV=production
 
 CMD ["sh", "-c", "npx payload migrate && npm run start"]
