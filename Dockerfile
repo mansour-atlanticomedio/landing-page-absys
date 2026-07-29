@@ -40,4 +40,4 @@ COPY --from=builder /app/public ./.next/standalone/public
 ENV HOSTNAME="0.0.0.0"
 ENV NODE_ENV=production
 
-CMD ["sh", "-c", "npx payload migrate && npm run start"]
+CMD ["npm", "run", "start"]
