@@ -30,7 +30,9 @@ COPY --from=builder /app/app ./app
 COPY --from=builder /app/collections ./collections
 COPY --from=builder /app/globals ./globals
 COPY --from=builder /app/migrations ./migrations
-COPY --from=builder /app/.next/static ./.next/standalone/.next/static
-COPY --from=builder /app/public ./.next/standalone/public
+COPY --from=builder /app/types ./types
+COPY --from=builder /app/lib ./lib
+COPY --from=builder /app/seeds ./seeds
+COPY --from=builder /app/payload-types.ts ./
 
 CMD ["sh", "-c", "npx payload migrate && npm run start"]
