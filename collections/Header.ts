@@ -8,6 +8,12 @@ export const Header: CollectionConfig = {
     },
     fields: [
         {
+            name: 'logo',
+            label: 'Logo de la aplicación',
+            type: 'upload',
+            relationTo: 'media',
+        },
+        {
             name: 'type',
             label: 'Tipo de encabezamiento',
             type: 'select',

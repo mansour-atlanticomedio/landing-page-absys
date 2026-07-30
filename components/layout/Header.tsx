@@ -4,10 +4,11 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Separator } from "radix-ui";
 
-import { ChevronDown, Mail, Phone, User } from "lucide-react";
+import { ChevronDown, Mail, Phone, User, LogOut } from "lucide-react";
 import logo from "@/public/logos/logo.png";
 import Image from "next/image";
 import { Button } from "../ui/button";
+import { LOGIN_SLUG } from "@/collections/Login";
 import { useEffect, useState } from "react";
 
 interface HeaderProps {
@@ -40,7 +41,6 @@ export default function Header({ type, phone, email, navbar }: HeaderProps) {
 
         const checkAccount = () => {
             const lenlec = localStorage.getItem('lenlec')
-            console.log("user: ", lenlec)
             setIsAccount(lenlec)
         }
 
@@ -58,6 +58,12 @@ export default function Header({ type, phone, email, navbar }: HeaderProps) {
             router.push(url);
         }
     };
+
+    const handleLogOut = () => {
+        localStorage.removeItem("lenlec");
+        localStorage.removeItem("lepass");
+        router.push(`/${LOGIN_SLUG}`);
+    }
 
     return (
         <section>
@@ -92,13 +98,44 @@ export default function Header({ type, phone, email, navbar }: HeaderProps) {
                     </a>
 
                     {
-                        !isAccount ? <Button onClick={() => router.push("/login")} className="p-5 cursor-pointer font-bold hover:p-5.5" >
-                            <User />
-                            Mi Cuenta
-                        </Button> : <Button className="p-5 cursor-pointer text-primary bg-transparent border-primary font-bold hover:p-5.5 hover:border-0 hover:bg-primary hover:text-white" >
-                            <User />
-                            Mi Perfil
-                        </Button>
+                        !isAccount ? (
+                            <Button onClick={() => router.push(`/${LOGIN_SLUG}`)} className="p-5 cursor-pointer font-bold hover:p-5.5">
+                                <User />
+                                Mi Cuenta
+                            </Button>
+                        ) : (
+                            <div className="group relative">
+                                <Button
+                                    className="p-5 cursor-pointer text-primary bg-transparent border-primary font-bold hover:p-5.5 hover:border-0 hover:bg-primary hover:text-white"
+                                >
+                                    <User />
+                                    Mi Perfil
+                                    <ChevronDown className="h-3.5 w-3.5 opacity-70 transition-transform group-hover:rotate-180" />
+                                </Button>
+
+                                <div className="absolute right-0 top-full z-30 w-56 -translate-y-1 border border-border bg-card text-card-foreground opacity-0 shadow-xl transition-all duration-150 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
+                                    <ul className="py-2 bg-white">
+                                        {/* <li>
+                                            <Link
+                                                href="/account"
+                                                className="block px-4 py-2 text-sm font-semibold uppercase tracking-wider text-foreground border-l-2 border-transparent hover:border-primary hover:bg-primary/5 hover:text-primary"
+                                            >
+                                                Perfil
+                                            </Link>
+                                        </li> */}
+                                        <li>
+                                            <button
+                                                onClick={() => handleLogOut()}
+                                                className="flex gap-2 items-center w-full text-left block px-2 py-2 text-sm font-semibold uppercase tracking-wider text-foreground border-l-2 border-transparent hover:border-primary hover:bg-primary/5 hover:text-primary"
+                                            >
+                                                <LogOut size={16} className="text-red-500" />
+                                                Cerrar sesión
+                                            </button>
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        )
                     }
                 </div>
             </header>

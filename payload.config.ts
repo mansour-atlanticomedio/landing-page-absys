@@ -43,6 +43,7 @@ import { AbsysService } from "./collections/Absys.service.ts";
 import { BookCoverService } from "./collections/BookCovers.service.ts";
 import { AuthorService } from "./collections/Author.service.ts";
 import { LoginAbsysService } from "./collections/LoginAbsys.service.ts";
+import { Login } from "./collections/Login.ts";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -76,6 +77,7 @@ export default buildConfig({
     PartnersCollection,
     NewsCollection,
     Footer,
+    Login,
     AbsysService,
     BookCoverService,
     AuthorService,

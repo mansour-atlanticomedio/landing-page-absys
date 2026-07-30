@@ -5,7 +5,14 @@ import type { Header, Footer, Media } from '@/payload-types'
 
 const payload = await getPayload({ config })
 
+const logo = await payload.create({
+    collection: 'media',
+    data: { alt: 'imagen fondo' },
+    filePath: './seeds/assets/unam-color-full.png',
+})
+
 const headerData = {
+    "logo": logo.id,
     "type": '0' as Header['type'],
     "phone": "+34 123 456 789",
     "email": "biblioteca@atlanticomedio.es",
@@ -69,12 +76,6 @@ const headerData = {
         }
     ],
 }
-
-const logo = await payload.create({
-    collection: 'media',
-    data: { alt: 'imagen fondo' },
-    filePath: './seeds/assets/unam-color-full.png',
-})
 
 type SocialIcon = NonNullable<Footer['social_medias']>[number]['icon']
 

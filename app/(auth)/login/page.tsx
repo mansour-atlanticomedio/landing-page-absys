@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import {
@@ -74,8 +74,30 @@ export const LoginPage: React.FC<LoginPageProps> = ({ className = "" }) => {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
+  const [loginImage, setLoginImage] = useState<{ url: string; alt: string } | null>(null);
+  const [headerLogo, setHeaderLogo] = useState<{ url: string; alt: string } | null>(null);
   const [loginData, setLoginData] = useState<LoginData>(initialLogin);
   const [registerData, setRegisterData] = useState<RegisterData>(initialRegister);
+
+  useEffect(() => {
+    axios.get('/api/login?depth=1&limit=1')
+      .then((res) => {
+        const doc = res.data?.docs?.[0];
+        if (doc?.imageLogin && typeof doc.imageLogin === 'object') {
+          setLoginImage({ url: doc.imageLogin.url, alt: doc.imageLogin.alt || '' });
+        }
+      })
+      .catch(() => {});
+
+    axios.get('/api/header?depth=1&limit=1')
+      .then((res) => {
+        const doc = res.data?.docs?.[0];
+        if (doc?.logo && typeof doc.logo === 'object') {
+          setHeaderLogo({ url: doc.logo.url, alt: doc.logo.alt || '' });
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   function switchMode(next: "login" | "register" | "reset") {
     setMode(next);
@@ -180,18 +202,22 @@ export const LoginPage: React.FC<LoginPageProps> = ({ className = "" }) => {
   return (
     <div className={`h-screen w-screen bg-slate-50 flex justify-center items-center ${className}`}>
       <div className="flex-1 h-full relative hidden md:block">
-        {/* <Image src="/biblioteca/api/media/file/screen-inicio-hero-12.png" fill alt="" className="object-cover" /> */}
+        {loginImage && (
+          <Image src={loginImage.url} fill alt={loginImage.alt} className="object-cover" />
+        )}
       </div>
 
       <div className="flex-1 flex flex-col justify-center items-center h-full px-6">
         <div className="mb-6 text-center">
           <div className="inline-flex items-center justify-center p-3 text-teal-400 mb-3">
-            <Image
-              src=""
-              width={300}
-              height={100}
-              alt=""
-            />
+            {headerLogo && (
+              <Image
+                src={headerLogo.url}
+                width={300}
+                height={100}
+                alt={headerLogo.alt}
+              />
+            )}
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
             Biblioteca UNAM
