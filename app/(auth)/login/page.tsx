@@ -34,6 +34,7 @@ import {
   CheckCircle2,
 } from "lucide-react";
 import axios from "axios";
+import { getLoginPageData } from "./actions";
 
 interface LoginData {
   lenlec: string;
@@ -80,23 +81,12 @@ export const LoginPage: React.FC<LoginPageProps> = ({ className = "" }) => {
   const [registerData, setRegisterData] = useState<RegisterData>(initialRegister);
 
   useEffect(() => {
-    axios.get('/api/login?depth=1&limit=1')
-      .then((res) => {
-        const doc = res.data?.docs?.[0];
-        if (doc?.imageLogin && typeof doc.imageLogin === 'object') {
-          setLoginImage({ url: doc.imageLogin.url, alt: doc.imageLogin.alt || '' });
-        }
+    getLoginPageData()
+      .then((data) => {
+        if (data.loginImage) setLoginImage(data.loginImage);
+        if (data.headerLogo) setHeaderLogo(data.headerLogo);
       })
-      .catch(() => {});
-
-    axios.get('/api/header?depth=1&limit=1')
-      .then((res) => {
-        const doc = res.data?.docs?.[0];
-        if (doc?.logo && typeof doc.logo === 'object') {
-          setHeaderLogo({ url: doc.logo.url, alt: doc.logo.alt || '' });
-        }
-      })
-      .catch(() => {});
+      .catch((err) => setError(err?.message || "Error al cargar datos de la página"));
   }, []);
 
   function switchMode(next: "login" | "register" | "reset") {
@@ -201,22 +191,28 @@ export const LoginPage: React.FC<LoginPageProps> = ({ className = "" }) => {
 
   return (
     <div className={`h-screen w-screen bg-slate-50 flex justify-center items-center ${className}`}>
-      <div className="flex-1 h-full relative hidden md:block">
-        {loginImage && (
+      <div className="flex-1 h-full relative hidden md:block bg-gradient-to-br from-teal-600 to-slate-900">
+        {loginImage ? (
           <Image src={loginImage.url} fill alt={loginImage.alt} className="object-cover" />
+        ) : (
+          <div className="flex items-center justify-center h-full">
+            <BookOpen className="w-24 h-24 text-white/40" />
+          </div>
         )}
       </div>
 
       <div className="flex-1 flex flex-col justify-center items-center h-full px-6">
         <div className="mb-6 text-center">
-          <div className="inline-flex items-center justify-center p-3 text-teal-400 mb-3">
-            {headerLogo && (
+          <div className="inline-flex items-center justify-center p-3 text-teal-400 mb-3 min-h-[100px]">
+            {headerLogo ? (
               <Image
                 src={headerLogo.url}
                 width={300}
                 height={100}
                 alt={headerLogo.alt}
               />
+            ) : (
+              <BookOpen className="w-12 h-12" />
             )}
           </div>
           <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
