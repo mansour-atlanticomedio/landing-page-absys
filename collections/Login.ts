@@ -1,10 +1,13 @@
 import { CollectionConfig } from "payload";
 
 export const Login: CollectionConfig = {
-    slug: 'login',
+    slug: 'login_page',
     labels: {
         plural: 'Inicio de Sesion',
         singular: 'Inicio de Sesion'
+    },
+    access: {
+        read: () => true,
     },
     fields: [
         {
@@ -15,4 +18,4 @@ export const Login: CollectionConfig = {
     ]
 }
 
-export const LOGIN_SLUG = 'login';
+export const LOGIN_SLUG = 'login_page';

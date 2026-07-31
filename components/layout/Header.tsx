@@ -8,7 +8,6 @@ import { ChevronDown, Mail, Phone, User, LogOut } from "lucide-react";
 import logo from "@/public/logos/logo.png";
 import Image from "next/image";
 import { Button } from "../ui/button";
-import { LOGIN_SLUG } from "@/collections/Login";
 import { useEffect, useState } from "react";
 
 interface HeaderProps {
@@ -62,7 +61,7 @@ export default function Header({ type, phone, email, navbar }: HeaderProps) {
     const handleLogOut = () => {
         localStorage.removeItem("lenlec");
         localStorage.removeItem("lepass");
-        router.push(`/${LOGIN_SLUG}`);
+        router.push(`/login`);
     }
 
     return (
@@ -99,7 +98,7 @@ export default function Header({ type, phone, email, navbar }: HeaderProps) {
 
                     {
                         !isAccount ? (
-                            <Button onClick={() => router.push(`/${LOGIN_SLUG}`)} className="p-5 cursor-pointer font-bold hover:p-5.5">
+                            <Button onClick={() => router.push(`/login`)} className="p-5 cursor-pointer font-bold hover:p-5.5">
                                 <User />
                                 Mi Cuenta
                             </Button>

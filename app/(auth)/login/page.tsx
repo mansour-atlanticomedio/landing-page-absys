@@ -73,20 +73,32 @@ export const LoginPage: React.FC<LoginPageProps> = ({ className = "" }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  
+  // Estado para almacenar la imagen dinámica traída de Payload
+  const [imageUrl, setImageUrl] = useState<string | null>(null);
+  const [imageAlt, setImageAlt] = useState<string>("Login");
+  const [headerLogo, setHeaderLogo] = useState<{ url: string; alt: string } | null>(null);
+
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-  const [loginImage, setLoginImage] = useState<{ url: string; alt: string } | null>(null);
-  const [headerLogo, setHeaderLogo] = useState<{ url: string; alt: string } | null>(null);
   const [loginData, setLoginData] = useState<LoginData>(initialLogin);
   const [registerData, setRegisterData] = useState<RegisterData>(initialRegister);
 
+  // 🔄 Carga de la imagen desde la colección login_page via server action (getClient)
   useEffect(() => {
     getLoginPageData()
       .then((data) => {
-        if (data.loginImage) setLoginImage(data.loginImage);
-        if (data.headerLogo) setHeaderLogo(data.headerLogo);
+        if (data.loginImage?.url) {
+          setImageUrl(data.loginImage.url);
+          setImageAlt(data.loginImage.alt || "Login");
+        }
+        if (data.headerLogo?.url) {
+          setHeaderLogo(data.headerLogo);
+        }
       })
-      .catch((err) => setError(err?.message || "Error al cargar datos de la página"));
+      .catch((err) => {
+        console.error("No se pudo cargar la imagen de la colección login:", err);
+      });
   }, []);
 
   function switchMode(next: "login" | "register" | "reset") {
@@ -103,12 +115,10 @@ export const LoginPage: React.FC<LoginPageProps> = ({ className = "" }) => {
     setRegisterData((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   }
 
-
   async function handleLoginSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     setSuccessMessage(null);
-    
 
     if (!loginData.lenlec || !loginData.lepass) {
       setError("Introduce tu número de lector y tu contraseña.");
@@ -116,32 +126,28 @@ export const LoginPage: React.FC<LoginPageProps> = ({ className = "" }) => {
     }
 
     const params = new URLSearchParams();
-    params.set('lenlec', loginData.lenlec);
-    params.set('lepass', loginData.lepass);
+    params.set("lenlec", loginData.lenlec);
+    params.set("lepass", loginData.lepass);
 
-    // NOTA: En navegadores modernos se usa btoa() en vez de Buffer
     const userEncoded = btoa(params.toString());
 
     try {
       setIsLoading(true);
 
-      const res = await axios.post(`${API_URL}/loginAbsys_service/login/${userEncoded}`);
+      await axios.post(`${API_URL}/loginAbsys_service/login/${userEncoded}`);
 
-      // Si la respuesta fue 200/201:
       setSuccessMessage("Sesión iniciada correctamente.");
 
-      localStorage.setItem("lenlec", loginData.lenlec)
-      localStorage.setItem("lepass", loginData.lepass)
+      localStorage.setItem("lenlec", loginData.lenlec);
+      localStorage.setItem("lepass", loginData.lepass);
 
-      router.push("/");
+      router.back();
 
     } catch (e: any) {
-      // Si el servidor devolvió un error (401, 400, 500, etc.)
       if (axios.isAxiosError(e) && e.response) {
         const serverMessage = e.response.data?.message;
         setError(serverMessage || "Credenciales incorrectas o error en la solicitud.");
       } else {
-        // Error de red, sin conexión o servidor caído
         setError("No se pudo conectar con el servidor.");
       }
     } finally {
@@ -173,10 +179,8 @@ export const LoginPage: React.FC<LoginPageProps> = ({ className = "" }) => {
       });
 
       const lenlec = res.data?.data?.lenlec;
-      setSuccessMessage(`Lector creado correctamente. Nº de lector: ${lenlec}`);
-      setSuccessMessage(`Inicia sesion con tu numero de lector`);
+      setSuccessMessage(`Lector creado correctamente. Nº de lector: ${lenlec}. Inicia sesión con tu número de lector.`);
       setRegisterData(initialRegister);
-
     } catch (e: any) {
       if (axios.isAxiosError(e) && e.response) {
         setError(e.response.data?.message || "No se ha podido crear el lector.");
@@ -188,36 +192,33 @@ export const LoginPage: React.FC<LoginPageProps> = ({ className = "" }) => {
     }
   }
 
-
   return (
     <div className={`h-screen w-screen bg-slate-50 flex justify-center items-center ${className}`}>
       <div className="flex-1 h-full relative hidden md:block bg-gradient-to-br from-teal-600 to-slate-900">
-        {loginImage ? (
-          <Image src={loginImage.url} fill alt={loginImage.alt} className="object-cover" />
-        ) : (
-          <div className="flex items-center justify-center h-full">
-            <BookOpen className="w-24 h-24 text-white/40" />
-          </div>
-        )}
+        {imageUrl && (
+          <Image src={imageUrl} fill alt={imageAlt} className="object-cover" />
+        ) }
       </div>
 
       <div className="flex-1 flex flex-col justify-center items-center h-full px-6">
-        <div className="mb-6 text-center">
-          <div className="inline-flex items-center justify-center p-3 text-teal-400 mb-3 min-h-[100px]">
+        <div className="text-center">
+          <div className="inline-flex items-center justify-center text-teal-400 min-h-[100px]">
             {headerLogo ? (
               <Image
                 src={headerLogo.url}
-                width={300}
-                height={100}
+                width={180}
+                height={60}
                 alt={headerLogo.alt}
               />
             ) : (
-              <BookOpen className="w-12 h-12" />
+              <Image
+                src="/seeds/assets/unam-color-full.png"
+                width={180}
+                height={60}
+                alt="Image Logo"
+              />
             )}
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
-            Biblioteca UNAM
-          </h1>
         </div>
 
         <Card className="w-full max-w-lg bg-white shadow-xl rounded-xl">
@@ -311,15 +312,16 @@ export const LoginPage: React.FC<LoginPageProps> = ({ className = "" }) => {
                   className="text-sm text-slate-600 hover:text-teal-700"
                 >
                   ¿No tienes cuenta?{" "}
-                  <span className="text-teal-700 font-medium hover:underline">Crea tu carnet de lector</span>
+                  <span className="text-teal-700 font-medium hover:underline">
+                    Crea tu carnet de lector
+                  </span>
                 </button>
                 <button
                   type="button"
                   onClick={() => switchMode("reset")}
                   className="text-sm text-slate-600 hover:text-teal-700 hover:underline"
                 >
-                  ¿Olvidaste tu contraseña?{" "}
-                  <span className="text-teal-700 font-medium"> </span>
+                  ¿Olvidaste tu contraseña?
                 </button>
               </CardFooter>
             </form>
@@ -430,7 +432,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ className = "" }) => {
                     <SelectTrigger id="lecolp" className="focus:ring-teal-600 w-full">
                       <SelectValue placeholder="Selecciona el lector" />
                     </SelectTrigger>
-                    <SelectContent className="bg-white" >
+                    <SelectContent className="bg-white">
                       <SelectItem value="ALUMN">Estudiante</SelectItem>
                       <SelectItem value="PDI">PDI (Docente e Investigador)</SelectItem>
                     </SelectContent>
@@ -488,8 +490,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ className = "" }) => {
           onClick={() => switchMode("reset")}
           className="text-sm text-slate-400 hover:text-teal-700 mt-6 underline"
         >
-          Solicitar ayuda al servicio de informatica{" "}
-          <span className="text-teal-700 font-medium"> </span>
+          Solicitar ayuda al servicio de informática
         </button>
       </div>
     </div>

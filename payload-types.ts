@@ -86,7 +86,7 @@ export interface Config {
     partners: Partner;
     news: News;
     footer: Footer;
-    login: Login;
+    login_page: LoginPage;
     absys_service: AbsysService;
     book_cover_service: BookCoverService;
     author_service: AuthorService;
@@ -116,7 +116,7 @@ export interface Config {
     partners: PartnersSelect<false> | PartnersSelect<true>;
     news: NewsSelect<false> | NewsSelect<true>;
     footer: FooterSelect<false> | FooterSelect<true>;
-    login: LoginSelect<false> | LoginSelect<true>;
+    login_page: LoginPageSelect<false> | LoginPageSelect<true>;
     absys_service: AbsysServiceSelect<false> | AbsysServiceSelect<true>;
     book_cover_service: BookCoverServiceSelect<false> | BookCoverServiceSelect<true>;
     author_service: AuthorServiceSelect<false> | AuthorServiceSelect<true>;
@@ -662,9 +662,9 @@ export interface Footer {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "login".
+ * via the `definition` "login_page".
  */
-export interface Login {
+export interface LoginPage {
   id: number;
   imageLogin?: (number | null) | Media;
   updatedAt: string;
@@ -832,8 +832,8 @@ export interface PayloadLockedDocument {
         value: number | Footer;
       } | null)
     | ({
-        relationTo: 'login';
-        value: number | Login;
+        relationTo: 'login_page';
+        value: number | LoginPage;
       } | null)
     | ({
         relationTo: 'absys_service';
@@ -1245,9 +1245,9 @@ export interface FooterSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "login_select".
+ * via the `definition` "login_page_select".
  */
-export interface LoginSelect<T extends boolean = true> {
+export interface LoginPageSelect<T extends boolean = true> {
   imageLogin?: T;
   updatedAt?: T;
   createdAt?: T;

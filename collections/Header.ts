@@ -6,6 +6,9 @@ export const Header: CollectionConfig = {
         singular: "Encabezamiento",
         plural: "Encabezamiento",
     },
+    access: {
+        read: () => true,
+    },
     fields: [
         {
             name: 'logo',
