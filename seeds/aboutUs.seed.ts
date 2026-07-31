@@ -25,3 +25,5 @@ await payload.updateGlobal({
     ],
   },
 })
+
+process.exit(0)

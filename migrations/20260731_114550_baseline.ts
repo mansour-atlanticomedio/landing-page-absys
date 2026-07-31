@@ -10,6 +10,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE TYPE "public"."enum_footer_social_medias_icon" AS ENUM('FaFacebook', 'FaTwitter', 'FaInstagram', 'FaLinkedin', 'FaYoutube', 'Globe');
   CREATE TYPE "public"."enum_footer_seccion_info_information_icon" AS ENUM('Lightbulb', 'BookOpen', 'Microscope', 'Star', 'User', 'Briefcase', 'Phone', 'Mail', 'MapPin', 'Calendar');
   CREATE TYPE "public"."enum_footer_type" AS ENUM('0', '1', '2');
+  CREATE TYPE "public"."enum_loginabsys_service_colectivo" AS ENUM('ALUMN', 'PDI', 'PAS', 'EXT');
   CREATE TABLE "users_sessions" (
   	"_order" integer NOT NULL,
   	"_parent_id" integer NOT NULL,
@@ -83,6 +84,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   
   CREATE TABLE "header" (
   	"id" serial PRIMARY KEY NOT NULL,
+  	"logo_id" integer,
   	"type" "enum_header_type" DEFAULT '0',
   	"phone" varchar,
   	"email" varchar,
@@ -322,6 +324,13 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL
   );
   
+  CREATE TABLE "login_page" (
+  	"id" serial PRIMARY KEY NOT NULL,
+  	"image_login_id" integer,
+  	"updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
+  	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL
+  );
+  
   CREATE TABLE "absys_service" (
   	"id" serial PRIMARY KEY NOT NULL,
   	"isbn" varchar,
@@ -343,6 +352,35 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"author_name" varchar,
   	"updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
   	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL
+  );
+  
+  CREATE TABLE "loginabsys_service_sessions" (
+  	"_order" integer NOT NULL,
+  	"_parent_id" integer NOT NULL,
+  	"id" varchar PRIMARY KEY NOT NULL,
+  	"created_at" timestamp(3) with time zone,
+  	"expires_at" timestamp(3) with time zone NOT NULL
+  );
+  
+  CREATE TABLE "loginabsys_service" (
+  	"id" serial PRIMARY KEY NOT NULL,
+  	"dni" varchar NOT NULL,
+  	"nombre" varchar NOT NULL,
+  	"apellidos" varchar NOT NULL,
+  	"numero_carnet" varchar,
+  	"colectivo" "enum_loginabsys_service_colectivo" DEFAULT 'ALUMN' NOT NULL,
+  	"max_prestamos" numeric,
+  	"dias_prestamo" numeric,
+  	"is_offline_data" boolean DEFAULT false,
+  	"updated_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
+  	"created_at" timestamp(3) with time zone DEFAULT now() NOT NULL,
+  	"email" varchar NOT NULL,
+  	"reset_password_token" varchar,
+  	"reset_password_expiration" timestamp(3) with time zone,
+  	"salt" varchar,
+  	"hash" varchar,
+  	"login_attempts" numeric DEFAULT 0,
+  	"lock_until" timestamp(3) with time zone
   );
   
   CREATE TABLE "payload_kv" (
@@ -381,9 +419,11 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"partners_id" integer,
   	"news_id" integer,
   	"footer_id" integer,
+  	"login_page_id" integer,
   	"absys_service_id" integer,
   	"book_cover_service_id" integer,
-  	"author_service_id" integer
+  	"author_service_id" integer,
+  	"loginabsys_service_id" integer
   );
   
   CREATE TABLE "payload_preferences" (
@@ -399,7 +439,8 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   	"order" integer,
   	"parent_id" integer NOT NULL,
   	"path" varchar NOT NULL,
-  	"users_id" integer
+  	"users_id" integer,
+  	"loginabsys_service_id" integer
   );
   
   CREATE TABLE "payload_migrations" (
@@ -1032,6 +1073,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   ALTER TABLE "hero" ADD CONSTRAINT "hero_background_image_id_media_id_fk" FOREIGN KEY ("background_image_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "header_navbar_items" ADD CONSTRAINT "header_navbar_items_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."header_navbar"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "header_navbar" ADD CONSTRAINT "header_navbar_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."header"("id") ON DELETE cascade ON UPDATE no action;
+  ALTER TABLE "header" ADD CONSTRAINT "header_logo_id_media_id_fk" FOREIGN KEY ("logo_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "hero_carrusel_items" ADD CONSTRAINT "hero_carrusel_items_image_id_media_id_fk" FOREIGN KEY ("image_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
   ALTER TABLE "hero_carrusel_items" ADD CONSTRAINT "hero_carrusel_items_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."hero_carrusel"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "speakers_people_socials" ADD CONSTRAINT "speakers_people_socials_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."speakers_people"("id") ON DELETE cascade ON UPDATE no action;
@@ -1051,6 +1093,8 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   ALTER TABLE "footer_seccion_info_information" ADD CONSTRAINT "footer_seccion_info_information_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."footer_seccion_info"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "footer_seccion_info" ADD CONSTRAINT "footer_seccion_info_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."footer"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "footer" ADD CONSTRAINT "footer_logo_id_media_id_fk" FOREIGN KEY ("logo_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
+  ALTER TABLE "login_page" ADD CONSTRAINT "login_page_image_login_id_media_id_fk" FOREIGN KEY ("image_login_id") REFERENCES "public"."media"("id") ON DELETE set null ON UPDATE no action;
+  ALTER TABLE "loginabsys_service_sessions" ADD CONSTRAINT "loginabsys_service_sessions_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."loginabsys_service"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_parent_fk" FOREIGN KEY ("parent_id") REFERENCES "public"."payload_locked_documents"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_users_fk" FOREIGN KEY ("users_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_media_fk" FOREIGN KEY ("media_id") REFERENCES "public"."media"("id") ON DELETE cascade ON UPDATE no action;
@@ -1070,11 +1114,14 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   ALTER TABLE "payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_partners_fk" FOREIGN KEY ("partners_id") REFERENCES "public"."partners"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_news_fk" FOREIGN KEY ("news_id") REFERENCES "public"."news"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_footer_fk" FOREIGN KEY ("footer_id") REFERENCES "public"."footer"("id") ON DELETE cascade ON UPDATE no action;
+  ALTER TABLE "payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_login_page_fk" FOREIGN KEY ("login_page_id") REFERENCES "public"."login_page"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_absys_service_fk" FOREIGN KEY ("absys_service_id") REFERENCES "public"."absys_service"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_book_cover_service_fk" FOREIGN KEY ("book_cover_service_id") REFERENCES "public"."book_cover_service"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_author_service_fk" FOREIGN KEY ("author_service_id") REFERENCES "public"."author_service"("id") ON DELETE cascade ON UPDATE no action;
+  ALTER TABLE "payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_loginabsys_service_fk" FOREIGN KEY ("loginabsys_service_id") REFERENCES "public"."loginabsys_service"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "payload_preferences_rels" ADD CONSTRAINT "payload_preferences_rels_parent_fk" FOREIGN KEY ("parent_id") REFERENCES "public"."payload_preferences"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "payload_preferences_rels" ADD CONSTRAINT "payload_preferences_rels_users_fk" FOREIGN KEY ("users_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;
+  ALTER TABLE "payload_preferences_rels" ADD CONSTRAINT "payload_preferences_rels_loginabsys_service_fk" FOREIGN KEY ("loginabsys_service_id") REFERENCES "public"."loginabsys_service"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "home_blocks_stats_block" ADD CONSTRAINT "home_blocks_stats_block_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."home"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "home_blocks_speakers_block" ADD CONSTRAINT "home_blocks_speakers_block_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."home"("id") ON DELETE cascade ON UPDATE no action;
   ALTER TABLE "home_blocks_about_block" ADD CONSTRAINT "home_blocks_about_block_parent_id_fk" FOREIGN KEY ("_parent_id") REFERENCES "public"."home"("id") ON DELETE cascade ON UPDATE no action;
@@ -1225,6 +1272,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE INDEX "header_navbar_items_parent_id_idx" ON "header_navbar_items" USING btree ("_parent_id");
   CREATE INDEX "header_navbar_order_idx" ON "header_navbar" USING btree ("_order");
   CREATE INDEX "header_navbar_parent_id_idx" ON "header_navbar" USING btree ("_parent_id");
+  CREATE INDEX "header_logo_idx" ON "header" USING btree ("logo_id");
   CREATE INDEX "header_updated_at_idx" ON "header" USING btree ("updated_at");
   CREATE INDEX "header_created_at_idx" ON "header" USING btree ("created_at");
   CREATE INDEX "hero_carrusel_items_order_idx" ON "hero_carrusel_items" USING btree ("_order");
@@ -1288,12 +1336,22 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE INDEX "footer_logo_idx" ON "footer" USING btree ("logo_id");
   CREATE INDEX "footer_updated_at_idx" ON "footer" USING btree ("updated_at");
   CREATE INDEX "footer_created_at_idx" ON "footer" USING btree ("created_at");
+  CREATE INDEX "login_page_image_login_idx" ON "login_page" USING btree ("image_login_id");
+  CREATE INDEX "login_page_updated_at_idx" ON "login_page" USING btree ("updated_at");
+  CREATE INDEX "login_page_created_at_idx" ON "login_page" USING btree ("created_at");
   CREATE INDEX "absys_service_updated_at_idx" ON "absys_service" USING btree ("updated_at");
   CREATE INDEX "absys_service_created_at_idx" ON "absys_service" USING btree ("created_at");
   CREATE INDEX "book_cover_service_updated_at_idx" ON "book_cover_service" USING btree ("updated_at");
   CREATE INDEX "book_cover_service_created_at_idx" ON "book_cover_service" USING btree ("created_at");
   CREATE INDEX "author_service_updated_at_idx" ON "author_service" USING btree ("updated_at");
   CREATE INDEX "author_service_created_at_idx" ON "author_service" USING btree ("created_at");
+  CREATE INDEX "loginabsys_service_sessions_order_idx" ON "loginabsys_service_sessions" USING btree ("_order");
+  CREATE INDEX "loginabsys_service_sessions_parent_id_idx" ON "loginabsys_service_sessions" USING btree ("_parent_id");
+  CREATE UNIQUE INDEX "loginabsys_service_dni_idx" ON "loginabsys_service" USING btree ("dni");
+  CREATE UNIQUE INDEX "loginabsys_service_numero_carnet_idx" ON "loginabsys_service" USING btree ("numero_carnet");
+  CREATE INDEX "loginabsys_service_updated_at_idx" ON "loginabsys_service" USING btree ("updated_at");
+  CREATE INDEX "loginabsys_service_created_at_idx" ON "loginabsys_service" USING btree ("created_at");
+  CREATE UNIQUE INDEX "loginabsys_service_email_idx" ON "loginabsys_service" USING btree ("email");
   CREATE UNIQUE INDEX "payload_kv_key_idx" ON "payload_kv" USING btree ("key");
   CREATE INDEX "payload_locked_documents_global_slug_idx" ON "payload_locked_documents" USING btree ("global_slug");
   CREATE INDEX "payload_locked_documents_updated_at_idx" ON "payload_locked_documents" USING btree ("updated_at");
@@ -1319,9 +1377,11 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE INDEX "payload_locked_documents_rels_partners_id_idx" ON "payload_locked_documents_rels" USING btree ("partners_id");
   CREATE INDEX "payload_locked_documents_rels_news_id_idx" ON "payload_locked_documents_rels" USING btree ("news_id");
   CREATE INDEX "payload_locked_documents_rels_footer_id_idx" ON "payload_locked_documents_rels" USING btree ("footer_id");
+  CREATE INDEX "payload_locked_documents_rels_login_page_id_idx" ON "payload_locked_documents_rels" USING btree ("login_page_id");
   CREATE INDEX "payload_locked_documents_rels_absys_service_id_idx" ON "payload_locked_documents_rels" USING btree ("absys_service_id");
   CREATE INDEX "payload_locked_documents_rels_book_cover_service_id_idx" ON "payload_locked_documents_rels" USING btree ("book_cover_service_id");
   CREATE INDEX "payload_locked_documents_rels_author_service_id_idx" ON "payload_locked_documents_rels" USING btree ("author_service_id");
+  CREATE INDEX "payload_locked_documents_rels_loginabsys_service_id_idx" ON "payload_locked_documents_rels" USING btree ("loginabsys_service_id");
   CREATE INDEX "payload_preferences_key_idx" ON "payload_preferences" USING btree ("key");
   CREATE INDEX "payload_preferences_updated_at_idx" ON "payload_preferences" USING btree ("updated_at");
   CREATE INDEX "payload_preferences_created_at_idx" ON "payload_preferences" USING btree ("created_at");
@@ -1329,6 +1389,7 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE INDEX "payload_preferences_rels_parent_idx" ON "payload_preferences_rels" USING btree ("parent_id");
   CREATE INDEX "payload_preferences_rels_path_idx" ON "payload_preferences_rels" USING btree ("path");
   CREATE INDEX "payload_preferences_rels_users_id_idx" ON "payload_preferences_rels" USING btree ("users_id");
+  CREATE INDEX "payload_preferences_rels_loginabsys_service_id_idx" ON "payload_preferences_rels" USING btree ("loginabsys_service_id");
   CREATE INDEX "payload_migrations_updated_at_idx" ON "payload_migrations" USING btree ("updated_at");
   CREATE INDEX "payload_migrations_created_at_idx" ON "payload_migrations" USING btree ("created_at");
   CREATE INDEX "home_blocks_stats_block_order_idx" ON "home_blocks_stats_block" USING btree ("_order");
@@ -1627,9 +1688,12 @@ export async function down({ db, payload, req }: MigrateDownArgs): Promise<void>
   DROP TABLE "footer_seccion_info_information" CASCADE;
   DROP TABLE "footer_seccion_info" CASCADE;
   DROP TABLE "footer" CASCADE;
+  DROP TABLE "login_page" CASCADE;
   DROP TABLE "absys_service" CASCADE;
   DROP TABLE "book_cover_service" CASCADE;
   DROP TABLE "author_service" CASCADE;
+  DROP TABLE "loginabsys_service_sessions" CASCADE;
+  DROP TABLE "loginabsys_service" CASCADE;
   DROP TABLE "payload_kv" CASCADE;
   DROP TABLE "payload_locked_documents" CASCADE;
   DROP TABLE "payload_locked_documents_rels" CASCADE;
@@ -1715,5 +1779,6 @@ export async function down({ db, payload, req }: MigrateDownArgs): Promise<void>
   DROP TYPE "public"."enum_news_style";
   DROP TYPE "public"."enum_footer_social_medias_icon";
   DROP TYPE "public"."enum_footer_seccion_info_information_icon";
-  DROP TYPE "public"."enum_footer_type";`)
+  DROP TYPE "public"."enum_footer_type";
+  DROP TYPE "public"."enum_loginabsys_service_colectivo";`)
 }

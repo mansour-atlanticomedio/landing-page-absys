@@ -7,7 +7,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "migrate": "payload migrate",
+    "migrate:create": "payload migrate:create",
+    "seed": "tsx seeds/layout.seed.ts && tsx seeds/home.seed.ts && tsx seeds/aboutUs.seed.ts"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "^3.84.1",
@@ -46,6 +49,7 @@
     "eslint-config-next": "16.2.6",
     "postcss": "^8.5.14",
     "tailwindcss": "^4.3.0",
+    "tsx": "^4.22.4",
     "typescript": "^5"
   }
 }

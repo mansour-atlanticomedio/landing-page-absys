@@ -44,6 +44,7 @@ import { BookCoverService } from "./collections/BookCovers.service.ts";
 import { AuthorService } from "./collections/Author.service.ts";
 import { LoginAbsysService } from "./collections/LoginAbsys.service.ts";
 import { Login } from "./collections/Login.ts";
+import { migrations } from "./migrations";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -103,6 +104,7 @@ export default buildConfig({
     pool: {
       connectionString: process.env.DATABASE_URI || process.env.DATABASE_URL || "",
     },
+    prodMigrations: migrations,
   }),
   sharp,
   plugins: [],

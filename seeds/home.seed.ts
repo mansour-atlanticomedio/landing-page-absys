@@ -138,3 +138,5 @@ try {
 } catch (err: any) {
   console.log('Error en updateGlobal layout home: ', JSON.stringify(err.data?.errors ?? err, null, 2))
 }
+
+process.exit(0)

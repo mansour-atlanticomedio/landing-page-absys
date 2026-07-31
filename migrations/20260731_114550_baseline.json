@@ -717,6 +717,12 @@
           "primaryKey": true,
           "notNull": true
         },
+        "logo_id": {
+          "name": "logo_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
         "type": {
           "name": "type",
           "type": "enum_header_type",
@@ -753,6 +759,21 @@
         }
       },
       "indexes": {
+        "header_logo_idx": {
+          "name": "header_logo_idx",
+          "columns": [
+            {
+              "expression": "logo_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
         "header_updated_at_idx": {
           "name": "header_updated_at_idx",
           "columns": [
@@ -784,7 +805,21 @@
           "with": {}
         }
       },
-      "foreignKeys": {},
+      "foreignKeys": {
+        "header_logo_id_media_id_fk": {
+          "name": "header_logo_id_media_id_fk",
+          "tableFrom": "header",
+          "tableTo": "media",
+          "columnsFrom": [
+            "logo_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
       "policies": {},
@@ -3284,6 +3319,105 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
+    "public.login_page": {
+      "name": "login_page",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "image_login_id": {
+          "name": "image_login_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "login_page_image_login_idx": {
+          "name": "login_page_image_login_idx",
+          "columns": [
+            {
+              "expression": "image_login_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "login_page_updated_at_idx": {
+          "name": "login_page_updated_at_idx",
+          "columns": [
+            {
+              "expression": "updated_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "login_page_created_at_idx": {
+          "name": "login_page_created_at_idx",
+          "columns": [
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "login_page_image_login_id_media_id_fk": {
+          "name": "login_page_image_login_id_media_id_fk",
+          "tableFrom": "login_page",
+          "tableTo": "media",
+          "columnsFrom": [
+            "image_login_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "set null",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
     "public.absys_service": {
       "name": "absys_service",
       "schema": "",
@@ -3494,6 +3628,297 @@
             }
           ],
           "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.loginabsys_service_sessions": {
+      "name": "loginabsys_service_sessions",
+      "schema": "",
+      "columns": {
+        "_order": {
+          "name": "_order",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "_parent_id": {
+          "name": "_parent_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "id": {
+          "name": "id",
+          "type": "varchar",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "loginabsys_service_sessions_order_idx": {
+          "name": "loginabsys_service_sessions_order_idx",
+          "columns": [
+            {
+              "expression": "_order",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "loginabsys_service_sessions_parent_id_idx": {
+          "name": "loginabsys_service_sessions_parent_id_idx",
+          "columns": [
+            {
+              "expression": "_parent_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "loginabsys_service_sessions_parent_id_fk": {
+          "name": "loginabsys_service_sessions_parent_id_fk",
+          "tableFrom": "loginabsys_service_sessions",
+          "tableTo": "loginabsys_service",
+          "columnsFrom": [
+            "_parent_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.loginabsys_service": {
+      "name": "loginabsys_service",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "serial",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "dni": {
+          "name": "dni",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "nombre": {
+          "name": "nombre",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "apellidos": {
+          "name": "apellidos",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "numero_carnet": {
+          "name": "numero_carnet",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "colectivo": {
+          "name": "colectivo",
+          "type": "enum_loginabsys_service_colectivo",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'ALUMN'"
+        },
+        "max_prestamos": {
+          "name": "max_prestamos",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "dias_prestamo": {
+          "name": "dias_prestamo",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_offline_data": {
+          "name": "is_offline_data",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false,
+          "default": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "email": {
+          "name": "email",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "reset_password_token": {
+          "name": "reset_password_token",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "reset_password_expiration": {
+          "name": "reset_password_expiration",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "salt": {
+          "name": "salt",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "hash": {
+          "name": "hash",
+          "type": "varchar",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "login_attempts": {
+          "name": "login_attempts",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false,
+          "default": 0
+        },
+        "lock_until": {
+          "name": "lock_until",
+          "type": "timestamp(3) with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "loginabsys_service_dni_idx": {
+          "name": "loginabsys_service_dni_idx",
+          "columns": [
+            {
+              "expression": "dni",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "loginabsys_service_numero_carnet_idx": {
+          "name": "loginabsys_service_numero_carnet_idx",
+          "columns": [
+            {
+              "expression": "numero_carnet",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "loginabsys_service_updated_at_idx": {
+          "name": "loginabsys_service_updated_at_idx",
+          "columns": [
+            {
+              "expression": "updated_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "loginabsys_service_created_at_idx": {
+          "name": "loginabsys_service_created_at_idx",
+          "columns": [
+            {
+              "expression": "created_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "loginabsys_service_email_idx": {
+          "name": "loginabsys_service_email_idx",
+          "columns": [
+            {
+              "expression": "email",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": true,
           "concurrently": false,
           "method": "btree",
           "with": {}
@@ -3774,6 +4199,12 @@
           "primaryKey": false,
           "notNull": false
         },
+        "login_page_id": {
+          "name": "login_page_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
         "absys_service_id": {
           "name": "absys_service_id",
           "type": "integer",
@@ -3788,6 +4219,12 @@
         },
         "author_service_id": {
           "name": "author_service_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "loginabsys_service_id": {
+          "name": "loginabsys_service_id",
           "type": "integer",
           "primaryKey": false,
           "notNull": false
@@ -4109,6 +4546,21 @@
           "method": "btree",
           "with": {}
         },
+        "payload_locked_documents_rels_login_page_id_idx": {
+          "name": "payload_locked_documents_rels_login_page_id_idx",
+          "columns": [
+            {
+              "expression": "login_page_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
         "payload_locked_documents_rels_absys_service_id_idx": {
           "name": "payload_locked_documents_rels_absys_service_id_idx",
           "columns": [
@@ -4144,6 +4596,21 @@
           "columns": [
             {
               "expression": "author_service_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "payload_locked_documents_rels_loginabsys_service_id_idx": {
+          "name": "payload_locked_documents_rels_loginabsys_service_id_idx",
+          "columns": [
+            {
+              "expression": "loginabsys_service_id",
               "isExpression": false,
               "asc": true,
               "nulls": "last"
@@ -4403,6 +4870,19 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
+        "payload_locked_documents_rels_login_page_fk": {
+          "name": "payload_locked_documents_rels_login_page_fk",
+          "tableFrom": "payload_locked_documents_rels",
+          "tableTo": "login_page",
+          "columnsFrom": [
+            "login_page_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
         "payload_locked_documents_rels_absys_service_fk": {
           "name": "payload_locked_documents_rels_absys_service_fk",
           "tableFrom": "payload_locked_documents_rels",
@@ -4435,6 +4915,19 @@
           "tableTo": "author_service",
           "columnsFrom": [
             "author_service_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "payload_locked_documents_rels_loginabsys_service_fk": {
+          "name": "payload_locked_documents_rels_loginabsys_service_fk",
+          "tableFrom": "payload_locked_documents_rels",
+          "tableTo": "loginabsys_service",
+          "columnsFrom": [
+            "loginabsys_service_id"
           ],
           "columnsTo": [
             "id"
@@ -4573,6 +5066,12 @@
           "type": "integer",
           "primaryKey": false,
           "notNull": false
+        },
+        "loginabsys_service_id": {
+          "name": "loginabsys_service_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {
@@ -4635,6 +5134,21 @@
           "concurrently": false,
           "method": "btree",
           "with": {}
+        },
+        "payload_preferences_rels_loginabsys_service_id_idx": {
+          "name": "payload_preferences_rels_loginabsys_service_id_idx",
+          "columns": [
+            {
+              "expression": "loginabsys_service_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
         }
       },
       "foreignKeys": {
@@ -4657,6 +5171,19 @@
           "tableTo": "users",
           "columnsFrom": [
             "users_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "payload_preferences_rels_loginabsys_service_fk": {
+          "name": "payload_preferences_rels_loginabsys_service_fk",
+          "tableFrom": "payload_preferences_rels",
+          "tableTo": "loginabsys_service",
+          "columnsFrom": [
+            "loginabsys_service_id"
           ],
           "columnsTo": [
             "id"
@@ -13935,6 +14462,16 @@
         "1",
         "2"
       ]
+    },
+    "public.enum_loginabsys_service_colectivo": {
+      "name": "enum_loginabsys_service_colectivo",
+      "schema": "public",
+      "values": [
+        "ALUMN",
+        "PDI",
+        "PAS",
+        "EXT"
+      ]
     }
   },
   "schemas": {},
@@ -13947,6 +14484,6 @@
     "tables": {},
     "columns": {}
   },
-  "id": "8f761720-2754-4ddf-aefa-755a2dacf141",
+  "id": "44e4fe71-eeff-4bc3-97bf-65fc90f42ba5",
   "prevId": "00000000-0000-0000-0000-000000000000"
 }
