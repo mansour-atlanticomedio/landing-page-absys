@@ -22,7 +22,7 @@ export const Features : CollectionConfig = {
             },
             type: 'array',
             minRows: 1,
-            maxRows: 4,
+            maxRows: 6,
             fields: [
                 {
                     name: 'icon',

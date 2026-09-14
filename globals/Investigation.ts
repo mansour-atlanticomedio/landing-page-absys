@@ -19,6 +19,27 @@ export const Investigation : GlobalConfig = {
       hasMany: false,
     },
     {
+      name: 'accesos_rapidos',
+      label: 'Accesos rápidos',
+      type: 'relationship',
+      relationTo: 'features',
+      hasMany: false,
+    },
+    {
+      name: 'tarjetas',
+      label: 'Tarjetas de contenido',
+      type: 'relationship',
+      relationTo: 'electronic_resources_access',
+      hasMany: false,
+    },
+    {
+      name: 'cta',
+      label: 'Solicitar apoyo (CTA)',
+      type: 'relationship',
+      relationTo: 'cta',
+      hasMany: false,
+    },
+    {
       name: 'layout',
       labels: {
         singular: 'bloque',

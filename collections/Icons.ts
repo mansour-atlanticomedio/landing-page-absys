@@ -10,6 +10,14 @@ export const appIcons = [
     { label: 'Correo', value: 'Mail' },
     { label: 'Pin (Mapa)', value: 'MapPin' },
     { label: 'Calendario', value: 'Calendar' },
+    { label: 'Buscar (Lupa)', value: 'Search' },
+    { label: 'Megáfono', value: 'Megaphone' },
+    { label: 'Candado (Acceso)', value: 'Lock' },
+    { label: 'Huella (Identidad)', value: 'Fingerprint' },
+    { label: 'Gráfico de Barras', value: 'BarChart3' },
+    { label: 'Manos Colaborando', value: 'HeartHandshake' },
+    { label: 'Libro Verificado', value: 'BookOpenCheck' },
+    { label: 'Institución (Landmark)', value: 'Landmark' },
 ]
 
 export const iconsSocialMedia = [

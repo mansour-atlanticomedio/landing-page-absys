@@ -376,7 +376,15 @@ export interface Statistic {
           | 'Phone'
           | 'Mail'
           | 'MapPin'
-          | 'Calendar';
+          | 'Calendar'
+          | 'Search'
+          | 'Megaphone'
+          | 'Lock'
+          | 'Fingerprint'
+          | 'BarChart3'
+          | 'HeartHandshake'
+          | 'BookOpenCheck'
+          | 'Landmark';
         value?: number | null;
         description?: string | null;
         id?: string | null;
@@ -429,7 +437,15 @@ export interface Feature {
           | 'Phone'
           | 'Mail'
           | 'MapPin'
-          | 'Calendar';
+          | 'Calendar'
+          | 'Search'
+          | 'Megaphone'
+          | 'Lock'
+          | 'Fingerprint'
+          | 'BarChart3'
+          | 'HeartHandshake'
+          | 'BookOpenCheck'
+          | 'Landmark';
         title?: string | null;
         description?: string | null;
         id?: string | null;
@@ -650,6 +666,14 @@ export interface Footer {
                     | 'Mail'
                     | 'MapPin'
                     | 'Calendar'
+                    | 'Search'
+                    | 'Megaphone'
+                    | 'Lock'
+                    | 'Fingerprint'
+                    | 'BarChart3'
+                    | 'HeartHandshake'
+                    | 'BookOpenCheck'
+                    | 'Landmark'
                   )
                 | null;
               label?: string | null;
@@ -760,7 +784,15 @@ export interface ElectronicResourcesAccess {
           | 'Phone'
           | 'Mail'
           | 'MapPin'
-          | 'Calendar';
+          | 'Calendar'
+          | 'Search'
+          | 'Megaphone'
+          | 'Lock'
+          | 'Fingerprint'
+          | 'BarChart3'
+          | 'HeartHandshake'
+          | 'BookOpenCheck'
+          | 'Landmark';
         title: string;
         description?: string | null;
         cta?: string | null;
@@ -1601,6 +1633,9 @@ export interface Investigation {
   id: number;
   hero?: (number | null) | Hero;
   hero_carrusel?: (number | null) | HeroCarrusel;
+  accesos_rapidos?: (number | null) | Feature;
+  tarjetas?: (number | null) | ElectronicResourcesAccess;
+  cta?: (number | null) | Cta;
   layout?:
     | (
         | {
@@ -2108,6 +2143,9 @@ export interface ServicesSelect<T extends boolean = true> {
 export interface InvestigationSelect<T extends boolean = true> {
   hero?: T;
   hero_carrusel?: T;
+  accesos_rapidos?: T;
+  tarjetas?: T;
+  cta?: T;
   layout?:
     | T
     | {
