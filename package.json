@@ -10,7 +10,7 @@
     "lint": "eslint",
     "migrate": "payload migrate",
     "migrate:create": "payload migrate:create",
-    "seed": "tsx seeds/layout.seed.ts && tsx seeds/home.seed.ts && tsx seeds/aboutUs.seed.ts && tsx seeds/electronicResources.seed.ts && tsx seeds/quienesSomos.seed.ts"
+    "seed": "tsx seeds/layout.seed.ts && tsx seeds/home.seed.ts && tsx seeds/aboutUs.seed.ts && tsx seeds/electronicResources.seed.ts && tsx seeds/quienesSomos.seed.ts && tsx seeds/investigation.seed.ts"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "^3.84.1",
