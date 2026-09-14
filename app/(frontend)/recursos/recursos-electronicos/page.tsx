@@ -1,12 +1,11 @@
-"use client"
-
 import Link from "next/link"
 import Image from "next/image"
-import { motion } from "framer-motion"
 import { Globe, BookOpen, Video, Headphones, FileText, ExternalLink, Lock, Database, Bookmark, BookText, Share2, Microscope, CheckCircle2, KeyRound, TriangleAlert } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { getClient } from "@/lib/payload"
+import { iconMap } from "@/lib/utils"
 
 const resourceCategories = [
   {
@@ -40,59 +39,57 @@ const resourceCategories = [
   },
 ]
 
-const ACCESOS = [
-  {
-    icon: BookText,
-    title: "eLibro",
-    desc: "Plataforma líder de libros electrónicos en español. Acceso a miles de títulos de múltiples disciplinas académicas para lectura en línea o descarga.",
-    cta: "Acceder a plataforma",
-  },
-  {
-    icon: Share2,
-    title: "Web of Science",
-    desc: "Base de datos referencial y multidisciplinar que proporciona acceso a información de investigación global, permitiendo análisis de impacto y tendencias científicas.",
-    cta: "Acceder a base de datos",
-  },
-  {
-    icon: Microscope,
-    title: "Scopus",
-    desc: "La mayor base de datos de citas y resúmenes de literatura científica revisada por pares. Herramienta esencial para el seguimiento y evaluación de la investigación académica.",
-    cta: "Acceder a literatura",
-  },
-];
+export default async function RecursosElectronicosPage() {
+  const payload = await getClient()
+  const electronicResources = await payload.findGlobal({
+    slug: 'electronic_resources' as never,
+    draft: false,
+    depth: 2
+  }) as any
 
-export default function RecursosElectronicosPage() {
+  const hero = electronicResources?.hero || null
+  const heroImageURL = hero?.background_image?.url || "/img/recursos-electronicos.jpg"
+  const heroTitle = hero?.title || "Recursos Electrónicos"
+  const heroSubtitle =
+    hero?.subtitle ||
+    "Acceda a nuestra extensa colección de plataformas digitales, bases de datos especializadas y literatura científica. Un entorno virtual diseñado para impulsar la excelencia académica y facilitar su investigación desde cualquier lugar."
+
+  const accesosDestacados = electronicResources?.accesos_destacados?.accesos || []
+
   return (
     <div className="min-h-screen bg-white">
       {/* <SiteHeader active="RECURSOS" /> */}
 
       <section className="mx-auto max-w-6xl px-6 py-14 grid grid-cols-2 gap-12 items-center">
         <div>
-          <h1 className="text-4xl font-extrabold text-slate-800">Recursos Electrónicos</h1>
-          <p className="mt-4 text-slate-600">
-            Acceda a nuestra extensa colección de plataformas digitales, bases de datos
-            especializadas y literatura científica. Un entorno virtual diseñado para impulsar la
-            excelencia académica y facilitar su investigación desde cualquier lugar.
-          </p>
+          <h1 className="text-4xl font-extrabold text-slate-800">{heroTitle}</h1>
+          <p className="mt-4 text-slate-600">{heroSubtitle}</p>
         </div>
         <div className="relative h-72 rounded-lg overflow-hidden">
-          <Image src="/img/recursos-electronicos.jpg" alt="" fill className="object-cover" />
+          <Image src={heroImageURL} alt="" fill className="object-cover" />
         </div>
       </section>
 
       <section className="mx-auto max-w-6xl px-6 pb-14">
         <h2 className="text-2xl font-bold text-slate-800 mb-8">Accesos Directos Destacados</h2>
         <div className="grid grid-cols-3 gap-6">
-          {ACCESOS.map((a) => (
-            <div key={a.title} className="border rounded-lg p-6">
-              <div className="bg-sky-100 text-sky-700 rounded-md h-10 w-10 flex items-center justify-center mb-4">
-                <a.icon className="h-5 w-5" />
+          {accesosDestacados.map((a: any, index: number) => {
+            const IconComponent = iconMap[a.icon] || BookText
+            return (
+              <div key={a.title ?? index} className="border rounded-lg p-6">
+                <div className="bg-sky-100 text-sky-700 rounded-md h-10 w-10 flex items-center justify-center mb-4">
+                  <IconComponent className="h-5 w-5" />
+                </div>
+                <h3 className="font-bold text-slate-800 mb-2">{a.title}</h3>
+                <p className="text-sm text-slate-600 mb-4">{a.description}</p>
+                {a.link && (
+                  <a href={a.link} className="text-sm text-teal-700 font-medium">
+                    {a.cta || "Acceder"} →
+                  </a>
+                )}
               </div>
-              <h3 className="font-bold text-slate-800 mb-2">{a.title}</h3>
-              <p className="text-sm text-slate-600 mb-4">{a.desc}</p>
-              <a href="#" className="text-sm text-teal-700 font-medium">{a.cta} →</a>
-            </div>
-          ))}
+            )
+          })}
         </div>
 
         <div className="mt-8 bg-slate-50 border rounded-lg p-8 grid grid-cols-[1fr_320px] gap-8 items-center">
