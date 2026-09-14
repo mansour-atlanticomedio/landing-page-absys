@@ -74,6 +74,7 @@ Payload Admin → Globals → Collections → Pages → RenderBlocks → Compone
 | `faq` | `collections/FAQ.ts` | `title`, `faqs[]` con `question`, `answer` (richText) | — |
 | `news` | `collections/News.ts` | `title`, `visible_cards`, `style` (select: 0-3), `newsItems[]` (min:1, max:6) con `tag`, `link`, `title`, `description`, `image` | `newsItems[].image` → media |
 | `blogs` | `collections/Blogs.ts` | `title`, `blogItems[]` (min:1, max:10) con `title`, `blog`, `date` | — |
+| `electronic_resources_access` | `collections/ElectronicResourcesAccess.ts` | `title`, `accesos[]` (min:1, max:6) con `icon` (select de appIcons), `title`, `description`, `cta`, `link` | — |
 
 #### Collections de datos (4)
 
@@ -115,6 +116,7 @@ Payload Admin → Globals → Collections → Pages → RenderBlocks → Compone
 | `library` | `globals/Library.ts` | Solo `hero` | Mínimo |
 | `contact` | `globals/Contact.ts` | Solo `hero` | Mínimo |
 | `about_us` | `globals/AboutUs.ts` | `quienes_somos[]`, `horarios[]`, `normativa[]` — cada uno con `images` (upload→media) | Documentos/imágenes |
+| `electronic_resources` | `globals/ElectronicResources.ts` | `hero` (rel→hero, reutiliza la collection existente), `accesos_destacados` (rel→electronic_resources_access) | Página parcial |
 | `layout` | `globals/Layout.ts` | `header` (rel→header), `footer` (rel→footer) | Template del sitio |
 
 #### Block types del `layout` (11, usados en Home/Services/Formation/Investigation/Repositories)
@@ -260,13 +262,13 @@ Cada bloque se envuelve en `<section key={id} data-block-type={blockType}>`.
 | `/conocenos/quienes-somos` | `about_us` | No | Images de Payload, arrays hardcodeados |
 | `/conocenos/normativa-...` | `about_us` | No | Images de Payload, arrays hardcodeados |
 | `/conocenos/horarios-...` | `about_us` | No | Images de Payload, horarios hardcodeados |
+| `/recursos/recursos-electronicos` | `electronic_resources` | No | Hero (title/subtitle/imagen) + accesos destacados editables desde Payload; pestañas de bases de datos/ebooks/multimedia siguen hardcodeadas |
 
 ### Páginas que NO usan Payload (API externa Absys)
 
 | Ruta | Notas |
 |------|-------|
 | `/libros` | Client component, fetch a Absys API via axios |
-| `/recursos/recursos-electronicos` | Todo hardcodeado |
 | `/recursos/repositorio-institucional` | Todo hardcodeado |
 | `/recursos/catalogo` | Todo hardcodeado, enlace a OPAC externo |
 | `/recursos/catalogo/busqueda` | Client, fetch a `absys_service` con paginación |
@@ -353,3 +355,13 @@ Añadido efecto hover al estilo 3:
 
 - `transition-transform duration-300 hover:scale-[1.02]` en el `<article>`
 - `rounded-xl overflow-hidden` para que el scale no se salga de las esquinas
+
+### `/recursos/recursos-electronicos` — Integración con Payload
+
+Se replicó el patrón usado en `/conocenos/horarios-ubicacion-y-contacto`, pero con más contenido editable (hero completo + tarjetas, no solo una imagen):
+
+- **Nuevo global** `electronic_resources` (`globals/ElectronicResources.ts`): en vez de reinventar campos de hero como hace `about_us` (que solo guarda un array de imágenes), reutiliza la collection `hero` ya existente vía `relationship` (mismo patrón que `home`/`services`/`repository`), más una `relationship` a la nueva collection `electronic_resources_access`
+- **Nueva collection** `electronic_resources_access` (`collections/ElectronicResourcesAccess.ts`): array `accesos[]` (icon/title/description/cta/link) para las tarjetas "Accesos Directos Destacados", mismo patrón que `features`
+- **Registrado** en `payload.config.ts` (collection + global)
+- **`app/(frontend)/recursos/recursos-electronicos/page.tsx`**: pasó de client component 100% hardcodeado a server component `async` que hace `payload.findGlobal({ slug: 'electronic_resources' })`; el icono de cada acceso se resuelve con `iconMap` de `lib/utils.ts` (mismo mecanismo que `components/Features.tsx`)
+- **Fuera de alcance**: las pestañas "Bases de datos / Libros electrónicos / Multimedia" (`resourceCategories`) siguen hardcodeadas, sin conectar a Payload
