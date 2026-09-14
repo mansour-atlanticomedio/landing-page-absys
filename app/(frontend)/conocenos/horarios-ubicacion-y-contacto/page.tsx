@@ -71,18 +71,24 @@ export default async function HorariosUbicacionContactoPage() {
               <div>
                 <p className="font-semibold text-slate-800">Contacto Directo</p>
                 <p className="text-sm text-slate-600">+34 828 019 019</p>
-                <p className="text-sm text-teal-700 flex items-center gap-1">
-                  <Mail className="h-3.5 w-3.5" /> biblioteca@atlanticomedio.es
-                </p>
+                <a href="mailto:biblioteca@atlanticomedio.es">
+                  <p className="text-sm text-teal-700 flex items-center gap-1">
+                    <Mail className="h-3.5 w-3.5" /> biblioteca@atlanticomedio.es
+                  </p>
+                </a>
               </div>
             </div>
 
-            <button className="w-full bg-slate-800 text-white rounded-md py-2.5 font-medium flex items-center justify-center gap-2 mb-3">
-              <Mail className="h-4 w-4" /> Contactar con la Biblioteca
-            </button>
-            <button className="w-full border rounded-md py-2.5 font-medium flex items-center justify-center gap-2 text-slate-800">
-              <Navigation className="h-4 w-4" /> Cómo llegar
-            </button>
+            <a href="mailto:biblioteca@atlanticomedio.es">
+              <button className="w-full bg-slate-800 text-white rounded-md py-2.5 font-medium flex items-center justify-center gap-2 mb-3 transition-200 hover:scale-[1.05] cursor-pointer">
+                <Mail className="h-4 w-4" /> Contactar con la Biblioteca
+              </button>
+            </a>
+            <a href="https://www.google.com/maps?ll=28.069492,-15.451801&z=16&t=m&hl=es&gl=ES&mapclient=embed&cid=2474455529394761746">
+              <button className="w-full border rounded-md py-2.5 font-medium flex items-center justify-center gap-2 text-slate-800 cursor-pointer hover:bg-teal-500 hover:text-white">
+                <Navigation className="h-4 w-4" /> Cómo llegar
+              </button>
+            </a>
           </div>
 
           <div className="space-y-6">
@@ -114,9 +120,11 @@ export default async function HorariosUbicacionContactoPage() {
               </p>
             </div>
           </div>
-          <button className="border rounded-md px-5 py-2.5 font-medium text-slate-800">
-            Ver FAQs
-          </button>
+          <a href="">
+            <button className="border rounded-md px-5 py-2.5 font-medium text-slate-800 hover:scale-[1.05] hover:bg-slate-700 hover:text-white">
+              Ver FAQs
+            </button>
+          </a>
         </div>
       </section>
 
