@@ -1797,6 +1797,19 @@ export interface Formation {
   id: number;
   hero?: (number | null) | Hero;
   hero_carrusel?: (number | null) | HeroCarrusel;
+  buscar_parrafo_1?: string | null;
+  buscar_parrafo_2?: string | null;
+  enlaces_rapidos?:
+    | {
+        label: string;
+        link: string;
+        id?: string | null;
+      }[]
+    | null;
+  citar_cta?: (number | null) | Cta;
+  guias_tutoriales?: (number | null) | ElectronicResourcesAccess;
+  actividades_texto?: string | null;
+  actividades_estado?: string | null;
   layout?:
     | (
         | {
@@ -2329,6 +2342,19 @@ export interface RepositorySelect<T extends boolean = true> {
 export interface FormationSelect<T extends boolean = true> {
   hero?: T;
   hero_carrusel?: T;
+  buscar_parrafo_1?: T;
+  buscar_parrafo_2?: T;
+  enlaces_rapidos?:
+    | T
+    | {
+        label?: T;
+        link?: T;
+        id?: T;
+      };
+  citar_cta?: T;
+  guias_tutoriales?: T;
+  actividades_texto?: T;
+  actividades_estado?: T;
   layout?:
     | T
     | {
