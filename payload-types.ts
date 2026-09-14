@@ -143,6 +143,7 @@ export interface Config {
     contact: Contact;
     about_us: AboutUs;
     electronic_resources: ElectronicResource;
+    quienes_somos: QuienesSomo;
   };
   globalsSelect: {
     home: HomeSelect<false> | HomeSelect<true>;
@@ -155,6 +156,7 @@ export interface Config {
     contact: ContactSelect<false> | ContactSelect<true>;
     about_us: AboutUsSelect<false> | AboutUsSelect<true>;
     electronic_resources: ElectronicResourcesSelect<false> | ElectronicResourcesSelect<true>;
+    quienes_somos: QuienesSomosSelect<false> | QuienesSomosSelect<true>;
   };
   locale: null;
   widgets: {
@@ -1883,6 +1885,19 @@ export interface ElectronicResource {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "quienes_somos".
+ */
+export interface QuienesSomo {
+  id: number;
+  hero?: (number | null) | Hero;
+  imagen_dirigidos?: (number | null) | Media;
+  ayudas?: (number | null) | Feature;
+  dirigidos?: (number | null) | Feature;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "home_select".
  */
 export interface HomeSelect<T extends boolean = true> {
@@ -2405,6 +2420,19 @@ export interface AboutUsSelect<T extends boolean = true> {
 export interface ElectronicResourcesSelect<T extends boolean = true> {
   hero?: T;
   accesos_destacados?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "quienes_somos_select".
+ */
+export interface QuienesSomosSelect<T extends boolean = true> {
+  hero?: T;
+  imagen_dirigidos?: T;
+  ayudas?: T;
+  dirigidos?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

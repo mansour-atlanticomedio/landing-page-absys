@@ -19,6 +19,7 @@ import { Formation } from "./globals/Formation.ts";
 import { Layout } from "./globals/Layout.ts";
 import { AboutUs } from "./globals/AboutUs.ts";
 import { ElectronicResources } from "./globals/ElectronicResources.ts";
+import { QuienesSomos } from "./globals/QuienesSomos.ts";
 
 import { Users } from "./collections/Users.ts";
 import { Media } from "./collections/Media.ts";
@@ -96,7 +97,8 @@ export default buildConfig({
     Formation,
     Contact,
     AboutUs,
-    ElectronicResources
+    ElectronicResources,
+    QuienesSomos
   ],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",
