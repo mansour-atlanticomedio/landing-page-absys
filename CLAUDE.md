@@ -110,7 +110,7 @@ Payload Admin → Globals → Collections → Pages → RenderBlocks → Compone
 |------|---------|--------|-----------|
 | `home` | `globals/Home.ts` | `hero` (rel→hero), `hero_carrusel` (rel→hero_carrusel), `layout` (11 block types) | Página completa |
 | `services` | `globals/Services.ts` | Igual que Home | Página completa |
-| `formation` | `globals/Formation.ts` | Igual que Home | Página completa |
+| `formation` | `globals/Formation.ts` | `hero`, `hero_carrusel`, `buscar_parrafo_1`/`buscar_parrafo_2` (texto), `enlaces_rapidos[]` (label+link, inline), `citar_cta` (rel→cta), `guias_tutoriales` (rel→electronic_resources_access), `actividades_texto`/`actividades_estado` (texto), `layout` (11 block types, sin usar por ahora) | Página completa |
 | `investigation` | `globals/Investigation.ts` | `hero`, `hero_carrusel`, `accesos_rapidos` (rel→features), `tarjetas` (rel→electronic_resources_access), `cta` (rel→cta), `layout` (11 block types, sin usar por ahora) | Página completa |
 | `repository` | `globals/Repositories.ts` | `hero` + `layout` (sin hero_carrusel). **Bug**: labels de `input_block` son "Sobre Nosotros" | Página parcial |
 | `library` | `globals/Library.ts` | Solo `hero` | Mínimo |
@@ -256,7 +256,7 @@ Cada bloque se envuelve en `<section key={id} data-block-type={blockType}>`.
 | `/` | `home` | **Sí** | Hero + HeroCarrousel + RenderBlocks |
 | `/repositorios` | `repository` | **Sí** | Hero + RenderBlocks |
 | `/servicios` | `services` | No (comentado) | JSX hardcodeado |
-| `/formacion` | `formation` | No (importado, no usado) | JSX hardcodeado |
+| `/formacion` | `formation` | No (se quitó `RenderBlocks`, sin usar) | Hero + secciones "Buscar y evaluar", "Citar correctamente", "Guías y tutoriales" y sidebar editables desde Payload; interactividad con framer-motion vía `FormationContent` (client component) |
 | `/investigacion` | `investigation` | No (se quitó `RenderBlocks`, sin usar) | Hero + accesos rápidos + tarjetas + CTA editables desde Payload; interactividad con framer-motion vía `InvestigationContent` (client component) |
 | `/biblioteca` | `library` | No | Hero + BooksList |
 | `/contacto` | `contact` | No | Hero + SimpleForm + info contacto |
@@ -331,7 +331,7 @@ tipo(alcance opcional): resumen en imperativo, máx 50 caracteres
 
 - `globals/Repositories.ts` líneas 71-72: labels de `input_block` dicen "Sobre Nosotros" en vez de "Entrada de texto"
 - `app/fonts/Monserrat/`: typo en el nombre del directorio (falta una 't'), pero las referencias en `styles.css` apuntan a esa ruta así que funciona
-- Páginas `/servicios`, `/formacion` importan `RenderBlocks` pero no lo usan — tienen JSX hardcodeado (`/investigacion` ya no importa `RenderBlocks`, ver "Cambios realizados")
+- Página `/servicios` importa `RenderBlocks` pero no lo usa — tiene JSX hardcodeado (`/investigacion` y `/formacion` ya no importan `RenderBlocks`, ver "Cambios realizados")
 
 ---
 
@@ -388,3 +388,14 @@ A diferencia de horarios/quienes-somos/recursos-electronicos, esta página **ya 
 - **⚠️ Gotcha de arquitectura importante**: un Server Component async (el que hace `payload.findGlobal`) **no puede usar `motion.*` de `framer-motion` directamente** — revienta en runtime con `createMotionComponent() from the server`. La solución fue extraer el JSX animado a un Client Component nuevo, `components/InvestigationContent.tsx` (`"use client"`), que recibe los datos ya resueltos como props; la página server-side solo hace el fetch y le pasa los props. Aplicar este mismo split si se añade `framer-motion` a otra página que haga fetch de Payload directamente en el componente de página
 - **Interactividad añadida**: los chips de "Accesos rápidos" ahora son anchors reales (`href="#tarjeta-N"`) que hacen scroll suave (ya había `scroll-behavior: smooth` global en `app/styles.css`) hasta la tarjeta correspondiente (mapeo 1:1 por índice); tarjetas con `whileInView` (reveal al hacer scroll, en vez de animar solo al montar) y hover con sombra; botones que antes no hacían nada ahora enlazan a `/recursos/recursos-electronicos`, al repositorio institucional o a `/contacto` según corresponda
 - **Probado** contra la BD real del contenedor de desarrollo y con `curl` a la página renderizada (200 OK, ids/anchors correctos)
+
+### `/formacion` — Integración con Payload + interactividad
+
+Mismo caso que `/investigacion`: el global `formation` ya tenía `hero`/`hero_carrusel`/`layout` conectados pero el JSX era 100% hardcodeado y no usaba nada de eso.
+
+- **Ampliado** `globals/Formation.ts` con campos nuevos (sin tocar `hero`, `hero_carrusel` ni `layout`): `buscar_parrafo_1`/`buscar_parrafo_2` (texto plano, no richText — se evitó `about`/Lexical por no haber ningún seed previo que sembrara richText en este proyecto y no valía la pena introducir ese riesgo para dos párrafos cortos), `enlaces_rapidos[]` (array inline `label`+`link`, igual que el patrón de `about_us` de embeber arrays simples directo en el global en vez de crear una collection), `citar_cta` (rel→`cta`, reutilizada), `guias_tutoriales` (rel→`electronic_resources_access`, reutilizada, un solo item), `actividades_texto`/`actividades_estado` (texto plano para el sidebar)
+- **Sin collections nuevas**: todo reutiliza `cta`/`electronic_resources_access` ya existentes, o son campos simples directo en el global
+- **`app/(frontend)/formacion/page.tsx`**: se quitaron los imports de `Hero`/`RenderBlocks`; el JSX animado se extrajo a `components/FormationContent.tsx` (`"use client"`), mismo motivo que en investigación (`motion.*` no puede usarse en el Server Component async que hace el fetch)
+- **Bugs de UX corregidos** (enlaces/botones que no hacían nada): el enlace "Acceso a Recursos electrónicos" apuntaba a `href="#"` → ahora apunta a `/recursos/recursos-electronicos` por defecto; el botón "Recomendaciones sobre citación y plagio" no tenía `href` en absoluto; la tarjeta "Acceder a guías y tutoriales disponibles" no era ni un link ni un botón pese a tener un icono de flecha sugiriendo que era clicable — ahora los tres son enlaces reales editables desde Payload
+- **Interactividad añadida**: entrada con fade/slide en el hero, reveal por scroll (`whileInView`) en cada bloque de contenido con delay escalonado, hover states en todos los enlaces/botones (antes no tenían ninguno), micro-interacción de flecha (`group-hover:translate-x-1`) en la tarjeta de guías y tutoriales, y el bullet "●" de texto del estado de actividades se sustituyó por un indicador `<span>` con `rounded-full` real
+- **Probado** contra la BD real del contenedor de desarrollo y con `curl` a la página renderizada (200 OK, imagen del hero servida desde Payload en vez del path hardcodeado)
