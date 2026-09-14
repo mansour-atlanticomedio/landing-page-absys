@@ -399,3 +399,12 @@ Mismo caso que `/investigacion`: el global `formation` ya tenía `hero`/`hero_ca
 - **Bugs de UX corregidos** (enlaces/botones que no hacían nada): el enlace "Acceso a Recursos electrónicos" apuntaba a `href="#"` → ahora apunta a `/recursos/recursos-electronicos` por defecto; el botón "Recomendaciones sobre citación y plagio" no tenía `href` en absoluto; la tarjeta "Acceder a guías y tutoriales disponibles" no era ni un link ni un botón pese a tener un icono de flecha sugiriendo que era clicable — ahora los tres son enlaces reales editables desde Payload
 - **Interactividad añadida**: entrada con fade/slide en el hero, reveal por scroll (`whileInView`) en cada bloque de contenido con delay escalonado, hover states en todos los enlaces/botones (antes no tenían ninguno), micro-interacción de flecha (`group-hover:translate-x-1`) en la tarjeta de guías y tutoriales, y el bullet "●" de texto del estado de actividades se sustituyó por un indicador `<span>` con `rounded-full` real
 - **Probado** contra la BD real del contenedor de desarrollo y con `curl` a la página renderizada (200 OK, imagen del hero servida desde Payload en vez del path hardcodeado)
+
+### `/` (Home) — Interactividad añadida (sin tocar Payload)
+
+A petición explícita, aquí no se tocó Payload ni las collections/globals — solo `app/(frontend)/page.tsx` y componentes nuevos con shadcn/ui:
+
+- **`components/HomeQuickLinks.tsx`** (nuevo, `"use client"`): franja de accesos rápidos (chips con icono, `Button asChild` de shadcn + `Link`) a Catálogo, Recursos electrónicos, Investigación, Formación y Horarios — entrada escalonada con framer-motion y `whileHover`. Contenido fijo en el propio componente (no viene de Payload)
+- **`components/BackToTop.tsx`** (nuevo, `"use client"`): botón flotante circular que aparece tras hacer scroll >480px y sube al inicio con scroll suave; `AnimatePresence` para la transición de entrada/salida
+- **`app/(frontend)/page.tsx`**: ambos se insertan entre `HeroCarrousel` y `RenderBlocks` (`HomeQuickLinks`) y al final (`BackToTop`); `Hero`, `HeroCarrousel`, `RenderBlocks`, `Input` y `News` no se modificaron (ya estaban bien pulidos con carrusel, autoplay, hover states y transiciones propias)
+- **Probado** con `curl` contra la página renderizada (200 OK, las 5 chips y el resto del contenido existente siguen presentes)
