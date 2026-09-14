@@ -1,16 +1,29 @@
 'use client'
-import { useRouter } from "next/navigation";
-import { Search, ChevronDown, ChevronUp } from "lucide-react";
-import { FormEvent, useState } from "react";
+
+import { useRouter } from "next/navigation"
+import { Search, ChevronDown, SlidersHorizontal, X } from "lucide-react"
+import { FormEvent, useState, useRef, useEffect } from "react"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { Label } from "@/components/ui/label"
 
 interface InputProps {
-  title?: string,
-  placeholder?: string,
+  title?: string
+  placeholder?: string
 }
 
 export default function InputComponent({ title, placeholder }: InputProps) {
   const router = useRouter()
   const [showAdvanced, setShowAdvanced] = useState(false)
+  const [simpleValue, setSimpleValue] = useState("")
+  const panelRef = useRef<HTMLDivElement>(null)
+  const [panelHeight, setPanelHeight] = useState(0)
+
+  useEffect(() => {
+    if (panelRef.current) {
+      setPanelHeight(panelRef.current.scrollHeight)
+    }
+  }, [showAdvanced])
 
   const handleInput = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -46,104 +59,114 @@ export default function InputComponent({ title, placeholder }: InputProps) {
     router.push(`/libros?${params.toString()}`)
   }
 
+  const advancedFields = [
+    { name: 'titulo', label: 'Título', placeholder: 'Título del libro' },
+    { name: 'autor', label: 'Autor', placeholder: 'Nombre del autor' },
+    { name: 'isbn', label: 'ISBN', placeholder: '978-84-...' },
+    { name: 'editorial', label: 'Editorial', placeholder: 'Editorial' },
+    { name: 'anio', label: 'Año', placeholder: '2024' },
+    { name: 'materia', label: 'Materia', placeholder: 'Programación' },
+  ]
+
   return (
-    <form onSubmit={handleInput} className=" mx-auto max-w-7xl px-6 flex justify-center flex-col rounded-lg mt-8">
-      {/* <div className="flex bg-gray-300 rounded-xl max-w-7xl justify-between items-center h-12">
-        <input
-          className="flex-5 ml-4 text-gray-600 font-bold h-full outline-none focus:outline-none focus:ring-0"
-          type="text"
-          name="input_hero"
-          id="input_hero"
-          placeholder={placeholder || 'Buscar título, autor o ISBN...'} />
-        <button type="submit" className="flex-1 flex gap-2 justify-center items-center rounded-r-xl bg-blue-500 h-full cursor-pointer" >
-          <Search size={16} className="text-white" />
-          <span className="text-white">Buscar</span>
-        </button>
-      </div> */}
-      <div className="mt-8 flex gap-2">
-        <div className="flex-1 flex items-center gap-2 border rounded-md px-4">
-          <Search className="h-4 w-4 text-slate-400" />
-          <input
-            placeholder="Título, autor, materia o ISBN..."
-            className="flex-1 py-3 outline-none text-sm"
+    <form onSubmit={handleInput} className="mx-auto max-w-7xl w-full px-6 mt-10">
+
+      {/* Search bar */}
+      <div className="relative flex items-center">
+        <div className="relative flex-1">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+          <Input
+            name="input_hero"
+            value={simpleValue}
+            onChange={(e) => setSimpleValue(e.target.value)}
+            placeholder={placeholder || "Buscar por título, autor, materia o ISBN..."}
+            className="h-12 pl-10 pr-10 rounded-l-lg rounded-r-none border-r-0 text-sm focus-visible:z-10"
           />
+          {simpleValue && (
+            <button
+              type="button"
+              onClick={() => setSimpleValue("")}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
         </div>
-        <button className="bg-accent text-white font-medium px-6 rounded-md"><a href="https://demo.baratz.es/opac">Buscar</a></button>
+
+        <Button
+          type="submit"
+          className="h-12 px-6 rounded-l-none rounded-r-lg bg-accent hover:bg-accent/90 text-accent-foreground font-semibold text-sm tracking-wide"
+        >
+          <Search className="h-4 w-4 mr-1.5" />
+          Buscar
+        </Button>
       </div>
 
-      <button
-        type="button"
-        onClick={() => setShowAdvanced(!showAdvanced)}
-        className="flex max-w-7xl items-center gap-2 py-2 text-sm text-gray-500 hover:text-gray-700 cursor-pointer"
-      >
-        {showAdvanced ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-        Búsqueda avanzada
-      </button>
+      {/* Advanced toggle */}
+      <div className="flex items-center justify-center mt-3">
+        <button
+          type="button"
+          onClick={() => setShowAdvanced(!showAdvanced)}
+          className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors group cursor-pointer"
+        >
+          <SlidersHorizontal className="h-3.5 w-3.5" />
+          <span>Búsqueda avanzada</span>
+          <ChevronDown
+            className={`h-3.5 w-3.5 transition-transform duration-200 ${showAdvanced ? "rotate-180" : ""}`}
+          />
+        </button>
+      </div>
 
-      {showAdvanced && (
-        <div className="grid max-w-7xl grid-cols-2 md:grid-cols-3 gap-4 py-2">
-          <div className="flex flex-col gap-1">
-            <label htmlFor="titulo" className="text-xs text-gray-500 font-bold">Título</label>
-            <input
-              className="px-3 py-2 text-sm border rounded-md outline-none focus:ring-2 focus:ring-blue-500"
-              type="text"
-              name="titulo"
-              id="titulo"
-              placeholder="Título del libro"
-            />
+      {/* Advanced panel */}
+      <div
+        className="overflow-hidden transition-all duration-300 ease-in-out"
+        style={{ maxHeight: showAdvanced ? `${panelHeight}px` : "0px" }}
+      >
+        <div ref={panelRef} className="pt-4">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-5 p-5 bg-secondary/50 border border-border rounded-xl">
+            {advancedFields.map(({ name, label, placeholder }) => (
+              <div key={name} className="space-y-1.5">
+                <Label htmlFor={name} className="text-xs text-muted-foreground">
+                  {label}
+                </Label>
+                <Input
+                  name={name}
+                  id={name}
+                  placeholder={placeholder}
+                  className="h-10 text-sm"
+                />
+              </div>
+            ))}
           </div>
-          <div className="flex flex-col gap-1">
-            <label htmlFor="autor" className="text-xs text-gray-500 font-bold">Autor</label>
-            <input
-              className="px-3 py-2 text-sm border rounded-md outline-none focus:ring-2 focus:ring-blue-500"
-              type="text"
-              name="autor"
-              id="autor"
-              placeholder="Autor"
-            />
-          </div>
-          <div className="flex flex-col gap-1">
-            <label htmlFor="isbn" className="text-xs text-gray-500 font-bold">ISBN</label>
-            <input
-              className="px-3 py-2 text-sm border rounded-md outline-none focus:ring-2 focus:ring-blue-500"
-              type="text"
-              name="isbn"
-              id="isbn"
-              placeholder="ISBN"
-            />
-          </div>
-          <div className="flex flex-col gap-1">
-            <label htmlFor="editorial" className="text-xs text-gray-500 font-bold">Editorial</label>
-            <input
-              className="px-3 py-2 text-sm border rounded-md outline-none focus:ring-2 focus:ring-blue-500"
-              type="text"
-              name="editorial"
-              id="editorial"
-              placeholder="Editorial"
-            />
-          </div>
-          <div className="flex flex-col gap-1">
-            <label htmlFor="anio" className="text-xs text-gray-500 font-bold">Año de publicación</label>
-            <input
-              className="px-3 py-2 text-sm border rounded-md outline-none focus:ring-2 focus:ring-blue-500"
-              type="text"
-              name="anio"
-              id="anio"
-              placeholder="Ej: 2008"
-            />
-          </div>
-          <div className="flex flex-col gap-1">
-            <label htmlFor="materia" className="text-xs text-gray-500 font-bold">Materia</label>
-            <input
-              className="px-3 py-2 text-sm border rounded-md outline-none focus:ring-2 focus:ring-blue-500"
-              type="text"
-              name="materia"
-              id="materia"
-              placeholder="Ej: Programación"
-            />
+
+          <div className="flex justify-end gap-2 mt-4">
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                setShowAdvanced(false)
+                const form = panelRef.current?.closest("form")
+                if (form) {
+                  advancedFields.forEach(({ name }) => {
+                    const input = form.elements.namedItem(name) as HTMLInputElement
+                    if (input) input.value = ""
+                  })
+                }
+              }}
+            >
+              Limpiar
+            </Button>
+            <Button
+              type="submit"
+              size="sm"
+              className="bg-accent hover:bg-accent/90 text-accent-foreground"
+            >
+              Buscar con filtros
+            </Button>
           </div>
         </div>
-      )}
+      </div>
     </form>
   )
 }

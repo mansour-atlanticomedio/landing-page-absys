@@ -186,8 +186,8 @@ function NewsCard({ new: { tag, link, title, description, image }, style }: { ne
 
     if (style === 3) {
         return (
-            <a href={link}>
-                <article className="group relative h-80 overflow-hidden bg-slate-900">
+            <a href={link} >
+                <article className="group relative h-80 bg-slate-900 rounded-xl overflow-hidden transition-transform duration-300 hover:scale-[1.02]">
                     {/* Capa de "Imagen" de fondo */}
                     <div className="absolute inset-0 bg-linear-to-t from-black via-black/40 to-transparent opacity-80">
                         {imageUrl && (
