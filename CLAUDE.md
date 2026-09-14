@@ -111,7 +111,7 @@ Payload Admin → Globals → Collections → Pages → RenderBlocks → Compone
 | `home` | `globals/Home.ts` | `hero` (rel→hero), `hero_carrusel` (rel→hero_carrusel), `layout` (11 block types) | Página completa |
 | `services` | `globals/Services.ts` | Igual que Home | Página completa |
 | `formation` | `globals/Formation.ts` | Igual que Home | Página completa |
-| `investigation` | `globals/Investigation.ts` | Igual que Home | Página completa |
+| `investigation` | `globals/Investigation.ts` | `hero`, `hero_carrusel`, `accesos_rapidos` (rel→features), `tarjetas` (rel→electronic_resources_access), `cta` (rel→cta), `layout` (11 block types, sin usar por ahora) | Página completa |
 | `repository` | `globals/Repositories.ts` | `hero` + `layout` (sin hero_carrusel). **Bug**: labels de `input_block` son "Sobre Nosotros" | Página parcial |
 | `library` | `globals/Library.ts` | Solo `hero` | Mínimo |
 | `contact` | `globals/Contact.ts` | Solo `hero` | Mínimo |
@@ -257,7 +257,7 @@ Cada bloque se envuelve en `<section key={id} data-block-type={blockType}>`.
 | `/repositorios` | `repository` | **Sí** | Hero + RenderBlocks |
 | `/servicios` | `services` | No (comentado) | JSX hardcodeado |
 | `/formacion` | `formation` | No (importado, no usado) | JSX hardcodeado |
-| `/investigacion` | `investigation` | No (importado, no usado) | JSX hardcodeado |
+| `/investigacion` | `investigation` | No (se quitó `RenderBlocks`, sin usar) | Hero + accesos rápidos + tarjetas + CTA editables desde Payload; interactividad con framer-motion vía `InvestigationContent` (client component) |
 | `/biblioteca` | `library` | No | Hero + BooksList |
 | `/contacto` | `contact` | No | Hero + SimpleForm + info contacto |
 | `/conocenos/quienes-somos` | `quienes_somos` | No | Hero (title/subtitle/imagen) + tarjetas "ayudas"/"dirigidos" editables desde Payload (reutilizan `features`) |
@@ -331,7 +331,7 @@ tipo(alcance opcional): resumen en imperativo, máx 50 caracteres
 
 - `globals/Repositories.ts` líneas 71-72: labels de `input_block` dicen "Sobre Nosotros" en vez de "Entrada de texto"
 - `app/fonts/Monserrat/`: typo en el nombre del directorio (falta una 't'), pero las referencias en `styles.css` apuntan a esa ruta así que funciona
-- Páginas `/servicios`, `/formacion`, `/investigacion` importan `RenderBlocks` pero no lo usan — tienen JSX hardcodeado
+- Páginas `/servicios`, `/formacion` importan `RenderBlocks` pero no lo usan — tienen JSX hardcodeado (`/investigacion` ya no importa `RenderBlocks`, ver "Cambios realizados")
 
 ---
 
@@ -376,3 +376,15 @@ Mismo tratamiento que `/recursos/recursos-electronicos`, esta vez reutilizando l
 - **Registrado** en `payload.config.ts` (solo el global; `features` ya estaba registrada)
 - **`app/(frontend)/conocenos/quienes-somos/page.tsx`**: pasó de leer `about_us.quienes_somos[]` (solo imágenes) a leer el nuevo global `quienes_somos` completo; si `ayudas`/`dirigidos` no tienen doc asignado en el admin, cae a los arrays `AYUDAS_FALLBACK`/`DIRIGIDOS_FALLBACK` con el contenido original
 - **`about_us.quienes_somos[]` queda sin uso** tras este cambio (nadie más lo lee) — no se ha borrado del schema por si se prefiere reutilizar más adelante; avisar antes de eliminarlo
+
+### `/investigacion` — Integración con Payload + interactividad
+
+A diferencia de horarios/quienes-somos/recursos-electronicos, esta página **ya tenía** el global `investigation` con `hero` conectado (fetch, extracción de campos) pero la sección `<main>` estaba 100% hardcodeada y no llegaba a usar esos datos ni los componentes `Hero`/`RenderBlocks` que importaba:
+
+- **Ampliado** `globals/Investigation.ts` con 3 campos nuevos (sin tocar `hero`, `hero_carrusel` ni `layout`, que quedan intactos por si se usan en el futuro): `accesos_rapidos` (rel→`features`), `tarjetas` (rel→`electronic_resources_access`), `cta` (rel→`cta`) — las 3 reutilizan collections ya existentes, ninguna es nueva
+- **`collections/Features.ts`**: `maxRows` de `feature[]` subido de 4 a 6 (necesario para los 5 "accesos rápidos"; cambio hacia atrás compatible, no rompe docs existentes)
+- **`collections/Icons.ts` / `lib/utils.ts`**: `appIcons`/`iconMap` ampliados con los iconos que ya usaba esta página (Search, Megaphone, Lock, Fingerprint, BarChart3, HeartHandshake, BookOpenCheck, Landmark) — antes solo cubrían un set genérico de 10 iconos que no encajaban con el contenido real de investigación
+- **`app/(frontend)/investigacion/page.tsx`**: se quitaron los imports de `Hero`/`RenderBlocks` (decisión consciente de no usar el sistema de `layout` blocks en esta página, igual que en horarios/quienes-somos/recursos-electronicos) y ahora sí consume `accesos_rapidos`/`tarjetas`/`cta`, con fallback al contenido original
+- **⚠️ Gotcha de arquitectura importante**: un Server Component async (el que hace `payload.findGlobal`) **no puede usar `motion.*` de `framer-motion` directamente** — revienta en runtime con `createMotionComponent() from the server`. La solución fue extraer el JSX animado a un Client Component nuevo, `components/InvestigationContent.tsx` (`"use client"`), que recibe los datos ya resueltos como props; la página server-side solo hace el fetch y le pasa los props. Aplicar este mismo split si se añade `framer-motion` a otra página que haga fetch de Payload directamente en el componente de página
+- **Interactividad añadida**: los chips de "Accesos rápidos" ahora son anchors reales (`href="#tarjeta-N"`) que hacen scroll suave (ya había `scroll-behavior: smooth` global en `app/styles.css`) hasta la tarjeta correspondiente (mapeo 1:1 por índice); tarjetas con `whileInView` (reveal al hacer scroll, en vez de animar solo al montar) y hover con sombra; botones que antes no hacían nada ahora enlazan a `/recursos/recursos-electronicos`, al repositorio institucional o a `/contacto` según corresponda
+- **Probado** contra la BD real del contenedor de desarrollo y con `curl` a la página renderizada (200 OK, ids/anchors correctos)
