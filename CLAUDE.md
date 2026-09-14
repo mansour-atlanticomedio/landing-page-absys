@@ -115,8 +115,9 @@ Payload Admin → Globals → Collections → Pages → RenderBlocks → Compone
 | `repository` | `globals/Repositories.ts` | `hero` + `layout` (sin hero_carrusel). **Bug**: labels de `input_block` son "Sobre Nosotros" | Página parcial |
 | `library` | `globals/Library.ts` | Solo `hero` | Mínimo |
 | `contact` | `globals/Contact.ts` | Solo `hero` | Mínimo |
-| `about_us` | `globals/AboutUs.ts` | `quienes_somos[]`, `horarios[]`, `normativa[]` — cada uno con `images` (upload→media) | Documentos/imágenes |
+| `about_us` | `globals/AboutUs.ts` | `quienes_somos[]` (**no usado**, ver `quienes_somos` global), `horarios[]`, `normativa[]` — cada uno con `images` (upload→media) | Documentos/imágenes |
 | `electronic_resources` | `globals/ElectronicResources.ts` | `hero` (rel→hero, reutiliza la collection existente), `accesos_destacados` (rel→electronic_resources_access) | Página parcial |
+| `quienes_somos` | `globals/QuienesSomos.ts` | `hero` (rel→hero), `imagen_dirigidos` (upload→media), `ayudas` (rel→features), `dirigidos` (rel→features) — `ayudas`/`dirigidos` reutilizan la collection `features` existente con dos docs distintos | Página parcial |
 | `layout` | `globals/Layout.ts` | `header` (rel→header), `footer` (rel→footer) | Template del sitio |
 
 #### Block types del `layout` (11, usados en Home/Services/Formation/Investigation/Repositories)
@@ -259,7 +260,7 @@ Cada bloque se envuelve en `<section key={id} data-block-type={blockType}>`.
 | `/investigacion` | `investigation` | No (importado, no usado) | JSX hardcodeado |
 | `/biblioteca` | `library` | No | Hero + BooksList |
 | `/contacto` | `contact` | No | Hero + SimpleForm + info contacto |
-| `/conocenos/quienes-somos` | `about_us` | No | Images de Payload, arrays hardcodeados |
+| `/conocenos/quienes-somos` | `quienes_somos` | No | Hero (title/subtitle/imagen) + tarjetas "ayudas"/"dirigidos" editables desde Payload (reutilizan `features`) |
 | `/conocenos/normativa-...` | `about_us` | No | Images de Payload, arrays hardcodeados |
 | `/conocenos/horarios-...` | `about_us` | No | Images de Payload, horarios hardcodeados |
 | `/recursos/recursos-electronicos` | `electronic_resources` | No | Hero (title/subtitle/imagen) + accesos destacados editables desde Payload; pestañas de bases de datos/ebooks/multimedia siguen hardcodeadas |
@@ -365,3 +366,13 @@ Se replicó el patrón usado en `/conocenos/horarios-ubicacion-y-contacto`, pero
 - **Registrado** en `payload.config.ts` (collection + global)
 - **`app/(frontend)/recursos/recursos-electronicos/page.tsx`**: pasó de client component 100% hardcodeado a server component `async` que hace `payload.findGlobal({ slug: 'electronic_resources' })`; el icono de cada acceso se resuelve con `iconMap` de `lib/utils.ts` (mismo mecanismo que `components/Features.tsx`)
 - **Fuera de alcance**: las pestañas "Bases de datos / Libros electrónicos / Multimedia" (`resourceCategories`) siguen hardcodeadas, sin conectar a Payload
+
+### `/conocenos/quienes-somos` — Integración con Payload
+
+Mismo tratamiento que `/recursos/recursos-electronicos`, esta vez reutilizando la collection `features` en vez de crear una nueva:
+
+- **Nuevo global** `quienes_somos` (`globals/QuienesSomos.ts`): `hero` (rel→`hero`, mismo patrón que el resto de globals de página), `imagen_dirigidos` (upload suelto para la imagen de la sección oscura "A quién se dirigen nuestros servicios"), `ayudas` y `dirigidos` — dos relationships distintas a la collection `features` ya existente (mismo patrón que `home.seed.ts` reutilizando `news` dos veces para "Destacados" y "Te recomendamos")
+- **Sin collection nueva**: `features` (icon/title/description) encajaba exactamente con las tarjetas hardcodeadas `AYUDAS` y `DIRIGIDOS`, así que no se creó ninguna collection nueva
+- **Registrado** en `payload.config.ts` (solo el global; `features` ya estaba registrada)
+- **`app/(frontend)/conocenos/quienes-somos/page.tsx`**: pasó de leer `about_us.quienes_somos[]` (solo imágenes) a leer el nuevo global `quienes_somos` completo; si `ayudas`/`dirigidos` no tienen doc asignado en el admin, cae a los arrays `AYUDAS_FALLBACK`/`DIRIGIDOS_FALLBACK` con el contenido original
+- **`about_us.quienes_somos[]` queda sin uso** tras este cambio (nadie más lo lee) — no se ha borrado del schema por si se prefiere reutilizar más adelante; avisar antes de eliminarlo
