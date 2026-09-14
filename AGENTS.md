@@ -91,7 +91,7 @@ coherentes con las suyas, no como una imitación forzada.
   `console.error` en vez de relanzarlo, típicamente
   `JSON.stringify(err.data?.errors ?? err, null, 2)`. El objetivo es poder ver qué campo falló al
   sembrar datos, no crashear el script.
-- **Dev tools) `console.log`/`console.warn` de depuración se quedan en el código** (`RenderBlocks.tsx`,
+- **Dev tools `console.log`/`console.warn` de depuración se quedan en el código** (`RenderBlocks.tsx`,
   varias páginas) en vez de limpiarse tras usarlos. No los borres por iniciativa propia si no es
   parte de lo que te pidió — puede que los siga usando activamente.
 - **Datos de prueba creíbles, nunca "Lorem ipsum"**: títulos de libros reales (Cien años de
