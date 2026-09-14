@@ -18,6 +18,7 @@ import { Investigation } from "./globals/Investigation.ts";
 import { Formation } from "./globals/Formation.ts";
 import { Layout } from "./globals/Layout.ts";
 import { AboutUs } from "./globals/AboutUs.ts";
+import { ElectronicResources } from "./globals/ElectronicResources.ts";
 
 import { Users } from "./collections/Users.ts";
 import { Media } from "./collections/Media.ts";
@@ -37,6 +38,7 @@ import { Input } from "./collections/Input.ts";
 import { HeroCarrusel } from "./collections/HeroCarrusel.ts";
 import { Header } from "./collections/Header.ts";
 import { Footer } from "./collections/Footer.ts";
+import { ElectronicResourcesAccess } from "./collections/ElectronicResourcesAccess.ts";
 
 
 import { AbsysService } from "./collections/Absys.service.ts";
@@ -81,7 +83,8 @@ export default buildConfig({
     AbsysService,
     BookCoverService,
     AuthorService,
-    LoginAbsysService
+    LoginAbsysService,
+    ElectronicResourcesAccess
   ],
   globals: [
     Home,
@@ -92,7 +95,8 @@ export default buildConfig({
     Repositories,
     Formation,
     Contact,
-    AboutUs
+    AboutUs,
+    ElectronicResources
   ],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",

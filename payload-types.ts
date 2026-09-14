@@ -91,6 +91,7 @@ export interface Config {
     book_cover_service: BookCoverService;
     author_service: AuthorService;
     loginAbsys_service: LoginAbsysService;
+    electronic_resources_access: ElectronicResourcesAccess;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -121,6 +122,7 @@ export interface Config {
     book_cover_service: BookCoverServiceSelect<false> | BookCoverServiceSelect<true>;
     author_service: AuthorServiceSelect<false> | AuthorServiceSelect<true>;
     loginAbsys_service: LoginAbsysServiceSelect<false> | LoginAbsysServiceSelect<true>;
+    electronic_resources_access: ElectronicResourcesAccessSelect<false> | ElectronicResourcesAccessSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -140,6 +142,7 @@ export interface Config {
     formation: Formation;
     contact: Contact;
     about_us: AboutUs;
+    electronic_resources: ElectronicResource;
   };
   globalsSelect: {
     home: HomeSelect<false> | HomeSelect<true>;
@@ -151,6 +154,7 @@ export interface Config {
     formation: FormationSelect<false> | FormationSelect<true>;
     contact: ContactSelect<false> | ContactSelect<true>;
     about_us: AboutUsSelect<false> | AboutUsSelect<true>;
+    electronic_resources: ElectronicResourcesSelect<false> | ElectronicResourcesSelect<true>;
   };
   locale: null;
   widgets: {
@@ -737,6 +741,36 @@ export interface LoginAbsysService {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "electronic_resources_access".
+ */
+export interface ElectronicResourcesAccess {
+  id: number;
+  title?: string | null;
+  accesos?:
+    | {
+        icon:
+          | 'Lightbulb'
+          | 'BookOpen'
+          | 'Microscope'
+          | 'Star'
+          | 'User'
+          | 'Briefcase'
+          | 'Phone'
+          | 'Mail'
+          | 'MapPin'
+          | 'Calendar';
+        title: string;
+        description?: string | null;
+        cta?: string | null;
+        link?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -850,6 +884,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'loginAbsys_service';
         value: number | LoginAbsysService;
+      } | null)
+    | ({
+        relationTo: 'electronic_resources_access';
+        value: number | ElectronicResourcesAccess;
       } | null);
   globalSlug?: string | null;
   user:
@@ -1310,6 +1348,25 @@ export interface LoginAbsysServiceSelect<T extends boolean = true> {
         createdAt?: T;
         expiresAt?: T;
       };
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "electronic_resources_access_select".
+ */
+export interface ElectronicResourcesAccessSelect<T extends boolean = true> {
+  title?: T;
+  accesos?:
+    | T
+    | {
+        icon?: T;
+        title?: T;
+        description?: T;
+        cta?: T;
+        link?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1810,6 +1867,17 @@ export interface AboutUs {
         id?: string | null;
       }[]
     | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "electronic_resources".
+ */
+export interface ElectronicResource {
+  id: number;
+  hero?: (number | null) | Hero;
+  accesos_destacados?: (number | null) | ElectronicResourcesAccess;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -2326,6 +2394,17 @@ export interface AboutUsSelect<T extends boolean = true> {
         images?: T;
         id?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "electronic_resources_select".
+ */
+export interface ElectronicResourcesSelect<T extends boolean = true> {
+  hero?: T;
+  accesos_destacados?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
