@@ -20,6 +20,7 @@ import { Layout } from "./globals/Layout.ts";
 import { AboutUs } from "./globals/AboutUs.ts";
 import { ElectronicResources } from "./globals/ElectronicResources.ts";
 import { QuienesSomos } from "./globals/QuienesSomos.ts";
+import { HorariosContacto } from "./globals/HorariosContacto.ts";
 
 import { Users } from "./collections/Users.ts";
 import { Media } from "./collections/Media.ts";
@@ -40,6 +41,7 @@ import { HeroCarrusel } from "./collections/HeroCarrusel.ts";
 import { Header } from "./collections/Header.ts";
 import { Footer } from "./collections/Footer.ts";
 import { ElectronicResourcesAccess } from "./collections/ElectronicResourcesAccess.ts";
+import { Schedule } from "./collections/Schedule.ts";
 
 
 import { AbsysService } from "./collections/Absys.service.ts";
@@ -85,7 +87,8 @@ export default buildConfig({
     BookCoverService,
     AuthorService,
     LoginAbsysService,
-    ElectronicResourcesAccess
+    ElectronicResourcesAccess,
+    Schedule
   ],
   globals: [
     Home,
@@ -98,7 +101,8 @@ export default buildConfig({
     Contact,
     AboutUs,
     ElectronicResources,
-    QuienesSomos
+    QuienesSomos,
+    HorariosContacto
   ],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",

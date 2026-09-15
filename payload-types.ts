@@ -92,6 +92,7 @@ export interface Config {
     author_service: AuthorService;
     loginAbsys_service: LoginAbsysService;
     electronic_resources_access: ElectronicResourcesAccess;
+    schedule: Schedule;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -123,6 +124,7 @@ export interface Config {
     author_service: AuthorServiceSelect<false> | AuthorServiceSelect<true>;
     loginAbsys_service: LoginAbsysServiceSelect<false> | LoginAbsysServiceSelect<true>;
     electronic_resources_access: ElectronicResourcesAccessSelect<false> | ElectronicResourcesAccessSelect<true>;
+    schedule: ScheduleSelect<false> | ScheduleSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -144,6 +146,7 @@ export interface Config {
     about_us: AboutUs;
     electronic_resources: ElectronicResource;
     quienes_somos: QuienesSomo;
+    horarios_contacto: HorariosContacto;
   };
   globalsSelect: {
     home: HomeSelect<false> | HomeSelect<true>;
@@ -157,6 +160,7 @@ export interface Config {
     about_us: AboutUsSelect<false> | AboutUsSelect<true>;
     electronic_resources: ElectronicResourcesSelect<false> | ElectronicResourcesSelect<true>;
     quienes_somos: QuienesSomosSelect<false> | QuienesSomosSelect<true>;
+    horarios_contacto: HorariosContactoSelect<false> | HorariosContactoSelect<true>;
   };
   locale: null;
   widgets: {
@@ -805,6 +809,24 @@ export interface ElectronicResourcesAccess {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "schedule".
+ */
+export interface Schedule {
+  id: number;
+  title?: string | null;
+  schedule?:
+    | {
+        day: string;
+        hours: string;
+        type?: ('regular' | 'closed' | 'extended' | 'holiday') | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -922,6 +944,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'electronic_resources_access';
         value: number | ElectronicResourcesAccess;
+      } | null)
+    | ({
+        relationTo: 'schedule';
+        value: number | Schedule;
       } | null);
   globalSlug?: string | null;
   user:
@@ -1397,6 +1423,23 @@ export interface ElectronicResourcesAccessSelect<T extends boolean = true> {
         description?: T;
         cta?: T;
         link?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "schedule_select".
+ */
+export interface ScheduleSelect<T extends boolean = true> {
+  title?: T;
+  schedule?:
+    | T
+    | {
+        day?: T;
+        hours?: T;
+        type?: T;
         id?: T;
       };
   updatedAt?: T;
@@ -1941,6 +1984,26 @@ export interface QuienesSomo {
   imagen_dirigidos?: (number | null) | Media;
   ayudas?: (number | null) | Feature;
   dirigidos?: (number | null) | Feature;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "horarios_contacto".
+ */
+export interface HorariosContacto {
+  id: number;
+  hero?: (number | null) | Hero;
+  edificio_nombre?: string | null;
+  edificio_subtitulo?: string | null;
+  horario?: (number | null) | Schedule;
+  direccion_linea1?: string | null;
+  direccion_linea2?: string | null;
+  telefono?: string | null;
+  email?: string | null;
+  mapa_url?: string | null;
+  mapa_embed_url?: string | null;
+  ayuda_cta?: (number | null) | Cta;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -2497,6 +2560,26 @@ export interface QuienesSomosSelect<T extends boolean = true> {
   imagen_dirigidos?: T;
   ayudas?: T;
   dirigidos?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "horarios_contacto_select".
+ */
+export interface HorariosContactoSelect<T extends boolean = true> {
+  hero?: T;
+  edificio_nombre?: T;
+  edificio_subtitulo?: T;
+  horario?: T;
+  direccion_linea1?: T;
+  direccion_linea2?: T;
+  telefono?: T;
+  email?: T;
+  mapa_url?: T;
+  mapa_embed_url?: T;
+  ayuda_cta?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
