@@ -424,3 +424,11 @@ Se pidió explícitamente no dejarlo tan simple. Se sustituyó el patrón mínim
 - **`seeds/horarios.seed.ts` reescrito** para sembrar el nuevo global (hero, `schedule` con las 5 franjas horarias, `cta` de ayuda) en vez de `about_us`
 - **Gotcha de dev encontrado**: tras registrar el global nuevo en `payload.config.ts`, el proceso `next dev` ya en marcha dentro del contenedor devolvía `APIError: The global with slug horarios_contacto can't be found` porque `getPayload()` cachea la instancia inicializada y no la recarga sola con Fast Refresh al añadir un global/collection nuevo — hace falta `docker restart biblioteca-frontend` (o reiniciar el dev server) después de registrar un global/collection nuevo en `payload.config.ts`, no basta con guardar el archivo
 - **Probado** contra la BD real del contenedor de desarrollo y con `curl` tras el restart (200 OK, tabla de horarios y enlace de FAQs correctos)
+
+### `hero_carrusel` (Home) — Seed dedicado con contenido real
+
+`seeds/heroCarrusel.seed.ts` (nuevo): crea 3 items reales de `hero_carrusel` (Nueva suscripción a Scopus y Web of Science, Nueva sala de estudio en grupo, Talleres gratuitos de gestión bibliográfica — usando 2 imágenes de `seeds/assets/` y `campus.jpg` como placeholder para la tercera, ver nota) y hace `updateGlobal` de `home.hero_carrusel` para que sustituya al carrusel de contenido de broma que crea `home.seed.ts` (hologramas 3D / NASA). Redundante con la sección de carrusel de `home.seed.ts` pero inofensivo — al ir después en la cadena de `npm run seed`, gana y es el que queda enlazado. No se tocó Payload (ninguna collection/global nueva, `hero_carrusel` ya existía).
+
+**Nota sobre la imagen del taller**: el usuario pidió usar contenido real (título/descripción) de una imagen que ya subió manualmente a producción vía el admin de Payload (`Gemini_Generated_Image_pjh4c4pjh4c4pjh4.jpg`, alt "imagen taller universitaria"), pero ese archivo no existe en este entorno de desarrollo — el `media` de este contenedor no tiene ese id/filename. Se usó `campus.jpg` como placeholder (confirmado con el usuario) hasta que suba el asset real a `seeds/assets/` o lo sustituya a mano en el admin de este entorno.
+
+Probado contra la BD real del contenedor de desarrollo y con `curl` contra la home renderizada (200 OK, las 3 diapositivas reales aparecen).
