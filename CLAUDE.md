@@ -75,6 +75,7 @@ Payload Admin → Globals → Collections → Pages → RenderBlocks → Compone
 | `news` | `collections/News.ts` | `title`, `visible_cards`, `style` (select: 0-3), `newsItems[]` (min:1, max:6) con `tag`, `link`, `title`, `description`, `image` | `newsItems[].image` → media |
 | `blogs` | `collections/Blogs.ts` | `title`, `blogItems[]` (min:1, max:10) con `title`, `blog`, `date` | — |
 | `electronic_resources_access` | `collections/ElectronicResourcesAccess.ts` | `title`, `accesos[]` (min:1, max:6) con `icon` (select de appIcons), `title`, `description`, `cta`, `link` | — |
+| `schedule` | `collections/Schedule.ts` | `title`, `schedule[]` (min:1, max:7) con `day`, `hours`, `type` (select: regular/closed/extended/holiday) | — |
 
 #### Collections de datos (4)
 
@@ -115,7 +116,8 @@ Payload Admin → Globals → Collections → Pages → RenderBlocks → Compone
 | `repository` | `globals/Repositories.ts` | `hero` + `layout` (sin hero_carrusel). **Bug**: labels de `input_block` son "Sobre Nosotros" | Página parcial |
 | `library` | `globals/Library.ts` | Solo `hero` | Mínimo |
 | `contact` | `globals/Contact.ts` | Solo `hero` | Mínimo |
-| `about_us` | `globals/AboutUs.ts` | `quienes_somos[]` (**no usado**, ver `quienes_somos` global), `horarios[]`, `normativa[]` — cada uno con `images` (upload→media) | Documentos/imágenes |
+| `about_us` | `globals/AboutUs.ts` | `quienes_somos[]` (**no usado**, ver `quienes_somos` global), `horarios[]` (**no usado**, ver `horarios_contacto` global), `normativa[]` — cada uno con `images` (upload→media) | Documentos/imágenes |
+| `horarios_contacto` | `globals/HorariosContacto.ts` | `hero` (rel→hero), `edificio_nombre`/`edificio_subtitulo`, `horario` (rel→schedule), `direccion_linea1`/`direccion_linea2`, `telefono`, `email`, `mapa_url`, `mapa_embed_url`, `ayuda_cta` (rel→cta) | Página parcial |
 | `electronic_resources` | `globals/ElectronicResources.ts` | `hero` (rel→hero, reutiliza la collection existente), `accesos_destacados` (rel→electronic_resources_access) | Página parcial |
 | `quienes_somos` | `globals/QuienesSomos.ts` | `hero` (rel→hero), `imagen_dirigidos` (upload→media), `ayudas` (rel→features), `dirigidos` (rel→features) — `ayudas`/`dirigidos` reutilizan la collection `features` existente con dos docs distintos | Página parcial |
 | `layout` | `globals/Layout.ts` | `header` (rel→header), `footer` (rel→footer) | Template del sitio |
@@ -262,7 +264,7 @@ Cada bloque se envuelve en `<section key={id} data-block-type={blockType}>`.
 | `/contacto` | `contact` | No | Hero + SimpleForm + info contacto |
 | `/conocenos/quienes-somos` | `quienes_somos` | No | Hero (title/subtitle/imagen) + tarjetas "ayudas"/"dirigidos" editables desde Payload (reutilizan `features`) |
 | `/conocenos/normativa-...` | `about_us` | No | Images de Payload, arrays hardcodeados |
-| `/conocenos/horarios-...` | `about_us` | No | Images de Payload, horarios hardcodeados |
+| `/conocenos/horarios-...` | `horarios_contacto` | No | Hero + tabla de horarios + contacto/dirección/mapa + CTA de ayuda, todo editable desde Payload |
 | `/recursos/recursos-electronicos` | `electronic_resources` | No | Hero (title/subtitle/imagen) + accesos destacados editables desde Payload; pestañas de bases de datos/ebooks/multimedia siguen hardcodeadas |
 
 ### Páginas que NO usan Payload (API externa Absys)
@@ -409,6 +411,16 @@ A petición explícita, aquí no se tocó Payload ni las collections/globals —
 - **`app/(frontend)/page.tsx`**: ambos se insertan entre `HeroCarrousel` y `RenderBlocks` (`HomeQuickLinks`) y al final (`BackToTop`); `Hero`, `HeroCarrousel`, `RenderBlocks`, `Input` y `News` no se modificaron (ya estaban bien pulidos con carrusel, autoplay, hover states y transiciones propias)
 - **Probado** con `curl` contra la página renderizada (200 OK, las 5 chips y el resto del contenido existente siguen presentes)
 
-### `/conocenos/horarios-ubicacion-y-contacto` — Seed dedicado
+### `/conocenos/horarios-ubicacion-y-contacto` — De seed mínimo a global + collection completos
 
-No se tocó Payload ni el componente (sigue usando el patrón mínimo ya existente: `about_us.horarios[0].images` para la imagen del hero, el resto de la página sigue hardcodeado). Solo se añadió `seeds/horarios.seed.ts`, siguiendo el mismo patrón modular (un seed por página) usado para recursos-electronicos/quienes-somos/investigación/formación, en vez de depender del seed genérico `aboutUs.seed.ts` que ya sembraba `horarios` junto con `quienes_somos` (huérfano) y `normativa`. Nota: `aboutUs.seed.ts` sigue sembrando `horarios` también — es redundante pero inofensivo (mismo patrón de cada seed subiendo su propia copia de `campus.jpg`, ya establecido en el resto de seeds de esta sesión). Encadenado al final de `npm run seed`. Probado contra la BD real del contenedor de desarrollo y con `curl` (200 OK, imagen servida desde Payload).
+Se pidió explícitamente no dejarlo tan simple. Se sustituyó el patrón mínimo (`about_us.horarios[0].images`, solo una imagen) por un global dedicado, igual de completo que investigación/formación:
+
+- **Nueva collection** `collections/Schedule.ts` (slug `schedule`): `title` + `schedule[]` (array `day`/`hours`/`type` — select `regular`/`closed`/`extended`/`holiday`, con estilos de color distintos por tipo en el front). Reutiliza el shape del array `schedules` que ya estaba en el componente pero nunca se usaba (dead code) — ahora sí se renderiza
+- **Nuevo global** `globals/HorariosContacto.ts` (slug `horarios_contacto`): `hero` (rel→`hero`), `edificio_nombre`/`edificio_subtitulo` (texto, caption sobre la imagen), `horario` (rel→`schedule`), `direccion_linea1`/`direccion_linea2`, `telefono`, `email`, `mapa_url` (botón "Cómo llegar"), `mapa_embed_url` (iframe), `ayuda_cta` (rel→`cta`, reutilizada, para el bloque "¿Necesitas ayuda adicional?")
+- **Registrado** en `payload.config.ts` (collection + global)
+- **`app/(frontend)/conocenos/horarios-ubicacion-y-contacto/page.tsx`**: ya no lee `about_us`, lee `horarios_contacto` completo, con fallback al contenido original en cada campo
+- **Bug corregido**: el botón "Ver FAQs" tenía `href=""` (enlace roto); ahora usa `ayuda_cta.button_link` con fallback a `/contacto`
+- **`about_us.horarios[]` queda sin uso** (como ya le pasó a `about_us.quienes_somos[]`) — no se ha borrado del schema
+- **`seeds/horarios.seed.ts` reescrito** para sembrar el nuevo global (hero, `schedule` con las 5 franjas horarias, `cta` de ayuda) en vez de `about_us`
+- **Gotcha de dev encontrado**: tras registrar el global nuevo en `payload.config.ts`, el proceso `next dev` ya en marcha dentro del contenedor devolvía `APIError: The global with slug horarios_contacto can't be found` porque `getPayload()` cachea la instancia inicializada y no la recarga sola con Fast Refresh al añadir un global/collection nuevo — hace falta `docker restart biblioteca-frontend` (o reiniciar el dev server) después de registrar un global/collection nuevo en `payload.config.ts`, no basta con guardar el archivo
+- **Probado** contra la BD real del contenedor de desarrollo y con `curl` tras el restart (200 OK, tabla de horarios y enlace de FAQs correctos)
