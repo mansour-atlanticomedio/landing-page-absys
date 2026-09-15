@@ -29,7 +29,7 @@ const TARJETAS_FALLBACK = [
     title: "Acceso abierto y repositorio",
     description: "Encuentra información sobre repositorios, versiones de los documentos, licencias, derechos de autor y posibilidades de difusión en acceso abierto.",
     cta: "Acceder al Repositorio institucional",
-    link: "http://172.23.2.44:4000/dspace",
+    link: "http://172.26.0.200:4000/dspace",
   },
   {
     icon: "Fingerprint",

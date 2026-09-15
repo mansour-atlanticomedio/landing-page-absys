@@ -19,20 +19,33 @@ const imageCarusel_2 = await payload.create({
   filePath: path.resolve(process.cwd(), 'seeds/assets/campus.jpg'),
 })
 
+const imageCarusel_3 = await payload.create({
+  collection: 'media',
+  data: { alt: 'imagen fondo' },
+  filePath: path.resolve(process.cwd(), 'seeds/assets/Gemini_Generated_Image_pjh4c4pjh4c4pjh4.jpg'),
+})
+
 const carusselData = {
   items: [
     {
-      title: 'La biblioteca sustituye todos sus libros por hologramas 3D',
+      title: 'Nueva suscripción a Scopus y Web of Science',
       description:
-        'Las estanterías físicas desaparecen el próximo mes para dar paso a lecturas flotantes en el aire y robots que velan por el silencio',
+        'La biblioteca amplía su acceso a bases de datos científicas para toda la comunidad universitaria, disponible ya desde el catálogo online',
       image: imageCarusel_1.id,
     },
     {
       title:
-        'Acceso gratuito e ilimitado a las bases de datos restringidas de la NASA para la comunidad',
+        'Nueva sala de estudio en grupo',
       description:
-        'Tras un convenio exclusivo, los estudiantes ya pueden consultar el archivo espacial reservado ingresando sus datos en el enlace adjunto',
+        'Disponible desde el próximo mes en la segunda planta, pensada para trabajos en equipo y con reserva desde tu cuenta de biblioteca',
       image: imageCarusel_2.id,
+    },
+    {
+      title:
+        'Talleres gratuitos de gestión bibliográfica',
+      description:
+        'Aprende a usar Zotero y Mendeley para organizar tus referencias, con sesiones abiertas a todo el alumnado este trimestre',
+      image: imageCarusel_3.id,
     },
   ],
 }
