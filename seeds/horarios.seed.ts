@@ -30,7 +30,6 @@ const horarioDoc = await payload.create({
       { day: 'Sábados', hours: '09:00 - 14:00', type: 'regular' },
       { day: 'Domingos y festivos', hours: 'Cerrado', type: 'closed' },
       { day: 'Período de exámenes', hours: '08:00 - 22:00', type: 'extended' },
-      { day: 'Vacaciones', hours: '09:00 - 15:00', type: 'holiday' },
     ],
   },
 })

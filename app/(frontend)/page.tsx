@@ -52,7 +52,7 @@ export default async function Home() {
         />
       }
 
-      <HomeQuickLinks />
+      {/* <HomeQuickLinks /> */}
 
       <RenderBlocks blocks={pageBlocks} />
 

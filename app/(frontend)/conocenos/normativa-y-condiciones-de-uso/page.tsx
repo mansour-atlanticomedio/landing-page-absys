@@ -130,7 +130,7 @@ export default async function NormativaPage() {
         </div>
 
         <div className="mt-10 flex justify-center">
-          <button className="bg-slate-800 text-white rounded-md px-6 py-3 font-medium flex items-center gap-2">
+          <button className="bg-slate-800 text-white rounded-md px-6 py-3 font-medium flex items-center gap-2 cursor-pointer hover:scale-[1.02]">
             <Download className="h-4 w-4" /> Descargar normativa completa (PDF)
           </button>
         </div>
