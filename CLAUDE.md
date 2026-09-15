@@ -429,6 +429,22 @@ Se pidió explícitamente no dejarlo tan simple. Se sustituyó el patrón mínim
 
 `seeds/heroCarrusel.seed.ts` (nuevo): crea 3 items reales de `hero_carrusel` (Nueva suscripción a Scopus y Web of Science, Nueva sala de estudio en grupo, Talleres gratuitos de gestión bibliográfica — usando 2 imágenes de `seeds/assets/` y `campus.jpg` como placeholder para la tercera, ver nota) y hace `updateGlobal` de `home.hero_carrusel` para que sustituya al carrusel de contenido de broma que crea `home.seed.ts` (hologramas 3D / NASA). Redundante con la sección de carrusel de `home.seed.ts` pero inofensivo — al ir después en la cadena de `npm run seed`, gana y es el que queda enlazado. No se tocó Payload (ninguna collection/global nueva, `hero_carrusel` ya existía).
 
+### `seeds/index.ts` — Punto de entrada único para todos los seeds
+
+`npm run seed` ahora ejecuta `tsx seeds/index.ts` en vez de una cadena de `&&` en `package.json`. `index.ts` lanza cada `*.seed.ts` como proceso hijo (`spawnSync('npx', ['tsx', file], { stdio: 'inherit' })`), en este orden, y se detiene en el primer fallo (mismo comportamiento que `&&`):
+
+1. `layout.seed.ts` — header + footer + global `layout`
+2. `home.seed.ts` — hero_carrusel de placeholder, input, news, global `home`
+3. `aboutUs.seed.ts` — global `about_us` (`normativa` es el único campo que sigue en uso; `quienes_somos`/`horarios` quedaron huérfanos)
+4. `electronicResources.seed.ts` — global `electronic_resources`
+5. `quienesSomos.seed.ts` — global `quienes_somos`
+6. `investigation.seed.ts` — global `investigation`
+7. `formation.seed.ts` — global `formation`
+8. `horarios.seed.ts` — global `horarios_contacto`
+9. `heroCarrusel.seed.ts` — **tiene que ir después de `home.seed.ts`**: sustituye su `hero_carrusel` de broma por el contenido real, vía `updateGlobal`
+
+Los seeds 3-8 son independientes entre sí y podrían reordenarse sin romper nada; la única dependencia de orden real es 2→9. Si se añade un seed nuevo, añadirlo al array `SEEDS` de `seeds/index.ts` (única fuente de verdad del orden — `package.json` ya no lo duplica).
+
 **Nota sobre la imagen del taller**: el usuario pidió usar contenido real (título/descripción) de una imagen que ya subió manualmente a producción vía el admin de Payload (`Gemini_Generated_Image_pjh4c4pjh4c4pjh4.jpg`, alt "imagen taller universitaria"), pero ese archivo no existe en este entorno de desarrollo — el `media` de este contenedor no tiene ese id/filename. Se usó `campus.jpg` como placeholder (confirmado con el usuario) hasta que suba el asset real a `seeds/assets/` o lo sustituya a mano en el admin de este entorno.
 
 Probado contra la BD real del contenedor de desarrollo y con `curl` contra la home renderizada (200 OK, las 3 diapositivas reales aparecen).
