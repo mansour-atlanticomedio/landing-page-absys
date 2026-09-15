@@ -55,9 +55,16 @@ Payload Admin → Globals → Collections → Pages → RenderBlocks → Compone
 - Wrapper: `getClient()` retorna instancia de Payload
 - Config: `payload.config.ts`
 
-### Collections (23 registradas)
+### ⚠️ Push (dev) vs Migraciones (producción) — leer antes de tocar schema
 
-#### Collections de contenido (13)
+- **En dev** (`NODE_ENV !== 'production'`, contenedor `biblioteca-frontend` con `Dockerfile.dev`), el adapter de Postgres usa `push: true` por defecto: cualquier collection/global nuevo o campo añadido se sincroniza solo contra la BD la primera vez que se inicializa Payload (el spinner "Pulling schema from database..." que se ve al lanzar un seed o `next dev`).
+- **En producción** (`Dockerfile` fija `NODE_ENV=production`), `push` es `false`: la BD **solo** se actualiza aplicando migraciones (`payload migrate`). Si se añade una collection/global/campo nuevo y no se genera su migración, en producción esa tabla/columna directamente no existe — cualquier `payload.create`/`payload.updateGlobal` contra ella revienta con `relation "..." does not exist`, aunque en dev funcione perfectamente (por eso puede pasar desapercibido toda una sesión de trabajo).
+- **Regla**: después de crear o modificar cualquier collection/global (`collections/*.ts`, `globals/*.ts`), además de `npx payload generate:types`, hay que generar la migración correspondiente con `npx payload migrate:create <nombre-descriptivo>` (se puede correr contra la BD de dev ya sincronizada por push — la migración generada refleja el diff acumulado desde la última migración) y comprobar que `npm run migrate` aplica limpio contra una BD nueva antes de dar el cambio por terminado.
+- Migraciones existentes: `migrations/20260731_114550_baseline.ts` (base) + `migrations/20260915_162539_session_2026_09_14_content_globals.ts` (todo el schema de la sesión de recursos-electrónicos/quiénes-somos/investigación/formación/horarios — se generó a posteriori porque no se había estado corriendo `migrate:create` en cada paso; a partir de ahora generar la migración en el mismo momento en que se toca el schema, no al final)
+
+### Collections (25 registradas)
+
+#### Collections de contenido (15)
 
 | Slug | Fichero | Campos clave | Relación con media |
 |------|---------|--------------|-------------------|
@@ -105,7 +112,7 @@ Payload Admin → Globals → Collections → Pages → RenderBlocks → Compone
 
 - **`collections/Icons.ts`**: exporta `appIcons` (Lightbulb, BookOpen, Microscope, Star, User, Briefcase, Phone, Mail, MapPin, Calendar) y `iconsSocialMedia` (FaFacebook, FaTwitter, FaInstagram, FaLinkedin, FaYoutube, Globe)
 
-### Globals (9)
+### Globals (12)
 
 | Slug | Fichero | Campos | Categoría |
 |------|---------|--------|-----------|
