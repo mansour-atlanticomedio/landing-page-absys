@@ -1,6 +1,6 @@
 "use client"
 import Image from "next/image"
-import { useParams, useRouter } from "next/navigation"
+import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { motion } from "framer-motion"
 import { Book, Calendar, Globe, Hash, MapPin, CheckCircle2, BookmarkPlus, ArrowLeft, Copyright } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -29,7 +29,12 @@ const recommendations = [
 export default function LibroPage() {
   const params = useParams()
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const previousQuery = searchParams.get('q')
   const isbn = params.isbn as string
+  const backHref = previousQuery
+    ? `/recursos/catalogo/busqueda?q=${encodeURIComponent(previousQuery)}`
+    : '/recursos/catalogo/busqueda'
   const BASE_API_URL = process.env.NEXT_PUBLIC_API_URL
 
   const [loading, setLoading] = useState(true);
@@ -130,10 +135,10 @@ export default function LibroPage() {
             variant="ghost"
             size="sm"
             className="text-muted-foreground hover:text-accent"
-            onClick={() => router.push('/recursos/catalogo')}
+            onClick={() => router.push(backHref)}
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Volver al catálogo
+            Volver a la búsqueda
           </Button>
         </div>
       </section>
