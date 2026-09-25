@@ -1,0 +1,9 @@
+{
+  "response": {
+    "description": "Add operation: OK (table 'lector').",
+    "subcode": "1",
+    "code": "0",
+    "lenlec": 100024,
+    "version": "Jul 13 2017 (2.1)"
+  }
+}

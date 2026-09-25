@@ -1,0 +1,27 @@
+{
+  "response": {
+    "description": "Search operation: OK (base 'cata').",
+    "subcode": 1,
+    "subcode2": 0,
+    "code": 0,
+    "count": 1,
+    "version": "Jul 13 2017 (2.1)",
+    "collection": {
+      "xmlns": "http://www.loc.gov/MARC21/slim",
+      "record": {
+        "index": 1,
+        "titn": 1045,
+        "leader": "00000nam a2200000 i 4500",
+        "controfield": [],
+        "datafield": [
+          { "tag": "020", "ind1": " ", "ind2": " ", "subfield": [{ "code": "a", "content": "9788497592208 (rúst.)" }] },
+          { "tag": "100", "ind1": 1, "ind2": " ", "subfield": [{ "code": "a", "content": "García Márquez, Gabriel," }] },
+          { "tag": "245", "ind1": 1, "ind2": 0, "subfield": [{ "code": "a", "content": "Cien años de soledad /" }, { "code": "c", "content": "Gabriel García Márquez" }] },
+          { "tag": "260", "ind1": " ", "ind2": " ", "subfield": [{ "code": "a", "content": "Barcelona :" }, { "code": "b", "content": "Debolsillo," }, { "code": "c", "content": "2003." }] },
+          { "tag": "520", "ind1": " ", "ind2": " ", "subfield": [{ "code": "a", "content": "Historia de la familia Buendía a lo largo de siete generaciones en el pueblo ficticio de Macondo." }] },
+          { "tag": "650", "ind1": " ", "ind2": 4, "subfield": [{ "code": "a", "content": "Novela colombiana" }] }
+        ]
+      }
+    }
+  }
+}
