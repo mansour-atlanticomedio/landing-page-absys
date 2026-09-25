@@ -115,9 +115,6 @@ export const handleLoginLector: PayloadHandler = async (req) => {
 
     const { lenlec, lepass } = Object.fromEntries(params);
 
-    console.log("Credentials:", credentials)
-    console.log("Informacion:", lenlec, lepass)
-
     const addParams = new URLSearchParams();
     addParams.set("operation", "search");
     addParams.set("table", "lector");
@@ -143,7 +140,6 @@ export const handleLoginLector: PayloadHandler = async (req) => {
     return jsonOk(user);
 
   } catch (e) {
-    console.error("Error with login: ", e)
     req.payload.logger.error(e);
     return jsonError("Error interno del servidor al procesar el login", 500);
   }
