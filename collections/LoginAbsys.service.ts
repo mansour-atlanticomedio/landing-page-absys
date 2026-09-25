@@ -1,7 +1,6 @@
 import { AbsysAddLectorPayload, AbsysAddLectorResponse } from "@/types/absys.type";
 import type { CollectionConfig, PayloadHandler } from "payload";
-
-class AbsysError extends Error { }
+import { absysClient, AbsysInvalidDataError } from "@/lib/integrations/absys";
 
 const COLECTIVOS = {
   ALUMN: { lecolp: "ALUMN", lecocf: "ALIM", maxPrestamos: 3, diasPrestamo: 15 },
@@ -23,90 +22,6 @@ function formatAbsysDateTime(date: Date): string {
 
 const REQUIRED_FIELDS = ["leapel", "lenomb", "lepass", "lecolp", "ledi11"] as const;
 
-const getAbsysHeaders = (): Headers => {
-  const user = process.env.NEXT_ABSYS_USERNAME;
-  const pass = Buffer.from(process.env.NEXT_ABSYS_PASSWORD || "", "base64").toString("utf-8");
-
-  if (!user || !pass) {
-    throw new AbsysError("Credenciales de ABSYS no configuradas");
-  }
-
-  const auth = Buffer.from(`${user}:${pass}`).toString("base64");
-
-  return new Headers({
-    Authorization: `Basic ${auth}`,
-    "Content-Type": "application/json",
-    Accept: "*/*",
-    "Cache-Control": "no-cache",
-    Cookie: "Path=/",
-  });
-};
-
-const fetchAbsys = async (params: URLSearchParams): Promise<any> => {
-  const baseUrl = process.env.NEXT_ABSYS_API;
-  if (!baseUrl) throw new AbsysError("NEXT_ABSYS_API no configurada");
-
-  const response = await fetch(`${baseUrl}?${params.toString()}`, {
-    method: "GET",
-    headers: getAbsysHeaders(),
-    cache: "no-store",
-  });
-
-  const data = await response.json();
-
-  if (!response.ok) {
-    throw new AbsysError(`Absys API Error: ${response.statusText} - ${JSON.stringify(data)}`);
-  }
-
-  return data;
-};
-
-const postAbsys = async (
-  operation: string,
-  table: string,
-  bodyParams: Record<string, string | undefined>
-): Promise<any> => {
-  const baseUrl = process.env.NEXT_ABSYS_API;
-  if (!baseUrl) throw new AbsysError("NEXT_ABSYS_API no configurada");
- 
-  const user = process.env.NEXT_ABSYS_USERNAME;
-  const pass = Buffer.from(process.env.NEXT_ABSYS_PASSWORD || "", "base64").toString("utf-8");
- 
-  if (!user || !pass) {
-    throw new AbsysError("Credenciales de ABSYS no configuradas");
-  }
- 
-  const auth = Buffer.from(`${user}:${pass}`).toString("base64");
- 
-  const query = new URLSearchParams({ operation, table });
- 
-  const body = new URLSearchParams();
-  for (const [key, value] of Object.entries(bodyParams)) {
-    if (value !== undefined && value !== null) body.set(key, String(value));
-  }
- 
-  const response = await fetch(`${baseUrl}?${query.toString()}`, {
-    method: "POST",
-    headers: {
-      Authorization: `Basic ${auth}`,
-      "Content-Type": "application/x-www-form-urlencoded",
-      Accept: "*/*",
-      "Cache-Control": "no-cache",
-    },
-    body: body.toString(),
-    cache: "no-store",
-  });
- 
-  const data = await response.json();
- 
-  if (!response.ok) {
-    throw new AbsysError(`Absys API Error: ${response.statusText} - ${JSON.stringify(data)}`);
-  }
- 
-  return data;
-};
- 
-
 export const handleLoginLector: PayloadHandler = async (req) => {
   try {
     const { credentials } = req.routeParams as { credentials: string };
@@ -115,12 +30,7 @@ export const handleLoginLector: PayloadHandler = async (req) => {
 
     const { lenlec, lepass } = Object.fromEntries(params);
 
-    const addParams = new URLSearchParams();
-    addParams.set("operation", "search");
-    addParams.set("table", "lector");
-    addParams.set("lenlec", lenlec);
-
-    const result = await fetchAbsys(addParams);
+    const result: any = await absysClient.search({ table: "lector", lenlec });
 
     const response = result.response
 
@@ -200,15 +110,14 @@ export const handleCreateLector: PayloadHandler = async (req) => {
       letfn1: body.letfn1,
     };
  
-    const result = await postAbsys("add", "lector", payload as unknown as Record<string, string>);
- 
-    if (result?.response?.code !== 0) {
-      req.payload.logger.error(result?.response?.description);
-      return jsonError(result?.response?.description ?? "No se ha podido crear el lector", 502);
-    }
+    const result = await absysClient.add("lector", payload as unknown as Record<string, string>);
  
     return jsonOk({ lenlec: result.response.lenlec }, 201);
   } catch (error) {
+    if (error instanceof AbsysInvalidDataError) {
+      req.payload.logger.error(error.message);
+      return jsonError(error.message || "No se ha podido crear el lector", 502);
+    }
     req.payload.logger.error(error);
     return jsonError("Error interno del servidor al procesar el alta", 500);
   }
@@ -225,12 +134,7 @@ export const handleGetLectorMe: PayloadHandler = async (req) => {
 
     if (req.user.id) {
       try {
-        const params = new URLSearchParams();
-        params.set("operation", "search");
-        params.set("table", "lector");
-        params.set("lenlec", String(req.user.id));
-
-        const res = await fetchAbsys(params);
+        const res: any = await absysClient.search({ table: "lector", lenlec: String(req.user.id) });
         if (res?.response?.lector) {
           absysProfile = res.response.lector;
         }

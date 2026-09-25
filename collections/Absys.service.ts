@@ -1,59 +1,15 @@
 import type { CollectionConfig, PayloadHandler } from "payload";
+import { absysClient } from "@/lib/integrations/absys";
 
 const ABSYS_BASE = "cata";
 const DOC_FIELDS = "245, 100, 020";
 const DEFAULT_PAGE_SIZE = 12;
-
-interface AbsysResponse {
-  data: any;
-  error?: string;
-}
-
-class AbsysError extends Error {}
-
-const getAbsysHeaders = (): Headers => {
-  const user = process.env.NEXT_ABSYS_USERNAME;
-  const pass = Buffer.from(process.env.NEXT_ABSYS_PASSWORD || '', 'base64').toString('utf-8');
-
-  if (!user || !pass) {
-    throw new AbsysError("Credenciales de ABSYS no configuradas");
-  }
-
-  const auth = Buffer.from(`${user}:${pass}`).toString("base64");
-
-  return new Headers({
-    Authorization: `Basic ${auth}`,
-    "Content-Type": "application/json",
-    Accept: "*/*",
-    "Cache-Control": "no-cache",
-    Cookie: "Path=/",
-  });
-};
 
 const getPaginationParams = (query: Record<string, any>) => {
   const pagePosition = Math.max(1, parseInt(query.page, 10) || 1);
   const limit = Math.max(1, parseInt(query.limit, 10) || DEFAULT_PAGE_SIZE);
   const page = (pagePosition - 1) * limit + 1;
   return { page, limit };
-};
-
-const fetchAbsys = async (params: URLSearchParams): Promise<AbsysResponse> => {
-  const baseUrl = process.env.NEXT_ABSYS_API;
-  if (!baseUrl) throw new AbsysError("NEXT_ABSYS_API no configurada");
-
-  const response = await fetch(`${baseUrl}?${params.toString()}`, {
-    method: "GET",
-    headers: getAbsysHeaders(),
-    cache: "no-store",
-  });
-
-  const data = await response.json();
-
-  if (!response.ok) {
-    throw new AbsysError(`Absys API Error: ${response.statusText} - ${JSON.stringify(data)}`);
-  }
-
-  return data;
 };
 
 const buildParams = (opts: {
@@ -63,7 +19,6 @@ const buildParams = (opts: {
   query?: Record<string, any>;
 }) => {
   const params = new URLSearchParams();
-  params.set("operation", "search");
   params.set("base", ABSYS_BASE);
   params.set("search", opts.search);
 
@@ -95,7 +50,7 @@ export const handleSearch: PayloadHandler = async (req) => {
       query: req.query,
     });
 
-    const result = await fetchAbsys(params);
+    const result = await absysClient.search(Object.fromEntries(params));
     return jsonOk(result);
   } catch (error) {
     req.payload.logger.error(error);
@@ -116,7 +71,7 @@ export const handleResourceByName: PayloadHandler = async (req) => {
       query: req.query,
     });
 
-    const result = await fetchAbsys(params);
+    const result = await absysClient.search(Object.fromEntries(params));
     return jsonOk(result);
   } catch (error) {
     req.payload.logger.error(error);
