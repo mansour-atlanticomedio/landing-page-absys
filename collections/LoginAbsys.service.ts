@@ -1,26 +1,15 @@
-import { AbsysAddLectorPayload, AbsysAddLectorResponse } from "@/types/absys.type";
 import type { CollectionConfig, PayloadHandler } from "payload";
-import { absysClient, AbsysInvalidDataError } from "@/lib/integrations/absys";
-
-const COLECTIVOS = {
-  ALUMN: { lecolp: "ALUMN", lecocf: "ALIM", maxPrestamos: 3, diasPrestamo: 15 },
-  PDI: { lecolp: "PDI", lecocf: "PDIM", maxPrestamos: 10, diasPrestamo: 30 },
-} as const;
-
-type Colectivo = keyof typeof COLECTIVOS;
-
-const LECOBI = "BIEURO";
-const LECOSU = "MADRID";
-const LECART = "1";
-
-function formatAbsysDateTime(date: Date): string {
-  const pad = (n: number) => String(n).padStart(2, "0");
-  return `${pad(date.getDate())}/${pad(date.getMonth() + 1)}/${date.getFullYear()} ${pad(
-    date.getHours()
-  )}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
-}
+import { absys, AbsysInvalidDataError, type Lector } from "@/lib/integrations/absys";
 
 const REQUIRED_FIELDS = ["leapel", "lenomb", "lepass", "lecolp", "ledi11"] as const;
+
+// TODO(contrato-front): normalizar en issue aparte
+const toLegacyLector = (lector: Lector) => ({
+  lenomb: lector.nombre,
+  leapel: lector.apellidos,
+  lefubi: lector.ultimoUso,
+  lenlec: lector.id,
+});
 
 export const handleLoginLector: PayloadHandler = async (req) => {
   try {
@@ -30,24 +19,14 @@ export const handleLoginLector: PayloadHandler = async (req) => {
 
     const { lenlec, lepass } = Object.fromEntries(params);
 
-    const result: any = await absysClient.search({ table: "lector", lenlec });
+    const lector = await absys.findLectorByExternalId(lenlec);
 
-    const response = result.response
+    if (!lector) return jsonError('Usuario invalido', 404)
 
-    if (!response.lector) return jsonError('Usuario invalido', 404)
+    // TODO(F01): lepass siempre llega enmascarado desde Absys (ADR-0005), esta comparación nunca acierta
+    if (lector.lepassLegacy !== lepass) return jsonError('Contraseña incorrecta', 401)
 
-    const lector = response.lector
-
-    if (lector.lepass !== lepass) return jsonError('Contraseña incorrecta', 401)
-
-    const user = {
-      lenomb: lector.lenomb,
-      leapel: lector.leapel,
-      lefubi: lector.lefubi,
-      lenlec: lector.lenlec
-    }
-
-    return jsonOk(user);
+    return jsonOk(toLegacyLector(lector));
 
   } catch (e) {
     req.payload.logger.error(e);
@@ -89,30 +68,18 @@ export const handleCreateLector: PayloadHandler = async (req) => {
       return jsonError(`Campos obligatorios incompletos: ${missing.join(", ")}`, 400);
     }
  
-    const lecolpVal = body.lecolp as string;
-    const colectivo: Colectivo = lecolpVal in COLECTIVOS ? (lecolpVal as Colectivo) : "ALUMN";
-    const { lecolp, lecocf } = COLECTIVOS[colectivo];
+    // TODO(contrato-front): normalizar en issue aparte
+    const lector = await absys.createLector({
+      nombre: body.lenomb,
+      apellidos: body.leapel,
+      password: body.lepass,
+      colectivo: body.lecolp,
+      direccion: body.ledi11,
+      email: body.lemail,
+      telefono: body.letfn1,
+    });
  
-    const payload: AbsysAddLectorPayload = {
-      lenlec: "0",
-      leapel: body.leapel,
-      lenomb: body.lenomb,
-      lepass: body.lepass,
-      lecolp,
-      lecobi: LECOBI,
-      lecosu: LECOSU,
-      lecart: LECART,
-      ledi11: body.ledi11,
-      lecocf,
-      leacpd: "1",
-      lefepd: formatAbsysDateTime(new Date()),
-      lemail: body.lemail,
-      letfn1: body.letfn1,
-    };
- 
-    const result = await absysClient.add("lector", payload as unknown as Record<string, string>);
- 
-    return jsonOk({ lenlec: result.response.lenlec }, 201);
+    return jsonOk({ lenlec: lector.id }, 201);
   } catch (error) {
     if (error instanceof AbsysInvalidDataError) {
       req.payload.logger.error(error.message);
@@ -129,14 +96,14 @@ export const handleGetLectorMe: PayloadHandler = async (req) => {
       return jsonError("Acceso no autorizado", 401);
     }
 
-    let absysProfile = null;
+    let absysProfile: Record<string, unknown> | null = null;
     let isOfflineData = false;
 
     if (req.user.id) {
       try {
-        const res: any = await absysClient.search({ table: "lector", lenlec: String(req.user.id) });
-        if (res?.response?.lector) {
-          absysProfile = res.response.lector;
+        const lector = await absys.findLectorByExternalId(String(req.user.id));
+        if (lector) {
+          absysProfile = { ...toLegacyLector(lector), lemail: lector.email };
         }
       } catch (err) {
         req.payload.logger.error(err);
