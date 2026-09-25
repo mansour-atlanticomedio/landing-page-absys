@@ -10,7 +10,8 @@
     "lint": "eslint",
     "migrate": "payload migrate",
     "migrate:create": "payload migrate:create",
-    "seed": "tsx seeds/index.ts"
+    "seed": "tsx seeds/index.ts",
+    "test": "vitest run"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "^3.84.1",
@@ -50,6 +51,7 @@
     "postcss": "^8.5.14",
     "tailwindcss": "^4.3.0",
     "tsx": "^4.22.4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^4.1.11"
   }
 }
