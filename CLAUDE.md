@@ -102,6 +102,8 @@ Payload Admin → Globals → Collections → Pages → RenderBlocks → Compone
 | `author_service` | `collections/Author.service.ts` | `GET /:authorName`, `GET /` | Wikipedia en español (búsqueda estricta con keyword matching) |
 | `loginAbsys_service` | `collections/LoginAbsys.service.ts` | `POST /signin` (crear lector), `POST /login/:credentials` (autenticar), `GET /me` (perfil) | `NEXT_ABSYS_API` + Basic Auth. Auth collection con `tokenExpiration: 1800` |
 
+| `loginCampus_service` | `collections/LoginCampus.service.ts` | `POST /login/password/:id` y `POST /api/loginCampus/login/password[/:id]` (global) — **temporales**, solo dev, prueban el descifrado del token | Auth collection de los lectores que entran desde el campus (ver "Login desde el campus"). Campos: `absysId`, `nombre`, `apellidos`, `colectivo`... Migración `20260928_114829_login_campus` |
+
 > Desde el 2026-09-25, `absys_service` y `loginAbsys_service` ya **no hablan con Absys directamente**: todo pasa por el adaptador `lib/integrations/absys` (ver abajo). Los handlers solo leen la request, llaman a `absys.*` y dan forma a la respuesta HTTP.
 
 #### Adaptador de AbsysNet (`lib/integrations/absys/`)
@@ -314,6 +316,41 @@ Cada bloque se envuelve en `<section key={id} data-block-type={blockType}>`.
 - Client component pero usa server action `getLoginPageData()` (`app/(auth)/login/actions.ts`)
 - Server action fetch: `payload.find({ collection: "login_page" })` + `payload.find({ collection: "header" })`
 - Integra con `loginAbsys_service` para autenticación
+- Desde el 2026-09-28 **no es el login principal**: el Header ya no la enlaza ni lee el `localStorage` que escribe (ver "Login desde el campus"). Queda para el colectivo EXT (F01/F02)
+
+### Login desde el campus (sesión real de Payload)
+
+Flujo del ADR-0005. La sesión es una sesión normal de Payload de la collection `loginCampus_service` (JWT con `sid` en cookie `payload-token`, httpOnly, `SameSite=Lax`, 30 min), emitida **sin contraseña** porque la identidad ya la validó el campus.
+
+```
+A) Llega del campus:  /auth/campus?token=<AES>&next=/ruta
+   → verifyCampusToken → absys.findLectorByExternalId(email)
+   → createCampusSession (crea/actualiza el usuario, añade sid, firma JWT) → cookie
+   → redirige a `next`, o a /profile/alta si no tiene ficha en Absys
+B) Página privada sin sesión: requireSession('/ruta') → /auth/login?next=/ruta
+   → NEXT_CAMPUS_LOGIN_URL?return=<site>/auth/campus?next=/ruta → campus → vuelve por A
+```
+
+| Fichero | Función |
+|---------|---------|
+| `lib/integrations/campus/token.ts` | `decryptCampusToken` (port del PHP del campus: base64(IV 16 bytes + AES-128-CBC("fecha\|email")), clave `NEXT_CAMPUS_SECRET_KEY` recortada/rellenada a 16 bytes), `verifyCampusToken` (además rechaza tokens de más de `NEXT_CAMPUS_TOKEN_MAX_AGE` s, 300 por defecto), `encryptCampusToken` (solo para simular el campus en dev/tests). Los `+` del base64 que lleguen como espacios se corrigen |
+| `lib/auth/redirects.ts` | Puro, sin Payload: `safeNextPath` (solo rutas internas, evita open redirect y bucles a `/auth/*`), `buildCampusLoginUrl`, `redirectResponse` (Location **relativa** con el basePath, para que funcione igual detrás de nginx que contra el contenedor) |
+| `lib/auth/session.ts` | Servidor: `getSession()`, `requireSession(next)` (para Server Components de páginas privadas), `createCampusSession`, `linkAbsysLector`, `destroyCampusSession` (revoca el `sid` en BD, no solo borra la cookie) |
+| `app/(auth)/auth/campus/route.ts` | Callback A |
+| `app/(auth)/auth/login/route.ts` | Entrada única al login: con sesión vuelve a `next`; sin ella, al campus. Sin `NEXT_CAMPUS_LOGIN_URL`: en dev → `/auth/simular-campus`, en prod → `/auth/error?motivo=config` |
+| `app/(auth)/auth/logout/route.ts` | `POST`, revoca la sesión y vuelve a `/` |
+| `app/(auth)/auth/error/page.tsx` | Motivos: `invalido`, `caducado`, `absys`, `config` |
+| `app/(auth)/auth/simular-campus/` | **Solo dev** (404 en producción): formulario con un email que genera un token real y vuelve al callback. Es la forma de probar el flujo hasta que Daniel tenga lista la redirección |
+| `app/(frontend)/profile/page.tsx` | Privada: datos del lector en Absys; si Absys está caído muestra los guardados en Payload |
+| `app/(frontend)/profile/alta/` | Privada: si el email del campus no tiene ficha en Absys, pide nombre/apellidos/dirección/colectivo y llama a `createLector` (con `lepass` aleatorio, porque entran siempre por el campus). **No probado contra Absys real** (error -400 pendiente con Baratz) |
+
+Variables (ver `env.local.Example`): `NEXT_CAMPUS_SECRET_KEY`, `NEXT_CAMPUS_TIMEZONE`, `NEXT_CAMPUS_TOKEN_MAX_AGE`, `NEXT_CAMPUS_TOKEN_PARAM` (`token`), `NEXT_CAMPUS_LOGIN_URL`, `NEXT_CAMPUS_RETURN_PARAM` (`return`). La URL de login del campus y el nombre de sus parámetros están **pendientes de confirmar con Daniel**; por eso son configurables.
+
+Gotchas:
+- **`SameSite=Lax`, no `Strict`**: la cookie se crea en una redirección que empieza en otro sitio (el campus); con `Strict` el navegador no la manda en ese mismo viaje y el usuario entra en bucle login → campus → login
+- **`Card` de shadcn no se puede renderizar en un Server Component**: `lib/utils.ts` lleva `'use client'` (tiene el hook `useBookCover`), así que `cn()` es una referencia de cliente y revienta en el servidor con `Attempted to call cn() from the server`. Envolver el Card en un componente `"use client"` (como `components/auth/*`, `ProfileDatosCard`)
+- `loginCampus_service`: cada lector solo puede leerse a sí mismo por la API; solo admins (`users`) crean/editan/borran
+- Payload usa una única cookie `payload-token` para todas las collections con auth: iniciar sesión como lector en el mismo navegador cierra la sesión del admin y viceversa
 
 ### API Routes (auto-generadas por Payload)
 
@@ -480,3 +517,35 @@ Los seeds 3-8 son independientes entre sí y podrían reordenarse sin romper nad
 **Nota sobre la imagen del taller**: el usuario pidió usar contenido real (título/descripción) de una imagen que ya subió manualmente a producción vía el admin de Payload (`Gemini_Generated_Image_pjh4c4pjh4c4pjh4.jpg`, alt "imagen taller universitaria"), pero ese archivo no existe en este entorno de desarrollo — el `media` de este contenedor no tiene ese id/filename. Se usó `campus.jpg` como placeholder (confirmado con el usuario) hasta que suba el asset real a `seeds/assets/` o lo sustituya a mano en el admin de este entorno.
 
 Probado contra la BD real del contenedor de desarrollo y con `curl` contra la home renderizada (200 OK, las 3 diapositivas reales aparecen).
+
+### Login desde el campus + `/profile` — rama `feat/login-campus` (2026-09-28)
+
+Arquitectura y ficheros en "Login desde el campus (sesión real de Payload)" (sección "Estructura de páginas"). Aquí, qué se hizo, cómo probarlo y qué queda.
+
+**Qué cambia para la app** — se separa la app por estado:
+- Páginas **públicas**: igual que antes.
+- Páginas **privadas** (`/profile`, `/profile/alta`): llaman a `requireSession('/ruta')`; sin sesión → `/auth/login?next=/ruta` → campus → vuelve a `/ruta` ya con sesión.
+- **Entrada desde el campus con claves**: `/auth/campus?token=…` descifra, confirma el lector en Absys y abre sesión directamente; sin ficha en Absys → `/profile/alta`.
+- **Header**: ya no lee `lenlec` de `localStorage` (cualquiera podía escribirlo). `app/(frontend)/layout.tsx` le pasa la prop `account` (`{ email, nombre } | null`) desde `getSession()`; "Mi Cuenta" enlaza a `/auth/login?next=<ruta actual>`; el desplegable tiene "Perfil" (`/profile`) y "Cerrar sesión" (form `POST /auth/logout`, que además limpia el `localStorage` del login antiguo).
+
+**Cambios en `loginCampus_service`** (`collections/LoginCampus.service.ts`): cookie `SameSite` de `Strict` a `Lax`; access `read` = admin o uno mismo, `create/update/delete` = solo admin (antes cualquier logueado leía a todos y podía crear usuarios); `dni`/`nombre`/`apellidos` opcionales y campo nuevo `absysId`; se quitaron los endpoints copiados de `loginAbsys_service` (`/signin`, `/login/:credentials`, `/me`); el descifrado pasó a `lib/integrations/campus/token.ts` y el endpoint de prueba `handleDecryptTest` lo usa. Nueva migración `migrations/20260928_114829_login_campus.ts` — la collection no tenía ninguna (se había registrado en `payload.config.ts` sin `migrate:create`).
+
+**Cómo probarlo en desarrollo** (sin campus real):
+1. Dejar `NEXT_CAMPUS_LOGIN_URL` vacía y `NEXT_CAMPUS_SECRET_KEY` con la clave de dev.
+2. Si se acaba de registrar algo en `payload.config.ts`: `docker restart biblioteca-frontend`.
+3. Pulsar "Mi Cuenta" (o abrir `/biblioteca/profile`) → redirige a `/biblioteca/auth/simular-campus` → escribir un email → hace de campus: cifra `fecha|email` con la clave real y vuelve a `/auth/campus`.
+4. Con `curl`: `curl -s -o /dev/null -w '%{redirect_url}' "http://localhost:8085/biblioteca/auth/simular-campus/emitir?email=<email>&next=/profile"` devuelve la URL del callback con un token válido; llamarla con `-c jar.txt` guarda la cookie, y `-b jar.txt` la reutiliza.
+5. Tests: `npm test` (`lib/integrations/campus/__tests__/token.test.ts`, `lib/auth/__tests__/redirects.test.ts`).
+
+**Probado** (contenedor de dev + Absys real, solo lecturas): sin sesión `/profile` → login → simulador; token basura → `/auth/error?motivo=invalido`; `next` externo ignorado; email existente en Absys → cookie `payload-token` (`HttpOnly`, `SameSite=Lax`) → `/profile` con los datos de Absys; con sesión `/auth/login` vuelve directo a `next`; email sin ficha → `/profile/alta` conservando `next`; por la API un lector solo se ve a sí mismo (`totalDocs: 1`, 404 al leer a otro) y no puede crear usuarios (403); logout revoca el `sid` y `/profile` vuelve a pedir login; las 3 migraciones aplican limpias contra una BD vacía; 62 tests de Vitest y `tsc --noEmit` sin errores.
+
+**Sin probar**: el envío del formulario de `/profile/alta` — crearía un lector real en Absys y `createLector` sigue con el error -400 pendiente con Baratz.
+
+**Pendiente**:
+- Con Daniel: URL de login del campus y nombre de sus parámetros (token y URL de vuelta). Configurables con `NEXT_CAMPUS_LOGIN_URL`, `NEXT_CAMPUS_TOKEN_PARAM`, `NEXT_CAMPUS_RETURN_PARAM`, sin tocar código.
+- La lobby de roles del ADR-0005 (el campus no manda el rol) no está hecha: todos entran como lector.
+- `/profile` solo muestra datos del lector; reservas y préstamos son F10.
+- El botón "Iniciar sesión con Microsoft" de `app/(auth)/login/page.tsx` apunta a la portada del campus; podría apuntar a `/biblioteca/auth/login`.
+- En la BD de dev quedaron 2 lectores de prueba en `loginCampus_service` (`mansour@atlanticomedio.es` y `no.existe.prueba@atlanticomedio.es`).
+
+**Nota de ramas**: `feat/login-campus` sale de `main` tras el merge de los PRs #15 (`refactor/absys-adapter`) y #12 (`feat/login-microsoft-emails`), no de `refactor/absys-adapter`.
