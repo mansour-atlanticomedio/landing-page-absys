@@ -120,7 +120,9 @@ Capas, de abajo a arriba:
 | `mappers/catalogo.ts` | `toCatalogQuery`: convierte `{ search, page, limit, detalle }` a la query de Absys (`base: cata`, `_start_position`/`_max_records`, 12 por página). Listado → `_doc_fields: "245, 100, 020"` (título/autor/ISBN MARC); `detalle: true` → `_description: "1"` (ficha completa) |
 | `lector.ts` | `createLectorService(client)`: `findLectorByExternalId` (null si no existe, `AbsysInvalidDataError` si hay duplicados) y `createLector` (alta; **no verificado contra Absys real**, error -400 pendiente con Baratz) |
 | `catalogo.ts` | `createCatalogoService(client)`: `searchCatalog(params)`, devuelve la respuesta cruda de Absys (el front sigue consumiendo ese formato) |
-| `mock.ts` | `absysMock`: el mismo adaptador pero con un cliente falso que responde con las fixtures. Solo existe un lector (el de `lector-search.json`); cualquier otro id devuelve vacío |
+| `mappers/prestamo.ts` | `toPrestamosQuery` (tabla `presta` filtrada por **`prnlec`**, no `lenlec`), `extractPrestamos`, `toPrestamo` (→ `Prestamo`: `ejemplar`, `fechaPrestamo`, `fechaDevolucion`, `renovaciones`, `renovable`, `sucursal`) e `isPrestamoVencido` (re-exportado desde `index.ts`) |
+| `prestamo.ts` | `createPrestamoService(client)`: `findPrestamosByLector(lenlec)` → `Prestamo[]` (sin título: `presta` solo trae el código del ejemplar) |
+| `mock.ts` | `absysMock`: el mismo adaptador pero con un cliente falso que responde con las fixtures. Solo existe un lector (el de `lector-search.json`); cualquier otro id devuelve vacío. Los préstamos salen de `prestamo-search.json` |
 | `index.ts` | Punto de entrada público. Define la interfaz `AbsysAdapter` y exporta `absys`, que es el adaptador real o `absysMock` según `ABSYS_MOCK=true`. Re-exporta tipos y errores |
 | `__fixtures__/*.json` | Respuestas reales (anonimizadas) de AbsysNet: catálogo (listado y detalle), lector (encontrado, vacío, duplicado), alta (ok y error) y servicio caído |
 | `__tests__/*.test.ts` | Tests con **Vitest** (`npm test`, config en `vitest.config.ts`, solo `lib/**/*.test.ts`): cliente (con `fetch` mockeado, timeouts, códigos de error), mappers, servicios de lector y mock |
@@ -552,10 +554,21 @@ Arquitectura y ficheros en "Login desde el campus (sesión real de Payload)" (se
 
 ### Área "Mi cuenta": `/perfil`, `/prestamos`, `/reservas` (2026-09-28)
 
-- **`/profile` pasa a `/perfil`** (y `/profile/alta` a `/perfil/alta`); `DEFAULT_AFTER_LOGIN` en `lib/auth/redirects.ts` también. `/profile` da 404.
+- **`/profile` pasa a `/perfil`** (y `/profile/alta` a `/perfil/alta`); `DEFAULT_AFTER_LOGIN` en `lib/auth/redirects.ts` también. `/profile` da 404. El usuario pidió "`/perfile`"; se interpretó como errata de `/perfil` (rutas en español como el resto del sitio).
 - **Route group `app/(frontend)/(cuenta)/`** con `layout.tsx` común: título "Mi cuenta" + `components/cuenta/CuentaNav.tsx` (`"use client"`, pestañas de texto Perfil · Préstamos · Reservas con subrayado `accent` en la activa, `aria-current="page"`). Cada página sigue llamando a `requireSession('/ruta')` (el layout no conoce la ruta).
 - **Estilo**: minimalista/institucional a petición explícita — sin tarjetas ni animaciones; listas `dl` con separadores, tabla simple y avisos con `components/cuenta/AvisoCuenta.tsx` (borde izquierdo `accent` sobre `bg-muted`). `components/ProfileDatosCard.tsx` se eliminó.
 - **`/prestamos`**: nuevo `absys.findPrestamosByLector(lenlec)` en el adaptador (`lib/integrations/absys/prestamo.ts` + `mappers/prestamo.ts`, con fixture `prestamo-search.json` y tests). Busca en la tabla `presta` por **`prnlec`** (con `lenlec` Absys responde `Unrecognized field`). Campos usados: `prbarc` (código del ejemplar), `prfpre`/`prfdev` (`"YYYY-MM-DD HH:mm:ss"`, se guarda solo la fecha), `prnren` (renovaciones), `renewable`, `prcosu` (sucursal). `isPrestamoVencido` compara `prfdev` con hoy. La tabla (`components/cuenta/PrestamosTabla.tsx`, cliente porque usa `Badge`) muestra el **código del ejemplar, no el título**: `presta` no trae título y `_secondary`/`_tertiary` no lo añaden; sacarlo requeriría buscar el ejemplar en `copias`/`cata` (pendiente). No está confirmado si `prfdev` es la fecha prevista o la real de devolución — se muestra como "Devolución".
 - **`/reservas`**: solo aviso institucional ("disponible próximamente", remite al mostrador o a contacto). Motivo: `search` sobre `reserv` devuelve `code 3 / subcode 32: Access denied 'reserv'` con el rol actual de Connect → **pedir a Baratz permiso de lectura sobre `reserv`**. Marcado con `TODO(F10)` en la página.
-- **Header**: enlaces del desplegable a `/perfil`, `/reservas` y `/prestamos`.
+- **Header** (`components/layout/Header.tsx`) — **sin commitear** a 2026-09-28, porque mezcla trabajo en curso del usuario con los ajustes de esta tarea:
+  - Del usuario: el botón "Mi Cuenta" (sin sesión) apunta ahora a `/biblioteca/login` (el login antiguo) en vez de a `/auth/login?next=…` (queda comentado), y añadió al desplegable los enlaces de Reservas y Préstamos.
+  - De esta tarea: enlace de Perfil a `/perfil`, el de reservas de `/reserva` a `/reservas`, y la errata "Prestámos" → "Préstamos".
+  - Mientras no se commitee, el Header de la rama enlaza a `/profile` (404).
 - **Probado** en el contenedor de dev contra Absys real (solo lecturas): sin sesión las 3 redirigen al login con su `next`; con sesión las 3 dan 200; `/perfil` muestra el número de lector; `/prestamos` muestra el estado vacío (el lector de prueba tiene 0 préstamos, así que **la tabla con datos solo está cubierta por tests**, no vista con préstamos reales); 69 tests de Vitest y `tsc --noEmit` sin errores.
+- **Pendiente**:
+  - Pedir a Baratz permiso de lectura sobre la tabla `reserv` y conectar `/reservas` (añadir `findReservasByLector` al adaptador igual que préstamos).
+  - Mostrar el título en `/prestamos`: buscar cada `prbarc` en `copias` y su registro en `cata`.
+  - Confirmar si `prfdev` es la fecha prevista de devolución o la real (y si `presta` guarda también préstamos ya devueltos).
+  - Ver la tabla de préstamos con datos reales (el lector de prueba tiene 0) — con `ABSYS_MOCK=true` usa `prestamo-search.json`, pero el lector del mock es `lector.prueba@atlanticomedio.es`.
+  - Commitear el Header (ver arriba).
+- **Gotcha de git**: `git mv` deja el renombrado ya en el índice, así que un `git add <otra cosa> && git commit` posterior se lo lleva en ese commit. Si se va a commitear por unidades después de un `git mv`, hacer primero `git restore --staged .` (o commitear el renombrado el primero). Pasó en esta tarea y se corrigió rehaciendo los commits locales con `git reset --soft`.
+- **Ruido en el log de dev**: `Module [project]/components/heroCarrusel.tsx ... was instantiated ... but the module factory is not available` en `app/(auth)/login/page.tsx` es un fallo del hot reload de Turbopack con un módulo desactualizado, no de estas rutas; se va reiniciando el dev server.
