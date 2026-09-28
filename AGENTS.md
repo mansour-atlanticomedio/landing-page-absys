@@ -54,8 +54,11 @@ coherentes con las suyas, no como una imitación forzada.
   parecido (`Features.ts` para arrays de tarjetas con icono, `hero` como relationship reutilizable
   en vez de duplicar campos, `iconMap` de `lib/utils.ts` en vez de un mapeo de iconos nuevo) y
   replícalo. La consistencia entre collections pesa más que la elegancia de una solución nueva.
-- **Verifica contra el entorno real, no sólo contra el compilador**: no hay suite de tests
-  (jest/vitest) en el proyecto. La forma de validar que algo funciona es sembrar datos con
+- **Verifica contra el entorno real, no sólo contra el compilador**: desde el 2026-09-25 hay
+  tests con Vitest (`npm test`), pero solo cubren el adaptador de AbsysNet
+  (`lib/integrations/absys/__tests__/`); si tocas esa carpeta, corre `npm test` antes de
+  commitear. Para el resto del proyecto (Payload, páginas, seeds) sigue sin haber tests, y la
+  forma de validar que algo funciona es sembrar datos con
   `npm run seed` / un seed específico contra el Postgres real del contenedor Docker de desarrollo
   (`biblioteca-frontend` / `biblioteca-db`) y comprobar filas en la base de datos o la página
   renderizada. Si vas a dar algo por terminado, favorece este tipo de verificación sobre
