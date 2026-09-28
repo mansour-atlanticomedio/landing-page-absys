@@ -1,0 +1,13 @@
+{
+  "response": {
+    "description": "Search operation: OK (table 'lector').",
+    "subcode": "1",
+    "code": "0",
+    "count": "2",
+    "lector": [
+      { "index": "1", "lenlec": "100023", "lenomb": "Lucía", "leapel": "Martín Pérez", "lemail": "lector.prueba@atlanticomedio.es", "lecolp": "ALUMN", "lefubi": "2026-09-15", "lepass": "******" },
+      { "index": "2", "lenlec": "100023", "lenomb": "Javier", "leapel": "Suárez Rodríguez", "lemail": "lector.prueba2@atlanticomedio.es", "lecolp": "PDI", "lefubi": "2026-09-10", "lepass": "******" }
+    ],
+    "version": "Jul 13 2017 (2.1)"
+  }
+}

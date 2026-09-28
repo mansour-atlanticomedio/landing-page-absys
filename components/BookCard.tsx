@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import logo from "@/public/logos/unam-color-logo.png";
 import { Book, Loader2 } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 import { useBookCover } from "@/lib/utils";
@@ -11,9 +12,10 @@ interface BookCardProps {
   book: BookInterface;
   index: number;
   router: any; // O el tipo específico de tu router de Next.js
+  query?: string; // término de búsqueda actual, para poder volver a él desde el detalle del libro
 }
 
-export default function BookCard({ book, index, router }: BookCardProps) {
+export default function BookCard({ book, index, router, query }: BookCardProps) {
   const { coverUrl, isApiLoading } = useBookCover(book.isbn);
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
@@ -31,13 +33,15 @@ export default function BookCard({ book, index, router }: BookCardProps) {
       className="max-w-[200px] w-full"
     >
       <Card
-        className="h-full group hover:shadow-lg transition-all cursor-pointer border-border/50 hover:border-accent/30 flex flex-col"
-        onClick={() => router.push(`/recursos/catalogo/libro/${encodeURIComponent(book.isbn)}`)}
+        className="h-full group p-0 pb-4 hover:shadow-lg transition-all cursor-pointer border-border/50 hover:border-accent/30 flex flex-col"
+        onClick={() => router.push(
+          `/recursos/catalogo/libro/${encodeURIComponent(book.isbn)}${query ? `?q=${encodeURIComponent(query)}` : ""}`
+        )}
       >
-        <CardContent className="p-3 flex flex-col h-full">
+        <CardContent className="p-0 flex flex-col w-full h-full rounded overflow-hidden">
           {/* Contenedor con aspecto de libro (ratio 2:3) */}
-          <div className="relative w-full aspect-[2/3] rounded-sm bg-muted/30 flex items-center justify-center mb-3 overflow-hidden border border-transparent group-hover:border-accent/20 transition-colors">
-            
+          <div className="relative w-full h-full aspect-[2/3] bg-muted/30 flex items-center justify-center mb-3 overflow-hidden border border-transparent group-hover:border-accent/20 transition-colors">
+
             {isApiLoading && (
               <div className="absolute inset-0 flex items-center justify-center bg-muted/50 z-10">
                 <Loader2 className="w-6 h-6 animate-spin text-muted-foreground/50" />
@@ -51,23 +55,24 @@ export default function BookCard({ book, index, router }: BookCardProps) {
                 fill
                 sizes="200px"
                 priority={index < 4}
-                className={`object-cover w-full h-full transition-all duration-500 ease-in-out ${
-                  imageLoaded ? "scale-100 blur-0" : "scale-105 blur-lg"
-                }`}
+                className={`object-cover w-full h-full transition-all duration-500 ease-in-out ${imageLoaded ? "scale-100 blur-0" : "scale-105 blur-lg"
+                  }`}
                 onLoad={() => setImageLoaded(true)}
                 onError={() => setImageError(true)}
               />
             )}
 
             {!isApiLoading && showFallbackIcon && (
-              <Book className="h-10 w-10 text-muted-foreground/40 transition-transform group-hover:scale-110 duration-300" />
+              <Image src={logo} alt="logo atlantico medio header" width={60} />
             )}
           </div>
 
-          <h3 className="font-bold text-xs group-hover:text-accent transition-colors line-clamp-2">
-            {book.title}
-          </h3>
-          <p className="text-[10px] text-muted-foreground mt-0.5 line-clamp-1">{book.author}</p>
+          <div className="flex flex-col gap-1 mx-1" >
+            <h3 className="font-bold text-md group-hover:text-accent transition-colors line-clamp-2 ">
+              {book.title}
+            </h3>
+            <p className="text-[10px] text-muted-foreground mt-0.5 line-clamp-1 text-slate-500">{book.author}</p>
+          </div>
         </CardContent>
       </Card>
     </motion.div>

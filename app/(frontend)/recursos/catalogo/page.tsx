@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import Link from "next/link"
 import { motion } from "framer-motion"
 import { Search, BookSearch, Filter, BookCheck, UserCog, HelpCircle, Headphones, SlidersHorizontal, CheckCircle2, UserCircle } from "lucide-react"
 import { Input } from "@/components/ui/input"
@@ -35,12 +36,19 @@ export default function CatalogoPage() {
   const router = useRouter()
   const [searchQuery, setSearchQuery] = useState("")
 
-  // const handleSearch = () => {
-  //   if (searchQuery.trim()) {
-  //     window.location.href = 'https://demo.baratz.es/opac'
-  //     // router.push(`/recursos/catalogo/busqueda?q=${encodeURIComponent(searchQuery.trim())}`)
-  //   }
-  // }
+  const handleSearch = () => {
+    if (searchQuery.trim()) {
+      console.log("Catalog button working")
+      // window.location.href = 'https://demo.baratz.es/opac'
+      router.push(`/recursos/catalogo/busqueda?q=${encodeURIComponent(searchQuery.trim())}`)
+    }
+  }
+
+  const handleInputChange = (e : any) => {
+    if (e.target) {
+      setSearchQuery(e.target.value)
+    }
+  }
 
   const PASOS = [
   {
@@ -79,15 +87,18 @@ export default function CatalogoPage() {
           <div className="flex-1 flex items-center gap-2 border rounded-md px-4">
             <Search className="h-4 w-4 text-slate-400" />
             <input
+            value={searchQuery}
+            onChange={(e) => handleInputChange(e)}
+            onKeyDown={(e) => e.key === "Enter" && handleSearch()}
               placeholder="Título, autor, materia o ISBN..."
               className="flex-1 py-3 outline-none text-sm"
             />
           </div>
-          <button className="bg-accent text-white font-medium px-6 rounded-md"><a href="https://demo.baratz.es/opac">Buscar</a></button>
+          <button onClick={() => handleSearch()} className="bg-accent text-white font-medium px-6 rounded-md">Buscar</button>
         </div>
-        <a href="#" className="mt-2 inline-block text-sm text-teal-700">
+        <Link href="/recursos/catalogo/busqueda" className="mt-2 inline-block text-sm text-teal-700">
           ⚏ Búsqueda avanzada
-        </a>
+        </Link>
       </section>
 
       <section className="mx-auto max-w-6xl px-6 pb-16">
@@ -119,9 +130,11 @@ export default function CatalogoPage() {
               </p>
             </div>
           </div>
-          <button className="border rounded-md px-5 py-3 font-medium text-teal-700">
-            Necesito ayuda para buscar
-          </button>
+          <Link href="/contacto">
+            <button className="border rounded-md px-5 py-3 font-medium text-teal-700 cursor-pointer transition-colors hover:bg-teal-700 hover:text-white">
+              Necesito ayuda para buscar
+            </button>
+          </Link>
         </div>
       </section>
 

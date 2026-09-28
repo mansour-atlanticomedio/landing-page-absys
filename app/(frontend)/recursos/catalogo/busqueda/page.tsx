@@ -384,7 +384,7 @@ export default function BusquedaPage() {
               </div>
             </div>
 
-            <div className={`grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 transition-opacity ${loading ? 'opacity-50' : 'opacity-100'}`}>
+            <div className={`grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 md:grid-cols-4 sm:grid-cols-3 xs: grid-cols-2 gap-5 transition-opacity ${loading ? 'opacity-50' : 'opacity-100'}`}>
               {records.map((record, i) => {
                 const book = transformMarcToBook(record.datafield);
 
@@ -394,6 +394,7 @@ export default function BusquedaPage() {
                     book={book}
                     index={i}
                     router={router}
+                    query={searchQuery}
                   />
                 );
               })}
@@ -406,8 +407,8 @@ export default function BusquedaPage() {
               )}
             </div>
 
-            {bookResults > 0 && (
-              <Pagination className="mt-12">
+            {bookResults > 0 && bookResults > PAGE_SIZE && (
+              <Pagination className="mt-16 mb-8">
                 <PaginationContent>
                   <PaginationItem>
                     <PaginationPrevious

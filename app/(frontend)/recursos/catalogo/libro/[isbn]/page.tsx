@@ -1,6 +1,6 @@
 "use client"
 import Image from "next/image"
-import { useParams } from "next/navigation"
+import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { motion } from "framer-motion"
 import { Book, Calendar, Globe, Hash, MapPin, CheckCircle2, BookmarkPlus, ArrowLeft, Copyright } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -10,6 +10,7 @@ import { AbsysInterface, BookInterface, RecordInterface } from "@/types/absys.ty
 import axios from "axios"
 import { transformMarcToBook } from "@/lib/marc21handler"
 import { AuthorCard } from "@/components/AuthorCard"
+import logo from "@/public/logos/unam-color-logo.png";
 
 const relatedBooks = [
   { title: "La casa de los espíritus", author: "Isabel Allende" },
@@ -27,7 +28,13 @@ const recommendations = [
 
 export default function LibroPage() {
   const params = useParams()
+  const router = useRouter()
+  const searchParams = useSearchParams()
+  const previousQuery = searchParams.get('q')
   const isbn = params.isbn as string
+  const backHref = previousQuery
+    ? `/recursos/catalogo/busqueda?q=${encodeURIComponent(previousQuery)}`
+    : '/recursos/catalogo/busqueda'
   const BASE_API_URL = process.env.NEXT_PUBLIC_API_URL
 
   const [loading, setLoading] = useState(true);
@@ -128,10 +135,10 @@ export default function LibroPage() {
             variant="ghost"
             size="sm"
             className="text-muted-foreground hover:text-accent"
-            onClick={() => window.history.back()}
+            onClick={() => router.push(backHref)}
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
-            Volver al catálogo
+            Volver a la búsqueda
           </Button>
         </div>
       </section>
@@ -158,8 +165,8 @@ export default function LibroPage() {
                   <>
                     {/* El Placeholder se muestra si la API está trabajando O si la imagen de Next.js aún no se ha bajado del todo */}
                     {(!imageLoaded || isApiLoading) && (
-                      <div className="absolute inset-0 bg-gradient-to-br from-bg-primary to-bg-secondary flex flex-col items-center justify-center animate-pulse z-10 px-4 text-center">
-                        <Book className="h-8 w-8 text-white animate-bounce mb-2" />
+                      <div className="absolute inset-0 bg-white flex flex-col items-center justify-center animate-pulse z-10 px-4 text-center">
+                        <Image src={logo} alt="logo atlantico medio header" width={60} />
                         <p className="text-[10px] text-accent font-medium uppercase tracking-wider">
                           Cargando portada...
                         </p>
@@ -184,9 +191,8 @@ export default function LibroPage() {
                   </>
                 ) : (
                   /* PLAN B: Si no hay portada o da error, le forzamos la proporción de libro para que el recuadro no quede plano */
-                  <div className="text-center px-4 py-8 animate-fadeIn aspect-[2/3] flex flex-col items-center justify-center w-full">
-                    <Book className="h-10 w-10 text-accent mx-auto mb-3" />
-                    <p className="text-white text-xs font-medium leading-tight">{book.title}</p>
+                  <div className="bg-white text-center px-4 py-8 animate-fadeIn aspect-[2/3] flex flex-col items-center justify-center w-full">
+                    <Image src={logo} alt="logo atlantico medio header" width={60} />
                   </div>
                 )}
 

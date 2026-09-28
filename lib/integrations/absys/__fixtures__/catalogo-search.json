@@ -1,0 +1,93 @@
+{
+  "response": {
+    "description": "Search operation: OK (base 'cata').",
+    "subcode": 1,
+    "subcode2": 0,
+    "code": 0,
+    "count": 2,
+    "version": "Jul 13 2017 (2.1)",
+    "collection": {
+      "xmlns": "http://www.loc.gov/MARC21/slim",
+      "record": [
+        {
+          "index": 1,
+          "titn": 1045,
+          "datafield": [
+            {
+              "tag": "020",
+              "ind1": " ",
+              "ind2": " ",
+              "subfield": [
+                {
+                  "code": "a",
+                  "content": "9788497592208"
+                }
+              ]
+            },
+            {
+              "tag": 100,
+              "ind1": 1,
+              "ind2": " ",
+              "subfield": [
+                {
+                  "code": "a",
+                  "content": "García Márquez, Gabriel,"
+                }
+              ]
+            },
+            {
+              "tag": 245,
+              "ind1": 1,
+              "ind2": 0,
+              "subfield": [
+                {
+                  "code": "a",
+                  "content": "Cien años de soledad /"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "index": 2,
+          "titn": 2210,
+          "datafield": [
+            {
+              "tag": "020",
+              "ind1": " ",
+              "ind2": " ",
+              "subfield": [
+                {
+                  "code": "a",
+                  "content": "9788498381498"
+                }
+              ]
+            },
+            {
+              "tag": 100,
+              "ind1": 1,
+              "ind2": " ",
+              "subfield": [
+                {
+                  "code": "a",
+                  "content": "Saint-Exupéry, Antoine de,"
+                }
+              ]
+            },
+            {
+              "tag": 245,
+              "ind1": 1,
+              "ind2": 3,
+              "subfield": [
+                {
+                  "code": "a",
+                  "content": "El principito /"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  }
+}

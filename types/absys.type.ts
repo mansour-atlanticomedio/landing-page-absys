@@ -248,11 +248,3 @@ export function parseAbsysResponse<T extends object = object>(
   }
   return { ok: true, data: response };
 }
-
-export async function fetchAbsys<T extends object = object>(
-  url: string | URL
-): Promise<AbsysResult<T>> {
-  const res = await fetch(url.toString());
-  const raw: AbsysApiResponse<T> = await res.json();
-  return parseAbsysResponse<T>(raw);
-}

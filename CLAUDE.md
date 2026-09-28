@@ -102,6 +102,31 @@ Payload Admin → Globals → Collections → Pages → RenderBlocks → Compone
 | `author_service` | `collections/Author.service.ts` | `GET /:authorName`, `GET /` | Wikipedia en español (búsqueda estricta con keyword matching) |
 | `loginAbsys_service` | `collections/LoginAbsys.service.ts` | `POST /signin` (crear lector), `POST /login/:credentials` (autenticar), `GET /me` (perfil) | `NEXT_ABSYS_API` + Basic Auth. Auth collection con `tokenExpiration: 1800` |
 
+> Desde el 2026-09-25, `absys_service` y `loginAbsys_service` ya **no hablan con Absys directamente**: todo pasa por el adaptador `lib/integrations/absys` (ver abajo). Los handlers solo leen la request, llaman a `absys.*` y dan forma a la respuesta HTTP.
+
+#### Adaptador de AbsysNet (`lib/integrations/absys/`)
+
+Único punto del código que habla con la API de AbsysNet (ADR-0009 en el vault). Nadie fuera de esta carpeta debe hacer `fetch` a `NEXT_ABSYS_API`: se importa siempre desde `@/lib/integrations/absys`.
+
+Capas, de abajo a arriba:
+
+| Fichero | Función |
+|---------|---------|
+| `client.ts` | Cliente HTTP único (`absysClient`). Solo servidor (lanza si `window` existe). Lee `NEXT_ABSYS_API`, `NEXT_ABSYS_USERNAME`, `NEXT_ABSYS_PASSWORD` (en **base64**, se decodifica aquí) y `ABSYS_TIMEOUT_MS` (10 s por defecto, con `AbortController`). Dos operaciones: `search(params)` → GET con todo en la query; `add(table, fields)` → POST `x-www-form-urlencoded`. Traduce fallos a errores tipados: red/timeout/HTTP 5xx/JSON inválido/`code` 1 o 4 → `AbsysUnavailableError`; HTTP 4xx y cualquier otro `code` ≠ 0 → `AbsysInvalidDataError`. Nunca mete credenciales ni la respuesta cruda en el mensaje de error |
+| `errors.ts` | Jerarquía de errores: `AbsysError` (base, con `code`/`subcode` de Absys) → `AbsysUnavailableError` (Absys caído o inalcanzable), `AbsysInvalidDataError` (Absys rechaza los datos o responde algo incoherente), `AbsysNotFoundError` (definido pero aún sin uso) |
+| `mappers/lector.ts` | Traducción pura (sin I/O) entre el formato de Absys (`lenlec`, `lenomb`, `leapel`, `lemail`, `lefubi`...) y nuestros tipos `Lector` / `NuevoLector`. Contiene las constantes institucionales del alta (`COLECTIVOS` ALUMN/PDI con su `lecocf` y perfil de préstamo, `LECOBI`, `LECOSU`, `LECART`), `formatAbsysDateTime` (`dd/mm/yyyy hh:mm:ss`), `resolveColectivo` (cualquier colectivo desconocido cae a `ALUMN`, ADR-0002) y `EXTERNAL_ID_FIELD` (campo con el que se cruza la identidad del campus; **provisional**, hoy `lenlec`, ADR-0005) |
+| `mappers/catalogo.ts` | `toCatalogQuery`: convierte `{ search, page, limit, detalle }` a la query de Absys (`base: cata`, `_start_position`/`_max_records`, 12 por página). Listado → `_doc_fields: "245, 100, 020"` (título/autor/ISBN MARC); `detalle: true` → `_description: "1"` (ficha completa) |
+| `lector.ts` | `createLectorService(client)`: `findLectorByExternalId` (null si no existe, `AbsysInvalidDataError` si hay duplicados) y `createLector` (alta; **no verificado contra Absys real**, error -400 pendiente con Baratz) |
+| `catalogo.ts` | `createCatalogoService(client)`: `searchCatalog(params)`, devuelve la respuesta cruda de Absys (el front sigue consumiendo ese formato) |
+| `mock.ts` | `absysMock`: el mismo adaptador pero con un cliente falso que responde con las fixtures. Solo existe un lector (el de `lector-search.json`); cualquier otro id devuelve vacío |
+| `index.ts` | Punto de entrada público. Define la interfaz `AbsysAdapter` y exporta `absys`, que es el adaptador real o `absysMock` según `ABSYS_MOCK=true`. Re-exporta tipos y errores |
+| `__fixtures__/*.json` | Respuestas reales (anonimizadas) de AbsysNet: catálogo (listado y detalle), lector (encontrado, vacío, duplicado), alta (ok y error) y servicio caído |
+| `__tests__/*.test.ts` | Tests con **Vitest** (`npm test`, config en `vitest.config.ts`, solo `lib/**/*.test.ts`): cliente (con `fetch` mockeado, timeouts, códigos de error), mappers, servicios de lector y mock |
+
+Los servicios reciben el cliente por parámetro (`createXService(client)`) para poder testearlos y montar el mock con el mismo código. Para trabajar sin conexión a Absys: `ABSYS_MOCK=true` en `.env.local`.
+
+Pendientes conocidos (marcados con `TODO` en el código): `lepassLegacy` / comparación de contraseña en `handleLoginLector` nunca acierta porque Absys devuelve `lepass` enmascarado (F01, ADR-0005); `toLegacyLector` en `LoginAbsys.service.ts` mantiene el formato antiguo de respuesta hasta normalizar el contrato con el front.
+
 #### Collection de email (1, hidden)
 
 | Slug | Fichero | Hook |
@@ -244,7 +269,7 @@ Cada bloque se envuelve en `<section key={id} data-block-type={blockType}>`.
 - `types/common.type.ts`: `CardProps`, `SocialMediaMedia`, `ItemProps`, **`PayloadImage`** (`{ id, url, alt?, width?, height? }`), `InfoProps`, `SpeakersProps`
 - `types/form.type.ts`: `SimpleFormProps`
 - `types/absys.type.ts`: `BookInterface`, `AbsysInterface`
-- `types/absysServer.type.ts`: funciones de request server-side
+- `types/absysServer.type.ts`: funciones de request server-side — **borrado el 2026-09-25** (nadie lo importaba; sustituido por `lib/integrations/absys/client.ts`)
 - `types/contact.type.ts`: `ContactProps`
 - `payload-types.ts`: tipos auto-generados por Payload
 

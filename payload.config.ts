@@ -48,6 +48,7 @@ import { AbsysService } from "./collections/Absys.service.ts";
 import { BookCoverService } from "./collections/BookCovers.service.ts";
 import { AuthorService } from "./collections/Author.service.ts";
 import { LoginAbsysService } from "./collections/LoginAbsys.service.ts";
+import { decryptTestEndpoints, LoginCampusService } from "./collections/LoginCampus.service.ts";
 import { Login } from "./collections/Login.ts";
 
 const filename = fileURLToPath(import.meta.url);
@@ -88,7 +89,8 @@ export default buildConfig({
     AuthorService,
     LoginAbsysService,
     ElectronicResourcesAccess,
-    Schedule
+    Schedule,
+    LoginCampusService
   ],
   globals: [
     Home,
@@ -104,6 +106,7 @@ export default buildConfig({
     QuienesSomos,
     HorariosContacto
   ],
+  endpoints: [...decryptTestEndpoints],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",
   typescript: {
