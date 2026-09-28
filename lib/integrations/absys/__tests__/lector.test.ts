@@ -26,9 +26,9 @@ describe("findLectorByExternalId", () => {
     const search = vi.fn().mockResolvedValue(lectorSearch as AbsysRawResponse);
     const service = createLectorService(fakeClient({ search }));
 
-    const lector = await service.findLectorByExternalId("100023");
+    const lector = await service.findLectorByExternalId("lector.prueba@atlanticomedio.es");
 
-    expect(search).toHaveBeenCalledWith({ table: "lector", lenlec: "100023" });
+    expect(search).toHaveBeenCalledWith({ table: "lector", lemail: "lector.prueba@atlanticomedio.es" });
     expect(lector).toMatchObject({ id: "100023", nombre: "Lucía" });
   });
 
@@ -43,21 +43,21 @@ describe("findLectorByExternalId", () => {
     const service = createLectorService(
       fakeClient({ search: vi.fn().mockResolvedValue(lectorSearchDuplicado as AbsysRawResponse) })
     );
-    await expect(service.findLectorByExternalId("100023")).rejects.toBeInstanceOf(AbsysInvalidDataError);
+    await expect(service.findLectorByExternalId("lector.prueba@atlanticomedio.es")).rejects.toBeInstanceOf(AbsysInvalidDataError);
   });
 
   it("propaga AbsysUnavailableError si Absys está caído o no responde", async () => {
     const service = createLectorService(
       fakeClient({ search: vi.fn().mockRejectedValue(new AbsysUnavailableError("sin respuesta en 10000 ms")) })
     );
-    await expect(service.findLectorByExternalId("100023")).rejects.toBeInstanceOf(AbsysUnavailableError);
+    await expect(service.findLectorByExternalId("lector.prueba@atlanticomedio.es")).rejects.toBeInstanceOf(AbsysUnavailableError);
   });
 
   it("propaga el error de negocio del cliente", async () => {
     const service = createLectorService(
       fakeClient({ search: vi.fn().mockRejectedValue(new AbsysInvalidDataError("Datos no válidos", 3, 6)) })
     );
-    await expect(service.findLectorByExternalId("100023")).rejects.toMatchObject({ code: 3, subcode: 6 });
+    await expect(service.findLectorByExternalId("lector.prueba@atlanticomedio.es")).rejects.toMatchObject({ code: 3, subcode: 6 });
   });
 });
 

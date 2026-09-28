@@ -25,7 +25,7 @@ export interface NuevoLector {
 }
 
 // TODO(ADR-0005): campo provisional con el que se cruza la identidad del campus
-export const EXTERNAL_ID_FIELD = "lenlec";
+export const EXTERNAL_ID_FIELD = "lemail";
 
 export const COLECTIVOS = {
   ALUMN: { lecolp: "ALUMN", lecocf: "ALIM", maxPrestamos: 3, diasPrestamo: 15 },

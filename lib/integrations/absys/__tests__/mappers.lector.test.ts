@@ -46,7 +46,7 @@ describe("toLector", () => {
     const [raw] = extractLectores(lectorSearch as AbsysRawResponse);
     expect(toLector(raw)).toEqual({
       id: "100023",
-      externalId: "100023",
+      externalId: "lector.prueba@atlanticomedio.es",
       nombre: "Lucía",
       apellidos: "Martín Pérez",
       email: "lector.prueba@atlanticomedio.es",
@@ -126,7 +126,7 @@ describe("toLectorCreado", () => {
   it("construye el lector a partir de los datos enviados y el lenlec asignado", () => {
     expect(toLectorCreado(nuevoLector, "100024")).toMatchObject({
       id: "100024",
-      externalId: "100024",
+      externalId: "lector.prueba@atlanticomedio.es",
       nombre: "Lucía",
       apellidos: "Martín Pérez",
       email: "lector.prueba@atlanticomedio.es",

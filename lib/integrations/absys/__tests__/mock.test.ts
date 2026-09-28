@@ -3,7 +3,7 @@ import { absysMock } from "../mock";
 
 describe("absysMock", () => {
   it("encuentra el lector de las fixtures", async () => {
-    await expect(absysMock.findLectorByExternalId("100023")).resolves.toMatchObject({ nombre: "Lucía" });
+    await expect(absysMock.findLectorByExternalId("lector.prueba@atlanticomedio.es")).resolves.toMatchObject({ nombre: "Lucía" });
   });
 
   it("devuelve null para cualquier otro lector", async () => {

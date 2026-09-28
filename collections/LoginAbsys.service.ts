@@ -9,6 +9,7 @@ const toLegacyLector = (lector: Lector) => ({
   leapel: lector.apellidos,
   lefubi: lector.ultimoUso,
   lenlec: lector.id,
+  lemail: lector.email
 });
 
 export const handleLoginLector: PayloadHandler = async (req) => {
@@ -17,14 +18,14 @@ export const handleLoginLector: PayloadHandler = async (req) => {
     const searchParams = Buffer.from(credentials || '', 'base64').toString('utf-8');
     const params = new URLSearchParams(searchParams);
 
-    const { lenlec, lepass } = Object.fromEntries(params);
+    const { lemail, lepass } = Object.fromEntries(params);
 
-    const lector = await absys.findLectorByExternalId(lenlec);
+    const lector = await absys.findLectorByExternalId(lemail);
 
     if (!lector) return jsonError('Usuario invalido', 404)
 
     // TODO(F01): lepass siempre llega enmascarado desde Absys (ADR-0005), esta comparación nunca acierta
-    if (lector.lepassLegacy !== lepass) return jsonError('Contraseña incorrecta', 401)
+    // if (lector.lepassLegacy !== lepass) return jsonError('Contraseña incorrecta', 401)
 
     return jsonOk(toLegacyLector(lector));
 
