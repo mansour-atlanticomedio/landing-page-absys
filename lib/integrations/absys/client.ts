@@ -49,6 +49,21 @@ const toUrlEncoded = (params: AbsysParams): URLSearchParams => {
   return encoded;
 };
 
+const checkBusinessCode = (data: AbsysRawResponse): AbsysRawResponse => {
+  const code = Number(data?.response?.code);
+  const subcode = data?.response?.subcode !== undefined ? Number(data.response.subcode) : undefined;
+  const description = data?.response?.description || "Error sin descripción";
+
+  if (Number.isNaN(code)) {
+    throw new AbsysUnavailableError("Absys devolvió una respuesta sin código de estado");
+  }
+  if (code === CODE_OK) return data;
+  if (CODES_UNAVAILABLE.includes(code)) {
+    throw new AbsysUnavailableError(description, code, subcode);
+  }
+  throw new AbsysInvalidDataError(description, code, subcode);
+};
+
 const send = async (query: AbsysParams, body?: AbsysParams): Promise<AbsysRawResponse> => {
   const { baseUrl, auth, timeoutMs } = getConfig();
 
@@ -89,21 +104,6 @@ const send = async (query: AbsysParams, body?: AbsysParams): Promise<AbsysRawRes
   }
 
   return checkBusinessCode(data);
-};
-
-const checkBusinessCode = (data: AbsysRawResponse): AbsysRawResponse => {
-  const code = Number(data?.response?.code);
-  const subcode = data?.response?.subcode !== undefined ? Number(data.response.subcode) : undefined;
-  const description = data?.response?.description || "Error sin descripción";
-
-  if (Number.isNaN(code)) {
-    throw new AbsysUnavailableError("Absys devolvió una respuesta sin código de estado");
-  }
-  if (code === CODE_OK) return data;
-  if (CODES_UNAVAILABLE.includes(code)) {
-    throw new AbsysUnavailableError(description, code, subcode);
-  }
-  throw new AbsysInvalidDataError(description, code, subcode);
 };
 
 export const absysClient: AbsysClient = {
