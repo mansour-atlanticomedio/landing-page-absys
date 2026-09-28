@@ -30,7 +30,7 @@ export async function GET(request: NextRequest) {
     const cookie = await createCampusSession(identity.email, lector);
 
     // Sin lector en Absys: tiene sesión, pero antes de seguir tiene que completar el alta
-    const destino = lector ? next : `/profile/alta?next=${encodeURIComponent(next)}`;
+    const destino = lector ? next : `/perfil/alta?next=${encodeURIComponent(next)}`;
     return redirectResponse(destino, cookie);
   } catch (error) {
     payload.logger.error(error);

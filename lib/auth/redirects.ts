@@ -1,5 +1,5 @@
 export const BASE_PATH = "/biblioteca";
-export const DEFAULT_AFTER_LOGIN = "/profile";
+export const DEFAULT_AFTER_LOGIN = "/perfil";
 
 // Solo rutas internas de la app: evita que ?next= se use para mandar al usuario a otra web tras el login
 export const safeNextPath = (next: string | null | undefined, fallback = DEFAULT_AFTER_LOGIN): string => {

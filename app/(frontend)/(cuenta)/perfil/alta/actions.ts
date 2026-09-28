@@ -13,7 +13,7 @@ export interface AltaState {
 const CAMPOS_OBLIGATORIOS = ["nombre", "apellidos", "direccion", "colectivo"] as const;
 
 export async function darDeAltaLector(_prev: AltaState, formData: FormData): Promise<AltaState> {
-  const session = await requireSession("/profile/alta");
+  const session = await requireSession("/perfil/alta");
   const next = safeNextPath(formData.get("next") as string | null);
   const campo = (name: string) => String(formData.get(name) ?? "").trim();
 

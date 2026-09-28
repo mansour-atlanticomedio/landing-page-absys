@@ -8,7 +8,7 @@ import { darDeAltaLector } from "./actions";
 export const dynamic = "force-dynamic";
 
 export default async function AltaLectorPage({ searchParams }: { searchParams: Promise<{ next?: string }> }) {
-  const session = await requireSession("/profile/alta");
+  const session = await requireSession("/perfil/alta");
   const next = safeNextPath((await searchParams).next);
 
   // Si ya tiene ficha en Absys no pinta nada aquí
@@ -16,8 +16,8 @@ export default async function AltaLectorPage({ searchParams }: { searchParams: P
   if (lector) redirect(next);
 
   return (
-    <section className="max-w-2xl mx-auto px-6 py-12">
+    <div className="max-w-2xl">
       <AltaLectorForm email={session.email} next={next} action={darDeAltaLector} />
-    </section>
+    </div>
   );
 }
