@@ -65,6 +65,7 @@ export interface Config {
   auth: {
     users: UserAuthOperations;
     loginAbsys_service: LoginAbsysServiceAuthOperations;
+    loginCampus_service: LoginCampusServiceAuthOperations;
   };
   blocks: {};
   collections: {
@@ -93,6 +94,7 @@ export interface Config {
     loginAbsys_service: LoginAbsysService;
     electronic_resources_access: ElectronicResourcesAccess;
     schedule: Schedule;
+    loginCampus_service: LoginCampusService;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -125,6 +127,7 @@ export interface Config {
     loginAbsys_service: LoginAbsysServiceSelect<false> | LoginAbsysServiceSelect<true>;
     electronic_resources_access: ElectronicResourcesAccessSelect<false> | ElectronicResourcesAccessSelect<true>;
     schedule: ScheduleSelect<false> | ScheduleSelect<true>;
+    loginCampus_service: LoginCampusServiceSelect<false> | LoginCampusServiceSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -166,7 +169,7 @@ export interface Config {
   widgets: {
     collections: CollectionsWidget;
   };
-  user: User | LoginAbsysService;
+  user: User | LoginAbsysService | LoginCampusService;
   jobs: {
     tasks: unknown;
     workflows: unknown;
@@ -191,6 +194,24 @@ export interface UserAuthOperations {
   };
 }
 export interface LoginAbsysServiceAuthOperations {
+  forgotPassword: {
+    email: string;
+    password: string;
+  };
+  login: {
+    email: string;
+    password: string;
+  };
+  registerFirstUser: {
+    email: string;
+    password: string;
+  };
+  unlock: {
+    email: string;
+    password: string;
+  };
+}
+export interface LoginCampusServiceAuthOperations {
   forgotPassword: {
     email: string;
     password: string;
@@ -827,6 +848,39 @@ export interface Schedule {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "loginCampus_service".
+ */
+export interface LoginCampusService {
+  id: number;
+  dni: string;
+  nombre: string;
+  apellidos: string;
+  numeroCarnet?: string | null;
+  colectivo: 'ALUMN' | 'PDI' | 'PAS' | 'EXT';
+  maxPrestamos?: number | null;
+  diasPrestamo?: number | null;
+  isOfflineData?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+  email: string;
+  resetPasswordToken?: string | null;
+  resetPasswordExpiration?: string | null;
+  salt?: string | null;
+  hash?: string | null;
+  loginAttempts?: number | null;
+  lockUntil?: string | null;
+  sessions?:
+    | {
+        id: string;
+        createdAt?: string | null;
+        expiresAt: string;
+      }[]
+    | null;
+  password?: string | null;
+  collection: 'loginCampus_service';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -948,6 +1002,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'schedule';
         value: number | Schedule;
+      } | null)
+    | ({
+        relationTo: 'loginCampus_service';
+        value: number | LoginCampusService;
       } | null);
   globalSlug?: string | null;
   user:
@@ -958,6 +1016,10 @@ export interface PayloadLockedDocument {
     | {
         relationTo: 'loginAbsys_service';
         value: number | LoginAbsysService;
+      }
+    | {
+        relationTo: 'loginCampus_service';
+        value: number | LoginCampusService;
       };
   updatedAt: string;
   createdAt: string;
@@ -976,6 +1038,10 @@ export interface PayloadPreference {
     | {
         relationTo: 'loginAbsys_service';
         value: number | LoginAbsysService;
+      }
+    | {
+        relationTo: 'loginCampus_service';
+        value: number | LoginCampusService;
       };
   key?: string | null;
   value?:
@@ -1444,6 +1510,36 @@ export interface ScheduleSelect<T extends boolean = true> {
       };
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "loginCampus_service_select".
+ */
+export interface LoginCampusServiceSelect<T extends boolean = true> {
+  dni?: T;
+  nombre?: T;
+  apellidos?: T;
+  numeroCarnet?: T;
+  colectivo?: T;
+  maxPrestamos?: T;
+  diasPrestamo?: T;
+  isOfflineData?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  email?: T;
+  resetPasswordToken?: T;
+  resetPasswordExpiration?: T;
+  salt?: T;
+  hash?: T;
+  loginAttempts?: T;
+  lockUntil?: T;
+  sessions?:
+    | T
+    | {
+        id?: T;
+        createdAt?: T;
+        expiresAt?: T;
+      };
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
