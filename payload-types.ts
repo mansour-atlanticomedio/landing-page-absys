@@ -852,9 +852,10 @@ export interface Schedule {
  */
 export interface LoginCampusService {
   id: number;
-  dni: string;
-  nombre: string;
-  apellidos: string;
+  absysId?: string | null;
+  dni?: string | null;
+  nombre?: string | null;
+  apellidos?: string | null;
   numeroCarnet?: string | null;
   colectivo: 'ALUMN' | 'PDI' | 'PAS' | 'EXT';
   maxPrestamos?: number | null;
@@ -1516,6 +1517,7 @@ export interface ScheduleSelect<T extends boolean = true> {
  * via the `definition` "loginCampus_service_select".
  */
 export interface LoginCampusServiceSelect<T extends boolean = true> {
+  absysId?: T;
   dni?: T;
   nombre?: T;
   apellidos?: T;

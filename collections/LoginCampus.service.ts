@@ -1,96 +1,7 @@
-import { AbsysAddLectorPayload, AbsysAddLectorResponse } from "@/types/absys.type";
-import type { CollectionConfig, Endpoint, PayloadHandler } from "payload";
-import { handleCreateLector, handleGetLectorMe, handleLoginLector } from "./LoginAbsys.service";
-import { createDecipheriv } from "node:crypto";
+import type { Access, CollectionConfig, Endpoint, PayloadHandler } from "payload";
+import { decryptCampusToken } from "@/lib/integrations/campus/token";
 
-class AbsysError extends Error { }
-
-// Versión original en PHP (campus):
-// $decoded = base64_decode($cadenaCodificada);
-// if ($decoded === false || strlen($decoded) <= 16) {
-// 	return null; // Datos inválidos
-// }
-// $iv = substr($decoded, 0, 16); // Primeros 16 bytes = IV
-// $encrypted = substr($decoded, 16); // El resto = datos cifrados
-// $decrypted = openssl_decrypt($encrypted, 'AES-128-CBC', SECRET_KEY, OPENSSL_RAW_DATA, $iv);
-// if ($decrypted === false) {
-// 	return null;
-// }
-// list($fecha, $email) = explode("|", $decrypted);
-// return ['fecha' => $fecha, 'email' => $email];
-
-// openssl_decrypt de PHP rellena con ceros o recorta la clave a 16 bytes; Node exige exactamente 16
-const getCampusKey = (): Buffer => {
-  const secret = process.env.NEXT_CAMPUS_SECRET_KEY;
-  if (!secret) throw new Error("NEXT_CAMPUS_SECRET_KEY no configurada");
-
-  const key = Buffer.alloc(16);
-  Buffer.from(secret, "utf-8").copy(key, 0, 0, 16);
-  return key;
-};
-
-// El campus manda la fecha sin zona horaria ("YYYY-MM-DD HH:mm:ss"), en la hora local de su servidor PHP
-const CAMPUS_TIMEZONE = process.env.NEXT_CAMPUS_TIMEZONE || "Atlantic/Canary";
-
-// Diferencia en ms entre la hora local de la zona y UTC en un instante dado (cambia con el horario de verano)
-const getTimeZoneOffset = (timestamp: number, timeZone: string): number => {
-  const parts = new Intl.DateTimeFormat("en-US", {
-    timeZone,
-    hourCycle: "h23",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-  }).formatToParts(new Date(timestamp));
-  const get = (type: Intl.DateTimeFormatPartTypes) => Number(parts.find((p) => p.type === type)?.value);
-
-  return Date.UTC(get("year"), get("month") - 1, get("day"), get("hour"), get("minute"), get("second")) - timestamp;
-};
-
-// Convierte la fecha del campus a ISO 8601 en UTC (ej: "2026-09-23T11:04:52.000Z")
-const campusDateToIsoUtc = (fecha: string, timeZone: string = CAMPUS_TIMEZONE): string | null => {
-  const match = fecha.trim().match(/^(\d{4})-(\d{2})-(\d{2})[ T](\d{2}):(\d{2}):(\d{2})$/);
-  if (!match) return null;
-
-  const [year, month, day, hour, minute, second] = match.slice(1).map(Number);
-  const wallClockAsUtc = Date.UTC(year, month - 1, day, hour, minute, second);
-
-  // Dos pasadas para acertar el offset también en los días de cambio de hora
-  let utc = wallClockAsUtc - getTimeZoneOffset(wallClockAsUtc, timeZone);
-  utc = wallClockAsUtc - getTimeZoneOffset(utc, timeZone);
-
-  const date = new Date(utc);
-  return Number.isNaN(date.getTime()) ? null : date.toISOString();
-};
-
-const passwordDecript = (passwordString: string): { fecha: string; email: string } | null => {
-  const decoded = Buffer.from(passwordString, "base64");
-  if (decoded.length <= 16) return null;
-
-  // Primeros 16 bytes = IV, el resto = datos cifrados
-  const iv = decoded.subarray(0, 16);
-  const encrypted = decoded.subarray(16);
-
-  const key = getCampusKey();
-
-  let decrypted: string;
-  try {
-    const decipher = createDecipheriv("aes-128-cbc", key, iv);
-    decrypted = Buffer.concat([decipher.update(encrypted), decipher.final()]).toString("utf-8");
-  } catch {
-    return null;
-  }
-
-  const [fechaCampus, email] = decrypted.split("|");
-  if (!fechaCampus || !email) return null;
-
-  const fecha = campusDateToIsoUtc(fechaCampus);
-  if (!fecha) return null;
-
-  return { fecha, email };
-};
+export const LOGIN_CAMPUS_SLUG = "loginCampus_service";
 
 // Endpoint temporal para comprobar que desciframos los tokens del campus. No debe llegar a producción
 export const handleDecryptTest: PayloadHandler = async (req) => {
@@ -116,7 +27,7 @@ export const handleDecryptTest: PayloadHandler = async (req) => {
   }
 
   try {
-    const result = passwordDecript(token);
+    const result = decryptCampusToken(token);
     if (!result) {
       return Response.json({ success: false, message: "Token inválido o clave incorrecta" }, { status: 400 });
     }
@@ -132,31 +43,44 @@ export const decryptTestEndpoints: Endpoint[] = [
   { path: "/loginCampus/login/password/:id", method: "post", handler: handleDecryptTest },
 ];
 
+const isAdmin: Access = ({ req: { user } }) => user?.collection === "users";
+
+// Un lector solo puede leer su propio documento; los admins, todos
+const isAdminOrSelf: Access = ({ req: { user } }) => {
+  if (!user) return false;
+  if (user.collection === "users") return true;
+  return { id: { equals: user.id } };
+};
+
 export const LoginCampusService: CollectionConfig = {
-  slug: "loginCampus_service",
+  slug: LOGIN_CAMPUS_SLUG,
+  labels: { singular: "Lector del campus", plural: "Lectores del campus" },
   auth: {
     tokenExpiration: 1800,
     cookies: {
       secure: process.env.NODE_ENV === "production",
-      sameSite: "Strict",
+      // Lax y no Strict: la sesión se crea en una redirección que empieza en el campus, y con Strict el navegador no mandaría la cookie en ese mismo viaje
+      sameSite: "Lax",
     },
   },
   admin: {
     useAsTitle: "email",
   },
   access: {
-    read: ({ req: { user } }) => {
-      if (!user) return false;
-      return true;
-    },
+    read: isAdminOrSelf,
+    create: isAdmin,
+    update: isAdmin,
+    delete: isAdmin,
   },
   fields: [
-    { name: "dni", type: "text", required: true, unique: true, index: true },
-    { name: "nombre", type: "text", required: true },
-    { name: "apellidos", type: "text", required: true },
-    { name: "numeroCarnet", type: "text", unique: true, index: true },
+    { name: "absysId", label: "Número de lector (Absys)", type: "text", index: true },
+    { name: "dni", label: "DNI", type: "text", unique: true, index: true },
+    { name: "nombre", label: "Nombre", type: "text" },
+    { name: "apellidos", label: "Apellidos", type: "text" },
+    { name: "numeroCarnet", label: "Número de carnet", type: "text", unique: true, index: true },
     {
       name: "colectivo",
+      label: "Colectivo",
       type: "select",
       required: true,
       defaultValue: "ALUMN",
@@ -167,14 +91,11 @@ export const LoginCampusService: CollectionConfig = {
         { label: "Externo", value: "EXT" },
       ],
     },
-    { name: "maxPrestamos", type: "number" },
-    { name: "diasPrestamo", type: "number" },
-    { name: "isOfflineData", type: "checkbox", defaultValue: false },
+    { name: "maxPrestamos", label: "Máximo de préstamos", type: "number" },
+    { name: "diasPrestamo", label: "Días de préstamo", type: "number" },
+    { name: "isOfflineData", label: "Datos sin conexión", type: "checkbox", defaultValue: false },
   ],
   endpoints: [
-    { path: "/signin", method: "post", handler: handleCreateLector },
     { path: "/login/password/:id", method: "post", handler: handleDecryptTest },
-    { path: "/login/:credentials", method: "post", handler: handleLoginLector },
-    { path: "/me", method: "get", handler: handleGetLectorMe },
   ],
 };
