@@ -32,6 +32,9 @@ import {
   Loader2,
   AlertCircle,
   CheckCircle2,
+  Eye,
+  EyeOff,
+  EyeClosed,
 } from "lucide-react";
 import axios from "axios";
 import { getLoginPageData } from "./actions";
@@ -71,9 +74,10 @@ export const LoginPage: React.FC<LoginPageProps> = ({ className = "" }) => {
   const router = useRouter();
   const [mode, setMode] = useState<"login" | "register" | "reset">("login");
   const [isLoading, setIsLoading] = useState(false);
+  const [isPasswordShown, setIsPasswordShown] = useState(false)
   const [error, setError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  
+
   // Estado para almacenar la imagen dinámica traída de Payload
   const [imageUrl, setImageUrl] = useState<string | null>(null);
   const [imageAlt, setImageAlt] = useState<string>("Login");
@@ -102,7 +106,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ className = "" }) => {
   }, []);
 
   function switchMode(next: "login" | "register" | "reset") {
-    setMode(next);
+    // setMode(next);
     setError(null);
     setSuccessMessage(null);
   }
@@ -194,13 +198,13 @@ export const LoginPage: React.FC<LoginPageProps> = ({ className = "" }) => {
 
   return (
     <div className={`h-screen w-screen bg-slate-50 flex justify-center items-center ${className}`}>
-      <div className="flex-1 h-full relative hidden md:block bg-gradient-to-br from-teal-600 to-slate-900">
+      <div className="flex-3 h-full relative hidden md:block bg-gradient-to-br from-teal-600 to-slate-900">
         {imageUrl && (
           <Image src={imageUrl} fill alt={imageAlt} className="object-cover" />
-        ) }
+        )}
       </div>
 
-      <div className="flex-1 flex flex-col justify-center items-center h-full px-6">
+      <div className="flex-2 flex flex-col justify-center items-center h-full px-6">
         <div className="text-center">
           <div className="inline-flex items-center justify-center text-teal-400 min-h-[100px]">
             {headerLogo ? (
@@ -223,14 +227,14 @@ export const LoginPage: React.FC<LoginPageProps> = ({ className = "" }) => {
 
         <Card className="w-full max-w-lg bg-white shadow-xl rounded-xl">
           <CardHeader>
-            <CardTitle className="text-2xl font-bold text-slate-900">
-              {mode === "login" ? "Iniciar sesión" : "Crear lector"}
+            <CardTitle className="text-3xl text-slate-900">
+              {mode === "login" ? "Bienvenido" : "Crear lector"}
             </CardTitle>
-            <CardDescription>
+            {/* <CardDescription>
               {mode === "login"
-                ? "Accede con tu número de lector y contraseña."
+                ? "Inicia sesión en tu biblioteca"
                 : "Introduce tus datos para crear tu carnet de lector."}
-            </CardDescription>
+            </CardDescription> */}
           </CardHeader>
 
           {(error || successMessage) && (
@@ -252,17 +256,17 @@ export const LoginPage: React.FC<LoginPageProps> = ({ className = "" }) => {
 
           {mode === "login" ? (
             <form onSubmit={handleLoginSubmit}>
-              <CardContent className="space-y-4 pt-4">
+              <CardContent className="space-y-4 pt-2">
                 <div className="space-y-2">
                   <Label htmlFor="lenlec" className="text-slate-700 font-medium">
-                    Nº de lector
+                    Correo electrónico
                   </Label>
                   <div className="relative">
-                    <IdCard className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                    <Mail className="absolute left-3 top-2 h-4 w-4 text-slate-400" />
                     <Input
                       id="lenlec"
                       name="lenlec"
-                      placeholder="100023"
+                      placeholder="Introduce tu correo electrónico"
                       value={loginData.lenlec}
                       onChange={handleLoginChange}
                       className="pl-9 focus-visible:ring-teal-600"
@@ -276,17 +280,30 @@ export const LoginPage: React.FC<LoginPageProps> = ({ className = "" }) => {
                     Contraseña
                   </Label>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                    <Lock className="absolute left-3 top-2 h-4 w-4 text-slate-400" />
                     <Input
                       id="lepass-login"
                       name="lepass"
-                      type="password"
-                      placeholder="••••••••"
+                      type={ isPasswordShown ? "text" : "password"}
+                      placeholder="Introduce tu contraseña"
                       value={loginData.lepass}
                       onChange={handleLoginChange}
-                      className="pl-9 focus-visible:ring-teal-600"
+                      className="pl-9 pr-9 focus-visible:ring-teal-600"
                       required
                     />
+                    <button
+                      type="button"
+                      onClick={() => setIsPasswordShown((prev) => !prev)}
+                      aria-label={isPasswordShown ? "Ocultar contraseña" : "Mostrar contraseña"}
+                      aria-pressed={isPasswordShown}
+                      className="absolute right-3 top-2 text-slate-400 hover:text-slate-600 transition-colors"
+                    >
+                      {isPasswordShown ? (
+                        <EyeClosed className="h-4 w-4" />
+                      ) : (
+                        <Eye className="h-4 w-4" />
+                      )}
+                    </button>
                   </div>
                 </div>
               </CardContent>
@@ -303,10 +320,10 @@ export const LoginPage: React.FC<LoginPageProps> = ({ className = "" }) => {
                       Iniciando sesión...
                     </>
                   ) : (
-                    "Acceder a Mi Cuenta"
+                    "Acceder"
                   )}
                 </Button>
-                <button
+                {/* <button
                   type="button"
                   onClick={() => switchMode("register")}
                   className="text-sm text-slate-600 hover:text-teal-700"
@@ -315,7 +332,30 @@ export const LoginPage: React.FC<LoginPageProps> = ({ className = "" }) => {
                   <span className="text-teal-700 font-medium hover:underline">
                     Crea tu carnet de lector
                   </span>
-                </button>
+                </button> */}
+                <div className="flex w-full items-center gap-3">
+                  <span className="h-px flex-1 bg-slate-200" />
+                  <span className="text-xs uppercase text-slate-400">o</span>
+                  <span className="h-px flex-1 bg-slate-200" />
+                </div>
+
+                <Button
+                  asChild
+                  variant="outline"
+                  className="w-full h-[41px] rounded-none border-[#8C8C8C] bg-white px-3 text-[15px] font-semibold text-[#5E5E5E] hover:bg-[#F3F3F3] hover:text-[#5E5E5E] transition-colors"
+                  style={{ fontFamily: '"Segoe UI", "Segoe UI Web", Tahoma, Arial, sans-serif' }}
+                >
+                  <a
+                    href="https://campus.atlanticomedio.es"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="gap-3"
+                  >
+                    <img src="https://www.microsoft.com/favicon.ico" alt="" width="18" />
+                    Iniciar sesión con Microsoft
+                  </a>
+                </Button>
+
                 <button
                   type="button"
                   onClick={() => switchMode("reset")}

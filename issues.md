@@ -335,7 +335,7 @@ Nace de una tarea suelta detectada fuera del roadmap original, sin fase previa a
 2. **F01** — login (base de la que dependen F02, F06, F07, F10)
 3. **F08** (solo la parte no bloqueada: auditoría de infraestructura) — se puede arrancar en
    paralelo ya, no depende de Daniel
-4. Resto de fases sin bloqueo (F02, F04, F05, F06, F07, F09, F10) — pueden avanzar en paralelo
-   sin competir por prioridad con las tres anteriores
-5. **F03** y el resto de **F08** — a la espera de decisiones/accesos externos (producto y
-   Daniel respectivamente)
+   4. Resto de fases sin bloqueo (F02, F04, F05, F06, F07, F09, F10) — pueden avanzar en paralelo
+      sin competir por prioridad con las tres anteriores
+      5. **F03** y el resto de **F08** — a la espera de decisiones/accesos externos (producto y
+         Daniel respectivamente)

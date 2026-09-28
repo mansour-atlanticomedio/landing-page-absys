@@ -94,11 +94,8 @@ export default function CatalogoPage() {
               className="flex-1 py-3 outline-none text-sm"
             />
           </div>
-          <button onClick={() => handleSearch()} className="bg-accent text-white font-medium px-6 rounded-md">Buscar</button>
+          <button onClick={() => handleSearch()} className="bg-accent text-white font-medium px-6 rounded-md hover:bg-slate-700 active:scale-[.92] cursor-pointer">Buscar</button>
         </div>
-        <Link href="/recursos/catalogo/busqueda" className="mt-2 inline-block text-sm text-teal-700">
-          ⚏ Búsqueda avanzada
-        </Link>
       </section>
 
       <section className="mx-auto max-w-6xl px-6 pb-16">
