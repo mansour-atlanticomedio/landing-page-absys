@@ -326,7 +326,7 @@ Flujo del ADR-0005. La sesión es una sesión normal de Payload de la collection
 A) Llega del campus:  /auth/campus?token=<AES>&next=/ruta
    → verifyCampusToken → absys.findLectorByExternalId(email)
    → createCampusSession (crea/actualiza el usuario, añade sid, firma JWT) → cookie
-   → redirige a `next`, o a /profile/alta si no tiene ficha en Absys
+   → redirige a `next`, o a /perfil/alta si no tiene ficha en Absys
 B) Página privada sin sesión: requireSession('/ruta') → /auth/login?next=/ruta
    → NEXT_CAMPUS_LOGIN_URL?return=<site>/auth/campus?next=/ruta → campus → vuelve por A
 ```
@@ -341,14 +341,14 @@ B) Página privada sin sesión: requireSession('/ruta') → /auth/login?next=/ru
 | `app/(auth)/auth/logout/route.ts` | `POST`, revoca la sesión y vuelve a `/` |
 | `app/(auth)/auth/error/page.tsx` | Motivos: `invalido`, `caducado`, `absys`, `config` |
 | `app/(auth)/auth/simular-campus/` | **Solo dev** (404 en producción): formulario con un email que genera un token real y vuelve al callback. Es la forma de probar el flujo hasta que Daniel tenga lista la redirección |
-| `app/(frontend)/profile/page.tsx` | Privada: datos del lector en Absys; si Absys está caído muestra los guardados en Payload |
-| `app/(frontend)/profile/alta/` | Privada: si el email del campus no tiene ficha en Absys, pide nombre/apellidos/dirección/colectivo y llama a `createLector` (con `lepass` aleatorio, porque entran siempre por el campus). **No probado contra Absys real** (error -400 pendiente con Baratz) |
+| `app/(frontend)/(cuenta)/perfil/page.tsx` | Privada: datos del lector en Absys; si Absys está caído muestra los guardados en Payload |
+| `app/(frontend)/(cuenta)/perfil/alta/` | Privada: si el email del campus no tiene ficha en Absys, pide nombre/apellidos/dirección/colectivo y llama a `createLector` (con `lepass` aleatorio, porque entran siempre por el campus). **No probado contra Absys real** (error -400 pendiente con Baratz) |
 
 Variables (ver `env.local.Example`): `NEXT_CAMPUS_SECRET_KEY`, `NEXT_CAMPUS_TIMEZONE`, `NEXT_CAMPUS_TOKEN_MAX_AGE`, `NEXT_CAMPUS_TOKEN_PARAM` (`token`), `NEXT_CAMPUS_LOGIN_URL`, `NEXT_CAMPUS_RETURN_PARAM` (`return`). La URL de login del campus y el nombre de sus parámetros están **pendientes de confirmar con Daniel**; por eso son configurables.
 
 Gotchas:
 - **`SameSite=Lax`, no `Strict`**: la cookie se crea en una redirección que empieza en otro sitio (el campus); con `Strict` el navegador no la manda en ese mismo viaje y el usuario entra en bucle login → campus → login
-- **`Card` de shadcn no se puede renderizar en un Server Component**: `lib/utils.ts` lleva `'use client'` (tiene el hook `useBookCover`), así que `cn()` es una referencia de cliente y revienta en el servidor con `Attempted to call cn() from the server`. Envolver el Card en un componente `"use client"` (como `components/auth/*`, `ProfileDatosCard`)
+- **`Card` de shadcn no se puede renderizar en un Server Component**: `lib/utils.ts` lleva `'use client'` (tiene el hook `useBookCover`), así que `cn()` es una referencia de cliente y revienta en el servidor con `Attempted to call cn() from the server`. Envolver el Card en un componente `"use client"` (como `components/auth/*`, `components/cuenta/PrestamosTabla`)
 - `loginCampus_service`: cada lector solo puede leerse a sí mismo por la API; solo admins (`users`) crean/editan/borran
 - Payload usa una única cookie `payload-token` para todas las collections con auth: iniciar sesión como lector en el mismo navegador cierra la sesión del admin y viceversa
 
@@ -518,34 +518,44 @@ Los seeds 3-8 son independientes entre sí y podrían reordenarse sin romper nad
 
 Probado contra la BD real del contenedor de desarrollo y con `curl` contra la home renderizada (200 OK, las 3 diapositivas reales aparecen).
 
-### Login desde el campus + `/profile` — rama `feat/login-campus` (2026-09-28)
+### Login desde el campus + `/perfil` — rama `feat/login-campus` (2026-09-28)
 
 Arquitectura y ficheros en "Login desde el campus (sesión real de Payload)" (sección "Estructura de páginas"). Aquí, qué se hizo, cómo probarlo y qué queda.
 
 **Qué cambia para la app** — se separa la app por estado:
 - Páginas **públicas**: igual que antes.
-- Páginas **privadas** (`/profile`, `/profile/alta`): llaman a `requireSession('/ruta')`; sin sesión → `/auth/login?next=/ruta` → campus → vuelve a `/ruta` ya con sesión.
-- **Entrada desde el campus con claves**: `/auth/campus?token=…` descifra, confirma el lector en Absys y abre sesión directamente; sin ficha en Absys → `/profile/alta`.
-- **Header**: ya no lee `lenlec` de `localStorage` (cualquiera podía escribirlo). `app/(frontend)/layout.tsx` le pasa la prop `account` (`{ email, nombre } | null`) desde `getSession()`; "Mi Cuenta" enlaza a `/auth/login?next=<ruta actual>`; el desplegable tiene "Perfil" (`/profile`) y "Cerrar sesión" (form `POST /auth/logout`, que además limpia el `localStorage` del login antiguo).
+- Páginas **privadas** (`/perfil`, `/perfil/alta`): llaman a `requireSession('/ruta')`; sin sesión → `/auth/login?next=/ruta` → campus → vuelve a `/ruta` ya con sesión.
+- **Entrada desde el campus con claves**: `/auth/campus?token=…` descifra, confirma el lector en Absys y abre sesión directamente; sin ficha en Absys → `/perfil/alta`.
+- **Header**: ya no lee `lenlec` de `localStorage` (cualquiera podía escribirlo). `app/(frontend)/layout.tsx` le pasa la prop `account` (`{ email, nombre } | null`) desde `getSession()`; "Mi Cuenta" enlaza a `/auth/login?next=<ruta actual>`; el desplegable tiene "Perfil" (`/perfil`) y "Cerrar sesión" (form `POST /auth/logout`, que además limpia el `localStorage` del login antiguo).
 
 **Cambios en `loginCampus_service`** (`collections/LoginCampus.service.ts`): cookie `SameSite` de `Strict` a `Lax`; access `read` = admin o uno mismo, `create/update/delete` = solo admin (antes cualquier logueado leía a todos y podía crear usuarios); `dni`/`nombre`/`apellidos` opcionales y campo nuevo `absysId`; se quitaron los endpoints copiados de `loginAbsys_service` (`/signin`, `/login/:credentials`, `/me`); el descifrado pasó a `lib/integrations/campus/token.ts` y el endpoint de prueba `handleDecryptTest` lo usa. Nueva migración `migrations/20260928_114829_login_campus.ts` — la collection no tenía ninguna (se había registrado en `payload.config.ts` sin `migrate:create`).
 
 **Cómo probarlo en desarrollo** (sin campus real):
 1. Dejar `NEXT_CAMPUS_LOGIN_URL` vacía y `NEXT_CAMPUS_SECRET_KEY` con la clave de dev.
 2. Si se acaba de registrar algo en `payload.config.ts`: `docker restart biblioteca-frontend`.
-3. Pulsar "Mi Cuenta" (o abrir `/biblioteca/profile`) → redirige a `/biblioteca/auth/simular-campus` → escribir un email → hace de campus: cifra `fecha|email` con la clave real y vuelve a `/auth/campus`.
-4. Con `curl`: `curl -s -o /dev/null -w '%{redirect_url}' "http://localhost:8085/biblioteca/auth/simular-campus/emitir?email=<email>&next=/profile"` devuelve la URL del callback con un token válido; llamarla con `-c jar.txt` guarda la cookie, y `-b jar.txt` la reutiliza.
+3. Pulsar "Mi Cuenta" (o abrir `/biblioteca/perfil`) → redirige a `/biblioteca/auth/simular-campus` → escribir un email → hace de campus: cifra `fecha|email` con la clave real y vuelve a `/auth/campus`.
+4. Con `curl`: `curl -s -o /dev/null -w '%{redirect_url}' "http://localhost:8085/biblioteca/auth/simular-campus/emitir?email=<email>&next=/perfil"` devuelve la URL del callback con un token válido; llamarla con `-c jar.txt` guarda la cookie, y `-b jar.txt` la reutiliza.
 5. Tests: `npm test` (`lib/integrations/campus/__tests__/token.test.ts`, `lib/auth/__tests__/redirects.test.ts`).
 
-**Probado** (contenedor de dev + Absys real, solo lecturas): sin sesión `/profile` → login → simulador; token basura → `/auth/error?motivo=invalido`; `next` externo ignorado; email existente en Absys → cookie `payload-token` (`HttpOnly`, `SameSite=Lax`) → `/profile` con los datos de Absys; con sesión `/auth/login` vuelve directo a `next`; email sin ficha → `/profile/alta` conservando `next`; por la API un lector solo se ve a sí mismo (`totalDocs: 1`, 404 al leer a otro) y no puede crear usuarios (403); logout revoca el `sid` y `/profile` vuelve a pedir login; las 3 migraciones aplican limpias contra una BD vacía; 62 tests de Vitest y `tsc --noEmit` sin errores.
+**Probado** (contenedor de dev + Absys real, solo lecturas): sin sesión `/perfil` → login → simulador; token basura → `/auth/error?motivo=invalido`; `next` externo ignorado; email existente en Absys → cookie `payload-token` (`HttpOnly`, `SameSite=Lax`) → `/perfil` con los datos de Absys; con sesión `/auth/login` vuelve directo a `next`; email sin ficha → `/perfil/alta` conservando `next`; por la API un lector solo se ve a sí mismo (`totalDocs: 1`, 404 al leer a otro) y no puede crear usuarios (403); logout revoca el `sid` y `/perfil` vuelve a pedir login; las 3 migraciones aplican limpias contra una BD vacía; 62 tests de Vitest y `tsc --noEmit` sin errores.
 
-**Sin probar**: el envío del formulario de `/profile/alta` — crearía un lector real en Absys y `createLector` sigue con el error -400 pendiente con Baratz.
+**Sin probar**: el envío del formulario de `/perfil/alta` — crearía un lector real en Absys y `createLector` sigue con el error -400 pendiente con Baratz.
 
 **Pendiente**:
 - Con Daniel: URL de login del campus y nombre de sus parámetros (token y URL de vuelta). Configurables con `NEXT_CAMPUS_LOGIN_URL`, `NEXT_CAMPUS_TOKEN_PARAM`, `NEXT_CAMPUS_RETURN_PARAM`, sin tocar código.
 - La lobby de roles del ADR-0005 (el campus no manda el rol) no está hecha: todos entran como lector.
-- `/profile` solo muestra datos del lector; reservas y préstamos son F10.
+- Reservas: `/reservas` solo muestra un aviso porque Absys responde `Access denied 'reserv'` con el rol actual; pedir a Baratz permiso de lectura sobre `reserv` (ver "Área Mi cuenta")
 - El botón "Iniciar sesión con Microsoft" de `app/(auth)/login/page.tsx` apunta a la portada del campus; podría apuntar a `/biblioteca/auth/login`.
 - En la BD de dev quedaron 2 lectores de prueba en `loginCampus_service` (`mansour@atlanticomedio.es` y `no.existe.prueba@atlanticomedio.es`).
 
 **Nota de ramas**: `feat/login-campus` sale de `main` tras el merge de los PRs #15 (`refactor/absys-adapter`) y #12 (`feat/login-microsoft-emails`), no de `refactor/absys-adapter`.
+
+### Área "Mi cuenta": `/perfil`, `/prestamos`, `/reservas` (2026-09-28)
+
+- **`/profile` pasa a `/perfil`** (y `/profile/alta` a `/perfil/alta`); `DEFAULT_AFTER_LOGIN` en `lib/auth/redirects.ts` también. `/profile` da 404.
+- **Route group `app/(frontend)/(cuenta)/`** con `layout.tsx` común: título "Mi cuenta" + `components/cuenta/CuentaNav.tsx` (`"use client"`, pestañas de texto Perfil · Préstamos · Reservas con subrayado `accent` en la activa, `aria-current="page"`). Cada página sigue llamando a `requireSession('/ruta')` (el layout no conoce la ruta).
+- **Estilo**: minimalista/institucional a petición explícita — sin tarjetas ni animaciones; listas `dl` con separadores, tabla simple y avisos con `components/cuenta/AvisoCuenta.tsx` (borde izquierdo `accent` sobre `bg-muted`). `components/ProfileDatosCard.tsx` se eliminó.
+- **`/prestamos`**: nuevo `absys.findPrestamosByLector(lenlec)` en el adaptador (`lib/integrations/absys/prestamo.ts` + `mappers/prestamo.ts`, con fixture `prestamo-search.json` y tests). Busca en la tabla `presta` por **`prnlec`** (con `lenlec` Absys responde `Unrecognized field`). Campos usados: `prbarc` (código del ejemplar), `prfpre`/`prfdev` (`"YYYY-MM-DD HH:mm:ss"`, se guarda solo la fecha), `prnren` (renovaciones), `renewable`, `prcosu` (sucursal). `isPrestamoVencido` compara `prfdev` con hoy. La tabla (`components/cuenta/PrestamosTabla.tsx`, cliente porque usa `Badge`) muestra el **código del ejemplar, no el título**: `presta` no trae título y `_secondary`/`_tertiary` no lo añaden; sacarlo requeriría buscar el ejemplar en `copias`/`cata` (pendiente). No está confirmado si `prfdev` es la fecha prevista o la real de devolución — se muestra como "Devolución".
+- **`/reservas`**: solo aviso institucional ("disponible próximamente", remite al mostrador o a contacto). Motivo: `search` sobre `reserv` devuelve `code 3 / subcode 32: Access denied 'reserv'` con el rol actual de Connect → **pedir a Baratz permiso de lectura sobre `reserv`**. Marcado con `TODO(F10)` en la página.
+- **Header**: enlaces del desplegable a `/perfil`, `/reservas` y `/prestamos`.
+- **Probado** en el contenedor de dev contra Absys real (solo lecturas): sin sesión las 3 redirigen al login con su `next`; con sesión las 3 dan 200; `/perfil` muestra el número de lector; `/prestamos` muestra el estado vacío (el lector de prueba tiene 0 préstamos, así que **la tabla con datos solo está cubierta por tests**, no vista con préstamos reales); 69 tests de Vitest y `tsc --noEmit` sin errores.
