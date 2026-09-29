@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { createLocalReq, getFieldsToSign, jwtSign } from "payload";
 import { addSessionToUser, generateExpiredPayloadCookie, generatePayloadCookie } from "payload/shared";
 import { LOGIN_CAMPUS_SLUG } from "@/collections/LoginCampus.service";
-import type { Lector } from "@/lib/integrations/absys";
+import type { Colectivo, Lector } from "@/lib/integrations/absys";
 import { getClient } from "@/lib/payload";
 
 export interface CampusSession {
@@ -13,6 +13,7 @@ export interface CampusSession {
   nombre?: string;
   apellidos?: string;
   absysId?: string;
+  colectivo?: Colectivo;
   sid?: string;
 }
 
@@ -35,6 +36,7 @@ export const getSession = async (requestHeaders?: Headers): Promise<CampusSessio
     nombre: user.nombre ?? undefined,
     apellidos: user.apellidos ?? undefined,
     absysId: user.absysId ?? undefined,
+    colectivo: user.colectivo ?? undefined,
     sid: user._sid,
   };
 };
@@ -46,29 +48,32 @@ export const requireSession = async (next: string): Promise<CampusSession> => {
   return session;
 };
 
-// Crea (o actualiza) el lector en Payload y le abre una sesión sin contraseña, porque la identidad ya la validó el campus
-export const createCampusSession = async (email: string, lector: Lector | null): Promise<string> => {
+// Crea (o actualiza) el lector en Payload y le abre una sesión sin contraseña, porque la identidad ya la validó el campus.
+// `rol` (derivado del dominio del correo, ver deriveCampusIdentity) se guarda aparte en vez de derivarlo del lector,
+// porque se recalcula en cada login y debe quedar sincronizado aunque el lector en Absys no haya cambiado
+export const createCampusSession = async (email: string, lector: Lector | null, rol?: Colectivo): Promise<string> => {
   const { payload, collection } = await getCampusCollection();
   const req = await createLocalReq({}, payload);
 
-  const datosAbsys = lector
-    ? { absysId: lector.id, nombre: lector.nombre, apellidos: lector.apellidos }
-    : {};
+  const datosCampus = {
+    ...(lector ? { absysId: lector.id, nombre: lector.nombre, apellidos: lector.apellidos } : {}),
+    ...(rol ? { colectivo: rol } : {}),
+  };
 
   const existing = await findRawUser(payload, req, { email: { equals: email } });
   if (!existing) {
     await payload.create({
       collection: LOGIN_CAMPUS_SLUG as never,
       // Contraseña aleatoria que nadie conoce: Payload la exige, pero estos lectores solo entran por el campus
-      data: { email, password: randomBytes(32).toString("hex"), ...datosAbsys } as never,
+      data: { email, password: randomBytes(32).toString("hex"), ...datosCampus } as never,
       overrideAccess: true,
       req,
     });
-  } else if (lector) {
+  } else if (Object.keys(datosCampus).length > 0) {
     await payload.update({
       collection: LOGIN_CAMPUS_SLUG as never,
       id: existing.id,
-      data: datosAbsys as never,
+      data: datosCampus as never,
       overrideAccess: true,
       req,
     });
@@ -91,7 +96,8 @@ export const createCampusSession = async (email: string, lector: Lector | null):
   }) as string;
 };
 
-// Tras el alta en Absys, guarda en el usuario de Payload el número de lector asignado
+// Sincroniza en el usuario de Payload la copia de nombre/apellidos/número de lector de Absys
+// (tras el alta automática o tras editar el perfil), para tener algo que mostrar si Absys cae
 export const linkAbsysLector = async (session: CampusSession, lector: Lector) => {
   const payload = await getClient();
   await payload.update({

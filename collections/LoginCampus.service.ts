@@ -84,11 +84,14 @@ export const LoginCampusService: CollectionConfig = {
       type: "select",
       required: true,
       defaultValue: "ALUMN",
+      // Mismos códigos que lib/integrations/absys/mappers/lector.ts (Colectivo) — se derivan del
+      // dominio del correo del campus (deriveCampusIdentity), no se piden en ningún formulario
       options: [
         { label: "Estudiante", value: "ALUMN" },
-        { label: "PDI", value: "PDI" },
-        { label: "PAS", value: "PAS" },
-        { label: "Externo", value: "EXT" },
+        { label: "Profesor", value: "PROFE" },
+        { label: "Personal", value: "ADULT" },
+        { label: "Invitado", value: "INVIT" },
+        { label: "Básico", value: "ANONI" },
       ],
     },
     { name: "maxPrestamos", label: "Máximo de préstamos", type: "number" },

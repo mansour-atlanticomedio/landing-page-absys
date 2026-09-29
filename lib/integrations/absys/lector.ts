@@ -7,6 +7,8 @@ import {
   toExternalIdQuery,
   toLector,
   toLectorCreado,
+  toModifyLectorQuery,
+  type ActualizarLector,
   type Lector,
   type NuevoLector,
 } from "./mappers/lector";
@@ -32,5 +34,11 @@ export const createLectorService = (client: AbsysClient) => ({
       throw new AbsysInvalidDataError("Absys no devolvió el número del lector creado");
     }
     return toLectorCreado(datos, lenlec);
+  },
+
+  // Solo nombre/apellidos son editables desde /perfil; el resto de la ficha no se toca aquí
+  async updateLector(actual: Lector, datos: ActualizarLector): Promise<Lector> {
+    await client.modify("lector", toModifyLectorQuery(actual.id, datos));
+    return { ...actual, nombre: datos.nombre, apellidos: datos.apellidos };
   },
 });

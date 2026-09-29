@@ -1,6 +1,7 @@
 import * as migration_20260731_114550_baseline from './20260731_114550_baseline';
 import * as migration_20260915_162539_session_2026_09_14_content_globals from './20260915_162539_session_2026_09_14_content_globals';
 import * as migration_20260928_114829_login_campus from './20260928_114829_login_campus';
+import * as migration_20260929_102432_actualizar_colectivos_campus from './20260929_102432_actualizar_colectivos_campus';
 
 export const migrations = [
   {
@@ -16,6 +17,11 @@ export const migrations = [
   {
     up: migration_20260928_114829_login_campus.up,
     down: migration_20260928_114829_login_campus.down,
-    name: '20260928_114829_login_campus'
+    name: '20260928_114829_login_campus',
+  },
+  {
+    up: migration_20260929_102432_actualizar_colectivos_campus.up,
+    down: migration_20260929_102432_actualizar_colectivos_campus.down,
+    name: '20260929_102432_actualizar_colectivos_campus',
   },
 ];

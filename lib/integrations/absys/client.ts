@@ -15,6 +15,7 @@ export interface AbsysRawResponse {
 export interface AbsysClient {
   search(params: AbsysParams): Promise<AbsysRawResponse>;
   add(table: string, fields: AbsysParams): Promise<AbsysRawResponse>;
+  modify(table: string, fields: AbsysParams): Promise<AbsysRawResponse>;
 }
 
 const DEFAULT_TIMEOUT_MS = 10_000;
@@ -109,4 +110,6 @@ const send = async (query: AbsysParams, body?: AbsysParams): Promise<AbsysRawRes
 export const absysClient: AbsysClient = {
   search: (params) => send({ operation: "search", ...params }),
   add: (table, fields) => send({ operation: "add", table }, fields),
+  // A diferencia de add, modify está probado y funciona en GET (docs/Absys API.md del vault)
+  modify: (table, fields) => send({ operation: "modify", table, ...fields }),
 };

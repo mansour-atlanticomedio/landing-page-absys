@@ -1,11 +1,20 @@
-import { redirect } from "next/navigation";
 import AvisoCuenta from "@/components/cuenta/AvisoCuenta";
+import PerfilForm from "@/components/cuenta/PerfilForm";
 import { requireSession } from "@/lib/auth/session";
 import { absys, type Lector } from "@/lib/integrations/absys";
 
 export const dynamic = "force-dynamic";
 
 export const metadata = { title: "Mi perfil | Biblioteca UNAM" };
+
+// Mismas etiquetas que collections/LoginCampus.service.ts (campo `colectivo`)
+const ROL_LABELS: Record<string, string> = {
+  ADULT: "Personal",
+  ALUMN: "Estudiante",
+  ANONI: "Básico",
+  INVIT: "Invitado",
+  PROFE: "Profesor",
+};
 
 export default async function PerfilPage() {
   const session = await requireSession("/perfil");
@@ -18,13 +27,10 @@ export default async function PerfilPage() {
     absysCaido = true;
   }
 
-  if (!lector && !absysCaido) redirect("/perfil/alta");
-
-  const nombre = lector ? `${lector.nombre} ${lector.apellidos}` : `${session.nombre ?? ""} ${session.apellidos ?? ""}`;
   const datos = [
-    { label: "Nombre", value: nombre.trim() || "—" },
-    { label: "Correo electrónico", value: session.email },
     { label: "Número de lector", value: lector?.id ?? session.absysId ?? "—" },
+    { label: "Correo electrónico", value: session.email },
+    { label: "Rol", value: (session.colectivo && ROL_LABELS[session.colectivo]) || "—" },
   ];
 
   return (
@@ -36,6 +42,19 @@ export default async function PerfilPage() {
 
       {absysCaido && (
         <AvisoCuenta>El sistema de la biblioteca no responde; te mostramos los últimos datos guardados.</AvisoCuenta>
+      )}
+
+      {lector ? (
+        <PerfilForm nombre={lector.nombre} apellidos={lector.apellidos} />
+      ) : (
+        <dl className="divide-y divide-border border-y border-border">
+          <div className="grid gap-1 py-4 sm:grid-cols-3">
+            <dt className="text-sm text-muted-foreground">Nombre</dt>
+            <dd className="sm:col-span-2 font-medium text-foreground break-all">
+              {`${session.nombre ?? ""} ${session.apellidos ?? ""}`.trim() || "—"}
+            </dd>
+          </div>
+        </dl>
       )}
 
       <dl className="divide-y divide-border border-y border-border">

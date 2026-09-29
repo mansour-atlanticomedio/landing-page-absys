@@ -40,7 +40,7 @@ describe("mappers de préstamo", () => {
 });
 
 describe("findPrestamosByLector", () => {
-  const fakeClient = (search: AbsysClient["search"]): AbsysClient => ({ search, add: vi.fn() });
+  const fakeClient = (search: AbsysClient["search"]): AbsysClient => ({ search, add: vi.fn(), modify: vi.fn() });
 
   it("devuelve los préstamos del lector", async () => {
     const search = vi.fn().mockResolvedValue(prestamoSearch as AbsysRawResponse);

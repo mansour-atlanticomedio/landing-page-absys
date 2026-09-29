@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { AbsysRawResponse } from "../client";
 import {
+  deriveCampusIdentity,
   EXTERNAL_ID_FIELD,
   extractLectores,
   formatAbsysDateTime,
@@ -10,6 +11,7 @@ import {
   toExternalIdQuery,
   toLector,
   toLectorCreado,
+  toModifyLectorQuery,
   type NuevoLector,
 } from "../mappers/lector";
 import lectorAdd from "../__fixtures__/lector-add.json";
@@ -21,7 +23,7 @@ const nuevoLector: NuevoLector = {
   nombre: "Lucía",
   apellidos: "Martín Pérez",
   password: "clave-de-prueba",
-  colectivo: "PDI",
+  colectivo: "PROFE",
   direccion: "Carretera de Quilmes, 37",
   email: "lector.prueba@atlanticomedio.es",
   telefono: "600000000",
@@ -68,13 +70,17 @@ describe("toExternalIdQuery", () => {
 });
 
 describe("resolveColectivo", () => {
-  it("acepta ALUMN y PDI", () => {
+  it("acepta los 5 colectivos reales de Absys", () => {
+    expect(resolveColectivo("ADULT")).toBe("ADULT");
     expect(resolveColectivo("ALUMN")).toBe("ALUMN");
-    expect(resolveColectivo("PDI")).toBe("PDI");
+    expect(resolveColectivo("ANONI")).toBe("ANONI");
+    expect(resolveColectivo("INVIT")).toBe("INVIT");
+    expect(resolveColectivo("PROFE")).toBe("PROFE");
   });
 
   it("cae a ALUMN con colectivos que Absys no reconoce (ADR-0002)", () => {
     expect(resolveColectivo("EXT")).toBe("ALUMN");
+    expect(resolveColectivo("PDI")).toBe("ALUMN");
     expect(resolveColectivo(undefined)).toBe("ALUMN");
   });
 });
@@ -93,7 +99,7 @@ describe("fromNuevoLector", () => {
       leapel: "Martín Pérez",
       lenomb: "Lucía",
       lepass: "clave-de-prueba",
-      lecolp: "PDI",
+      lecolp: "PROFE",
       lecobi: "BIEURO",
       lecosu: "MADRID",
       lecart: "1",
@@ -119,6 +125,53 @@ describe("lenlecFromAddResponse", () => {
 
   it("devuelve null si Absys no manda lenlec", () => {
     expect(lenlecFromAddResponse({ response: { code: 0 } })).toBeNull();
+  });
+});
+
+describe("deriveCampusIdentity", () => {
+  it("separa nombre y apellidos por el primer punto del correo", () => {
+    expect(deriveCampusIdentity("mansour.lolo@alu.atlanticomedio.es")).toEqual({
+      nombre: "Mansour",
+      apellidos: "Lolo",
+      rol: "ALUMN",
+    });
+  });
+
+  it("comprueba el dominio en orden: pdi, alu, unam, atlanticomedio.es a secas", () => {
+    expect(deriveCampusIdentity("juan.perez@pdi.atlanticomedio.es").rol).toBe("PROFE");
+    expect(deriveCampusIdentity("juan.perez@alu.atlanticomedio.es").rol).toBe("ALUMN");
+    expect(deriveCampusIdentity("juan.perez@unam.atlanticomedio.es").rol).toBe("INVIT");
+    expect(deriveCampusIdentity("juan.perez@atlanticomedio.es").rol).toBe("ADULT");
+  });
+
+  it("cae a ANONI si el dominio no es institucional (rol más básico)", () => {
+    expect(deriveCampusIdentity("juan.perez@gmail.com").rol).toBe("ANONI");
+    expect(deriveCampusIdentity("juan.perez@otro.atlanticomedio.es").rol).toBe("ANONI");
+  });
+
+  it("usa '-' como apellidos si el correo no tiene un segundo segmento", () => {
+    expect(deriveCampusIdentity("mansour@alu.atlanticomedio.es")).toMatchObject({
+      nombre: "Mansour",
+      apellidos: "-",
+    });
+  });
+
+  it("une varios segmentos como apellidos si el correo tiene más de un punto", () => {
+    expect(deriveCampusIdentity("juan.perez.gomez@alu.atlanticomedio.es")).toMatchObject({
+      nombre: "Juan",
+      apellidos: "Perez Gomez",
+    });
+  });
+});
+
+describe("toModifyLectorQuery", () => {
+  it("construye la query de modify solo con nombre y apellidos", () => {
+    expect(toModifyLectorQuery("100023", { nombre: "Lucía", apellidos: "Martín Pérez" })).toEqual({
+      table: "lector",
+      lenlec: "100023",
+      lenomb: "Lucía",
+      leapel: "Martín Pérez",
+    });
   });
 });
 

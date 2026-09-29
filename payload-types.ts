@@ -857,7 +857,7 @@ export interface LoginCampusService {
   nombre?: string | null;
   apellidos?: string | null;
   numeroCarnet?: string | null;
-  colectivo: 'ALUMN' | 'PDI' | 'PAS' | 'EXT';
+  colectivo: 'ALUMN' | 'PROFE' | 'ADULT' | 'INVIT' | 'ANONI';
   maxPrestamos?: number | null;
   diasPrestamo?: number | null;
   isOfflineData?: boolean | null;

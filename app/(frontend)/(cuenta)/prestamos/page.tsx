@@ -1,4 +1,3 @@
-import { redirect } from "next/navigation";
 import AvisoCuenta from "@/components/cuenta/AvisoCuenta";
 import PrestamosTabla from "@/components/cuenta/PrestamosTabla";
 import { requireSession } from "@/lib/auth/session";
@@ -12,13 +11,12 @@ export default async function PrestamosPage() {
   const session = await requireSession("/prestamos");
 
   let prestamos: Prestamo[] | null = null;
+  let sinFicha = false;
   try {
     const lector = await absys.findLectorByExternalId(session.email);
-    if (!lector) redirect("/perfil/alta?next=/prestamos");
-    prestamos = await absys.findPrestamosByLector(lector.id);
-  } catch (error) {
-    // redirect() lanza una excepción propia de Next que no hay que tragarse
-    if ((error as { digest?: string })?.digest?.startsWith("NEXT_REDIRECT")) throw error;
+    if (!lector) sinFicha = true;
+    else prestamos = await absys.findPrestamosByLector(lector.id);
+  } catch {
     prestamos = null;
   }
 
@@ -31,7 +29,9 @@ export default async function PrestamosPage() {
         </p>
       </header>
 
-      {prestamos === null ? (
+      {sinFicha ? (
+        <AvisoCuenta>No encontramos tu ficha de lector. Contacta con la biblioteca para resolverlo.</AvisoCuenta>
+      ) : prestamos === null ? (
         <AvisoCuenta>El sistema de la biblioteca no responde. Inténtalo de nuevo en unos minutos.</AvisoCuenta>
       ) : prestamos.length === 0 ? (
         <AvisoCuenta>No tienes ningún préstamo en curso.</AvisoCuenta>

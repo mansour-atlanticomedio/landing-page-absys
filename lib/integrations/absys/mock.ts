@@ -25,6 +25,9 @@ const mockClient: AbsysClient = {
   async add() {
     return lectorAdd as AbsysRawResponse;
   },
+  async modify() {
+    return { response: { code: 0 } } as AbsysRawResponse;
+  },
 };
 
 export const absysMock: AbsysAdapter = {
