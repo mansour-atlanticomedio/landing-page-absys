@@ -60,7 +60,7 @@ Payload Admin → Globals → Collections → Pages → RenderBlocks → Compone
 - **En dev** (`NODE_ENV !== 'production'`, contenedor `biblioteca-frontend` con `Dockerfile.dev`), el adapter de Postgres usa `push: true` por defecto: cualquier collection/global nuevo o campo añadido se sincroniza solo contra la BD la primera vez que se inicializa Payload (el spinner "Pulling schema from database..." que se ve al lanzar un seed o `next dev`).
 - **En producción** (`Dockerfile` fija `NODE_ENV=production`), `push` es `false`: la BD **solo** se actualiza aplicando migraciones (`payload migrate`). Si se añade una collection/global/campo nuevo y no se genera su migración, en producción esa tabla/columna directamente no existe — cualquier `payload.create`/`payload.updateGlobal` contra ella revienta con `relation "..." does not exist`, aunque en dev funcione perfectamente (por eso puede pasar desapercibido toda una sesión de trabajo).
 - **Regla**: después de crear o modificar cualquier collection/global (`collections/*.ts`, `globals/*.ts`), además de `npx payload generate:types`, hay que generar la migración correspondiente con `npx payload migrate:create <nombre-descriptivo>` (se puede correr contra la BD de dev ya sincronizada por push — la migración generada refleja el diff acumulado desde la última migración) y comprobar que `npm run migrate` aplica limpio contra una BD nueva antes de dar el cambio por terminado.
-- Migraciones existentes: `migrations/20260731_114550_baseline.ts` (base) + `migrations/20260915_162539_session_2026_09_14_content_globals.ts` (todo el schema de la sesión de recursos-electrónicos/quiénes-somos/investigación/formación/horarios — se generó a posteriori porque no se había estado corriendo `migrate:create` en cada paso; a partir de ahora generar la migración en el mismo momento en que se toca el schema, no al final)
+- Migraciones existentes: `migrations/20260731_114550_baseline.ts` (base) + `migrations/20260915_162539_session_2026_09_14_content_globals.ts` (todo el schema de la sesión de recursos-electrónicos/quiénes-somos/investigación/formación/horarios — se generó a posteriori porque no se había estado corriendo `migrate:create` en cada paso; a partir de ahora generar la migración en el mismo momento en que se toca el schema, no al final) + `migrations/20260928_114829_login_campus.ts` (collection `loginCampus_service`) + `migrations/20260929_102432_actualizar_colectivos_campus.ts` (enum `colectivo` de `loginCampus_service`: de ALUMN/PDI/PAS/EXT a los 5 tipos reales ADULT/ALUMN/ANONI/INVIT/PROFE — el `up` remapea filas existentes con `UPDATE ... CASE`, no un cast directo, porque un cast directo revienta con valores que ya no están en el enum nuevo) + `migrations/20260929_110457_layout_enlaces_externos.ts` (tabla nueva para `layout.enlaces_externos[]`)
 
 ### Collections (25 registradas)
 
@@ -114,11 +114,11 @@ Capas, de abajo a arriba:
 
 | Fichero | Función |
 |---------|---------|
-| `client.ts` | Cliente HTTP único (`absysClient`). Solo servidor (lanza si `window` existe). Lee `NEXT_ABSYS_API`, `NEXT_ABSYS_USERNAME`, `NEXT_ABSYS_PASSWORD` (en **base64**, se decodifica aquí) y `ABSYS_TIMEOUT_MS` (10 s por defecto, con `AbortController`). Dos operaciones: `search(params)` → GET con todo en la query; `add(table, fields)` → POST `x-www-form-urlencoded`. Traduce fallos a errores tipados: red/timeout/HTTP 5xx/JSON inválido/`code` 1 o 4 → `AbsysUnavailableError`; HTTP 4xx y cualquier otro `code` ≠ 0 → `AbsysInvalidDataError`. Nunca mete credenciales ni la respuesta cruda en el mensaje de error |
+| `client.ts` | Cliente HTTP único (`absysClient`). Solo servidor (lanza si `window` existe). Lee `NEXT_ABSYS_API`, `NEXT_ABSYS_USERNAME`, `NEXT_ABSYS_PASSWORD` (en **base64**, se decodifica aquí) y `ABSYS_TIMEOUT_MS` (10 s por defecto, con `AbortController`). Tres operaciones: `search(params)` → GET con todo en la query; `add(table, fields)` → POST `x-www-form-urlencoded`; `modify(table, fields)` → GET con todo en la query (igual que `search`; a diferencia de `add`, está documentada como probada y funcional en `docs/Absys API.md` del vault). Traduce fallos a errores tipados: red/timeout/HTTP 5xx/JSON inválido/`code` 1 o 4 → `AbsysUnavailableError`; HTTP 4xx y cualquier otro `code` ≠ 0 → `AbsysInvalidDataError`. Nunca mete credenciales ni la respuesta cruda en el mensaje de error |
 | `errors.ts` | Jerarquía de errores: `AbsysError` (base, con `code`/`subcode` de Absys) → `AbsysUnavailableError` (Absys caído o inalcanzable), `AbsysInvalidDataError` (Absys rechaza los datos o responde algo incoherente), `AbsysNotFoundError` (definido pero aún sin uso) |
-| `mappers/lector.ts` | Traducción pura (sin I/O) entre el formato de Absys (`lenlec`, `lenomb`, `leapel`, `lemail`, `lefubi`...) y nuestros tipos `Lector` / `NuevoLector`. Contiene las constantes institucionales del alta (`COLECTIVOS` ALUMN/PDI con su `lecocf` y perfil de préstamo, `LECOBI`, `LECOSU`, `LECART`), `formatAbsysDateTime` (`dd/mm/yyyy hh:mm:ss`), `resolveColectivo` (cualquier colectivo desconocido cae a `ALUMN`, ADR-0002) y `EXTERNAL_ID_FIELD` (campo con el que se cruza la identidad del campus; **provisional**, hoy `lenlec`, ADR-0005) |
+| `mappers/lector.ts` | Traducción pura (sin I/O) entre el formato de Absys (`lenlec`, `lenomb`, `leapel`, `lemail`, `lefubi`...) y nuestros tipos `Lector` / `NuevoLector` / `ActualizarLector`. Contiene `Colectivo` (los 5 tipos de lector reales: ADULT/ALUMN/ANONI/INVIT/PROFE, ver "Login desde el campus") y las constantes institucionales del alta (`COLECTIVOS` con su `lecocf` y perfil de préstamo — solo confirmado para ALUMN/PROFE, `LECOBI`, `LECOSU`, `LECART`), `formatAbsysDateTime` (`dd/mm/yyyy hh:mm:ss`), `resolveColectivo` (cualquier colectivo desconocido cae a `ALUMN`, ADR-0002), `EXTERNAL_ID_FIELD` (campo con el que se cruza la identidad del campus; **provisional**, hoy `lenlec`, ADR-0005), `deriveCampusIdentity` (nombre/apellidos/`rol: Colectivo` a partir del dominio del email del campus, para el alta automática y para guardar el rol aparte) y `toModifyLectorQuery` (query de `modify` solo con nombre/apellidos) |
 | `mappers/catalogo.ts` | `toCatalogQuery`: convierte `{ search, page, limit, detalle }` a la query de Absys (`base: cata`, `_start_position`/`_max_records`, 12 por página). Listado → `_doc_fields: "245, 100, 020"` (título/autor/ISBN MARC); `detalle: true` → `_description: "1"` (ficha completa) |
-| `lector.ts` | `createLectorService(client)`: `findLectorByExternalId` (null si no existe, `AbsysInvalidDataError` si hay duplicados) y `createLector` (alta; **no verificado contra Absys real**, error -400 pendiente con Baratz) |
+| `lector.ts` | `createLectorService(client)`: `findLectorByExternalId` (null si no existe, `AbsysInvalidDataError` si hay duplicados), `createLector` (alta; **no verificado contra Absys real**, error -400 pendiente con Baratz — usado también por el alta automática del login de campus) y `updateLector` (`operation=modify`; solo nombre/apellidos, editable desde `/perfil`; **tampoco verificado contra Absys real** desde este código, aunque Baratz documenta `modify` como probado y funcional) |
 | `catalogo.ts` | `createCatalogoService(client)`: `searchCatalog(params)`, devuelve la respuesta cruda de Absys (el front sigue consumiendo ese formato) |
 | `mappers/prestamo.ts` | `toPrestamosQuery` (tabla `presta` filtrada por **`prnlec`**, no `lenlec`), `extractPrestamos`, `toPrestamo` (→ `Prestamo`: `ejemplar`, `fechaPrestamo`, `fechaDevolucion`, `renovaciones`, `renovable`, `sucursal`) e `isPrestamoVencido` (re-exportado desde `index.ts`) |
 | `prestamo.ts` | `createPrestamoService(client)`: `findPrestamosByLector(lenlec)` → `Prestamo[]` (sin título: `presta` solo trae el código del ejemplar) |
@@ -156,7 +156,7 @@ Pendientes conocidos (marcados con `TODO` en el código): `lepassLegacy` / compa
 | `horarios_contacto` | `globals/HorariosContacto.ts` | `hero` (rel→hero), `edificio_nombre`/`edificio_subtitulo`, `horario` (rel→schedule), `direccion_linea1`/`direccion_linea2`, `telefono`, `email`, `mapa_url`, `mapa_embed_url`, `ayuda_cta` (rel→cta) | Página parcial |
 | `electronic_resources` | `globals/ElectronicResources.ts` | `hero` (rel→hero, reutiliza la collection existente), `accesos_destacados` (rel→electronic_resources_access) | Página parcial |
 | `quienes_somos` | `globals/QuienesSomos.ts` | `hero` (rel→hero), `imagen_dirigidos` (upload→media), `ayudas` (rel→features), `dirigidos` (rel→features) — `ayudas`/`dirigidos` reutilizan la collection `features` existente con dos docs distintos | Página parcial |
-| `layout` | `globals/Layout.ts` | `header` (rel→header), `footer` (rel→footer) | Template del sitio |
+| `layout` | `globals/Layout.ts` | `header` (rel→header), `footer` (rel→footer), `enlaces_externos[]` (`key`/`label`/`url`, ver "Enlaces externos") | Template del sitio |
 
 #### Block types del `layout` (11, usados en Home/Services/Formation/Investigation/Repositories)
 
@@ -173,6 +173,27 @@ Pendientes conocidos (marcados con `TODO` en el código): `lepassLegacy` / compa
 | `partners_block` | `partners_relation` | `partners` | `<Partners>` |
 | `cta_block` | `cta_relation` | `cta` | `<CTA>` |
 | `faq_block` | `faq_relation` | `faq` | `<FAQ>` |
+
+### Enlaces externos (2026-09-29)
+
+Registro de enlaces a sitios externos (repositorio, catálogo, redes sociales...) editable desde el
+admin de Payload sin tocar código ni redeployar — **alcance deliberadamente limitado a enlaces no
+sensibles**; nada relacionado con autenticación (las URLs del login del campus siguen en variables
+de entorno, ver "Login desde el campus").
+
+- **Campo** `layout.enlaces_externos[]` (`globals/Layout.ts`): array con `key` (identificador libre
+  en minúsculas, ej. `opac`/`dspace`/`instagram` — es lo que usa el código para buscarlo),
+  `label` (nombre para el admin) y `url`.
+- **`lib/links.ts`**: `resolveEnlaceExterno(enlaces, key, fallback)` — función pura, sin I/O; busca
+  por `key` en el array y devuelve `fallback` si no hay entrada o su `url` está vacía. Cualquier
+  página/componente que ya haga `payload.findGlobal({ slug: 'layout' })` (o lo reciba como prop)
+  puede usarla así: `resolveEnlaceExterno(layout.enlaces_externos, 'dspace', '/enlace/por-defecto')`.
+- **Sin migrar automáticamente** los enlaces externos que ya estaban hardcodeados en el código (el
+  repositorio institucional en `investigacion/page.tsx`, las redes sociales de
+  `FooterSimple.tsx`...) — se creó solo la infraestructura; migrar cada uno es trabajo aparte, a
+  hacer cuando haga falta tocar esa página.
+- Migración `migrations/20260929_110457_layout_enlaces_externos.ts` (tabla nueva, sin dato que
+  remapear).
 
 ### Access Control
 
@@ -326,25 +347,63 @@ Flujo del ADR-0005. La sesión es una sesión normal de Payload de la collection
 
 ```
 A) Llega del campus:  /auth/campus?token=<AES>&next=/ruta
-   → verifyCampusToken → absys.findLectorByExternalId(email)
-   → createCampusSession (crea/actualiza el usuario, añade sid, firma JWT) → cookie
-   → redirige a `next`, o a /perfil/alta si no tiene ficha en Absys
+   → verifyCampusToken → deriveCampusIdentity(email) → { nombre, apellidos, rol }
+   → absys.findLectorByExternalId(email)
+   → sin ficha en Absys: absys.createLector({ ..., colectivo: rol }) — alta automática, validar en
+     el campus es suficiente, no hace falta rellenar ningún formulario
+   → createCampusSession(email, lector, rol) (crea/actualiza el usuario, guarda `rol` en
+     `colectivo`, añade sid, firma JWT) → cookie
+   → redirige a `next` (siempre, ya no hay paso intermedio de alta)
 B) Página privada sin sesión: requireSession('/ruta') → /auth/login?next=/ruta
    → NEXT_CAMPUS_LOGIN_URL?return=<site>/auth/campus?next=/ruta → campus → vuelve por A
 ```
+
+**Alta automática (2026-09-29)**: el campus solo manda el email, así que `deriveCampusIdentity`
+(`lib/integrations/absys/mappers/lector.ts`) lo parsea asumiendo el formato institucional
+`nombre.apellidos@{pdi|alu|unam}.atlanticomedio.es`, o sin subdominio para el resto de personal
+(`nombre.apellidos@atlanticomedio.es`) — nombre/apellidos del local-part (separados por el primer
+punto, capitalizados; `"-"` si falta alguno). La dirección se manda como `"-"` (`DIRECCION_AUTO_ALTA`,
+constante) porque Absys la exige y el campus no la da. Nada de esto se vuelve a pedir en un
+formulario — `/perfil/alta` ya no existe.
+
+**Tipos de lector / rol (2026-09-29, dados por el usuario)**: `Colectivo`
+(`lib/integrations/absys/mappers/lector.ts`) tiene los 5 tipos reales de Absys, cada uno con su
+dominio de correo institucional — `deriveCampusIdentity` los comprueba **en este orden**:
+
+| Dominio del correo | `Colectivo` | Quién |
+|---|---|---|
+| `@pdi.atlanticomedio.es` | `PROFE` | Profesores |
+| `@alu.atlanticomedio.es` | `ALUMN` | Alumnado |
+| `@unam.atlanticomedio.es` | `INVIT` | Externos |
+| `@atlanticomedio.es` (a secas) | `ADULT` | Personal |
+| Cualquier otro dominio | `ANONI` | Rol más básico (fallback) |
+
+El mismo valor sirve como `colectivo` al dar de alta en Absys (`createLector`) y se guarda tal cual
+en el campo `colectivo` de `loginCampus_service` (select con estas 5 opciones — antes tenía
+ALUMN/PDI/PAS/EXT, un intento previo de esta misma sesión con nombres distintos; migración
+`20260929_102432_actualizar_colectivos_campus`, que remapea PDI→PROFE/PAS→ADULT/EXT→INVIT en
+las filas existentes en vez de un cast directo, porque Absys mismo ya usa/usaba "PDI" como código
+real en algunas fichas existentes — **si Baratz confirma que "PDI" sigue siendo el código correcto
+en Absys y "PROFE" no existe ahí, hay que revisar esto**, ver `lecocf`/`fromNuevoLector`).
+`resolveColectivo` sigue cayendo a `ALUMN` para cualquier string que no sea uno de estos 5 (ADR-0002,
+p. ej. si llega el código antiguo `PDI`/`PAS`/`EXT` desde algún sitio que no se haya actualizado).
+`lecocf`/perfil de préstamo solo están confirmados para `ALUMN`/`PROFE` (venían de antes); para
+`ADULT`/`ANONI`/`INVIT` no se manda `lecocf` (campo opcional) por no inventar un valor institucional
+que no se ha confirmado con Baratz. Se recalcula y resincroniza en **cada** login de campus, no solo
+en el alta, así que también corrige el rol de lectores que ya existían antes de este cambio.
+Expuesto de solo lectura en `/perfil` (fila "Rol", con las mismas etiquetas que el select del admin).
 
 | Fichero | Función |
 |---------|---------|
 | `lib/integrations/campus/token.ts` | `decryptCampusToken` (port del PHP del campus: base64(IV 16 bytes + AES-128-CBC("fecha\|email")), clave `NEXT_CAMPUS_SECRET_KEY` recortada/rellenada a 16 bytes), `verifyCampusToken` (además rechaza tokens de más de `NEXT_CAMPUS_TOKEN_MAX_AGE` s, 300 por defecto), `encryptCampusToken` (solo para simular el campus en dev/tests). Los `+` del base64 que lleguen como espacios se corrigen |
 | `lib/auth/redirects.ts` | Puro, sin Payload: `safeNextPath` (solo rutas internas, evita open redirect y bucles a `/auth/*`), `buildCampusLoginUrl`, `redirectResponse` (Location **relativa** con el basePath, para que funcione igual detrás de nginx que contra el contenedor) |
-| `lib/auth/session.ts` | Servidor: `getSession()`, `requireSession(next)` (para Server Components de páginas privadas), `createCampusSession`, `linkAbsysLector`, `destroyCampusSession` (revoca el `sid` en BD, no solo borra la cookie) |
+| `lib/auth/session.ts` | Servidor: `getSession()` (incluye `colectivo` en `CampusSession`), `requireSession(next)` (para Server Components de páginas privadas), `createCampusSession(email, lector, rol?)`, `linkAbsysLector`, `destroyCampusSession` (revoca el `sid` en BD, no solo borra la cookie) |
 | `app/(auth)/auth/campus/route.ts` | Callback A |
 | `app/(auth)/auth/login/route.ts` | Entrada única al login: con sesión vuelve a `next`; sin ella, al campus. Sin `NEXT_CAMPUS_LOGIN_URL`: en dev → `/auth/simular-campus`, en prod → `/auth/error?motivo=config` |
 | `app/(auth)/auth/logout/route.ts` | `POST`, revoca la sesión y vuelve a `/` |
 | `app/(auth)/auth/error/page.tsx` | Motivos: `invalido`, `caducado`, `absys`, `config` |
 | `app/(auth)/auth/simular-campus/` | **Solo dev** (404 en producción): formulario con un email que genera un token real y vuelve al callback. Es la forma de probar el flujo hasta que Daniel tenga lista la redirección |
-| `app/(frontend)/(cuenta)/perfil/page.tsx` | Privada: datos del lector en Absys; si Absys está caído muestra los guardados en Payload |
-| `app/(frontend)/(cuenta)/perfil/alta/` | Privada: si el email del campus no tiene ficha en Absys, pide nombre/apellidos/dirección/colectivo y llama a `createLector` (con `lepass` aleatorio, porque entran siempre por el campus). **No probado contra Absys real** (error -400 pendiente con Baratz) |
+| `app/(frontend)/(cuenta)/perfil/page.tsx` + `perfil/actions.ts` + `components/cuenta/PerfilForm.tsx` | Privada: datos del lector en Absys, con nombre/apellidos editables (`absys.updateLector`, vía `operation=modify`); dirección/colectivo/email no se pueden editar desde aquí (decisión del usuario, 2026-09-29). Muestra también el rol (`session.colectivo`, solo lectura). Si Absys está caído muestra los guardados en Payload |
 
 Variables (ver `env.local.Example`): `NEXT_CAMPUS_SECRET_KEY`, `NEXT_CAMPUS_TIMEZONE`, `NEXT_CAMPUS_TOKEN_MAX_AGE`, `NEXT_CAMPUS_TOKEN_PARAM` (`token`), `NEXT_CAMPUS_LOGIN_URL`, `NEXT_CAMPUS_RETURN_PARAM` (`return`). La URL de login del campus y el nombre de sus parámetros están **pendientes de confirmar con Daniel**; por eso son configurables.
 
@@ -404,171 +463,29 @@ tipo(alcance opcional): resumen en imperativo, máx 50 caracteres
 
 - `globals/Repositories.ts` líneas 71-72: labels de `input_block` dicen "Sobre Nosotros" en vez de "Entrada de texto"
 - `app/fonts/Monserrat/`: typo en el nombre del directorio (falta una 't'), pero las referencias en `styles.css` apuntan a esa ruta así que funciona
-- Página `/servicios` importa `RenderBlocks` pero no lo usa — tiene JSX hardcodeado (`/investigacion` y `/formacion` ya no importan `RenderBlocks`, ver "Cambios realizados")
+- Página `/servicios` importa `RenderBlocks` pero no lo usa — tiene JSX hardcodeado (`/investigacion` y `/formacion` ya no importan `RenderBlocks`, ver `MEMORY.md` para el porqué)
 
 ---
 
-## Cambios realizados
+## Registro de sesiones — `MEMORY.md`
 
-### `components/Input.tsx` — Búsqueda completa
+El historial de **qué se hizo, cuándo y por qué** vive en `MEMORY.md` (raíz del repo), no aquí.
+`CLAUDE.md` describe el estado *actual* del sistema (arquitectura, collections, globals,
+componentes, reglas); `MEMORY.md` es el changelog cronológico de sesiones de trabajo, con qué se
+probó y qué quedó pendiente en cada una.
 
-Reescritura del componente de búsqueda usando los componentes UI del proyecto:
+**Regla obligatoria**: al terminar cualquier tarea o unidad de trabajo verificable (ver "Cuándo
+commitear" en Git workflow), añade una entrada a `MEMORY.md`. No es opcional ni queda a criterio
+de la tarea — toda sesión de trabajo termina con su entrada en `MEMORY.md`, igual de obligatorio
+que el commit final.
 
-- **Barra principal**: `Input` de shadcn + `Button` con `bg-accent`, fusionados visualmente (sin gap entre ellos)
-- **Icono de búsqueda** integrado dentro del input (`pl-10`)
-- **Botón clear** (`X`) que aparece cuando hay texto
-- **Toggle de búsqueda avanzada**: icono `SlidersHorizontal` + chevron animado con `rotate-180`
-- **Panel avanzado**: `maxHeight` dinámico basado en `scrollHeight` (no el truco de `max-h-[500px]`), fondo `bg-secondary/50`, grid de 2/3 columnas
-- **Campos avanzados**: Título, Autor, ISBN, Editorial, Año, Materia — todos con `name` correcto que coincide con lo que espera `handleInput`
-- **Acciones del panel**: botón "Limpiar" (ghost) y "Buscar con filtros" (accent)
-- **Bug fix**: los `name` de los inputs ahora coinciden con los campos que procesa `handleInput` (`titulo`, `autor`, `isbn`, `editorial`, `anio`, `materia`)
-
-### `components/News.tsx` — Hover en estilo 3
-
-Añadido efecto hover al estilo 3:
-
-- `transition-transform duration-300 hover:scale-[1.02]` en el `<article>`
-- `rounded-xl overflow-hidden` para que el scale no se salga de las esquinas
-
-### `/recursos/recursos-electronicos` — Integración con Payload
-
-Se replicó el patrón usado en `/conocenos/horarios-ubicacion-y-contacto`, pero con más contenido editable (hero completo + tarjetas, no solo una imagen):
-
-- **Nuevo global** `electronic_resources` (`globals/ElectronicResources.ts`): en vez de reinventar campos de hero como hace `about_us` (que solo guarda un array de imágenes), reutiliza la collection `hero` ya existente vía `relationship` (mismo patrón que `home`/`services`/`repository`), más una `relationship` a la nueva collection `electronic_resources_access`
-- **Nueva collection** `electronic_resources_access` (`collections/ElectronicResourcesAccess.ts`): array `accesos[]` (icon/title/description/cta/link) para las tarjetas "Accesos Directos Destacados", mismo patrón que `features`
-- **Registrado** en `payload.config.ts` (collection + global)
-- **`app/(frontend)/recursos/recursos-electronicos/page.tsx`**: pasó de client component 100% hardcodeado a server component `async` que hace `payload.findGlobal({ slug: 'electronic_resources' })`; el icono de cada acceso se resuelve con `iconMap` de `lib/utils.ts` (mismo mecanismo que `components/Features.tsx`)
-- **Fuera de alcance**: las pestañas "Bases de datos / Libros electrónicos / Multimedia" (`resourceCategories`) siguen hardcodeadas, sin conectar a Payload
-
-### `/conocenos/quienes-somos` — Integración con Payload
-
-Mismo tratamiento que `/recursos/recursos-electronicos`, esta vez reutilizando la collection `features` en vez de crear una nueva:
-
-- **Nuevo global** `quienes_somos` (`globals/QuienesSomos.ts`): `hero` (rel→`hero`, mismo patrón que el resto de globals de página), `imagen_dirigidos` (upload suelto para la imagen de la sección oscura "A quién se dirigen nuestros servicios"), `ayudas` y `dirigidos` — dos relationships distintas a la collection `features` ya existente (mismo patrón que `home.seed.ts` reutilizando `news` dos veces para "Destacados" y "Te recomendamos")
-- **Sin collection nueva**: `features` (icon/title/description) encajaba exactamente con las tarjetas hardcodeadas `AYUDAS` y `DIRIGIDOS`, así que no se creó ninguna collection nueva
-- **Registrado** en `payload.config.ts` (solo el global; `features` ya estaba registrada)
-- **`app/(frontend)/conocenos/quienes-somos/page.tsx`**: pasó de leer `about_us.quienes_somos[]` (solo imágenes) a leer el nuevo global `quienes_somos` completo; si `ayudas`/`dirigidos` no tienen doc asignado en el admin, cae a los arrays `AYUDAS_FALLBACK`/`DIRIGIDOS_FALLBACK` con el contenido original
-- **`about_us.quienes_somos[]` queda sin uso** tras este cambio (nadie más lo lee) — no se ha borrado del schema por si se prefiere reutilizar más adelante; avisar antes de eliminarlo
-
-### `/investigacion` — Integración con Payload + interactividad
-
-A diferencia de horarios/quienes-somos/recursos-electronicos, esta página **ya tenía** el global `investigation` con `hero` conectado (fetch, extracción de campos) pero la sección `<main>` estaba 100% hardcodeada y no llegaba a usar esos datos ni los componentes `Hero`/`RenderBlocks` que importaba:
-
-- **Ampliado** `globals/Investigation.ts` con 3 campos nuevos (sin tocar `hero`, `hero_carrusel` ni `layout`, que quedan intactos por si se usan en el futuro): `accesos_rapidos` (rel→`features`), `tarjetas` (rel→`electronic_resources_access`), `cta` (rel→`cta`) — las 3 reutilizan collections ya existentes, ninguna es nueva
-- **`collections/Features.ts`**: `maxRows` de `feature[]` subido de 4 a 6 (necesario para los 5 "accesos rápidos"; cambio hacia atrás compatible, no rompe docs existentes)
-- **`collections/Icons.ts` / `lib/utils.ts`**: `appIcons`/`iconMap` ampliados con los iconos que ya usaba esta página (Search, Megaphone, Lock, Fingerprint, BarChart3, HeartHandshake, BookOpenCheck, Landmark) — antes solo cubrían un set genérico de 10 iconos que no encajaban con el contenido real de investigación
-- **`app/(frontend)/investigacion/page.tsx`**: se quitaron los imports de `Hero`/`RenderBlocks` (decisión consciente de no usar el sistema de `layout` blocks en esta página, igual que en horarios/quienes-somos/recursos-electronicos) y ahora sí consume `accesos_rapidos`/`tarjetas`/`cta`, con fallback al contenido original
-- **⚠️ Gotcha de arquitectura importante**: un Server Component async (el que hace `payload.findGlobal`) **no puede usar `motion.*` de `framer-motion` directamente** — revienta en runtime con `createMotionComponent() from the server`. La solución fue extraer el JSX animado a un Client Component nuevo, `components/InvestigationContent.tsx` (`"use client"`), que recibe los datos ya resueltos como props; la página server-side solo hace el fetch y le pasa los props. Aplicar este mismo split si se añade `framer-motion` a otra página que haga fetch de Payload directamente en el componente de página
-- **Interactividad añadida**: los chips de "Accesos rápidos" ahora son anchors reales (`href="#tarjeta-N"`) que hacen scroll suave (ya había `scroll-behavior: smooth` global en `app/styles.css`) hasta la tarjeta correspondiente (mapeo 1:1 por índice); tarjetas con `whileInView` (reveal al hacer scroll, en vez de animar solo al montar) y hover con sombra; botones que antes no hacían nada ahora enlazan a `/recursos/recursos-electronicos`, al repositorio institucional o a `/contacto` según corresponda
-- **Probado** contra la BD real del contenedor de desarrollo y con `curl` a la página renderizada (200 OK, ids/anchors correctos)
-
-### `/formacion` — Integración con Payload + interactividad
-
-Mismo caso que `/investigacion`: el global `formation` ya tenía `hero`/`hero_carrusel`/`layout` conectados pero el JSX era 100% hardcodeado y no usaba nada de eso.
-
-- **Ampliado** `globals/Formation.ts` con campos nuevos (sin tocar `hero`, `hero_carrusel` ni `layout`): `buscar_parrafo_1`/`buscar_parrafo_2` (texto plano, no richText — se evitó `about`/Lexical por no haber ningún seed previo que sembrara richText en este proyecto y no valía la pena introducir ese riesgo para dos párrafos cortos), `enlaces_rapidos[]` (array inline `label`+`link`, igual que el patrón de `about_us` de embeber arrays simples directo en el global en vez de crear una collection), `citar_cta` (rel→`cta`, reutilizada), `guias_tutoriales` (rel→`electronic_resources_access`, reutilizada, un solo item), `actividades_texto`/`actividades_estado` (texto plano para el sidebar)
-- **Sin collections nuevas**: todo reutiliza `cta`/`electronic_resources_access` ya existentes, o son campos simples directo en el global
-- **`app/(frontend)/formacion/page.tsx`**: se quitaron los imports de `Hero`/`RenderBlocks`; el JSX animado se extrajo a `components/FormationContent.tsx` (`"use client"`), mismo motivo que en investigación (`motion.*` no puede usarse en el Server Component async que hace el fetch)
-- **Bugs de UX corregidos** (enlaces/botones que no hacían nada): el enlace "Acceso a Recursos electrónicos" apuntaba a `href="#"` → ahora apunta a `/recursos/recursos-electronicos` por defecto; el botón "Recomendaciones sobre citación y plagio" no tenía `href` en absoluto; la tarjeta "Acceder a guías y tutoriales disponibles" no era ni un link ni un botón pese a tener un icono de flecha sugiriendo que era clicable — ahora los tres son enlaces reales editables desde Payload
-- **Interactividad añadida**: entrada con fade/slide en el hero, reveal por scroll (`whileInView`) en cada bloque de contenido con delay escalonado, hover states en todos los enlaces/botones (antes no tenían ninguno), micro-interacción de flecha (`group-hover:translate-x-1`) en la tarjeta de guías y tutoriales, y el bullet "●" de texto del estado de actividades se sustituyó por un indicador `<span>` con `rounded-full` real
-- **Probado** contra la BD real del contenedor de desarrollo y con `curl` a la página renderizada (200 OK, imagen del hero servida desde Payload en vez del path hardcodeado)
-
-### `/` (Home) — Interactividad añadida (sin tocar Payload)
-
-A petición explícita, aquí no se tocó Payload ni las collections/globals — solo `app/(frontend)/page.tsx` y componentes nuevos con shadcn/ui:
-
-- **`components/HomeQuickLinks.tsx`** (nuevo, `"use client"`): franja de accesos rápidos (chips con icono, `Button asChild` de shadcn + `Link`) a Catálogo, Recursos electrónicos, Investigación, Formación y Horarios — entrada escalonada con framer-motion y `whileHover`. Contenido fijo en el propio componente (no viene de Payload)
-- **`components/BackToTop.tsx`** (nuevo, `"use client"`): botón flotante circular que aparece tras hacer scroll >480px y sube al inicio con scroll suave; `AnimatePresence` para la transición de entrada/salida
-- **`app/(frontend)/page.tsx`**: ambos se insertan entre `HeroCarrousel` y `RenderBlocks` (`HomeQuickLinks`) y al final (`BackToTop`); `Hero`, `HeroCarrousel`, `RenderBlocks`, `Input` y `News` no se modificaron (ya estaban bien pulidos con carrusel, autoplay, hover states y transiciones propias)
-- **Probado** con `curl` contra la página renderizada (200 OK, las 5 chips y el resto del contenido existente siguen presentes)
-
-### `/conocenos/horarios-ubicacion-y-contacto` — De seed mínimo a global + collection completos
-
-Se pidió explícitamente no dejarlo tan simple. Se sustituyó el patrón mínimo (`about_us.horarios[0].images`, solo una imagen) por un global dedicado, igual de completo que investigación/formación:
-
-- **Nueva collection** `collections/Schedule.ts` (slug `schedule`): `title` + `schedule[]` (array `day`/`hours`/`type` — select `regular`/`closed`/`extended`/`holiday`, con estilos de color distintos por tipo en el front). Reutiliza el shape del array `schedules` que ya estaba en el componente pero nunca se usaba (dead code) — ahora sí se renderiza
-- **Nuevo global** `globals/HorariosContacto.ts` (slug `horarios_contacto`): `hero` (rel→`hero`), `edificio_nombre`/`edificio_subtitulo` (texto, caption sobre la imagen), `horario` (rel→`schedule`), `direccion_linea1`/`direccion_linea2`, `telefono`, `email`, `mapa_url` (botón "Cómo llegar"), `mapa_embed_url` (iframe), `ayuda_cta` (rel→`cta`, reutilizada, para el bloque "¿Necesitas ayuda adicional?")
-- **Registrado** en `payload.config.ts` (collection + global)
-- **`app/(frontend)/conocenos/horarios-ubicacion-y-contacto/page.tsx`**: ya no lee `about_us`, lee `horarios_contacto` completo, con fallback al contenido original en cada campo
-- **Bug corregido**: el botón "Ver FAQs" tenía `href=""` (enlace roto); ahora usa `ayuda_cta.button_link` con fallback a `/contacto`
-- **`about_us.horarios[]` queda sin uso** (como ya le pasó a `about_us.quienes_somos[]`) — no se ha borrado del schema
-- **`seeds/horarios.seed.ts` reescrito** para sembrar el nuevo global (hero, `schedule` con las 5 franjas horarias, `cta` de ayuda) en vez de `about_us`
-- **Gotcha de dev encontrado**: tras registrar el global nuevo en `payload.config.ts`, el proceso `next dev` ya en marcha dentro del contenedor devolvía `APIError: The global with slug horarios_contacto can't be found` porque `getPayload()` cachea la instancia inicializada y no la recarga sola con Fast Refresh al añadir un global/collection nuevo — hace falta `docker restart biblioteca-frontend` (o reiniciar el dev server) después de registrar un global/collection nuevo en `payload.config.ts`, no basta con guardar el archivo
-- **Probado** contra la BD real del contenedor de desarrollo y con `curl` tras el restart (200 OK, tabla de horarios y enlace de FAQs correctos)
-
-### `hero_carrusel` (Home) — Seed dedicado con contenido real
-
-`seeds/heroCarrusel.seed.ts` (nuevo): crea 3 items reales de `hero_carrusel` (Nueva suscripción a Scopus y Web of Science, Nueva sala de estudio en grupo, Talleres gratuitos de gestión bibliográfica — usando 2 imágenes de `seeds/assets/` y `campus.jpg` como placeholder para la tercera, ver nota) y hace `updateGlobal` de `home.hero_carrusel` para que sustituya al carrusel de contenido de broma que crea `home.seed.ts` (hologramas 3D / NASA). Redundante con la sección de carrusel de `home.seed.ts` pero inofensivo — al ir después en la cadena de `npm run seed`, gana y es el que queda enlazado. No se tocó Payload (ninguna collection/global nueva, `hero_carrusel` ya existía).
-
-### `seeds/index.ts` — Punto de entrada único para todos los seeds
-
-`npm run seed` ahora ejecuta `tsx seeds/index.ts` en vez de una cadena de `&&` en `package.json`. `index.ts` lanza cada `*.seed.ts` como proceso hijo (`spawnSync('npx', ['tsx', file], { stdio: 'inherit' })`), en este orden, y se detiene en el primer fallo (mismo comportamiento que `&&`):
-
-1. `layout.seed.ts` — header + footer + global `layout`
-2. `home.seed.ts` — hero_carrusel de placeholder, input, news, global `home`
-3. `aboutUs.seed.ts` — global `about_us` (`normativa` es el único campo que sigue en uso; `quienes_somos`/`horarios` quedaron huérfanos)
-4. `electronicResources.seed.ts` — global `electronic_resources`
-5. `quienesSomos.seed.ts` — global `quienes_somos`
-6. `investigation.seed.ts` — global `investigation`
-7. `formation.seed.ts` — global `formation`
-8. `horarios.seed.ts` — global `horarios_contacto`
-9. `heroCarrusel.seed.ts` — **tiene que ir después de `home.seed.ts`**: sustituye su `hero_carrusel` de broma por el contenido real, vía `updateGlobal`
-
-Los seeds 3-8 son independientes entre sí y podrían reordenarse sin romper nada; la única dependencia de orden real es 2→9. Si se añade un seed nuevo, añadirlo al array `SEEDS` de `seeds/index.ts` (única fuente de verdad del orden — `package.json` ya no lo duplica).
-
-**Nota sobre la imagen del taller**: el usuario pidió usar contenido real (título/descripción) de una imagen que ya subió manualmente a producción vía el admin de Payload (`Gemini_Generated_Image_pjh4c4pjh4c4pjh4.jpg`, alt "imagen taller universitaria"), pero ese archivo no existe en este entorno de desarrollo — el `media` de este contenedor no tiene ese id/filename. Se usó `campus.jpg` como placeholder (confirmado con el usuario) hasta que suba el asset real a `seeds/assets/` o lo sustituya a mano en el admin de este entorno.
-
-Probado contra la BD real del contenedor de desarrollo y con `curl` contra la home renderizada (200 OK, las 3 diapositivas reales aparecen).
-
-### Login desde el campus + `/perfil` — rama `feat/login-campus` (2026-09-28)
-
-Arquitectura y ficheros en "Login desde el campus (sesión real de Payload)" (sección "Estructura de páginas"). Aquí, qué se hizo, cómo probarlo y qué queda.
-
-**Qué cambia para la app** — se separa la app por estado:
-- Páginas **públicas**: igual que antes.
-- Páginas **privadas** (`/perfil`, `/perfil/alta`): llaman a `requireSession('/ruta')`; sin sesión → `/auth/login?next=/ruta` → campus → vuelve a `/ruta` ya con sesión.
-- **Entrada desde el campus con claves**: `/auth/campus?token=…` descifra, confirma el lector en Absys y abre sesión directamente; sin ficha en Absys → `/perfil/alta`.
-- **Header**: ya no lee `lenlec` de `localStorage` (cualquiera podía escribirlo). `app/(frontend)/layout.tsx` le pasa la prop `account` (`{ email, nombre } | null`) desde `getSession()`; "Mi Cuenta" enlaza a `/auth/login?next=<ruta actual>`; el desplegable tiene "Perfil" (`/perfil`) y "Cerrar sesión" (form `POST /auth/logout`, que además limpia el `localStorage` del login antiguo).
-
-**Cambios en `loginCampus_service`** (`collections/LoginCampus.service.ts`): cookie `SameSite` de `Strict` a `Lax`; access `read` = admin o uno mismo, `create/update/delete` = solo admin (antes cualquier logueado leía a todos y podía crear usuarios); `dni`/`nombre`/`apellidos` opcionales y campo nuevo `absysId`; se quitaron los endpoints copiados de `loginAbsys_service` (`/signin`, `/login/:credentials`, `/me`); el descifrado pasó a `lib/integrations/campus/token.ts` y el endpoint de prueba `handleDecryptTest` lo usa. Nueva migración `migrations/20260928_114829_login_campus.ts` — la collection no tenía ninguna (se había registrado en `payload.config.ts` sin `migrate:create`).
-
-**Cómo probarlo en desarrollo** (sin campus real):
-1. Dejar `NEXT_CAMPUS_LOGIN_URL` vacía y `NEXT_CAMPUS_SECRET_KEY` con la clave de dev.
-2. Si se acaba de registrar algo en `payload.config.ts`: `docker restart biblioteca-frontend`.
-3. Pulsar "Mi Cuenta" (o abrir `/biblioteca/perfil`) → redirige a `/biblioteca/auth/simular-campus` → escribir un email → hace de campus: cifra `fecha|email` con la clave real y vuelve a `/auth/campus`.
-4. Con `curl`: `curl -s -o /dev/null -w '%{redirect_url}' "http://localhost:8085/biblioteca/auth/simular-campus/emitir?email=<email>&next=/perfil"` devuelve la URL del callback con un token válido; llamarla con `-c jar.txt` guarda la cookie, y `-b jar.txt` la reutiliza.
-5. Tests: `npm test` (`lib/integrations/campus/__tests__/token.test.ts`, `lib/auth/__tests__/redirects.test.ts`).
-
-**Probado** (contenedor de dev + Absys real, solo lecturas): sin sesión `/perfil` → login → simulador; token basura → `/auth/error?motivo=invalido`; `next` externo ignorado; email existente en Absys → cookie `payload-token` (`HttpOnly`, `SameSite=Lax`) → `/perfil` con los datos de Absys; con sesión `/auth/login` vuelve directo a `next`; email sin ficha → `/perfil/alta` conservando `next`; por la API un lector solo se ve a sí mismo (`totalDocs: 1`, 404 al leer a otro) y no puede crear usuarios (403); logout revoca el `sid` y `/perfil` vuelve a pedir login; las 3 migraciones aplican limpias contra una BD vacía; 62 tests de Vitest y `tsc --noEmit` sin errores.
-
-**Sin probar**: el envío del formulario de `/perfil/alta` — crearía un lector real en Absys y `createLector` sigue con el error -400 pendiente con Baratz.
-
-**Pendiente**:
-- Con Daniel: URL de login del campus y nombre de sus parámetros (token y URL de vuelta). Configurables con `NEXT_CAMPUS_LOGIN_URL`, `NEXT_CAMPUS_TOKEN_PARAM`, `NEXT_CAMPUS_RETURN_PARAM`, sin tocar código.
-- La lobby de roles del ADR-0005 (el campus no manda el rol) no está hecha: todos entran como lector.
-- Reservas: `/reservas` solo muestra un aviso porque Absys responde `Access denied 'reserv'` con el rol actual; pedir a Baratz permiso de lectura sobre `reserv` (ver "Área Mi cuenta")
-- El botón "Iniciar sesión con Microsoft" de `app/(auth)/login/page.tsx` apunta a la portada del campus; podría apuntar a `/biblioteca/auth/login`.
-- En la BD de dev quedaron 2 lectores de prueba en `loginCampus_service` (`mansour@atlanticomedio.es` y `no.existe.prueba@atlanticomedio.es`).
-
-**Nota de ramas**: `feat/login-campus` sale de `main` tras el merge de los PRs #15 (`refactor/absys-adapter`) y #12 (`feat/login-microsoft-emails`), no de `refactor/absys-adapter`.
-
-### Área "Mi cuenta": `/perfil`, `/prestamos`, `/reservas` (2026-09-28)
-
-- **`/profile` pasa a `/perfil`** (y `/profile/alta` a `/perfil/alta`); `DEFAULT_AFTER_LOGIN` en `lib/auth/redirects.ts` también. `/profile` da 404. El usuario pidió "`/perfile`"; se interpretó como errata de `/perfil` (rutas en español como el resto del sitio).
-- **Route group `app/(frontend)/(cuenta)/`** con `layout.tsx` común: título "Mi cuenta" + `components/cuenta/CuentaNav.tsx` (`"use client"`, pestañas de texto Perfil · Préstamos · Reservas con subrayado `accent` en la activa, `aria-current="page"`). Cada página sigue llamando a `requireSession('/ruta')` (el layout no conoce la ruta).
-- **Estilo**: minimalista/institucional a petición explícita — sin tarjetas ni animaciones; listas `dl` con separadores, tabla simple y avisos con `components/cuenta/AvisoCuenta.tsx` (borde izquierdo `accent` sobre `bg-muted`). `components/ProfileDatosCard.tsx` se eliminó.
-- **`/prestamos`**: nuevo `absys.findPrestamosByLector(lenlec)` en el adaptador (`lib/integrations/absys/prestamo.ts` + `mappers/prestamo.ts`, con fixture `prestamo-search.json` y tests). Busca en la tabla `presta` por **`prnlec`** (con `lenlec` Absys responde `Unrecognized field`). Campos usados: `prbarc` (código del ejemplar), `prfpre`/`prfdev` (`"YYYY-MM-DD HH:mm:ss"`, se guarda solo la fecha), `prnren` (renovaciones), `renewable`, `prcosu` (sucursal). `isPrestamoVencido` compara `prfdev` con hoy. La tabla (`components/cuenta/PrestamosTabla.tsx`, cliente porque usa `Badge`) muestra el **código del ejemplar, no el título**: `presta` no trae título y `_secondary`/`_tertiary` no lo añaden; sacarlo requeriría buscar el ejemplar en `copias`/`cata` (pendiente). No está confirmado si `prfdev` es la fecha prevista o la real de devolución — se muestra como "Devolución".
-- **`/reservas`**: solo aviso institucional ("disponible próximamente", remite al mostrador o a contacto). Motivo: `search` sobre `reserv` devuelve `code 3 / subcode 32: Access denied 'reserv'` con el rol actual de Connect → **pedir a Baratz permiso de lectura sobre `reserv`**. Marcado con `TODO(F10)` en la página.
-- **Header** (`components/layout/Header.tsx`) — **sin commitear** a 2026-09-28, porque mezcla trabajo en curso del usuario con los ajustes de esta tarea:
-  - Del usuario: el botón "Mi Cuenta" (sin sesión) apunta ahora a `/biblioteca/login` (el login antiguo) en vez de a `/auth/login?next=…` (queda comentado), y añadió al desplegable los enlaces de Reservas y Préstamos.
-  - De esta tarea: enlace de Perfil a `/perfil`, el de reservas de `/reserva` a `/reservas`, y la errata "Prestámos" → "Préstamos".
-  - Mientras no se commitee, el Header de la rama enlaza a `/profile` (404).
-- **Probado** en el contenedor de dev contra Absys real (solo lecturas): sin sesión las 3 redirigen al login con su `next`; con sesión las 3 dan 200; `/perfil` muestra el número de lector; `/prestamos` muestra el estado vacío (el lector de prueba tiene 0 préstamos, así que **la tabla con datos solo está cubierta por tests**, no vista con préstamos reales); 69 tests de Vitest y `tsc --noEmit` sin errores.
-- **Pendiente**:
-  - Pedir a Baratz permiso de lectura sobre la tabla `reserv` y conectar `/reservas` (añadir `findReservasByLector` al adaptador igual que préstamos).
-  - Mostrar el título en `/prestamos`: buscar cada `prbarc` en `copias` y su registro en `cata`.
-  - Confirmar si `prfdev` es la fecha prevista de devolución o la real (y si `presta` guarda también préstamos ya devueltos).
-  - Ver la tabla de préstamos con datos reales (el lector de prueba tiene 0) — con `ABSYS_MOCK=true` usa `prestamo-search.json`, pero el lector del mock es `lector.prueba@atlanticomedio.es`.
-  - Commitear el Header (ver arriba).
-- **Gotcha de git**: `git mv` deja el renombrado ya en el índice, así que un `git add <otra cosa> && git commit` posterior se lo lleva en ese commit. Si se va a commitear por unidades después de un `git mv`, hacer primero `git restore --staged .` (o commitear el renombrado el primero). Pasó en esta tarea y se corrigió rehaciendo los commits locales con `git reset --soft`.
-- **Ruido en el log de dev**: `Module [project]/components/heroCarrusel.tsx ... was instantiated ... but the module factory is not available` en `app/(auth)/login/page.tsx` es un fallo del hot reload de Turbopack con un módulo desactualizado, no de estas rutas; se va reiniciando el dev server.
+**Qué va en cada sitio, para no duplicar**:
+- Un global/collection/componente nuevo, o un cambio de flujo de datos → actualiza las tablas de
+  referencia de este fichero (`CLAUDE.md`) con el estado resultante, y en `MEMORY.md` deja solo el
+  *por qué* de la decisión, cómo se probó y qué quedó pendiente — no repitas aquí la lista de
+  campos ni allí la arquitectura completa.
+- Un bug corregido que deja una lección para el futuro (un gotcha de Payload, un patrón que no
+  funcionó) → si es una regla permanente a seguir, a "Bugs conocidos" o a la sección técnica que
+  corresponda en `CLAUDE.md`; si es solo el relato de cómo se encontró y arregló, a `MEMORY.md`.
+- Como con `CLAUDE.md`, no se borra información existente de `MEMORY.md` sin preguntar antes —
+  solo se añaden entradas nuevas.
