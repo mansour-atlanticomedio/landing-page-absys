@@ -88,7 +88,8 @@ export default function Header({ type, phone, email, navbar, account }: HeaderPr
                     {
                         !account ? (
                             <Button asChild className="p-5 cursor-pointer font-bold hover:p-5.5">
-                                <a href={`/biblioteca/auth/login?next=${encodeURIComponent(pathname || "/profile")}`}>
+                                {/* <a href={`/biblioteca/auth/login?next=${encodeURIComponent(pathname || "/perfil")}`}> */}
+                                <a href={ pathname ? `/biblioteca/login` : "/perfil" }>
                                     <User />
                                     Mi Cuenta
                                 </a>
@@ -107,10 +108,22 @@ export default function Header({ type, phone, email, navbar, account }: HeaderPr
                                     <ul className="py-2 bg-white">
                                         <li>
                                             <Link
-                                                href="/profile"
+                                                href="/perfil"
                                                 className="block px-4 py-2 text-sm font-semibold uppercase tracking-wider text-foreground border-l-2 border-transparent hover:border-primary hover:bg-primary/5 hover:text-primary"
                                             >
                                                 Perfil
+                                            </Link>
+                                            <Link
+                                                href="/reservas"
+                                                className="block px-4 py-2 text-sm font-semibold uppercase tracking-wider text-foreground border-l-2 border-transparent hover:border-primary hover:bg-primary/5 hover:text-primary"
+                                            >
+                                                Reservas
+                                            </Link>
+                                            <Link
+                                                href="/prestamos"
+                                                className="block px-4 py-2 text-sm font-semibold uppercase tracking-wider text-foreground border-l-2 border-transparent hover:border-primary hover:bg-primary/5 hover:text-primary"
+                                            >
+                                                Préstamos
                                             </Link>
                                         </li>
                                         <li>

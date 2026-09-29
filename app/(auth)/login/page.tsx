@@ -346,7 +346,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ className = "" }) => {
                   style={{ fontFamily: '"Segoe UI", "Segoe UI Web", Tahoma, Arial, sans-serif' }}
                 >
                   <a
-                    href="https://campus.atlanticomedio.es"
+                    href="/biblioteca/auth/simular-campus?next=%2F"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="gap-3"

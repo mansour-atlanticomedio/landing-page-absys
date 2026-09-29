@@ -44,7 +44,8 @@ export const getSession = async (requestHeaders?: Headers): Promise<CampusSessio
 // Para Server Components de páginas privadas: sin sesión, manda al login del campus y vuelve a `next`
 export const requireSession = async (next: string): Promise<CampusSession> => {
   const session = await getSession();
-  if (!session) redirect(`/auth/login?next=${encodeURIComponent(next)}`);
+  // if (!session) redirect(`/auth/login?next=${encodeURIComponent(next)}`);
+  if (!session) redirect('/login');
   return session;
 };
 
