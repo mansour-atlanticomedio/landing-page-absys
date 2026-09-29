@@ -459,6 +459,29 @@ tipo(alcance opcional): resumen en imperativo, máx 50 caracteres
 
 ---
 
+## Pendientes para la próxima sesión (anotado 2026-09-29, a empezar 2026-09-30)
+
+1. **Estrategia para no perder datos al migrar Payload**: hay collections modificadas en el código
+   sin subir todavía cuya migración va a tocar tablas con datos reales, y eso puede romper o
+   perder información existente al aplicarla. Definir un procedimiento repetible antes del
+   próximo `payload migrate` en producción — ej. backup previo, revisar si la migración generada
+   hace `DROP`/`CREATE` en vez de preservar filas (como se hizo a mano en
+   `migrations/20260929_102432_actualizar_colectivos_campus.ts` con un `UPDATE ... CASE` en lugar
+   de un cast directo), o algún otro mecanismo de recuperación. Punto de partida: la sección
+   "⚠️ Push (dev) vs Migraciones (producción)" de este documento.
+2. **Completar (no escalar) los enlaces externos del layout**: `layout.enlaces_externos[]` y
+   `resolveEnlaceExterno` ya existen (ver "Enlaces externos" arriba) pero solo como
+   infraestructura genérica. Falta decidir y crear los huecos concretos que el código necesita
+   para que Payload los rellene: qué páginas/componentes van a consumir qué `key` (repositorio
+   institucional de `investigacion/page.tsx`, redes sociales de `FooterSimple.tsx`, etc. — ver la
+   lista de "no migrado automáticamente" en esa misma sección) y cablear cada uno.
+3. **Backups de Payload más allá de los seeds**: los seeds (`npm run seed`) reconstruyen contenido
+   de ejemplo pero no son backup de datos reales de producción. Evaluar qué opciones hay aparte de
+   Payload auth — ej. `pg_dump` programado sobre `biblioteca-db`, algún plugin/mecanismo nativo de
+   Payload — y dejar al menos una decisión tomada sobre cuál usar.
+
+---
+
 ## Bugs conocidos
 
 - `globals/Repositories.ts` líneas 71-72: labels de `input_block` dicen "Sobre Nosotros" en vez de "Entrada de texto"
