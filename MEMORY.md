@@ -9,6 +9,31 @@ regla de cuándo añadir una entrada (obligatorio al terminar cada tarea).
 
 ---
 
+## 2026-09-29 — WIP: enlaces temporales del Header/login para probar Mi cuenta/Reservas/Préstamos
+
+Cambios sin terminar, comiteados tal cual a petición del usuario (commit `wip(auth): apuntar
+Header y requireSession a rutas locales para pruebas`) para poder pinchar `/perfil`, `/reservas` y
+`/prestamos` sin depender de la redirección real del campus, que aún no está confirmada con
+Daniel.
+
+- `components/layout/Header.tsx`: "Mi Cuenta" apunta a `/biblioteca/login` (login antiguo, no al
+  flujo de campus) en vez de `/auth/login`; se comentó la línea original en vez de borrarla.
+  Añadidos accesos directos a "Reservas" y "Préstamos" en el dropdown de cuenta (rutas `/reservas`
+  y `/prestamos`, aún sin verificar que existan como páginas).
+- `lib/auth/session.ts`: `requireSession` redirige a `/login` en vez de `/auth/login` (línea
+  original también comentada, no borrada).
+- `app/(auth)/login/page.tsx`: el enlace de "acceso desde el campus" apunta a
+  `/biblioteca/auth/simular-campus?next=%2F` (la ruta de simulación, solo dev) en vez del dominio
+  real `https://campus.atlanticomedio.es`.
+
+**No se ha verificado que esto sea el flujo final** — son atajos para pruebas locales, coherente
+con el patrón de trabajo del usuario de dejar código comentado/temporal en vez de limpiarlo hasta
+que el flujo esté decidido. Pendiente: revertir a los enlaces reales (`/auth/login`, dominio del
+campus) cuando el flujo de campus esté confirmado, y confirmar si `/reservas`/`/prestamos` son las
+rutas correctas del área de cuenta.
+
+---
+
 ## 2026-09-29 — Diagnóstico del enlace de prueba del campus + registro de enlaces externos
 
 ### Diagnóstico (sin cambios de código): el enlace de prueba del jefe del usuario no funcionaría
