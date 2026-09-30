@@ -48,6 +48,12 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: ' aplicaciones.unam.es',
+        port: '',
+        pathname: '/**',
+      },
     ],
     dangerouslyAllowLocalIP: true,
   },
