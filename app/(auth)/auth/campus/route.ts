@@ -42,8 +42,9 @@ export async function GET(request: NextRequest) {
         colectivo: rol,
         direccion: DIRECCION_AUTO_ALTA,
         email: identity.email,
-        // Absys exige lepass, pero estos lectores entran siempre por el campus: nadie necesita conocerla
-        password: randomBytes(12).toString("base64url"),
+        // Absys exige lepass, pero estos lectores entran siempre por el campus: nadie necesita conocerla.
+        // Máx. 8 caracteres: Absys rechaza el alta si "lepass" supera ese tamaño (código 3/47)
+        password: randomBytes(4).toString("hex"),
       });
     }
 
