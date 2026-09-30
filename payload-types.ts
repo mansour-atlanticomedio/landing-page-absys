@@ -852,11 +852,12 @@ export interface Schedule {
  */
 export interface LoginCampusService {
   id: number;
-  dni: string;
-  nombre: string;
-  apellidos: string;
+  absysId?: string | null;
+  dni?: string | null;
+  nombre?: string | null;
+  apellidos?: string | null;
   numeroCarnet?: string | null;
-  colectivo: 'ALUMN' | 'PDI' | 'PAS' | 'EXT';
+  colectivo: 'ALUMN' | 'PROFE' | 'ADULT' | 'INVIT' | 'ANONI';
   maxPrestamos?: number | null;
   diasPrestamo?: number | null;
   isOfflineData?: boolean | null;
@@ -1516,6 +1517,7 @@ export interface ScheduleSelect<T extends boolean = true> {
  * via the `definition` "loginCampus_service_select".
  */
 export interface LoginCampusServiceSelect<T extends boolean = true> {
+  absysId?: T;
   dni?: T;
   nombre?: T;
   apellidos?: T;
@@ -1680,6 +1682,20 @@ export interface Layout {
   id: number;
   header?: (number | null) | Header;
   footer?: (number | null) | Footer;
+  /**
+   * Registro de enlaces a sitios externos (repositorio, catálogo, redes...) editable sin tocar código. Se consultan por "key" desde lib/links.ts
+   */
+  enlaces_externos?:
+    | {
+        /**
+         * Sin espacios, en minúsculas (ej: opac, dspace, instagram) — es lo que usa el código para buscarlo
+         */
+        key: string;
+        label: string;
+        url: string;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -2212,6 +2228,14 @@ export interface LibrarySelect<T extends boolean = true> {
 export interface LayoutSelect<T extends boolean = true> {
   header?: T;
   footer?: T;
+  enlaces_externos?:
+    | T
+    | {
+        key?: T;
+        label?: T;
+        url?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

@@ -84,6 +84,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ className = "" }) => {
   const [headerLogo, setHeaderLogo] = useState<{ url: string; alt: string } | null>(null);
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
+  const CAMPUS_URI = process.env.NEXT_CAMPUS_URI;
 
   const [loginData, setLoginData] = useState<LoginData>(initialLogin);
   const [registerData, setRegisterData] = useState<RegisterData>(initialRegister);
@@ -257,7 +258,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ className = "" }) => {
           {mode === "login" ? (
             <form onSubmit={handleLoginSubmit}>
               <CardContent className="space-y-4 pt-2">
-                <div className="space-y-2">
+                {/* <div className="space-y-2">
                   <Label htmlFor="lenlec" className="text-slate-700 font-medium">
                     Correo electrónico
                   </Label>
@@ -273,9 +274,9 @@ export const LoginPage: React.FC<LoginPageProps> = ({ className = "" }) => {
                       required
                     />
                   </div>
-                </div>
+                </div> */}
 
-                <div className="space-y-2">
+                {/* <div className="space-y-2">
                   <Label htmlFor="lepass-login" className="text-slate-700 font-medium">
                     Contraseña
                   </Label>
@@ -305,11 +306,11 @@ export const LoginPage: React.FC<LoginPageProps> = ({ className = "" }) => {
                       )}
                     </button>
                   </div>
-                </div>
+                </div> */}
               </CardContent>
 
               <CardFooter className="flex flex-col gap-3 pt-6 pb-6 border-0">
-                <Button
+                {/* <Button
                   type="submit"
                   disabled={isLoading}
                   className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-4 shadow-md transition-colors"
@@ -322,7 +323,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ className = "" }) => {
                   ) : (
                     "Acceder"
                   )}
-                </Button>
+                </Button> */}
                 {/* <button
                   type="button"
                   onClick={() => switchMode("register")}
@@ -333,11 +334,11 @@ export const LoginPage: React.FC<LoginPageProps> = ({ className = "" }) => {
                     Crea tu carnet de lector
                   </span>
                 </button> */}
-                <div className="flex w-full items-center gap-3">
+                {/* <div className="flex w-full items-center gap-3">
                   <span className="h-px flex-1 bg-slate-200" />
                   <span className="text-xs uppercase text-slate-400">o</span>
                   <span className="h-px flex-1 bg-slate-200" />
-                </div>
+                </div> */}
 
                 <Button
                   asChild
@@ -346,7 +347,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ className = "" }) => {
                   style={{ fontFamily: '"Segoe UI", "Segoe UI Web", Tahoma, Arial, sans-serif' }}
                 >
                   <a
-                    href="https://campus.atlanticomedio.es"
+                    href={CAMPUS_URI}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="gap-3"

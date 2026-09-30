@@ -1,0 +1,32 @@
+{
+  "response": {
+    "code": 0,
+    "subcode": 0,
+    "subcode2": 0,
+    "count": 2,
+    "description": " Search operation:  OK (table 'presta').",
+    "table": "presta",
+    "presta": [
+      {
+        "prnlec": "100023",
+        "prbarc": "BIEU000123",
+        "prfpre": "2026-09-10 10:15:00",
+        "prfdev": "2026-09-25 23:59:59",
+        "prnren": "1",
+        "renewable": 1,
+        "prcosu": "MADRID",
+        "index": 1
+      },
+      {
+        "prnlec": "100023",
+        "prbarc": "BIEU000456",
+        "prfpre": "2026-09-20 12:30:00",
+        "prfdev": "2026-10-05 23:59:59",
+        "prnren": "0",
+        "renewable": 0,
+        "prcosu": "MADRID",
+        "index": 2
+      }
+    ]
+  }
+}

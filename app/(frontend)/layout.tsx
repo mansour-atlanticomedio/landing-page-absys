@@ -3,6 +3,7 @@ import { Toaster } from 'sonner'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import { getClient } from '@/lib/payload'
+import { getSession } from '@/lib/auth/session'
 import '../styles.css'
 
 export const dynamic = 'force-dynamic'
@@ -23,11 +24,14 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
   const headerData = layoutPage?.header
   const footerData = layoutPage?.footer
 
+  const session = await getSession()
+  const account = session ? { email: session.email, nombre: session.nombre } : null
+
   return (
     <html lang="en">
       <body className="min-h-screen flex flex-col bg-background">
         <Toaster />
-        {headerData && <Header {...headerData} />}
+        {headerData && <Header {...headerData} account={account} />}
         <main>{children}</main>
         {footerData && <Footer {...footerData} />}
       </body>

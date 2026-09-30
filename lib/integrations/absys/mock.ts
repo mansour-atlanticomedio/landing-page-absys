@@ -1,6 +1,7 @@
 import { createCatalogoService } from "./catalogo";
 import type { AbsysClient, AbsysRawResponse } from "./client";
 import { createLectorService } from "./lector";
+import { createPrestamoService } from "./prestamo";
 import { EXTERNAL_ID_FIELD } from "./mappers/lector";
 import type { AbsysAdapter } from "./index";
 import catalogoRecurso from "./__fixtures__/catalogo-recurso.json";
@@ -8,6 +9,7 @@ import catalogoSearch from "./__fixtures__/catalogo-search.json";
 import lectorAdd from "./__fixtures__/lector-add.json";
 import lectorSearch from "./__fixtures__/lector-search.json";
 import lectorSearchVacio from "./__fixtures__/lector-search-vacio.json";
+import prestamoSearch from "./__fixtures__/prestamo-search.json";
 
 const MOCK_EXTERNAL_ID = lectorSearch.response.lector[EXTERNAL_ID_FIELD];
 
@@ -17,14 +19,19 @@ const mockClient: AbsysClient = {
       const found = String(params[EXTERNAL_ID_FIELD]) === MOCK_EXTERNAL_ID;
       return (found ? lectorSearch : lectorSearchVacio) as AbsysRawResponse;
     }
+    if (params.table === "presta") return prestamoSearch as AbsysRawResponse;
     return (params._description ? catalogoRecurso : catalogoSearch) as AbsysRawResponse;
   },
   async add() {
     return lectorAdd as AbsysRawResponse;
+  },
+  async modify() {
+    return { response: { code: 0 } } as AbsysRawResponse;
   },
 };
 
 export const absysMock: AbsysAdapter = {
   ...createLectorService(mockClient),
   ...createCatalogoService(mockClient),
+  ...createPrestamoService(mockClient),
 };

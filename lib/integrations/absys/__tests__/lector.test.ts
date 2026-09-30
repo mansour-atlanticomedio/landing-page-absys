@@ -10,6 +10,7 @@ import lectorSearchVacio from "../__fixtures__/lector-search-vacio.json";
 const fakeClient = (overrides: Partial<AbsysClient>): AbsysClient => ({
   search: vi.fn(),
   add: vi.fn(),
+  modify: vi.fn(),
   ...overrides,
 });
 
@@ -82,5 +83,37 @@ describe("createLector", () => {
       fakeClient({ add: vi.fn().mockRejectedValue(new AbsysInvalidDataError("Add operation: Invalid data", 3, 6)) })
     );
     await expect(service.createLector(nuevoLector)).rejects.toBeInstanceOf(AbsysInvalidDataError);
+  });
+});
+
+describe("updateLector", () => {
+  const actual = {
+    id: "100023",
+    externalId: "lector.prueba@atlanticomedio.es",
+    nombre: "Lucía",
+    apellidos: "Martín Pérez",
+    email: "lector.prueba@atlanticomedio.es",
+  };
+
+  it("modifica solo nombre y apellidos y conserva el resto de la ficha", async () => {
+    const modify = vi.fn().mockResolvedValue({ response: { code: 0 } });
+    const service = createLectorService(fakeClient({ modify }));
+
+    const lector = await service.updateLector(actual, { nombre: "Lucía Nueva", apellidos: "Otro Apellido" });
+
+    expect(modify).toHaveBeenCalledWith("lector", {
+      table: "lector",
+      lenlec: "100023",
+      lenomb: "Lucía Nueva",
+      leapel: "Otro Apellido",
+    });
+    expect(lector).toEqual({ ...actual, nombre: "Lucía Nueva", apellidos: "Otro Apellido" });
+  });
+
+  it("propaga el error de negocio cuando Absys rechaza los datos", async () => {
+    const service = createLectorService(
+      fakeClient({ modify: vi.fn().mockRejectedValue(new AbsysInvalidDataError("Modify operation: Invalid data", 3, 6)) })
+    );
+    await expect(service.updateLector(actual, { nombre: "X", apellidos: "Y" })).rejects.toBeInstanceOf(AbsysInvalidDataError);
   });
 });

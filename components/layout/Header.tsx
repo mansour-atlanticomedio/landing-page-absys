@@ -8,13 +8,13 @@ import { ChevronDown, Mail, Phone, User, LogOut } from "lucide-react";
 import logo from "@/public/logos/logo.png";
 import Image from "next/image";
 import { Button } from "../ui/button";
-import { useEffect, useState } from "react";
 
 interface HeaderProps {
     type: string,
     phone?: string,
     email?: string,
-    navbar: navMenuLinks[]
+    navbar: navMenuLinks[],
+    account?: { email: string, nombre?: string } | null
 }
 
 interface navMenuLinks {
@@ -29,22 +29,11 @@ interface NavLinkProps {
 }
 
 
-export default function Header({ type, phone, email, navbar }: HeaderProps) {
+export default function Header({ type, phone, email, navbar, account }: HeaderProps) {
     const router = useRouter();
     const pathname = usePathname();
-    const [isAccount, setIsAccount] = useState<string | null>()
 
     const navbarMenu = navbar ?? [];
-
-    useEffect(() => {
-
-        const checkAccount = () => {
-            const lenlec = localStorage.getItem('lenlec')
-            setIsAccount(lenlec)
-        }
-
-        checkAccount()
-    }, [])
 
     // Manejo de clicks en el botón principal de cada sección
     const handleNavLink = (url?: string) => {
@@ -58,10 +47,10 @@ export default function Header({ type, phone, email, navbar }: HeaderProps) {
         }
     };
 
+    // Limpia también lo que dejaba el login antiguo; la sesión real la cierra el POST a /auth/logout
     const handleLogOut = () => {
         localStorage.removeItem("lenlec");
         localStorage.removeItem("lepass");
-        router.push(`/login`);
     }
 
     return (
@@ -97,10 +86,13 @@ export default function Header({ type, phone, email, navbar }: HeaderProps) {
                     </a>
 
                     {
-                        !isAccount ? (
-                            <Button onClick={() => router.push(`/login`)} className="p-5 cursor-pointer font-bold hover:p-5.5">
-                                <User />
-                                Mi Cuenta
+                        !account ? (
+                            <Button asChild className="p-5 cursor-pointer font-bold hover:p-5.5">
+                                {/* <a href={`/biblioteca/auth/login?next=${encodeURIComponent(pathname || "/perfil")}`}> */}
+                                <a href={ pathname ? `/biblioteca/login` : "/perfil" }>
+                                    <User />
+                                    Mi Cuenta
+                                </a>
                             </Button>
                         ) : (
                             <div className="group relative">
@@ -114,22 +106,36 @@ export default function Header({ type, phone, email, navbar }: HeaderProps) {
 
                                 <div className="absolute right-0 top-full z-30 w-56 -translate-y-1 border border-border bg-card text-card-foreground opacity-0 shadow-xl transition-all duration-150 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
                                     <ul className="py-2 bg-white">
-                                        {/* <li>
+                                        <li>
                                             <Link
-                                                href="/account"
+                                                href="/perfil"
                                                 className="block px-4 py-2 text-sm font-semibold uppercase tracking-wider text-foreground border-l-2 border-transparent hover:border-primary hover:bg-primary/5 hover:text-primary"
                                             >
                                                 Perfil
                                             </Link>
-                                        </li> */}
-                                        <li>
-                                            <button
-                                                onClick={() => handleLogOut()}
-                                                className="flex gap-2 items-center w-full text-left block px-2 py-2 text-sm font-semibold uppercase tracking-wider text-foreground border-l-2 border-transparent hover:border-primary hover:bg-primary/5 hover:text-primary"
+                                            <Link
+                                                href="/reservas"
+                                                className="block px-4 py-2 text-sm font-semibold uppercase tracking-wider text-foreground border-l-2 border-transparent hover:border-primary hover:bg-primary/5 hover:text-primary"
                                             >
-                                                <LogOut size={16} className="text-red-500" />
-                                                Cerrar sesión
-                                            </button>
+                                                Reservas
+                                            </Link>
+                                            <Link
+                                                href="/prestamos"
+                                                className="block px-4 py-2 text-sm font-semibold uppercase tracking-wider text-foreground border-l-2 border-transparent hover:border-primary hover:bg-primary/5 hover:text-primary"
+                                            >
+                                                Préstamos
+                                            </Link>
+                                        </li>
+                                        <li>
+                                            <form method="post" action="/biblioteca/auth/logout" onSubmit={() => handleLogOut()}>
+                                                <button
+                                                    type="submit"
+                                                    className="flex gap-2 items-center w-full text-left block px-2 py-2 text-sm font-semibold uppercase tracking-wider text-foreground border-l-2 border-transparent hover:border-primary hover:bg-primary/5 hover:text-primary"
+                                                >
+                                                    <LogOut size={16} className="text-red-500" />
+                                                    Cerrar sesión
+                                                </button>
+                                            </form>
                                         </li>
                                     </ul>
                                 </div>
