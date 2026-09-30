@@ -19,5 +19,5 @@ export async function GET(request: NextRequest) {
   if (process.env.NODE_ENV !== "production") {
     return redirectResponse(`/auth/simular-campus?next=${encodeURIComponent(next)}`);
   }
-  return redirectResponse("/auth/error?motivo=config");
+  return redirectResponse("/auth/error");
 }

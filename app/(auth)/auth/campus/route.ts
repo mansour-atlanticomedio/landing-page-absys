@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
   const token = params.get(process.env.NEXT_CAMPUS_TOKEN_PARAM || "token");
   const payload = await getClient();
 
-  if (!token) return redirectResponse("/auth/error?motivo=invalido");
+  if (!token) return redirectResponse("/auth/error");
 
   let identity: CampusIdentity;
   try {
@@ -23,7 +23,7 @@ export async function GET(request: NextRequest) {
   } catch (error) {
     const motivo = error instanceof CampusTokenError ? error.reason : "config";
     payload.logger.warn(`Login campus rechazado: ${motivo}`);
-    return redirectResponse(`/auth/error?motivo=${motivo}`);
+    return redirectResponse("/auth/error");
   }
 
   try {
@@ -51,6 +51,6 @@ export async function GET(request: NextRequest) {
     return redirectResponse(next, cookie);
   } catch (error) {
     payload.logger.error(error);
-    return redirectResponse("/auth/error?motivo=absys");
+    return redirectResponse("/auth/error");
   }
 }

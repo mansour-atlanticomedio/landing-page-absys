@@ -399,9 +399,9 @@ Expuesto de solo lectura en `/perfil` (fila "Rol", con las mismas etiquetas que 
 | `lib/auth/redirects.ts` | Puro, sin Payload: `safeNextPath` (solo rutas internas, evita open redirect y bucles a `/auth/*`), `buildCampusLoginUrl`, `redirectResponse` (Location **relativa** con el basePath, para que funcione igual detrás de nginx que contra el contenedor) |
 | `lib/auth/session.ts` | Servidor: `getSession()` (incluye `colectivo` en `CampusSession`), `requireSession(next)` (para Server Components de páginas privadas), `createCampusSession(email, lector, rol?)`, `linkAbsysLector`, `destroyCampusSession` (revoca el `sid` en BD, no solo borra la cookie) |
 | `app/(auth)/auth/campus/route.ts` | Callback A |
-| `app/(auth)/auth/login/route.ts` | Entrada única al login: con sesión vuelve a `next`; sin ella, al campus. Sin `NEXT_CAMPUS_LOGIN_URL`: en dev → `/auth/simular-campus`, en prod → `/auth/error?motivo=config` |
+| `app/(auth)/auth/login/route.ts` | Entrada única al login: con sesión vuelve a `next`; sin ella, al campus. Sin `NEXT_CAMPUS_LOGIN_URL`: en dev → `/auth/simular-campus`, en prod → `/auth/error` |
 | `app/(auth)/auth/logout/route.ts` | `POST`, revoca la sesión y vuelve a `/` |
-| `app/(auth)/auth/error/page.tsx` | Motivos: `invalido`, `caducado`, `absys`, `config` |
+| `app/(auth)/auth/error/page.tsx` | Un único mensaje genérico (2026-09-30, antes distinguía `?motivo=invalido\|caducado\|absys\|config` en la URL — se quitó para no exponer el motivo interno en el enlace). El motivo real de cada caso sigue quedando en los logs del servidor (`payload.logger.warn`/`error` en `auth/campus/route.ts` y `auth/login/route.ts`) |
 | `app/(auth)/auth/simular-campus/` | **Solo dev** (404 en producción): formulario con un email que genera un token real y vuelve al callback. Es la forma de probar el flujo hasta que Daniel tenga lista la redirección |
 | `app/(frontend)/(cuenta)/perfil/page.tsx` + `perfil/actions.ts` + `components/cuenta/PerfilForm.tsx` | Privada: datos del lector en Absys, con nombre/apellidos editables (`absys.updateLector`, vía `operation=modify`); dirección/colectivo/email no se pueden editar desde aquí (decisión del usuario, 2026-09-29). Muestra también el rol (`session.colectivo`, solo lectura). Si Absys está caído muestra los guardados en Payload |
 
