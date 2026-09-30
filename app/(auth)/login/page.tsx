@@ -84,7 +84,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ className = "" }) => {
   const [headerLogo, setHeaderLogo] = useState<{ url: string; alt: string } | null>(null);
 
   const API_URL = process.env.NEXT_PUBLIC_API_URL;
-  const CAMPUS_URI = process.env.NEXT_CAMPUS_URI;
+  const CAMPUS_URI = process.env.NEXT_PUBLIC_CAMPUS_URI;
 
   const [loginData, setLoginData] = useState<LoginData>(initialLogin);
   const [registerData, setRegisterData] = useState<RegisterData>(initialRegister);

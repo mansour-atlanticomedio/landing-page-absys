@@ -11,7 +11,7 @@ interface AuthErrorCardProps {
 }
 
 export default function AuthErrorCard({ titulo, texto }: AuthErrorCardProps) {
-  const CAMPUS_URI = process.env.NEXT_CAMPUS_URI
+  const CAMPUS_URI: string = process.env.NEXT_PUBLIC_CAMPUS_URI || ''
 
   return (
     <Card className="w-full max-w-lg shadow-xl flex">
@@ -23,7 +23,7 @@ export default function AuthErrorCard({ titulo, texto }: AuthErrorCardProps) {
       <CardContent />
       <CardFooter className="flex flex-wrap justify-center gap-3">
         <Button asChild className="bg-accent font-bold hover:bg-accent/90 transition-colors">
-          <a href={CAMPUS_URI}>Volver a intentarlo</a>
+          <Link href={CAMPUS_URI} > Volver a intentarlo </Link>
         </Button>
         <Button asChild variant="outline">
           <Link href="/conocenos/horarios-ubicacion-y-contacto">Contactar con la biblioteca</Link>
