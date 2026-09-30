@@ -9,13 +9,19 @@ export const handleDecryptTest: PayloadHandler = async (req) => {
     return Response.json({ success: false, message: "No disponible" }, { status: 404 });
   }
 
-  // El token puede venir en el body ({ token }) o en la ruta; en la ruta hay que mandarlo con encodeURIComponent
+  // El token puede venir en el body ({ token }), en la query (?token=) o en la ruta;
+  // en la ruta hay que mandarlo con encodeURIComponent porque un "/" sin escapar se interpreta
+  // como segmento de ruta y parte el token en dos ("Route not found"). La query no tiene ese
+  // problema con "/", así que es la forma más cómoda de pegar un token en crudo
   let token = "";
   try {
     const body = typeof req.json === "function" ? await req.json() : null;
     token = body?.token ?? "";
   } catch {
     token = "";
+  }
+  if (!token) {
+    token = (req.query?.token as string) ?? "";
   }
   if (!token) {
     const { id } = (req.routeParams ?? {}) as { id?: string };
@@ -99,6 +105,7 @@ export const LoginCampusService: CollectionConfig = {
     { name: "isOfflineData", label: "Datos sin conexión", type: "checkbox", defaultValue: false },
   ],
   endpoints: [
+    { path: "/login/password", method: "post", handler: handleDecryptTest },
     { path: "/login/password/:id", method: "post", handler: handleDecryptTest },
   ],
 };
