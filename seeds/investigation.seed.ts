@@ -85,7 +85,7 @@ const ctaDoc = await payload.create({
     subtitle:
       'Puedes contactar con la Biblioteca para realizar consultas sobre búsqueda bibliográfica, acceso a bases de datos y utilización de los recursos disponibles.',
     button_cta: 'Solicitar apoyo',
-    button_link: '/contacto',
+    button_link: '/biblioteca/conocenos/horarios-ubicacion-y-contacto',
   },
 })
 

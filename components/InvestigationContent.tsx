@@ -84,7 +84,7 @@ export default function InvestigationContent({
               );
             })}
             <a
-              href="#cta-apoyo"
+              href="/biblioteca/conocenos/horarios-ubicacion-y-contacto"
               className="bg-slate-800 text-white rounded-md px-4 py-2 text-sm font-medium flex items-center gap-2 transition-colors hover:bg-slate-700"
             >
               <HeartHandshake className="h-4 w-4" /> Solicitar apoyo
