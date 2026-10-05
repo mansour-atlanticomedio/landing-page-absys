@@ -1688,9 +1688,9 @@ export interface Layout {
   enlaces_externos?:
     | {
         /**
-         * Sin espacios, en minúsculas (ej: opac, dspace, instagram) — es lo que usa el código para buscarlo
+         * Identificador que usa el código para buscarlo (ver lib/links.ts)
          */
-        key: string;
+        key: 'opac' | 'dspace' | 'campus' | 'facebook' | 'twitter' | 'instagram' | 'linkedin' | 'youtube' | 'tiktok';
         label: string;
         url: string;
         id?: string | null;

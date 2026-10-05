@@ -1,7 +1,10 @@
 import { getClient } from "@/lib/payload";
 import InvestigationContent from "@/components/InvestigationContent";
+import { resolveEnlaceExterno } from "@/lib/links";
 
 export const dynamic = 'force-dynamic';
+
+const DSPACE_FALLBACK = "http://172.26.0.200:4000/dspace";
 
 const ACCESOS_RAPIDOS_FALLBACK = [
   { icon: "Search", title: "Buscar información" },
@@ -29,7 +32,7 @@ const TARJETAS_FALLBACK = [
     title: "Acceso abierto y repositorio",
     description: "Encuentra información sobre repositorios, versiones de los documentos, licencias, derechos de autor y posibilidades de difusión en acceso abierto.",
     cta: "Acceder al Repositorio institucional",
-    link: "http://172.26.0.200:4000/dspace",
+    link: DSPACE_FALLBACK,
   },
   {
     icon: "Fingerprint",
@@ -57,6 +60,8 @@ export default async function Investigation() {
     draft: false,
     depth: 5
   }) as any
+  const layoutData = await payload.findGlobal({ slug: 'layout', depth: 0 }) as any
+  const dspaceUrl = resolveEnlaceExterno(layoutData?.enlaces_externos, 'dspace', DSPACE_FALLBACK)
 
   const heroData = homepage?.hero
   const title = heroData?.title || "Apoyo a la investigación";
@@ -68,7 +73,9 @@ export default async function Investigation() {
   const accesosRapidos = homepage?.accesos_rapidos?.feature?.length
     ? homepage.accesos_rapidos.feature
     : ACCESOS_RAPIDOS_FALLBACK;
-  const tarjetas = homepage?.tarjetas?.accesos?.length ? homepage.tarjetas.accesos : TARJETAS_FALLBACK;
+  const tarjetas = homepage?.tarjetas?.accesos?.length
+    ? homepage.tarjetas.accesos
+    : TARJETAS_FALLBACK.map((tarjeta) => (tarjeta.link === DSPACE_FALLBACK ? { ...tarjeta, link: dspaceUrl } : tarjeta));
   const cta = homepage?.cta || CTA_FALLBACK;
 
   return (
