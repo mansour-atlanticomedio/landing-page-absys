@@ -9,6 +9,55 @@ regla de cuándo añadir una entrada (obligatorio al terminar cada tarea).
 
 ---
 
+## 2026-10-05 — Catálogo cerrado de keys para enlaces externos (rama `feat/enlaces-externos`)
+
+A petición del usuario: completar `layout.enlaces_externos[]` (infraestructura creada el
+2026-09-29) con todas las keys previsibles del sitio, para que salgan como opciones en el select
+del admin en vez de tener que escribirlas a mano.
+
+### Qué se hizo
+- `lib/links.ts`: `ENLACES_EXTERNOS_KEYS` con `opac`, `dspace`, `campus` y las 5 redes sociales
+  que ya tenía el proyecto en algún sitio (`facebook`/`twitter`/`instagram`/`linkedin`/`youtube`,
+  del `iconsSocialMedia` de `collections/Icons.ts`) + `tiktok` como añadido razonable para una
+  universidad hoy.
+- `globals/Layout.ts`: el campo `key` pasa de `text` a `select` con esas opciones.
+- Cableados `investigacion/page.tsx` (link de `dspace`) y `FooterSimple.tsx` (las 5 redes
+  sociales, componente pasado a `async` para poder leer el global `layout`) — este último sigue
+  sin usarse en ninguna página, se cableó porque era el único sitio con URLs de redes sociales
+  realmente hardcodeadas en código (las del `Footer` real vienen de la collection `footer`, no de
+  este registro).
+- **Decisión explícita de no tocar `recursos/catalogo/page.tsx`**: el único rastro de un enlace a
+  OPAC ahí es una línea comentada muerta, sin ningún botón real que la use — forzar un refactor
+  (habría que partir la página en server+client component solo para esto) no estaba justificado
+  por el alcance pedido.
+- **Hallazgo real durante la migración**: la BD de dev ya tenía una fila en
+  `layout_enlaces_externos` con `key='catalogo'` (tecleada a mano desde el admin, apuntando a
+  `https://demo.baratz.es/opac`, antes de que este campo tuviera lista cerrada). La migración que
+  cambia `key` a enum remapea ese valor a `opac` antes del cast (mismo patrón que la migración de
+  `colectivo` del 2026-09-29) — sin este remapeo, el cast habría reventado contra esa fila. Dato
+  real conservado, no se perdió nada.
+
+### Cómo se probó
+- `npx payload migrate:create` + aplicada contra un Postgres nuevo (contenedor Docker temporal,
+  destruido al terminar) — las 6 migraciones en orden, limpias.
+- Contra la BD de dev real: intentar `npm run migrate` ahí falló como es esperable (está
+  sincronizada por `push`, no por migraciones — el propio Payload avisa de "data loss" y, al
+  confirmarlo, la migración baseline revienta porque las tablas ya existen fuera de su control;
+  rollback automático, no se perdió nada). Se remapeó esa fila a mano (`catalogo`→`opac`) y se
+  reinició el contenedor de dev para que el `push` aplicase el nuevo tipo de columna — confirmado
+  con `\d layout_enlaces_externos` (columna ya es `enum_layout_enlaces_externos_key`) y `curl` a
+  `/investigacion`, `/recursos/recursos-electronicos`, `/recursos/catalogo` (200 los tres).
+- `npm test` (81 tests) y `tsc --noEmit` en verde.
+
+### Qué quedó pendiente
+- Revisar si **producción** tiene alguna otra key libre en `layout_enlaces_externos` antes de
+  aplicar esta migración allí — el `ELSE` de la migración deja pasar cualquier valor que no sea
+  `catalogo` tal cual, y el cast final revienta si no coincide con el enum nuevo.
+- El repositorio institucional del navbar (`seeds/layout.seed.ts`) y el acceso a OPAC de
+  `recursos/catalogo/page.tsx` siguen sin usar este registro (ver razones arriba).
+
+---
+
 ## 2026-09-29 — WIP: enlaces temporales del Header/login para probar Mi cuenta/Reservas/Préstamos
 
 Cambios sin terminar, comiteados tal cual a petición del usuario (commit `wip(auth): apuntar

@@ -181,19 +181,28 @@ admin de Payload sin tocar código ni redeployar — **alcance deliberadamente l
 sensibles**; nada relacionado con autenticación (las URLs del login del campus siguen en variables
 de entorno, ver "Login desde el campus").
 
-- **Campo** `layout.enlaces_externos[]` (`globals/Layout.ts`): array con `key` (identificador libre
-  en minúsculas, ej. `opac`/`dspace`/`instagram` — es lo que usa el código para buscarlo),
-  `label` (nombre para el admin) y `url`.
-- **`lib/links.ts`**: `resolveEnlaceExterno(enlaces, key, fallback)` — función pura, sin I/O; busca
-  por `key` en el array y devuelve `fallback` si no hay entrada o su `url` está vacía. Cualquier
-  página/componente que ya haga `payload.findGlobal({ slug: 'layout' })` (o lo reciba como prop)
-  puede usarla así: `resolveEnlaceExterno(layout.enlaces_externos, 'dspace', '/enlace/por-defecto')`.
-- **Sin migrar automáticamente** los enlaces externos que ya estaban hardcodeados en el código (el
-  repositorio institucional en `investigacion/page.tsx`, las redes sociales de
-  `FooterSimple.tsx`...) — se creó solo la infraestructura; migrar cada uno es trabajo aparte, a
-  hacer cuando haga falta tocar esa página.
-- Migración `migrations/20260929_110457_layout_enlaces_externos.ts` (tabla nueva, sin dato que
-  remapear).
+- **Campo** `layout.enlaces_externos[]` (`globals/Layout.ts`): array con `key` (2026-10-05: ya no
+  es texto libre, es un `select` con las opciones de `ENLACES_EXTERNOS_KEYS` de `lib/links.ts` —
+  `opac`, `dspace`, `campus`, `facebook`, `twitter`, `instagram`, `linkedin`, `youtube`, `tiktok`;
+  añadir una key nueva es añadir una entrada a esa constante), `label` (nombre para el admin) y
+  `url`.
+- **`lib/links.ts`**: exporta `ENLACES_EXTERNOS_KEYS` (catálogo cerrado de keys conocidas, con su
+  label para el select) y `resolveEnlaceExterno(enlaces, key, fallback)` — función pura, sin I/O;
+  busca por `key` en el array y devuelve `fallback` si no hay entrada o su `url` está vacía.
+  Cualquier página/componente que ya haga `payload.findGlobal({ slug: 'layout' })` (o lo reciba
+  como prop) puede usarla así: `resolveEnlaceExterno(layout.enlaces_externos, 'dspace', '/enlace/por-defecto')`.
+- **Ya cableados** (2026-10-05): `investigacion/page.tsx` (link de `dspace` en el fallback de
+  `tarjetas`) y `FooterSimple.tsx` (las 5 redes sociales; se pasó a Server Component `async` para
+  poder hacer el `findGlobal` — sigue sin montarse en ninguna página, código existente sin usar).
+  **Sin migrar todavía**: el repositorio institucional del navbar (`seeds/layout.seed.ts`, dato de
+  seed, no código) y el acceso a OPAC de `recursos/catalogo/page.tsx` (ahí solo hay una línea
+  comentada muerta, sin UI real que la use — no se forzó un refactor solo para cablearla).
+- Migraciones: `migrations/20260929_110457_layout_enlaces_externos.ts` (tabla nueva, sin dato que
+  remapear) + `migrations/20261005_114927_enlaces_externos_key_select.ts` (`key` de texto libre a
+  enum — remapea la única key libre que había en dev, `catalogo`→`opac`; **revisar si producción
+  tiene alguna otra key libre antes de aplicar esta migración allí**, el `ELSE` de la migración
+  deja pasar cualquier otro valor tal cual y el cast final reventaría si no coincide con el enum
+  nuevo).
 
 ### Access Control
 
