@@ -32,7 +32,7 @@ const accesosDoc = await payload.create({
         description:
           'Plataforma líder de libros electrónicos en español. Acceso a miles de títulos de múltiples disciplinas académicas para lectura en línea o descarga.',
         cta: 'Acceder a plataforma',
-        link: '#',
+        link: 'https://elibro.net/es/lc/atlanticomedio/inicio',
       },
       {
         icon: 'Star',
@@ -40,7 +40,7 @@ const accesosDoc = await payload.create({
         description:
           'Base de datos referencial y multidisciplinar que proporciona acceso a información de investigación global, permitiendo análisis de impacto y tendencias científicas.',
         cta: 'Acceder a base de datos',
-        link: '#',
+        link: 'https://www.recursoscientificos.fecyt.es/',
       },
       {
         icon: 'Microscope',
@@ -48,7 +48,7 @@ const accesosDoc = await payload.create({
         description:
           'La mayor base de datos de citas y resúmenes de literatura científica revisada por pares. Herramienta esencial para el seguimiento y evaluación de la investigación académica.',
         cta: 'Acceder a literatura',
-        link: '#',
+        link: 'https://www.scopus.com/pages/home#basic',
       },
     ],
   },

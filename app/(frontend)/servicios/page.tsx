@@ -131,7 +131,7 @@ export default async function Servicios() {
                 a las plataformas disponibles y resolver dudas relacionadas con sus servicios.
               </p>
               <button className="bg-slate-800 text-white text-sm font-medium rounded-md px-4 py-2">
-                Contactar
+                <a href="/biblioteca/conocenos/horarios-ubicacion-y-contacto">Contactar</a>
               </button>
             </div>
           </div>

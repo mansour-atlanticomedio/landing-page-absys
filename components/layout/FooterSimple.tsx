@@ -36,7 +36,7 @@ export default function FooterSimple() {
         <h2 className="text-white text-3xl font-bold">
           {title}
         </h2>
-        
+
         <div className="text-white space-y-1 text-sm md:text-base">
           <p>Carretera de Quílmes, 37 · 35017 Tafira Baja · Las Palmas de Gran Canaria</p>
           <p className="text-gray-400 font-medium">Horario de atención: L-V 9:00-14:00 h</p>

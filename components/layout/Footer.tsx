@@ -9,7 +9,10 @@ interface FooterProps {
   type?: string,
   logo?: PayloadImage | string,
   social_medias: SocialMediaProps[],
-  seccion_info: InfoSection[]
+  seccion_info: InfoSection[],
+  legal_advice: string,
+  privacy_policie: string,
+  privacy_cookies: string
 }
 
 interface InfoSection {
@@ -17,25 +20,50 @@ interface InfoSection {
   information: ItemProps[]
 }
 
-interface FooterTypeProps extends FooterProps {
+interface PolicyProps {
+  label: string,
+  link: string
+}
+
+interface FooterTypeProps {
+  type?: string,
+  logo?: PayloadImage | string,
+  social_medias: SocialMediaProps[],
+  seccion_info: InfoSection[],
   title?: string,
   logoUrl?: string,
   logoAlt?: string,
+  policies: PolicyProps[]
 }
 
-export default function Footer({ type, logo, social_medias, seccion_info }: FooterProps) {
+export default function Footer({ type, logo, social_medias, seccion_info, legal_advice, privacy_policie, privacy_cookies }: FooterProps) {
 
   const socialMedias = social_medias ?? []
   const seccionsInfo = seccion_info ?? []
   const logoUrl = typeof logo === "object" ? logo?.url : logo;
   const logoAlt = typeof logo === "object" ? logo?.alt : 'logo de fondo';
 
-  if (type == '0') return <FooterHorizontal logoUrl={logoUrl} logoAlt={logoAlt} social_medias={socialMedias} seccion_info={seccionsInfo} />
-  if (type == '1') return <FooterVertical logoUrl={logoUrl} logoAlt={logoAlt} social_medias={socialMedias} seccion_info={seccionsInfo} />
+  const policies: PolicyProps[] = [
+    {
+      label: 'Aviso Legal',
+      link: legal_advice
+    },
+    {
+      label: 'Política de privacidad',
+      link: privacy_policie
+    },
+    {
+      label: 'Política de cookies',
+      link: privacy_cookies
+    }
+  ]
+
+  if (type == '0') return <FooterHorizontal logoUrl={logoUrl} logoAlt={logoAlt} social_medias={socialMedias} seccion_info={seccionsInfo} policies={policies} />
+  if (type == '1') return <FooterVertical logoUrl={logoUrl} logoAlt={logoAlt} social_medias={socialMedias} seccion_info={seccionsInfo} policies={policies} />
 
 }
 
-function FooterHorizontal({ logoUrl, logoAlt, social_medias, seccion_info }: FooterTypeProps) {
+function FooterHorizontal({ logoUrl, logoAlt, social_medias, seccion_info, policies }: FooterTypeProps) {
 
   return (
     <footer className="bg-primary text-primary-foreground bottom-0" >
@@ -100,23 +128,29 @@ function FooterHorizontal({ logoUrl, logoAlt, social_medias, seccion_info }: Foo
         <p>
           Todos los derechos reservados.
         </p>
-        <p>
-          <a href="https://www.universidadatlanticomedio.es/home/avisolegal">Aviso Legal</a> · <a href="https://www.universidadatlanticomedio.es/home/politicaprivacidad">Política de Privacidad</a> · <a href="https://www.universidadatlanticomedio.es/home/politicacookies">Política de Cookies</a>
-        </p>
+        <div className="policies mb-4 flex gap-4">
+          {
+            policies.map(({ label, link }, i) => (
+              <div key={i} className="flex">
+                <a className="hover:underline mr-2" href={link}>{label}</a>
+                {i < policies.length - 1 && "-"}
+              </div>
+            ))
+          }
+        </div>
         <a href="#top-arrow">
           <CircleArrowUp className="absolute right-10" />
         </a>
       </div>
-
     </footer>
   )
 }
 
-function FooterVertical({ title, logoUrl, logoAlt, social_medias, seccion_info }: FooterTypeProps) {
+function FooterVertical({ title, logoUrl, logoAlt, social_medias, seccion_info, policies }: FooterTypeProps) {
 
   return (
     <footer className="flex flex-col items-center justify-center bg-primary text-primary-foreground bottom-0" >
-      <div className="flex flex-col items-center justify-center max-w-7xl my-20 gap-10 text-center">
+      <div className="flex flex-col items-center justify-center max-w-7xl my-20 gap-8 text-center">
         {title &&
           <h2 className="text-white text-3xl font-bold">
             {title}
@@ -187,6 +221,16 @@ function FooterVertical({ title, logoUrl, logoAlt, social_medias, seccion_info }
             );
           })}
         </div>
+      </div>
+      <div className="policies mb-4 flex gap-4">
+        {
+          policies.map(({ label, link }, i) => (
+            <div key={i} className="flex">
+              <a className="hover:underline mr-2" href={link}>{label}</a>
+              {i < policies.length - 1 && "-"}
+            </div>
+          ))
+        }
       </div>
     </footer>
   )
