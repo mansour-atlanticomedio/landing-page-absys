@@ -9,52 +9,69 @@ regla de cuándo añadir una entrada (obligatorio al terminar cada tarea).
 
 ---
 
-## 2026-10-05 — Catálogo cerrado de keys para enlaces externos (rama `feat/enlaces-externos`)
+## 2026-09-30 — Primer despliegue a producción del login de campus: batería de bugs reales
 
-A petición del usuario: completar `layout.enlaces_externos[]` (infraestructura creada el
-2026-09-29) con todas las keys previsibles del sitio, para que salgan como opciones en el select
-del admin en vez de tener que escribirlas a mano.
+El PR #16 (`feat/login-microsoft-emails`, todo el trabajo de login de campus documentado en las
+entradas de ayer) se fusionó en `main` y se desplegó a producción por primera vez. Esta entrada es
+el diagnóstico en caliente de todo lo que salió mal al probarlo contra datos y servidor reales — a
+diferencia de dev, aquí cada fallo tenía una causa distinta.
 
-### Qué se hizo
-- `lib/links.ts`: `ENLACES_EXTERNOS_KEYS` con `opac`, `dspace`, `campus` y las 5 redes sociales
-  que ya tenía el proyecto en algún sitio (`facebook`/`twitter`/`instagram`/`linkedin`/`youtube`,
-  del `iconsSocialMedia` de `collections/Icons.ts`) + `tiktok` como añadido razonable para una
-  universidad hoy.
-- `globals/Layout.ts`: el campo `key` pasa de `text` a `select` con esas opciones.
-- Cableados `investigacion/page.tsx` (link de `dspace`) y `FooterSimple.tsx` (las 5 redes
-  sociales, componente pasado a `async` para poder leer el global `layout`) — este último sigue
-  sin usarse en ninguna página, se cableó porque era el único sitio con URLs de redes sociales
-  realmente hardcodeadas en código (las del `Footer` real vienen de la collection `footer`, no de
-  este registro).
-- **Decisión explícita de no tocar `recursos/catalogo/page.tsx`**: el único rastro de un enlace a
-  OPAC ahí es una línea comentada muerta, sin ningún botón real que la use — forzar un refactor
-  (habría que partir la página en server+client component solo para esto) no estaba justificado
-  por el alcance pedido.
-- **Hallazgo real durante la migración**: la BD de dev ya tenía una fila en
-  `layout_enlaces_externos` con `key='catalogo'` (tecleada a mano desde el admin, apuntando a
-  `https://demo.baratz.es/opac`, antes de que este campo tuviera lista cerrada). La migración que
-  cambia `key` a enum remapea ese valor a `opac` antes del cast (mismo patrón que la migración de
-  `colectivo` del 2026-09-29) — sin este remapeo, el cast habría reventado contra esa fila. Dato
-  real conservado, no se perdió nada.
+### Bugs de código corregidos (commits en `main`)
+- **`lepass` de Absys demasiado largo** (`a89654a`): la contraseña aleatoria del alta automática
+  (`randomBytes(12).toString("base64url")`, 16 caracteres) reventaba contra Absys real con
+  `Data for field 'lepass' in table 'lector' too big. Max size '8'` (código 3/47) — Absys limita
+  ese campo a 8 caracteres. Confirmado en logs de producción. Cambiado a
+  `randomBytes(4).toString("hex")` (8 caracteres exactos). Esto bloqueaba el alta de **cualquier**
+  usuario nuevo del campus sin ficha previa en Absys.
+- **`NEXT_CAMPUS_URI` no llegaba al navegador** (`3856846`): `AuthErrorCard.tsx` y `login/page.tsx`
+  son `"use client"` y leían `process.env.NEXT_CAMPUS_URI` directamente — Next.js solo inyecta en
+  el bundle del cliente las env vars con prefijo `NEXT_PUBLIC_`, así que el valor salía
+  `undefined`/vacío y los botones "Volver a intentarlo" e "Iniciar sesión con Microsoft" no
+  llevaban a ningún sitio (aunque ya eran `<a>` normales, no `<Link>` — se descartó esa hipótesis).
+  Renombrada a `NEXT_PUBLIC_CAMPUS_URI` en ambos ficheros y documentada en `env.local.Example`.
+- **Endpoint de prueba de desencriptado, token con `/` en la ruta** (`4db3f55`): pegar el token en
+  crudo como segmento de ruta (`/login/password/:id`) rompía si el token traía un `/` sin escapar
+  (se interpreta como separador de carpetas → "Route not found"). Se añadió soporte para mandar el
+  token por query string (`?token=`) en `handleDecryptTest`, y una ruta nueva sin `:id` en la
+  collection — la query no tiene ese problema con `/`, y el `+`→espacio ya lo corregía
+  `decryptCampusToken` desde antes. Solo afecta a esta herramienta de prueba (desactivada en
+  producción), no al flujo real.
 
-### Cómo se probó
-- `npx payload migrate:create` + aplicada contra un Postgres nuevo (contenedor Docker temporal,
-  destruido al terminar) — las 6 migraciones en orden, limpias.
-- Contra la BD de dev real: intentar `npm run migrate` ahí falló como es esperable (está
-  sincronizada por `push`, no por migraciones — el propio Payload avisa de "data loss" y, al
-  confirmarlo, la migración baseline revienta porque las tablas ya existen fuera de su control;
-  rollback automático, no se perdió nada). Se remapeó esa fila a mano (`catalogo`→`opac`) y se
-  reinició el contenedor de dev para que el `push` aplicase el nuevo tipo de columna — confirmado
-  con `\d layout_enlaces_externos` (columna ya es `enum_layout_enlaces_externos_key`) y `curl` a
-  `/investigacion`, `/recursos/recursos-electronicos`, `/recursos/catalogo` (200 los tres).
-- `npm test` (81 tests) y `tsc --noEmit` en verde.
+### No eran bugs de código (aunque parecían serlo)
+- **Migración sin aplicar**: al desplegar, `relation "layout_enlaces_externos" does not exist`
+  tiraba **toda** la web (el layout raíz hace `findGlobal('layout')` en cada request). No es un bug
+  — el `Dockerfile` (`CMD ["npm","run","start"]`) nunca ejecuta `payload migrate` solo; hay que
+  correrlo a mano en el servidor tras cada deploy que toque schema (recordatorio de la sección
+  "Push vs Migraciones" de `CLAUDE.md`, que ya avisaba de esto).
+- **Tokens caducados repetidamente durante las pruebas**: varios "errores" fueron simplemente el
+  mismo token de prueba reusado minutos (o días) después de generarse, rechazado por
+  `verifyCampusToken` (`NEXT_CAMPUS_TOKEN_MAX_AGE=300`, 5 min). El 303 de la respuesta tampoco es
+  el error en sí — es el status normal de `redirectResponse` tanto en éxito como en fallo; lo que
+  importa es a dónde redirige.
+- **Divergencia de historial entre `main` local y `origin/main`**: tras fusionarse el PR #16 en
+  GitHub, se siguió commiteando directamente sobre `main` local sin hacer `pull` antes — mismo
+  contenido, pero grafos distintos (`ahead 3, behind 1`). Se resolvió con un merge normal
+  (`abc815d`, sin conflictos, contenido idéntico) en vez de forzar nada.
 
-### Qué quedó pendiente
-- Revisar si **producción** tiene alguna otra key libre en `layout_enlaces_externos` antes de
-  aplicar esta migración allí — el `ELSE` de la migración deja pasar cualquier valor que no sea
-  `catalogo` tal cual, y el cast final revienta si no coincide con el enum nuevo.
-- El repositorio institucional del navbar (`seeds/layout.seed.ts`) y el acceso a OPAC de
-  `recursos/catalogo/page.tsx` siguen sin usar este registro (ver razones arriba).
+### Pendiente / sin tocar
+- `SMTP_HOST=smtp.office.com` en `.env.prod` no resuelve (`ENOTFOUND`) — el host correcto de
+  Microsoft 365 es `smtp.office365.com`. Es una variable de entorno, no código; falta corregirla.
+- El typo `hostname: ' aplicaciones.unam.es'` (espacio al principio) en el `remotePatterns` de
+  `next.config.ts` que el usuario añadió como WIP — no se tocó por ser WIP de otro archivo, pero no
+  va a matchear nunca así.
+- El usuario pegó en el chat, en texto plano, `NEXT_CAMPUS_SECRET_KEY` real de producción — no se
+  guardó en ningún fichero ni memoria, pero queda en el historial de esta conversación. Valorar
+  rotarla con el campus/Daniel si en algún momento importa.
+- Al cierre de esta sesión, `main` local iba un commit por delante de `origin/main` sin subir
+  (`4db3f55`), y el servidor de producción seguía en `3ac4690` (anterior a los 3 fixes de código
+  de esta entrada) — el usuario iba a encargarse de subir/etiquetar y desplegar por su cuenta.
+
+### Cómo se confirmó
+Cada fix se verificó con `npm test` (81 tests) y `tsc --noEmit` en verde tras cada commit. Los
+tokens del campus se descifraron en caliente con la clave real de producción (`decryptCampusToken`/
+`verifyCampusToken` corridos directamente con `tsx`) para confirmar edad y contenido antes de
+descartar cada hipótesis. El usuario confirmó al final de la sesión que el flujo ya funciona en
+producción.
 
 ---
 
