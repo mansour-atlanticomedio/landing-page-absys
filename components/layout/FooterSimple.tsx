@@ -2,29 +2,34 @@ import { Mail, Phone, MapPin, CircleArrowUp } from "lucide-react";
 import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin, FaYoutube } from 'react-icons/fa'
 import logo_white from "@/public/logos/logo_white.png";
 import Image from "next/image";
+import { getClient } from "@/lib/payload";
+import { resolveEnlaceExterno } from "@/lib/links";
 
-export default function FooterSimple() {
+export default async function FooterSimple() {
+  const payload = await getClient()
+  const layoutData = await payload.findGlobal({ slug: 'layout', depth: 0 }) as any
+  const enlaces = layoutData?.enlaces_externos
 
   const socialmedias: { icon: any, link: string }[] = [
     {
       icon: FaFacebook,
-      link: 'https://www.facebook.com/UniversidadAtlanticoMedioUNAM/'
+      link: resolveEnlaceExterno(enlaces, 'facebook', 'https://www.facebook.com/UniversidadAtlanticoMedioUNAM/')
     },
     {
       icon: FaTwitter,
-      link: 'https://twitter.com/atlanticomedio'
+      link: resolveEnlaceExterno(enlaces, 'twitter', 'https://twitter.com/atlanticomedio')
     },
     {
       icon: FaInstagram,
-      link: 'https://www.instagram.com/atlanticomedio/'
+      link: resolveEnlaceExterno(enlaces, 'instagram', 'https://www.instagram.com/atlanticomedio/')
     },
     {
       icon: FaLinkedin,
-      link: 'https://www.linkedin.com/school/15138255?pathWildcard=15138255'
+      link: resolveEnlaceExterno(enlaces, 'linkedin', 'https://www.linkedin.com/school/15138255?pathWildcard=15138255')
     },
     {
       icon: FaYoutube,
-      link: 'https://www.youtube.com/@universidaddelatlanticomed'
+      link: resolveEnlaceExterno(enlaces, 'youtube', 'https://www.youtube.com/@universidaddelatlanticomed')
     },
   ]
 
@@ -36,7 +41,7 @@ export default function FooterSimple() {
         <h2 className="text-white text-3xl font-bold">
           {title}
         </h2>
-        
+
         <div className="text-white space-y-1 text-sm md:text-base">
           <p>Carretera de Quílmes, 37 · 35017 Tafira Baja · Las Palmas de Gran Canaria</p>
           <p className="text-gray-400 font-medium">Horario de atención: L-V 9:00-14:00 h</p>

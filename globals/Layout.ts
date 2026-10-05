@@ -1,4 +1,5 @@
 import { GlobalConfig } from "payload";
+import { ENLACES_EXTERNOS_KEYS } from "@/lib/links";
 
 export const Layout : GlobalConfig = {
     slug: 'layout',
@@ -27,10 +28,11 @@ export const Layout : GlobalConfig = {
                 {
                     name: 'key',
                     label: 'Identificador',
-                    type: 'text',
+                    type: 'select',
                     required: true,
+                    options: ENLACES_EXTERNOS_KEYS.map(({ key, label }) => ({ label, value: key })),
                     admin: {
-                        description: 'Sin espacios, en minúsculas (ej: opac, dspace, instagram) — es lo que usa el código para buscarlo',
+                        description: 'Identificador que usa el código para buscarlo (ver lib/links.ts)',
                     },
                 },
                 {

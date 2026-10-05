@@ -92,10 +92,10 @@ const destacadosDoc = await payload.create({
     visible_cards: 4,
     style: '3',
     newsItems: [
-      { title: 'Catálogo Institucional', description: ' ', tag: null, link: null, image: imageNews[0].id },
-      { title: 'Repositorio Académico', description: ' ', tag: null, link: null, image: imageNews[1].id },
-      { title: 'Apoyo a la investigación', description: ' ', tag: null, link: null, image: imageNews[2].id },
-      { title: 'Servicios Bibliotecarios', description: ' ', tag: null, link: null, image: imageNews[3].id },
+      { title: 'Catálogo Institucional', description: ' ', tag: null, link: "/biblioteca/recursos/catalogo", image: imageNews[0].id },
+      { title: 'Repositorio Académico', description: ' ', tag: null, link: "", image: imageNews[1].id },
+      { title: 'Apoyo a la investigación', description: ' ', tag: null, link: "/biblioteca/investigacion", image: imageNews[2].id },
+      { title: 'Servicios Bibliotecarios', description: ' ', tag: null, link: "/biblioteca/servicios", image: imageNews[3].id },
     ],
   },
 })

@@ -56,7 +56,8 @@ export default function InputComponent({ title, placeholder }: InputProps) {
 
     if (params.size === 0) return
 
-    router.push(`/libros?${params.toString()}`)
+    // router.push(`/libros?${params.toString()}`)
+    router.push('/recursos/catalogo')
   }
 
   const advancedFields = [
