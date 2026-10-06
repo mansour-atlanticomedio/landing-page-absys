@@ -58,8 +58,8 @@ const headerData = {
                     "label": "Recursos electrónicos"
                 },
                 {
-                    
-                    "to": "http://172.26.0.200:4000/dspace",
+                    "tipo": "registro" as const,
+                    "enlace_key": "dspace" as const,
                     "label": "Repositorio institucional"
                 }
             ]
@@ -67,7 +67,13 @@ const headerData = {
         {
             "name": "investigación",
             "to": "/investigacion",
-            "items": []
+            "items": [
+                {
+                    "tipo": "ancla" as const,
+                    "ancla": "investigacion-apoyo" as const,
+                    "label": "Apoyo a la investigación"
+                }
+            ]
         },
         {
             "name": "formacion",
@@ -85,15 +91,18 @@ const footerData = {
     "social_medias": [
         {
             "icon": "FaFacebook" as SocialIcon,
-            "link": "https://www.atlanticomedio.es/biblioteca"
+            "tipo": "registro" as const,
+            "enlace_key": "facebook" as const
         },
         {
             "icon": "FaTwitter" as SocialIcon,
-            "link": "https://www.atlanticomedio.es/biblioteca"
+            "tipo": "registro" as const,
+            "enlace_key": "twitter" as const
         },
         {
             "icon": "FaYoutube" as SocialIcon,
-            "link": "https://www.atlanticomedio.es/biblioteca"
+            "tipo": "registro" as const,
+            "enlace_key": "youtube" as const
         }
     ],
     "seccion_info": [
@@ -139,12 +148,27 @@ try {
         data: footerData,
     })
     
+    // Solo se añaden las keys que aún no existan en el registro, para no pisar lo editado en el admin
+    const layoutActual: any = await payload.findGlobal({ slug: 'layout', depth: 0 })
+    const enlacesActuales: any[] = layoutActual.enlaces_externos ?? []
+    const enlacesSeed = [
+        { key: 'dspace', label: 'Repositorio institucional', url: 'http://172.26.0.200:4000/dspace' },
+        { key: 'facebook', label: 'Facebook', url: 'https://www.atlanticomedio.es/biblioteca' },
+        { key: 'twitter', label: 'Twitter / X', url: 'https://www.atlanticomedio.es/biblioteca' },
+        { key: 'youtube', label: 'YouTube', url: 'https://www.atlanticomedio.es/biblioteca' },
+    ]
+    const enlacesNuevos = enlacesSeed.filter((e) => !enlacesActuales.some((a) => a.key === e.key))
+
     await payload.updateGlobal({
         slug: 'layout',
         data: {
             header: headerDoc.id,
             footer: footerDoc.id,
-        },
+            enlaces_externos: [
+                ...enlacesActuales.map(({ id, ...resto }) => resto),
+                ...enlacesNuevos,
+            ],
+        } as any,
     })
 } catch (err: any) {
     console.log("Error: ", JSON.stringify(err.data?.errors ?? err, null, 2))

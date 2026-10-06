@@ -311,11 +311,41 @@ export interface Header {
   navbar?:
     | {
         name?: string | null;
+        tipo?: ('interno' | 'ancla' | 'registro' | 'externo') | null;
         to?: string | null;
+        ancla?: ('home-noticias' | 'investigacion-apoyo') | null;
+        enlace_key?:
+          | ('opac' | 'dspace' | 'campus' | 'facebook' | 'twitter' | 'instagram' | 'linkedin' | 'youtube' | 'tiktok')
+          | null;
+        url?: string | null;
+        /**
+         * Por defecto se abre en pestaña nueva solo si es externo
+         */
+        nueva_pestana?: boolean | null;
         items?:
           | {
-              to?: string | null;
               label?: string | null;
+              tipo?: ('interno' | 'ancla' | 'registro' | 'externo') | null;
+              to?: string | null;
+              ancla?: ('home-noticias' | 'investigacion-apoyo') | null;
+              enlace_key?:
+                | (
+                    | 'opac'
+                    | 'dspace'
+                    | 'campus'
+                    | 'facebook'
+                    | 'twitter'
+                    | 'instagram'
+                    | 'linkedin'
+                    | 'youtube'
+                    | 'tiktok'
+                  )
+                | null;
+              url?: string | null;
+              /**
+               * Por defecto se abre en pestaña nueva solo si es externo
+               */
+              nueva_pestana?: boolean | null;
               id?: string | null;
             }[]
           | null;
@@ -670,7 +700,17 @@ export interface Footer {
   social_medias?:
     | {
         icon?: ('FaFacebook' | 'FaTwitter' | 'FaInstagram' | 'FaLinkedin' | 'FaYoutube' | 'Globe') | null;
+        tipo?: ('interno' | 'ancla' | 'registro' | 'externo') | null;
+        to?: string | null;
+        ancla?: ('home-noticias' | 'investigacion-apoyo') | null;
+        enlace_key?:
+          | ('opac' | 'dspace' | 'campus' | 'facebook' | 'twitter' | 'instagram' | 'linkedin' | 'youtube' | 'tiktok')
+          | null;
         link?: string | null;
+        /**
+         * Por defecto se abre en pestaña nueva solo si es externo
+         */
+        nueva_pestana?: boolean | null;
         id?: string | null;
       }[]
     | null;
@@ -702,7 +742,27 @@ export interface Footer {
                   )
                 | null;
               label?: string | null;
+              tipo?: ('interno' | 'ancla' | 'registro' | 'externo') | null;
+              to?: string | null;
+              ancla?: ('home-noticias' | 'investigacion-apoyo') | null;
+              enlace_key?:
+                | (
+                    | 'opac'
+                    | 'dspace'
+                    | 'campus'
+                    | 'facebook'
+                    | 'twitter'
+                    | 'instagram'
+                    | 'linkedin'
+                    | 'youtube'
+                    | 'tiktok'
+                  )
+                | null;
               url?: string | null;
+              /**
+               * Por defecto se abre en pestaña nueva solo si es externo
+               */
+              nueva_pestana?: boolean | null;
               id?: string | null;
             }[]
           | null;
@@ -1149,12 +1209,22 @@ export interface HeaderSelect<T extends boolean = true> {
     | T
     | {
         name?: T;
+        tipo?: T;
         to?: T;
+        ancla?: T;
+        enlace_key?: T;
+        url?: T;
+        nueva_pestana?: T;
         items?:
           | T
           | {
-              to?: T;
               label?: T;
+              tipo?: T;
+              to?: T;
+              ancla?: T;
+              enlace_key?: T;
+              url?: T;
+              nueva_pestana?: T;
               id?: T;
             };
         id?: T;
@@ -1385,7 +1455,12 @@ export interface FooterSelect<T extends boolean = true> {
     | T
     | {
         icon?: T;
+        tipo?: T;
+        to?: T;
+        ancla?: T;
+        enlace_key?: T;
         link?: T;
+        nueva_pestana?: T;
         id?: T;
       };
   seccion_info?:
@@ -1397,7 +1472,12 @@ export interface FooterSelect<T extends boolean = true> {
           | {
               icon?: T;
               label?: T;
+              tipo?: T;
+              to?: T;
+              ancla?: T;
+              enlace_key?: T;
               url?: T;
+              nueva_pestana?: T;
               id?: T;
             };
         id?: T;

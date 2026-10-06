@@ -4,6 +4,7 @@ import * as migration_20260928_114829_login_campus from './20260928_114829_login
 import * as migration_20260929_102432_actualizar_colectivos_campus from './20260929_102432_actualizar_colectivos_campus';
 import * as migration_20260929_110457_layout_enlaces_externos from './20260929_110457_layout_enlaces_externos';
 import * as migration_20261005_114927_enlaces_externos_key_select from './20261005_114927_enlaces_externos_key_select';
+import * as migration_20261006_112738_enlaces_navbar_footer from './20261006_112738_enlaces_navbar_footer';
 
 export const migrations = [
   {
@@ -34,6 +35,11 @@ export const migrations = [
   {
     up: migration_20261005_114927_enlaces_externos_key_select.up,
     down: migration_20261005_114927_enlaces_externos_key_select.down,
-    name: '20261005_114927_enlaces_externos_key_select'
+    name: '20261005_114927_enlaces_externos_key_select',
+  },
+  {
+    up: migration_20261006_112738_enlaces_navbar_footer.up,
+    down: migration_20261006_112738_enlaces_navbar_footer.down,
+    name: '20261006_112738_enlaces_navbar_footer'
   },
 ];

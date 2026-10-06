@@ -1,4 +1,5 @@
 import { CollectionConfig } from "payload";
+import { enlaceFields } from "./fields/enlace";
 
 export const Header: CollectionConfig = {
     slug: 'header',
@@ -56,11 +57,7 @@ export const Header: CollectionConfig = {
                     label: 'Nombre',
                     type: "text"
                 },
-                {
-                    name: "to",
-                    label: 'Enlace',
-                    type: "text"
-                },
+                ...enlaceFields(),
                 {
                     name: "items",
                     label: 'Desplegable',
@@ -71,15 +68,11 @@ export const Header: CollectionConfig = {
                     type: "array",
                     fields: [
                         {
-                            name: 'to',
-                            label: "Enlace",
-                            type: 'text'
-                        },
-                        {
                             name: 'label',
                             label: 'Etiqueta',
                             type: 'text'
-                        }
+                        },
+                        ...enlaceFields()
                     ]
                 },
             ]
