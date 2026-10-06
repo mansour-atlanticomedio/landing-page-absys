@@ -3,6 +3,7 @@ import { Toaster } from 'sonner'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import { getClient } from '@/lib/payload'
+import { resolveNavbar, resolveFooterLinks } from '@/lib/links'
 import { getSession } from '@/lib/auth/session'
 import '../styles.css'
 
@@ -21,8 +22,13 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
     depth: 2,
   })) as any
 
-  const headerData = layoutPage?.header
-  const footerData = layoutPage?.footer
+  const enlaces = layoutPage?.enlaces_externos
+  const rawHeader = layoutPage?.header
+  const rawFooter = layoutPage?.footer
+
+  // Los enlaces (interno/ancla/registro/externo) se resuelven aquí para que los componentes solo pinten
+  const headerData = rawHeader && { ...rawHeader, navbar: resolveNavbar(rawHeader.navbar, enlaces) }
+  const footerData = rawFooter && { ...rawFooter, ...resolveFooterLinks(rawFooter, enlaces) }
 
   const session = await getSession()
   const account = session ? { email: session.email, nombre: session.nombre } : null

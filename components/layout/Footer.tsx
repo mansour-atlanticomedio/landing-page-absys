@@ -1,14 +1,30 @@
-import { Mail, Phone, MapPin, CircleArrowUp, Link } from "lucide-react";
+import { Mail, Phone, MapPin, CircleArrowUp, Link as LinkIcon } from "lucide-react";
 import { FaFacebook, FaTwitter, FaInstagram, FaLinkedin, FaYoutube } from 'react-icons/fa'
 import logo_white from "@/public/logos/logo_white.png";
 import Image from "next/image";
-import { ItemProps, PayloadImage, SocialMediaProps } from "@/types/common.type";
+import Link from "next/link";
+import { PayloadImage } from "@/types/common.type";
 import { iconMap, iconsSocialMediaMap } from "@/lib/utils";
+
+interface ResolvedLink {
+  href?: string,
+  external: boolean,
+  newTab: boolean
+}
+
+interface SocialItem extends ResolvedLink {
+  icon: string
+}
+
+interface InfoItem extends ResolvedLink {
+  icon: string,
+  label: string
+}
 
 interface FooterProps {
   type?: string,
   logo?: PayloadImage | string,
-  social_medias: SocialMediaProps[],
+  social_medias: SocialItem[],
   seccion_info: InfoSection[],
   legal_advice: string,
   privacy_policie: string,
@@ -17,7 +33,18 @@ interface FooterProps {
 
 interface InfoSection {
   title: string,
-  information: ItemProps[]
+  information: InfoItem[]
+}
+
+function FooterLink({ href, external, newTab, className, children }: ResolvedLink & { className?: string, children: React.ReactNode }) {
+  if (!href) return <>{children}</>
+  if (external || newTab) {
+    return <a href={href} target="_blank" rel="noopener noreferrer" className={className}>{children}</a>
+  }
+  if (/^(tel|mailto):/i.test(href)) {
+    return <a href={href} className={className}>{children}</a>
+  }
+  return <Link href={href} className={className}>{children}</Link>
 }
 
 interface PolicyProps {
@@ -28,7 +55,7 @@ interface PolicyProps {
 interface FooterTypeProps {
   type?: string,
   logo?: PayloadImage | string,
-  social_medias: SocialMediaProps[],
+  social_medias: SocialItem[],
   seccion_info: InfoSection[],
   title?: string,
   logoUrl?: string,
@@ -84,19 +111,19 @@ function FooterHorizontal({ logoUrl, logoAlt, social_medias, seccion_info, polic
             Puedes encontrarnos en:
           </p>
           <div className="flex gap-3 mt-5">
-            {social_medias.map(({ icon, link }, i) => {
-              const IconComponent = iconsSocialMediaMap[icon] ?? Link
+            {social_medias.map(({ icon, href, external, newTab }, i) => {
+              const IconComponent = iconsSocialMediaMap[icon] ?? LinkIcon
 
               return (
-                <a
-                  key={link + i}
-                  href={link}
-                  className="w-9 h-9 rounded-full border border-primary-foreground/30 flex items-center justify-center hover:bg-accent hover:border-accent transition-colors"
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <FooterLink
+                  key={(href ?? "") + i}
+                  href={href}
+                  external={external}
+                  newTab={newTab}
+                  className="w-9 h-9 rounded-full border border-primary-foreground/30 flex items-center justify-center hover:bg-accent hover:border-accent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
                 >
                   <IconComponent className="w-4 h-4" />
-                </a>
+                </FooterLink>
               );
             })}
           </div>
@@ -106,15 +133,15 @@ function FooterHorizontal({ logoUrl, logoAlt, social_medias, seccion_info, polic
           <div key={info.title + i} >
             <h4 className="text-primary-foreground font-display uppercase tracking-wider text-sm mb-4">{info.title}</h4>
             <ul className="space-y-3 text-sm text-primary-foreground/80">
-              {info.information.map(({ icon, label, url }, i) => {
+              {info.information.map(({ icon, label, href, external, newTab }, i) => {
                 const IconComponent = iconMap[icon]
 
-                return <li key={label + i + url} className="flex items-start gap-2 hover:text-accent">
+                return <li key={label + i + href} className="flex items-start gap-2 hover:text-accent">
                   {
                     IconComponent &&
                     <IconComponent className="w-4 h-4 mt-0.5 text-accent" />
                   }
-                  <a href={url}> {label}</a>
+                  <FooterLink href={href} external={external} newTab={newTab} className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"> {label}</FooterLink>
                 </li>
               })
               }
@@ -179,19 +206,19 @@ function FooterVertical({ title, logoUrl, logoAlt, social_medias, seccion_info, 
 
             {title && title != '' && <h4 className="text-primary-foreground font-display uppercase tracking-wider text-2xl mb-6">{title}</h4>}
 
-            {information.map(({ icon, label, url }, i) => {
+            {information.map(({ icon, label, href, external, newTab }, i) => {
 
               const IconComponent = iconMap[icon]
 
               return (
                 <div key={label + i} >
                   <ul className="space-y-4 text-sm text-primary-foreground/80 mt-4">
-                    <li key={label + i + url} className="flex items-center justify-center gap-2 hover:text-accent hover:underline">
+                    <li key={label + i + href} className="flex items-center justify-center gap-2 hover:text-accent hover:underline">
                       {
                         IconComponent &&
                         <IconComponent className="w-4 h-4 mt-0.5 text-accent" />
                       }
-                      <a href={url} className={i % 2 != 0 ? "block hover:text-accent text-gray-400" : ""} > {label}</a>
+                      <FooterLink href={href} external={external} newTab={newTab} className={`focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${i % 2 != 0 ? "block hover:text-accent text-gray-400" : ""}`} > {label}</FooterLink>
                     </li>
 
                   </ul>
@@ -205,19 +232,19 @@ function FooterVertical({ title, logoUrl, logoAlt, social_medias, seccion_info, 
         ))}
 
         <div className="flex gap-3">
-          {social_medias.map(({ icon, link }, i) => {
-            const IconComponent = iconsSocialMediaMap[icon] ?? Link;
+          {social_medias.map(({ icon, href, external, newTab }, i) => {
+            const IconComponent = iconsSocialMediaMap[icon] ?? LinkIcon;
 
             return (
-              <a
+              <FooterLink
                 key={i}
-                href={link}
-                className="w-9 h-9 rounded-full border border-primary-foreground/30 flex items-center justify-center hover:bg-accent hover:border-accent transition-colors"
-                target="_blank"
-                rel="noopener noreferrer"
+                href={href}
+                external={external}
+                newTab={newTab}
+                className="w-9 h-9 rounded-full border border-primary-foreground/30 flex items-center justify-center hover:bg-accent hover:border-accent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
                 {IconComponent && <IconComponent className="w-4 h-4" />}
-              </a>
+              </FooterLink>
             );
           })}
         </div>

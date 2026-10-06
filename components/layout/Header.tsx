@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { Separator } from "radix-ui";
 
 import { ChevronDown, Mail, Phone, User, LogOut } from "lucide-react";
@@ -17,35 +17,68 @@ interface HeaderProps {
     account?: { email: string, nombre?: string } | null
 }
 
+interface NavLinkProps {
+    label: string,
+    href?: string,
+    external: boolean,
+    newTab: boolean,
+}
+
 interface navMenuLinks {
-    to?: string,
     name: string,
+    href?: string,
+    external: boolean,
+    newTab: boolean,
     items: NavLinkProps[]
 }
 
-interface NavLinkProps {
-    to?: string,
-    label: string,
+interface NavAnchorProps {
+    href: string,
+    external: boolean,
+    newTab: boolean,
+    className?: string,
+    children: React.ReactNode,
 }
 
+// Enlace ya resuelto en servidor: interno con Link, externo/nueva pestaña con <a>. Las anclas a la
+// página actual hacen scroll suave sin navegar ni añadir entradas al historial
+function NavAnchor({ href, external, newTab, className, children }: NavAnchorProps) {
+    const pathname = usePathname();
+
+    if (external || newTab) {
+        return (
+            <a href={href} target="_blank" rel="noopener noreferrer" className={className}>
+                {children}
+            </a>
+        );
+    }
+
+    const [path, hash] = href.split("#");
+
+    const handleClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+        if (!hash || path !== pathname) return;
+        if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+
+        const target = document.getElementById(hash);
+        if (!target) return;
+
+        e.preventDefault();
+        target.scrollIntoView({ behavior: "smooth", block: "start" });
+        // Solo el hash, así el basePath lo mantiene el navegador
+        window.history.replaceState(null, "", `#${hash}`);
+    };
+
+    return (
+        <Link href={href} onClick={handleClick} className={className}>
+            {children}
+        </Link>
+    );
+}
 
 export default function Header({ type, phone, email, navbar, account }: HeaderProps) {
-    const router = useRouter();
     const pathname = usePathname();
 
     const navbarMenu = navbar ?? [];
-
-    // Manejo de clicks en el botón principal de cada sección
-    const handleNavLink = (url?: string) => {
-        if (!url) return;
-
-        const isExternal = /^https?:\/\//i.test(url);
-        if (isExternal) {
-            window.open(url, "_blank", "noopener,noreferrer");
-        } else {
-            router.push(url);
-        }
-    };
 
     // Limpia también lo que dejaba el login antiguo; la sesión real la cierra el POST a /auth/logout
     const handleLogOut = () => {
@@ -146,52 +179,47 @@ export default function Header({ type, phone, email, navbar, account }: HeaderPr
             </header>
             <div className="border-t border-border bg-primary text-primary-foreground flex items-center justify-center">
                 <div className="max-w-7xl flex items-center justify-center px-6 md:flex">
-                    {navbarMenu.map((section, index) => (
-                        <button key={section.name + section.to + index} onClick={() => handleNavLink(section.to)} >
-                            <div className="group relative">
-                                <div className="flex h-12 items-center gap-1 px-10 text-sm font-bold tracking-wide transition cursor-pointer group-hover:bg-primary-foreground/10">
-                                    {section.name}
-                                    {
-                                        section.items.length > 0 && (
-                                            <ChevronDown className="h-3.5 w-3.5 opacity-70" />
-                                        )
-                                    }
-                                </div>
+                    {navbarMenu.map((section, index) => {
+                        const triggerClasses = "flex h-12 items-center gap-1 px-10 text-sm font-bold tracking-wide transition cursor-pointer group-hover:bg-primary-foreground/10 group-focus-within:bg-primary-foreground/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset";
+                        const content = (
+                            <>
+                                {section.name}
+                                {
+                                    section.items.length > 0 && (
+                                        <ChevronDown className="h-3.5 w-3.5 opacity-70" />
+                                    )
+                                }
+                            </>
+                        );
+
+                        return (
+                            <div key={section.name + section.href + index} className="group relative">
+                                {section.href ? (
+                                    <NavAnchor href={section.href} external={section.external} newTab={section.newTab} className={triggerClasses}>
+                                        {content}
+                                    </NavAnchor>
+                                ) : (
+                                    <button type="button" aria-haspopup="true" className={triggerClasses}>
+                                        {content}
+                                    </button>
+                                )}
                                 {section.items.length > 0 &&
 
-                                    <div className="invisible bg-white absolute -left-6/12 top-full z-30 w-72 -translate-y-1 border border-border bg-card text-card-foreground opacity-0 shadow-xl transition-all duration-150 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
+                                    <div className="invisible bg-white absolute -left-6/12 top-full z-30 w-72 -translate-y-1 border border-border bg-card text-card-foreground opacity-0 shadow-xl transition-all duration-150 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100">
                                         <ul className="py-2">
                                             {section.items.map((it, itemIndex) => {
-                                                const url = it.to ?? '';
-                                                const isExternal = /^https?:\/\//i.test(url);
-                                                const isActive = pathname === url;
+                                                const isActive = pathname === it.href?.split("#")[0] && !it.href?.includes("#");
 
-                                                const linkClasses = `uppercase text-start text-sm font-semibold tracking-wider transition-colors block border-l-2 border-transparent px-4 py-2 hover:border-primary hover:bg-primary/5 text-primary ${isActive
+                                                const linkClasses = `uppercase text-start text-sm font-semibold tracking-wider transition-colors block border-l-2 border-transparent px-4 py-2 hover:border-primary hover:bg-primary/5 text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring ${isActive
                                                     ? "text-accent"
                                                     : "text-foreground hover:text-accent"
                                                     }`;
 
                                                 return (
                                                     <li key={itemIndex}>
-                                                        {isExternal ? (
-                                                            /* Enlace Externo */
-                                                            <a
-                                                                href={url}
-                                                                target="_blank"
-                                                                rel="noopener noreferrer"
-                                                                className={linkClasses}
-                                                            >
-                                                                {it.label}
-                                                            </a>
-                                                        ) : (
-                                                            /* Enlace Interno de la App */
-                                                            <Link
-                                                                href={url}
-                                                                className={linkClasses}
-                                                            >
-                                                                {it.label}
-                                                            </Link>
-                                                        )}
+                                                        <NavAnchor href={it.href ?? "/"} external={it.external} newTab={it.newTab} className={linkClasses}>
+                                                            {it.label}
+                                                        </NavAnchor>
                                                     </li>
                                                 )
                                             })}
@@ -199,8 +227,8 @@ export default function Header({ type, phone, email, navbar, account }: HeaderPr
                                     </div>
                                 }
                             </div>
-                        </button>
-                    ))}
+                        )
+                    })}
                 </div>
             </div>
         </section>
