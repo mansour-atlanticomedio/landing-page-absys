@@ -7,6 +7,15 @@ import type { AbsysRawResponse } from "../client";
 // (externos, @unam.) y PROFE (profesores, @pdi.)
 export type Colectivo = "ADULT" | "ALUMN" | "ANONI" | "INVIT" | "PROFE";
 
+// Mismas etiquetas que el select `colectivo` de collections/LoginCampus.service.ts
+export const COLECTIVO_LABELS: Record<Colectivo, string> = {
+  ADULT: "Personal",
+  ALUMN: "Estudiante",
+  ANONI: "Básico",
+  INVIT: "Invitado",
+  PROFE: "Profesor",
+};
+
 export interface Lector {
   id: string;
   externalId: string;

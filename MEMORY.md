@@ -18,6 +18,22 @@ regla de cuándo añadir una entrada (obligatorio al terminar cada tarea).
 
 ---
 
+## 2026-10-07 — Envío real del formulario de sugerencia de libros por correo
+
+### Qué se hizo y por qué
+Comprobado: el formulario **no enviaba nada** (el modal era simulado) y el servicio de email (`nodemailerAdapter` + helpers de `collections/Email.service.ts`) solo lo usaba `/contacto`. Se añadió `sendBookSuggestionEmail` (aviso a la Biblioteca con `replyTo` al solicitante) y `sendBookSuggestionConfirmationEmail` (copia al solicitante, porque el modal la promete), con la plantilla de los otros correos. Se llaman desde una server action (`actions.ts`) que toma nombre, apellidos, correo y rol de `getSession()` en el servidor (el cliente no puede falsearlos) y valida con `lib/sugerencias.ts` (máx. 10 libros, título y autor obligatorios, longitudes, enlaces solo http/https). El texto del usuario se escapa antes de entrar en el HTML del correo. Si falla el aviso a la Biblioteca se avisa al usuario con un toast; si falla solo la confirmación se registra en log y no se le dice nada. Se añadió `COLECTIVO_LABELS` a `mappers/lector.ts` (el select de rol de `perfil/page.tsx` mantiene su copia local).
+
+### Cómo se probó
+`tsc` limpio, 92 tests (6 nuevos de validación), y los dos correos generados con un `payload` falso: destinatario, `replyTo`, asunto y HTML escapado (un `<script>` en el título no llega crudo). **No se mandó ningún correo real** ni se probó la server action de punta a punta ni en navegador.
+
+### Qué quedó pendiente
+- Probar un envío real (con `SUGGESTIONS_EMAIL_TO` apuntando a una cuenta de prueba): el SMTP actual es el de `.env`, y el remitente por defecto del adaptador es `Mansour Lo Lo`.
+- Definir el destino real de producción (`SUGGESTIONS_EMAIL_TO`; por defecto `biblioteca@atlanticomedio.es`).
+- No se guarda registro en BD: si el SMTP falla en el momento, la sugerencia se pierde (el usuario ve el error y puede reintentar). Una collection de sugerencias sería el siguiente paso si se quiere histórico.
+- Sin límite de frecuencia por usuario.
+
+---
+
 ## 2026-10-08 — Simulador del campus tras un flag de entorno
 
 - **`lib/env.ts`**: `isProduction` y `devToolsEnabled` (`NODE_ENV !== production` o `FEATURE_DEV_TOOLS=true`). Aplicado solo al simulador del campus (`simular-campus/page.tsx`, `emitir/route.ts` y el fallback al simulador de `auth/login/route.ts`). Quedan con su `NODE_ENV` directo, sin migrar, los endpoints temporales de `LoginCampus.service.ts`, las cookies `secure` y los `console.log` de componentes. `NODE_ENV` no se define en el `.env` (lo gestiona Next; el Dockerfile fija `production`); `FEATURE_DEV_TOOLS` sí, y es variable de servidor (se lee en runtime, no hace falta rebuild).

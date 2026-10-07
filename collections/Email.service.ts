@@ -168,6 +168,82 @@ export const sendLoanNotificationEmail = async (payload: Payload, { to, name, ty
 }
 
 // ---------------------------------------------------------------------------
+// 4. Correos de sugerencia de libros (desiderata, /adquisiciones/solicitud-compra)
+// ---------------------------------------------------------------------------
+
+// Los datos del formulario los escribe el usuario: se escapan antes de meterlos en el HTML del correo
+const escapeHtml = (value: string) =>
+  value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;")
+
+export interface LibroSugeridoEmail {
+  titulo: string
+  autor: string
+  editorial?: string
+  anio?: string
+  isbn?: string
+  enlace?: string
+}
+
+interface SendBookSuggestionEmailParams {
+  solicitante: { nombre: string; email: string; rol?: string }
+  libros: LibroSugeridoEmail[]
+}
+
+const bookRow = (label: string, value?: string) =>
+  value ? `<p style="margin: 0 0 4px; font-size: 13px; color: #333333;"><strong>${label}:</strong> ${escapeHtml(value)}</p>` : ""
+
+const booksHtml = (libros: LibroSugeridoEmail[]) =>
+  libros
+    .map(
+      (libro, i) => `
+    <div style="margin: 0 0 12px; padding: 12px 16px; background-color: #F2F4F7; border-radius: 6px;">
+      <p style="margin: 0 0 8px; font-family: 'Montserrat', Arial, sans-serif; font-size: 14px; font-weight: 700; color: #2D3E50;">
+        ${i + 1}. ${escapeHtml(libro.titulo)}
+      </p>
+      ${bookRow("Autor(es)", libro.autor)}
+      ${bookRow("Editorial", libro.editorial)}
+      ${bookRow("Año", libro.anio)}
+      ${bookRow("ISBN", libro.isbn)}
+      ${libro.enlace ? `<p style="margin: 0; font-size: 13px;"><strong>Enlace:</strong> <a href="${escapeHtml(libro.enlace)}" style="color: #3BACBD;">${escapeHtml(libro.enlace)}</a></p>` : ""}
+    </div>`
+    )
+    .join("")
+
+// Aviso interno a la Biblioteca. `replyTo` es el solicitante para poder contestarle directamente
+export const sendBookSuggestionEmail = async (payload: Payload, { solicitante, libros }: SendBookSuggestionEmailParams) => {
+  const body = `
+    <p style="margin: 0 0 4px; font-size: 14px; color: #333333;"><strong>Solicitante:</strong> ${escapeHtml(solicitante.nombre)}</p>
+    <p style="margin: 0 0 4px; font-size: 14px; color: #333333;"><strong>Correo:</strong> ${escapeHtml(solicitante.email)}</p>
+    ${solicitante.rol ? `<p style="margin: 0 0 16px; font-size: 14px; color: #333333;"><strong>Rol:</strong> ${escapeHtml(solicitante.rol)}</p>` : '<div style="margin-bottom: 12px;"></div>'}
+    ${booksHtml(libros)}
+  `
+
+  await payload.sendEmail({
+    to: process.env.SUGGESTIONS_EMAIL_TO || CONTACT_EMAIL,
+    replyTo: solicitante.email,
+    subject: `Sugerencia de ${libros.length === 1 ? "libro" : `${libros.length} libros`} de ${solicitante.nombre}`,
+    html: emailLayout("Nueva sugerencia de libros", body),
+  })
+}
+
+// Copia de confirmación para quien sugiere (el modal del formulario promete este correo)
+export const sendBookSuggestionConfirmationEmail = async (payload: Payload, { solicitante, libros }: SendBookSuggestionEmailParams) => {
+  const body = `
+    <p style="margin: 0 0 16px; font-size: 14px; line-height: 1.6; color: #333333;">Hola ${escapeHtml(solicitante.nombre)},</p>
+    <p style="margin: 0 0 16px; font-size: 14px; line-height: 1.6; color: #333333;">
+      Hemos recibido tu sugerencia de adquisición. El equipo de la Biblioteca la evaluará y se pondrá en contacto contigo.
+    </p>
+    ${booksHtml(libros)}
+  `
+
+  await payload.sendEmail({
+    to: solicitante.email,
+    subject: "Hemos recibido tu sugerencia de libro — Biblioteca UNAM",
+    html: emailLayout("Sugerencia recibida", body),
+  })
+}
+
+// ---------------------------------------------------------------------------
 // Collection de contacto (formulario público /contacto)
 // ---------------------------------------------------------------------------
 
