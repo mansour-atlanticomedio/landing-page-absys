@@ -19,6 +19,7 @@ import { Formation } from "./globals/Formation.ts";
 import { Layout } from "./globals/Layout.ts";
 import { AboutUs } from "./globals/AboutUs.ts";
 import { ElectronicResources } from "./globals/ElectronicResources.ts";
+import { SolicitudCompra } from "./globals/SolicitudCompra.ts";
 import { QuienesSomos } from "./globals/QuienesSomos.ts";
 import { HorariosContacto } from "./globals/HorariosContacto.ts";
 
@@ -104,7 +105,8 @@ export default buildConfig({
     AboutUs,
     ElectronicResources,
     QuienesSomos,
-    HorariosContacto
+    HorariosContacto,
+    SolicitudCompra
   ],
   endpoints: [...decryptTestEndpoints],
   editor: lexicalEditor(),

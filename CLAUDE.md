@@ -60,7 +60,7 @@ Payload Admin → Globals → Collections → Pages → RenderBlocks → Compone
 - **En dev** (`NODE_ENV !== 'production'`, contenedor `biblioteca-frontend` con `Dockerfile.dev`), el adapter de Postgres usa `push: true` por defecto: cualquier collection/global nuevo o campo añadido se sincroniza solo contra la BD la primera vez que se inicializa Payload (el spinner "Pulling schema from database..." que se ve al lanzar un seed o `next dev`).
 - **En producción** (`Dockerfile` fija `NODE_ENV=production`), `push` es `false`: la BD **solo** se actualiza aplicando migraciones (`payload migrate`). Si se añade una collection/global/campo nuevo y no se genera su migración, en producción esa tabla/columna directamente no existe — cualquier `payload.create`/`payload.updateGlobal` contra ella revienta con `relation "..." does not exist`, aunque en dev funcione perfectamente (por eso puede pasar desapercibido toda una sesión de trabajo).
 - **Regla**: después de crear o modificar cualquier collection/global (`collections/*.ts`, `globals/*.ts`), además de `npx payload generate:types`, hay que generar la migración correspondiente con `npx payload migrate:create <nombre-descriptivo>` (se puede correr contra la BD de dev ya sincronizada por push — la migración generada refleja el diff acumulado desde la última migración) y comprobar que `npm run migrate` aplica limpio contra una BD nueva antes de dar el cambio por terminado.
-- Migraciones existentes: `migrations/20260731_114550_baseline.ts` (base) + `migrations/20260915_162539_session_2026_09_14_content_globals.ts` (todo el schema de la sesión de recursos-electrónicos/quiénes-somos/investigación/formación/horarios — se generó a posteriori porque no se había estado corriendo `migrate:create` en cada paso; a partir de ahora generar la migración en el mismo momento en que se toca el schema, no al final) + `migrations/20260928_114829_login_campus.ts` (collection `loginCampus_service`) + `migrations/20260929_102432_actualizar_colectivos_campus.ts` (enum `colectivo` de `loginCampus_service`: de ALUMN/PDI/PAS/EXT a los 5 tipos reales ADULT/ALUMN/ANONI/INVIT/PROFE — el `up` remapea filas existentes con `UPDATE ... CASE`, no un cast directo, porque un cast directo revienta con valores que ya no están en el enum nuevo) + `migrations/20260929_110457_layout_enlaces_externos.ts` (tabla nueva para `layout.enlaces_externos[]`)
+- Migraciones existentes: `migrations/20260731_114550_baseline.ts` (base) + `migrations/20260915_162539_session_2026_09_14_content_globals.ts` (todo el schema de la sesión de recursos-electrónicos/quiénes-somos/investigación/formación/horarios — se generó a posteriori porque no se había estado corriendo `migrate:create` en cada paso; a partir de ahora generar la migración en el mismo momento en que se toca el schema, no al final) + `migrations/20260928_114829_login_campus.ts` (collection `loginCampus_service`) + `migrations/20260929_102432_actualizar_colectivos_campus.ts` (enum `colectivo` de `loginCampus_service`: de ALUMN/PDI/PAS/EXT a los 5 tipos reales ADULT/ALUMN/ANONI/INVIT/PROFE — el `up` remapea filas existentes con `UPDATE ... CASE`, no un cast directo, porque un cast directo revienta con valores que ya no están en el enum nuevo) + `migrations/20260929_110457_layout_enlaces_externos.ts` (tabla nueva para `layout.enlaces_externos[]`) + `migrations/20261007_164512_solicitud_compra_global.ts` (tabla nueva del global `solicitud_compra`)
 
 ### Collections (25 registradas)
 
@@ -141,7 +141,7 @@ Pendientes conocidos (marcados con `TODO` en el código): `lepassLegacy` / compa
 
 - **`collections/Icons.ts`**: exporta `appIcons` (Lightbulb, BookOpen, Microscope, Star, User, Briefcase, Phone, Mail, MapPin, Calendar) y `iconsSocialMedia` (FaFacebook, FaTwitter, FaInstagram, FaLinkedin, FaYoutube, Globe)
 
-### Globals (12)
+### Globals (13)
 
 | Slug | Fichero | Campos | Categoría |
 |------|---------|--------|-----------|
@@ -156,6 +156,7 @@ Pendientes conocidos (marcados con `TODO` en el código): `lepassLegacy` / compa
 | `horarios_contacto` | `globals/HorariosContacto.ts` | `hero` (rel→hero), `edificio_nombre`/`edificio_subtitulo`, `horario` (rel→schedule), `direccion_linea1`/`direccion_linea2`, `telefono`, `email`, `mapa_url`, `mapa_embed_url`, `ayuda_cta` (rel→cta) | Página parcial |
 | `electronic_resources` | `globals/ElectronicResources.ts` | `hero` (rel→hero, reutiliza la collection existente), `accesos_destacados` (rel→electronic_resources_access) | Página parcial |
 | `quienes_somos` | `globals/QuienesSomos.ts` | `hero` (rel→hero), `imagen_dirigidos` (upload→media), `ayudas` (rel→features), `dirigidos` (rel→features) — `ayudas`/`dirigidos` reutilizan la collection `features` existente con dos docs distintos | Página parcial |
+| `solicitud_compra` | `globals/SolicitudCompra.ts` | `hero` (rel→hero). Cabecera de `/adquisiciones/solicitud-compra`; el formulario sigue en `SolicitudCompraForm` | Página parcial |
 | `layout` | `globals/Layout.ts` | `header` (rel→header), `footer` (rel→footer), `enlaces_externos[]` (`key`/`label`/`url`, ver "Enlaces externos") | Template del sitio |
 
 #### Block types del `layout` (11, usados en Home/Services/Formation/Investigation/Repositories)
@@ -363,7 +364,7 @@ Cada bloque se envuelve en `<section key={id} data-block-type={blockType}>`.
 | `/libros` | Client component, fetch a Absys API via axios |
 | `/recursos/repositorio-institucional` | Todo hardcodeado |
 | `/recursos/catalogo` | Todo hardcodeado, enlace a OPAC externo |
-| `/adquisiciones/solicitud-compra` | Formulario de desiderata (propuesta de compra) en `components/SolicitudCompraForm.tsx` (client: varios libros, modal de éxito). Hero fijo en el page, **sin Payload y sin envío real todavía** (ver `MEMORY.md` 2026-10-07). Enlazado desde la tarjeta "Solicitud de compra" de `/servicios` |
+| `/adquisiciones/solicitud-compra` | Formulario de desiderata (sugerir libro) en `components/SolicitudCompraForm.tsx` (client: varios libros, modal de éxito). Hero desde el global `solicitud_compra` (con texto de respaldo si está vacío); **sin envío real todavía** (ver `MEMORY.md` 2026-10-07). Enlazado desde la tarjeta "Solicitud de compra" de `/servicios` |
 | `/recursos/catalogo/busqueda` | Client, fetch a `absys_service` con paginación |
 | `/recursos/catalogo/libro/[isbn]` | Client, fetch a `absys_service` + `book_cover_service` |
 

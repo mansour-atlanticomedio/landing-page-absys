@@ -15,6 +15,7 @@ const SEEDS = [
   'investigation.seed.ts',
   'formation.seed.ts',
   'horarios.seed.ts',
+  'solicitudCompra.seed.ts',
   'heroCarrusel.seed.ts',
 ]
 

@@ -150,6 +150,7 @@ export interface Config {
     electronic_resources: ElectronicResource;
     quienes_somos: QuienesSomo;
     horarios_contacto: HorariosContacto;
+    solicitud_compra: SolicitudCompra;
   };
   globalsSelect: {
     home: HomeSelect<false> | HomeSelect<true>;
@@ -164,6 +165,7 @@ export interface Config {
     electronic_resources: ElectronicResourcesSelect<false> | ElectronicResourcesSelect<true>;
     quienes_somos: QuienesSomosSelect<false> | QuienesSomosSelect<true>;
     horarios_contacto: HorariosContactoSelect<false> | HorariosContactoSelect<true>;
+    solicitud_compra: SolicitudCompraSelect<false> | SolicitudCompraSelect<true>;
   };
   locale: null;
   widgets: {
@@ -2201,6 +2203,16 @@ export interface HorariosContacto {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "solicitud_compra".
+ */
+export interface SolicitudCompra {
+  id: number;
+  hero?: (number | null) | Hero;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "home_select".
  */
 export interface HomeSelect<T extends boolean = true> {
@@ -2780,6 +2792,16 @@ export interface HorariosContactoSelect<T extends boolean = true> {
   mapa_url?: T;
   mapa_embed_url?: T;
   ayuda_cta?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "solicitud_compra_select".
+ */
+export interface SolicitudCompraSelect<T extends boolean = true> {
+  hero?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

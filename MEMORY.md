@@ -9,6 +9,28 @@ regla de cuándo añadir una entrada (obligatorio al terminar cada tarea).
 
 ---
 
+## 2026-10-07 — Global `solicitud_compra`: cabecera de la página editable desde Payload
+
+### Qué se hizo y por qué
+Se interpretó "editar el header" como la cabecera (Hero) de `/adquisiciones/solicitud-compra`, que iba
+fija en código; el header global del sitio ya se edita desde `layout`. Global nuevo
+`solicitud_compra` con `hero` → collection `hero`, mismo patrón que `electronic_resources`;
+migración `20261007_164512_solicitud_compra_global` (solo `CREATE TABLE` + FK + índice) y
+`seeds/solicitudCompra.seed.ts` (registrado en `seeds/index.ts`). La página conserva los textos
+anteriores como respaldo si el global está vacío. En la misma sesión se cambió "Proponer una compra"
+por "Sugerir libro" y el carrito por `BookPlus`.
+
+### Cómo se probó
+Migraciones aplicadas limpias contra una BD temporal vacía (8), seed ejecutado en el contenedor y fila
+comprobada en la BD de dev, reinicio de `biblioteca-frontend` y `curl` 200 con el hero servido desde el
+media de Payload. Los seeds hay que lanzarlos dentro del contenedor (`docker exec biblioteca-frontend
+npx tsx seeds/<x>.seed.ts`); en el host fallan con "missing secret key".
+
+### Qué quedó pendiente
+El envío del formulario sigue simulado (ver entrada siguiente).
+
+---
+
 ## 2026-10-07 — Página `/adquisiciones/solicitud-compra` y tarjeta en Servicios (rama `feat/enlaces-externos`)
 
 ### Qué se hizo y por qué
