@@ -1,8 +1,9 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useTransition } from "react"
 import Link from "next/link"
-import { BookOpen, Plus, BookPlus, Trash2, User, CheckCircle2 } from "lucide-react"
+import { toast } from "sonner"
+import { BookOpen, Plus, BookPlus, Trash2, CheckCircle2, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -15,20 +16,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-
-const COLECTIVOS = [
-  { value: "alumno", label: "Alumno / Estudiante" },
-  { value: "profesor", label: "Profesor" },
-  { value: "pdi", label: "PDI (Personal Docente e Investigador)" },
-  { value: "pas", label: "PAS (Personal de Administración y Servicios)" },
-]
+import { enviarSugerencia } from "@/app/(frontend)/adquisiciones/solicitud-compra/actions"
 
 interface LibroCampo {
   name: string
@@ -56,8 +44,9 @@ export default function SolicitudCompraForm({ solicitante }: SolicitudCompraForm
   // Cada libro lleva un id propio para que React no mezcle los valores al eliminar uno del medio
   const [libros, setLibros] = useState<number[]>([0])
   const [siguienteId, setSiguienteId] = useState(1)
-  const [colectivo, setColectivo] = useState("")
   const [enviado, setEnviado] = useState(false)
+  const [totalEnviado, setTotalEnviado] = useState(0)
+  const [enviando, startTransition] = useTransition()
   const [formKey, setFormKey] = useState(0)
 
   const agregarLibro = () => {
@@ -72,13 +61,30 @@ export default function SolicitudCompraForm({ solicitante }: SolicitudCompraForm
   const limpiar = () => {
     setLibros([0])
     setSiguienteId(1)
-    setColectivo("")
     setFormKey((k) => k + 1)
   }
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    setEnviado(true)
+    const data = new FormData(e.currentTarget)
+
+    // Todos los libros llevan los mismos campos, así que cada getAll sale alineado por posición
+    const campos = CAMPOS_LIBRO.map(({ name }) => [name, data.getAll(name).map(String)] as const)
+    const payload = libros.map((_, i) => Object.fromEntries(campos.map(([name, values]) => [name, values[i] ?? ""])))
+
+    startTransition(async () => {
+      try {
+        const res = await enviarSugerencia(payload)
+        if (!res.ok) {
+          toast.error(res.error)
+          return
+        }
+        setTotalEnviado(res.total)
+        setEnviado(true)
+      } catch {
+        toast.error("No hemos podido enviar tu sugerencia. Inténtalo de nuevo en unos minutos.")
+      }
+    })
   }
 
   const cerrarModal = () => {
@@ -169,8 +175,9 @@ export default function SolicitudCompraForm({ solicitante }: SolicitudCompraForm
               <Button type="button" variant="outline" onClick={limpiar} className="cursor-pointer">
                 Cancelar / Limpiar
               </Button>
-              <Button type="submit" className="bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer">
-                Enviar propuesta de compra
+              <Button type="submit" disabled={enviando} className="bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer">
+                {enviando && <Loader2 className="h-4 w-4 animate-spin" />}
+                {enviando ? "Enviando..." : "Enviar propuesta de compra"}
               </Button>
             </div>
           </form>
@@ -185,7 +192,7 @@ export default function SolicitudCompraForm({ solicitante }: SolicitudCompraForm
             </div>
             <DialogTitle className="font-display text-lg text-primary">¡Propuesta enviada con éxito!</DialogTitle>
             <DialogDescription>
-              Gracias, {solicitante.nombre || solicitante.email}. Se {libros.length === 1 ? "ha registrado 1 obra" : `han registrado ${libros.length} obras`} en
+              Gracias, {solicitante.nombre || solicitante.email}. Se {totalEnviado === 1 ? "hemos enviado 1 obra" : `hemos enviado ${totalEnviado} obras`} en
               tu propuesta de desiderata para la Biblioteca de la Universidad Atlántico Medio.
               Recibirás confirmación en {solicitante.email}.
             </DialogDescription>
