@@ -9,6 +9,57 @@ regla de cuándo añadir una entrada (obligatorio al terminar cada tarea).
 
 ---
 
+## 2026-10-07 — Página `/adquisiciones/solicitud-compra` y tarjeta en Servicios (rama `feat/enlaces-externos`)
+
+### Qué se hizo y por qué
+- La tarjeta "Acceso al catálogo" de `/servicios` pasa a "Solicitud de compra" y enlaza a la página nueva.
+- Página nueva a partir de `desiderata_universidad_del_atlantico_medio.html` (borrador del usuario), rehecha con la plantilla del sitio: `Hero`, shadcn (`Card`, `Input`, `Label`, `Select`, `Dialog`, `Button`), tokens de color del sistema (`primary`/`accent`/`muted`, no los slate/amber del HTML) y `font-display`. El estado vive en un client component (`SolicitudCompraForm`); el `page.tsx` es server y solo pone el Hero. Cada libro lleva un id propio para no mezclar valores al borrar uno del medio.
+- Siguiendo el patrón "UI primero, datos después", el Hero va fijo en el page, sin global de Payload.
+
+### Cómo se probó
+`tsc --noEmit` limpio y `curl` 200 en `/servicios` y en la página nueva, con el href bajo `/biblioteca`. No probado en navegador (añadir/quitar libros, modal, validación del Select).
+
+### Qué quedó pendiente
+- **El envío es simulado**: el modal dice "enviada con éxito" pero no se guarda ni se envía nada. Decidir destino (collection + email, o Absys) antes de publicar. `sendEmail` hoy escribe a un Gmail fijo, no reutilizar tal cual.
+- Los colectivos del select (alumno/profesor/PDI/PAS) vienen del HTML y no coinciden con los 5 tipos de Absys (ADULT/ALUMN/ANONI/INVIT/PROFE).
+- Si se conecta a Payload: global con `hero` editable, y añadir la página como `ancla`/enlace en el navbar.
+- El HTML original sigue sin trackear en esa carpeta y trae texto suelto tras `</html>`.
+
+---
+
+## 2026-10-06 — Header y Footer con enlaces del registro, anclas y URLs propias (rama `feat/enlaces-externos`)
+
+### Qué se hizo y por qué
+Para no duplicar URLs externas entre el registro (`layout.enlaces_externos`) y el navbar/footer, cada
+enlace de ambos lleva ahora un `tipo` (interno / ancla / registro / externo). Estado resultante y
+tabla de campos en `CLAUDE.md` → "Enlaces de navbar y footer". Decisiones: anclas de **lista cerrada**
+(`ANCLAS` en `lib/links.ts`, con ruta + `id` real) para que el admin no pueda apuntar a un id
+inventado; resolución en **servidor** (`resolveNavbar`/`resolveFooterLinks`) para que Header/Footer
+solo pinten `{ href, external, newTab }`; defaults (`interno` en header reutilizando `to`,
+`externo` en footer conservando `link`/`url`) para que la migración no toque datos. Fuera de alcance
+a propósito: las políticas legales del footer siguen siendo texto plano.
+Trabajo repartido: resolver + tests (orquestador), schema/migración/seed (`backend`), Header/Footer
+(`designer`), revisión (`reviewer`).
+Arreglos del Header de paso: los botones de primer nivel eran `<button>` con `div` dentro
+(HTML inválido, sin ctrl+click); ahora son enlaces reales, y el desplegable abre también con foco de
+teclado. El Footer ya no pinta `<a href={null}>` en filas solo-texto.
+
+### Cómo se probó
+`npm test` (86 tests, 9 nuevos del resolver), `tsc --noEmit` limpio, migración aplicada limpia contra
+una BD temporal vacía (7 migraciones), seed ejecutado contra la BD de dev y filas comprobadas, `curl`
+200 en home/investigacion/formacion con hrefs correctos bajo `/biblioteca`. **No** probado en
+navegador: scroll suave de anclas, dropdown con teclado, aspecto visual.
+
+### Qué quedó pendiente
+- `ancla`/`enlace_key` son enums de Postgres: añadir valores nuevos exige migración `ALTER TYPE ... ADD VALUE`.
+- Accesibilidad pendiente del desplegable (`aria-expanded`, cierre con Escape, táctil: un item con
+  enlace y desplegable navega al tocar y no abre el menú).
+- Si producción tiene `to`/`url` http en filas existentes, se resuelven como externos por criterio, no por migración.
+- El seed añade el desplegable "Apoyo a la investigación" (ancla) a investigación como ejemplo; decidir si se queda.
+- Anclas útiles aún sin `id` en el DOM (p. ej. Formación · Guías y tutoriales).
+
+---
+
 ## 2026-10-05 — Catálogo cerrado de keys para enlaces externos (rama `feat/enlaces-externos`)
 
 A petición del usuario: completar `layout.enlaces_externos[]` (infraestructura creada el

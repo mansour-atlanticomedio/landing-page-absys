@@ -204,6 +204,29 @@ de entorno, ver "Login desde el campus").
   deja pasar cualquier otro valor tal cual y el cast final reventaría si no coincide con el enum
   nuevo).
 
+#### Enlaces de navbar y footer (2026-10-06)
+
+Los enlaces de `header.navbar[]` / `navbar[].items[]` y de `footer.social_medias[]` /
+`footer.seccion_info[].information[]` ya no son una URL de texto libre: cada uno lleva un `tipo`
+(helper `collections/fields/enlace.ts` → `enlaceFields({ externalName, defaultTipo })`):
+
+| `tipo` | Campo | Resultado |
+|---|---|---|
+| `interno` | `to` | Ruta de la web (`Link`). Un `to` que empiece por http se sigue tratando como externo |
+| `ancla` | `ancla` (select de `ANCLAS`) | `ruta#id`. Lista cerrada en `lib/links.ts`, cada entrada con su página y el `id` real del DOM |
+| `registro` | `enlace_key` (select de `ENLACES_EXTERNOS_KEYS`) | URL tomada de `layout.enlaces_externos` — un solo sitio donde editarla |
+| `externo` | `url` (footer social: `link`) | URL libre para casos puntuales |
+
+Más `nueva_pestana` (por defecto solo los externos). Defaults para no migrar datos: header
+`tipo=interno` (reutiliza `to`), footer `tipo=externo` (conserva `link` en social y `url` en
+information). `legal_advice`/`privacy_policie`/`privacy_cookies` siguen siendo texto plano.
+
+- **Resolución en servidor**: `app/(frontend)/layout.tsx` pasa `header.navbar` por `resolveNavbar` y el footer por `resolveFooterLinks` (`lib/links.ts`, puras, con tests en `lib/__tests__/links.test.ts`) y los componentes reciben `{ href, external, newTab }` ya resuelto. Un destino que no resuelve (key sin entrada en el registro, ancla desconocida) oculta el enlace en vez de pintarlo roto; en el footer las filas solo-texto se conservan sin `<a>`.
+- **Añadir una ancla**: poner el `id` (con `scroll-mt-24`) en el componente destino + una entrada en `ANCLAS`. Hoy: `home-noticias` (`/#noticias`) e `investigacion-apoyo` (`/investigacion#cta-apoyo`).
+- ⚠️ `ancla` y `enlace_key` son enums de Postgres: **añadir una ancla o key nueva en código requiere una migración con `ALTER TYPE ... ADD VALUE`** (en dev lo cubre `push`, en producción el guardado fallaría). Vale igual para `ENLACES_EXTERNOS_KEYS`.
+- Anclas en la misma página: `NavAnchor` (Header) hace scroll suave + `history.replaceState` sin recargar; entre páginas navega `Link` con el hash.
+- Migración: `migrations/20261006_112738_enlaces_navbar_footer.ts` (solo `CREATE TYPE` + `ADD COLUMN`, no destructiva). Si producción tiene filas con `to`/`url` http, ninguna migración las toca: se resuelven por el criterio de `resolveEnlace`.
+
 ### Access Control
 
 | Collection | Regla | Efecto |
@@ -340,6 +363,7 @@ Cada bloque se envuelve en `<section key={id} data-block-type={blockType}>`.
 | `/libros` | Client component, fetch a Absys API via axios |
 | `/recursos/repositorio-institucional` | Todo hardcodeado |
 | `/recursos/catalogo` | Todo hardcodeado, enlace a OPAC externo |
+| `/adquisiciones/solicitud-compra` | Formulario de desiderata (propuesta de compra) en `components/SolicitudCompraForm.tsx` (client: varios libros, modal de éxito). Hero fijo en el page, **sin Payload y sin envío real todavía** (ver `MEMORY.md` 2026-10-07). Enlazado desde la tarjeta "Solicitud de compra" de `/servicios` |
 | `/recursos/catalogo/busqueda` | Client, fetch a `absys_service` con paginación |
 | `/recursos/catalogo/libro/[isbn]` | Client, fetch a `absys_service` + `book_cover_service` |
 
