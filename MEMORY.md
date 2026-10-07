@@ -9,6 +9,15 @@ regla de cuándo añadir una entrada (obligatorio al terminar cada tarea).
 
 ---
 
+## 2026-10-07 — Solicitud de libro solo con sesión y modal de confirmación sin `history.back()`
+
+- `/adquisiciones/solicitud-compra` usa `requireSession`: sin sesión redirige a `/login` (hoy `requireSession` apunta a `/login` fijo, un cambio temporal del usuario, así que no vuelve a la página tras entrar); con sesión muestra el formulario.
+- El usuario quitó del formulario la sección "Datos del solicitante" (sale de la sesión). El modal usaba ese campo para el nombre ("Gracias, ."), ahora recibe `solicitante` (nombre + email de la sesión) por props desde el page.
+- El botón "Aceptar" con `window.history.back()` se sustituyó por dos acciones: "Volver a servicios" (`Link`) y "Sugerir otro libro" (cierra y limpia). `history.back()` dependía de que el usuario llegara desde otra página de la web.
+- Probado con `curl`: sin cookie 307 a `/biblioteca/login`; con cookie del simulador de campus 200 con el formulario. No probado en navegador. El envío sigue simulado.
+
+---
+
 ## 2026-10-07 — Global `solicitud_compra`: cabecera de la página editable desde Payload
 
 ### Qué se hizo y por qué

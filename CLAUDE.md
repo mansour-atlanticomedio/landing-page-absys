@@ -364,7 +364,7 @@ Cada bloque se envuelve en `<section key={id} data-block-type={blockType}>`.
 | `/libros` | Client component, fetch a Absys API via axios |
 | `/recursos/repositorio-institucional` | Todo hardcodeado |
 | `/recursos/catalogo` | Todo hardcodeado, enlace a OPAC externo |
-| `/adquisiciones/solicitud-compra` | Formulario de desiderata (sugerir libro) en `components/SolicitudCompraForm.tsx` (client: varios libros, modal de éxito). Hero desde el global `solicitud_compra` (con texto de respaldo si está vacío); **sin envío real todavía** (ver `MEMORY.md` 2026-10-07). Enlazado desde la tarjeta "Solicitud de compra" de `/servicios` |
+| `/adquisiciones/solicitud-compra` | Formulario de desiderata (sugerir libro) en `components/SolicitudCompraForm.tsx` (client: varios libros, modal de éxito). **privada** (`requireSession`: sin sesión va al login), el solicitante sale de la sesión y ya no se pide en el formulario. Hero desde el global `solicitud_compra` (con texto de respaldo si está vacío); **sin envío real todavía** (ver `MEMORY.md` 2026-10-07). Enlazado desde la tarjeta "Solicitud de compra" de `/servicios` |
 | `/recursos/catalogo/busqueda` | Client, fetch a `absys_service` con paginación |
 | `/recursos/catalogo/libro/[isbn]` | Client, fetch a `absys_service` + `book_cover_service` |
 

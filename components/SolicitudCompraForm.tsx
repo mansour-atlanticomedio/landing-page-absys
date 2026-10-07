@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import Link from "next/link"
 import { BookOpen, Plus, BookPlus, Trash2, User, CheckCircle2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -47,12 +48,15 @@ const CAMPOS_LIBRO: LibroCampo[] = [
   { name: "enlace", label: "Enlace de interés (opcional · web de editorial, Amazon, etc.)", placeholder: "https://...", type: "url", fullWidth: true },
 ]
 
-export default function SolicitudCompraForm() {
+interface SolicitudCompraFormProps {
+  solicitante: { nombre?: string, email: string }
+}
+
+export default function SolicitudCompraForm({ solicitante }: SolicitudCompraFormProps) {
   // Cada libro lleva un id propio para que React no mezcle los valores al eliminar uno del medio
   const [libros, setLibros] = useState<number[]>([0])
   const [siguienteId, setSiguienteId] = useState(1)
   const [colectivo, setColectivo] = useState("")
-  const [nombre, setNombre] = useState("")
   const [enviado, setEnviado] = useState(false)
   const [formKey, setFormKey] = useState(0)
 
@@ -69,14 +73,11 @@ export default function SolicitudCompraForm() {
     setLibros([0])
     setSiguienteId(1)
     setColectivo("")
-    setNombre("")
     setFormKey((k) => k + 1)
   }
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    const data = new FormData(e.currentTarget)
-    setNombre(String(data.get("nombreSolicitante") ?? ""))
     setEnviado(true)
   }
 
@@ -101,46 +102,12 @@ export default function SolicitudCompraForm() {
 
         <CardContent className="p-0">
           <form key={formKey} onSubmit={handleSubmit} className="p-6 md:p-8 space-y-8">
-            <div className="border-b border-border pb-6">
-              <h3 className="font-display font-semibold text-primary mb-4 flex items-center gap-2">
-                <User className="h-5 w-5 text-accent" />
-                1. Datos del solicitante
-              </h3>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <Label htmlFor="nombreSolicitante">Nombre y apellidos *</Label>
-                  <Input id="nombreSolicitante" name="nombreSolicitante" required placeholder="Ej. Ana María Rodríguez Pérez" />
-                </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="emailSolicitante">Correo electrónico institucional *</Label>
-                  <Input id="emailSolicitante" name="emailSolicitante" type="email" required placeholder="usuario@atlanticomedio.es" />
-                </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="colectivoSolicitante">Colectivo / Perfil *</Label>
-                  <Select name="colectivoSolicitante" value={colectivo} onValueChange={setColectivo} required>
-                    <SelectTrigger id="colectivoSolicitante" className="w-full">
-                      <SelectValue placeholder="Selecciona tu colectivo..." />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {COLECTIVOS.map(({ value, label }) => (
-                        <SelectItem key={value} value={value}>{label}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-                <div className="space-y-1.5">
-                  <Label htmlFor="gradoSolicitante">Grado o titulación / departamento *</Label>
-                  <Input id="gradoSolicitante" name="gradoSolicitante" required placeholder="Ej. Grado en Administración y Dirección de Empresas" />
-                </div>
-              </div>
-            </div>
 
             <div>
               <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
                 <h3 className="font-display font-semibold text-primary flex items-center gap-2">
                   <BookPlus className="h-5 w-5 text-accent" />
-                  2. Obras solicitadas ({libros.length})
+                  Obras solicitadas ({libros.length})
                 </h3>
                 <span className="text-xs text-muted-foreground italic">Puedes proponer uno o varios libros</span>
               </div>
@@ -210,21 +177,26 @@ export default function SolicitudCompraForm() {
         </CardContent>
       </Card>
 
-      <Dialog open={enviado} onOpenChange={(open) => { if (!open) cerrarModal() }}>
-        <DialogContent className="max-w-md text-center">
+      <Dialog open={enviado} onOpenChange={(open) => { if (!open) cerrarModal() }} >
+        <DialogContent className="max-w-md text-center bg-white">
           <DialogHeader className="items-center">
             <div className="w-12 h-12 rounded-full bg-accent/10 text-accent flex items-center justify-center mb-2">
               <CheckCircle2 className="h-6 w-6" />
             </div>
             <DialogTitle className="font-display text-lg text-primary">¡Propuesta enviada con éxito!</DialogTitle>
             <DialogDescription>
-              Gracias, {nombre}. Se {libros.length === 1 ? "ha registrado 1 obra" : `han registrado ${libros.length} obras`} en
+              Gracias, {solicitante.nombre || solicitante.email}. Se {libros.length === 1 ? "ha registrado 1 obra" : `han registrado ${libros.length} obras`} en
               tu propuesta de desiderata para la Biblioteca de la Universidad Atlántico Medio.
-              Recibirás confirmación en tu correo institucional.
+              Recibirás confirmación en {solicitante.email}.
             </DialogDescription>
           </DialogHeader>
-          <DialogFooter>
-            <Button onClick={cerrarModal} className="w-full cursor-pointer">Aceptar</Button>
+          <DialogFooter className="sm:flex-col gap-2">
+            <Button asChild className="w-full">
+              <Link href="/servicios">Volver a servicios</Link>
+            </Button>
+            <Button type="button" variant="outline" onClick={cerrarModal} className="w-full cursor-pointer">
+              Sugerir otro libro
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

@@ -1,6 +1,7 @@
 import Hero from "@/components/Hero";
 import SolicitudCompraForm from "@/components/SolicitudCompraForm";
 import { getClient } from "@/lib/payload";
+import { requireSession } from "@/lib/auth/session";
 
 export const dynamic = 'force-dynamic';
 
@@ -10,6 +11,8 @@ export const metadata = {
 };
 
 export default async function SolicitudCompra() {
+  const session = await requireSession("/adquisiciones/solicitud-compra")
+
   const payload = await getClient()
   const page = await payload.findGlobal({
     slug: 'solicitud_compra' as never,
@@ -38,7 +41,7 @@ export default async function SolicitudCompra() {
 
       <section className="py-16 bg-background">
         <div className="max-w-6xl mx-auto px-6">
-          <SolicitudCompraForm />
+          <SolicitudCompraForm solicitante={{ nombre: [session.nombre, session.apellidos].filter(Boolean).join(" "), email: session.email }} />
         </div>
       </section>
     </>
