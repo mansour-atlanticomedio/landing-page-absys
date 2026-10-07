@@ -153,6 +153,7 @@ export default async function Servicios() {
                   Sugerir libro
                 </button>
               </Link>
+              <p className="w-full text-xs text-center text-gray-400 mt-2" >Identifícate con tu cuenta para acceder</p>
             </div>
 
             <div className="bg-slate-800 text-white rounded-lg p-6">
