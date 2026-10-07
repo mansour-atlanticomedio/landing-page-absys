@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { BookOpen, Plus, ShoppingCart, Trash2, User, CheckCircle2 } from "lucide-react"
+import { BookOpen, Plus, BookPlus, Trash2, User, CheckCircle2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -139,7 +139,7 @@ export default function SolicitudCompraForm() {
             <div>
               <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
                 <h3 className="font-display font-semibold text-primary flex items-center gap-2">
-                  <ShoppingCart className="h-5 w-5 text-accent" />
+                  <BookPlus className="h-5 w-5 text-accent" />
                   2. Obras solicitadas ({libros.length})
                 </h3>
                 <span className="text-xs text-muted-foreground italic">Puedes proponer uno o varios libros</span>

@@ -2,7 +2,7 @@ import Hero from "@/components/Hero";
 import Image from "next/image";
 import { RenderBlocks } from "@/components/RenderBlocks";
 import { getClient } from "@/lib/payload";
-import { Bookmark, BookOpen, Headphones, LibraryBig, RefreshCw, Search, ShoppingCart, User } from "lucide-react";
+import { Bookmark, BookOpen, Headphones, LibraryBig, RefreshCw, Search, BookPlus, User } from "lucide-react";
 import Link from "next/link";
 
 export const dynamic = 'force-dynamic';
@@ -139,14 +139,14 @@ export default async function Servicios() {
           <div className="space-y-6">
             <div className="border rounded-lg p-6">
               <h3 className="flex items-center gap-2 font-bold text-slate-800 mb-2">
-                <ShoppingCart className="h-4 w-4" /> Solicitud de compra
+                <BookPlus className="h-4 w-4" /> Solicitud de compra
               </h3>
               <p className="text-sm text-slate-600 mb-4">
                 Propón la adquisición de libros u obras que necesites para tu docencia, estudio o investigación.
               </p>
               <Link href={'/adquisiciones/solicitud-compra'} >
                 <button className="w-full border-2 border-teal-700 text-teal-700 rounded-md py-2.5 font-medium cursor-pointer">
-                  Proponer una compra
+                  Sugerir libro
                 </button>
               </Link>
             </div>
