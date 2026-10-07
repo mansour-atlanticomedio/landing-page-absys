@@ -18,6 +18,12 @@ regla de cuándo añadir una entrada (obligatorio al terminar cada tarea).
 
 ---
 
+## 2026-10-07 — La comprobación de sesión de "Sugerir libro" pasa a `/servicios`
+
+El usuario no quiso que el redirect ocurriera al llegar a la página privada. `/servicios` hace `getSession()` y el botón "Sugerir libro" apunta a `/adquisiciones/solicitud-compra` con sesión o a `/login` sin ella. La página de destino conserva su `requireSession` como red de seguridad para quien entre por URL directa (el formulario necesita el solicitante de la sesión); quitarlo es una decisión pendiente del usuario. Probado con `curl` con y sin cookie: el href cambia como se espera.
+
+---
+
 ## 2026-10-07 — Global `solicitud_compra`: cabecera de la página editable desde Payload
 
 ### Qué se hizo y por qué

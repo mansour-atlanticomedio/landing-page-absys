@@ -2,6 +2,7 @@ import Hero from "@/components/Hero";
 import Image from "next/image";
 import { RenderBlocks } from "@/components/RenderBlocks";
 import { getClient } from "@/lib/payload";
+import { getSession } from "@/lib/auth/session";
 import { Bookmark, BookOpen, Headphones, LibraryBig, RefreshCw, Search, BookPlus, User } from "lucide-react";
 import Link from "next/link";
 
@@ -9,6 +10,9 @@ export const dynamic = 'force-dynamic';
 
 export default async function Servicios() {
   const payload = await getClient()
+  const session = await getSession()
+  // Sin sesión el botón de sugerir libro lleva al login en vez de a la página privada
+  const sugerirLibroHref = session ? '/adquisiciones/solicitud-compra' : '/login'
   const homepage = await payload.findGlobal({
     slug: 'services' as never,
     draft: false,
@@ -144,7 +148,7 @@ export default async function Servicios() {
               <p className="text-sm text-slate-600 mb-4">
                 Propón la adquisición de libros u obras que necesites para tu docencia, estudio o investigación.
               </p>
-              <Link href={'/adquisiciones/solicitud-compra'} >
+              <Link href={sugerirLibroHref} >
                 <button className="w-full border-2 border-teal-700 text-teal-700 rounded-md py-2.5 font-medium cursor-pointer">
                   Sugerir libro
                 </button>
