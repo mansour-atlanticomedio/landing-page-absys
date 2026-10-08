@@ -190,10 +190,12 @@ export default function SolicitudCompraForm({ solicitante }: SolicitudCompraForm
             <div className="w-12 h-12 rounded-full bg-accent/10 text-accent flex items-center justify-center mb-2">
               <CheckCircle2 className="h-6 w-6" />
             </div>
-            <DialogTitle className="font-display text-lg text-primary">¡Propuesta enviada con éxito!</DialogTitle>
+            <DialogTitle className="font-display font-bold text-lg text-primary">¡Propuesta enviada con éxito!</DialogTitle>
             <DialogDescription>
               Gracias, {solicitante.nombre || solicitante.email}. Se {totalEnviado === 1 ? "hemos enviado 1 obra" : `hemos enviado ${totalEnviado} obras`} en
               tu propuesta de desiderata para la Biblioteca de la Universidad Atlántico Medio.
+            </DialogDescription>
+            <DialogDescription>
               Recibirás confirmación en {solicitante.email}.
             </DialogDescription>
           </DialogHeader>
