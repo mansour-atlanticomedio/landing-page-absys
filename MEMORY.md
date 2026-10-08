@@ -18,6 +18,13 @@ regla de cuándo añadir una entrada (obligatorio al terminar cada tarea).
 
 ---
 
+## 2026-10-08 — Simulador del campus tras un flag de entorno
+
+- **`lib/env.ts`**: `isProduction` y `devToolsEnabled` (`NODE_ENV !== production` o `FEATURE_DEV_TOOLS=true`). Aplicado solo al simulador del campus (`simular-campus/page.tsx`, `emitir/route.ts` y el fallback al simulador de `auth/login/route.ts`). Quedan con su `NODE_ENV` directo, sin migrar, los endpoints temporales de `LoginCampus.service.ts`, las cookies `secure` y los `console.log` de componentes. `NODE_ENV` no se define en el `.env` (lo gestiona Next; el Dockerfile fija `production`); `FEATURE_DEV_TOOLS` sí, y es variable de servidor (se lee en runtime, no hace falta rebuild).
+- Probado: `tsc` limpio; `devToolsEnabled` con development / production / production+flag; el simulador sigue en 200 en dev. **No probado**: el 404 con un build de producción real.
+
+---
+
 ## 2026-10-07 — La comprobación de sesión de "Sugerir libro" pasa a `/servicios`
 
 El usuario no quiso que el redirect ocurriera al llegar a la página privada. `/servicios` hace `getSession()` y el botón "Sugerir libro" apunta a `/adquisiciones/solicitud-compra` con sesión o a `/login` sin ella. La página de destino conserva su `requireSession` como red de seguridad para quien entre por URL directa (el formulario necesita el solicitante de la sesión); quitarlo es una decisión pendiente del usuario. Probado con `curl` con y sin cookie: el href cambia como se espera.
