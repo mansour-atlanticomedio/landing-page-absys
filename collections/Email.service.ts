@@ -1,19 +1,45 @@
+import path from "node:path"
 import type { CollectionConfig, Payload } from "payload"
 
 const SITE_URL = process.env.NEXT_PUBLIC_SERVER_URL || "https://www.atlanticomedio.es/biblioteca"
 const CONTACT_PHONE = "+34 828 019 019"
 const CONTACT_EMAIL = "biblioteca@atlanticomedio.es"
 
-// Plantilla base con la identidad visual de la Biblioteca (cabecera turquesa,
-// texto en la paleta navy/gris del sitio) para que los 3 correos transaccionales
-// y el aviso de contacto compartan el mismo aspecto.
+// Plantilla base con la identidad visual de la Biblioteca: cabecera blanca con el escudo de la UNAM y
+// filete turquesa, texto en la paleta navy/gris del sitio. La comparten todos los correos
+// (PIN, bienvenida, préstamos, sugerencias y aviso de contacto)
+const LOGO_CID = "unam-logo"
+
+// El logo va incrustado en el correo (cid) y no enlazado por URL: se ve igual en desarrollo y no
+// depende de que el sitio sea público ni de que el cliente de correo bloquee imágenes remotas
+const emailAttachments = () => [
+  {
+    filename: "unam-logo.png",
+    path: path.join(process.cwd(), "public", "logos", "unam-color-logo.png"),
+    cid: LOGO_CID,
+  },
+]
+
+type EmailMessage = Parameters<Payload["sendEmail"]>[0]
+
+const sendBrandedEmail = (payload: Payload, message: EmailMessage) =>
+  payload.sendEmail({ ...message, attachments: emailAttachments() })
+
 const emailLayout = (title: string, bodyHtml: string) => `
 <div style="font-family: 'Open Sans', Arial, sans-serif; background-color: #F2F4F7; padding: 32px 16px; color: #333333;">
   <div style="max-width: 560px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; overflow: hidden; border: 1px solid #E0E0E0;">
-    <div style="background-color: #3BACBD; padding: 24px 32px;">
-      <p style="margin: 0; font-family: 'Montserrat', Arial, sans-serif; font-size: 18px; font-weight: 700; color: #ffffff; letter-spacing: 0.5px;">
-        Biblioteca UNAM
-      </p>
+    <div style="background-color: #ffffff; padding: 20px 32px; border-bottom: 4px solid #3BACBD;">
+      <table role="presentation" cellpadding="0" cellspacing="0" border="0" style="border-collapse: collapse;">
+        <tr>
+          <td style="padding-right: 16px; vertical-align: middle;">
+            <img src="cid:${LOGO_CID}" alt="Universidad del Atlántico Medio" width="52" height="55" style="display: block; border: 0;" />
+          </td>
+          <td style="vertical-align: middle; border-left: 2px solid #3BACBD; padding-left: 16px;">
+            <p style="margin: 0; font-family: 'Montserrat', Arial, sans-serif; font-size: 16px; font-weight: 700; color: #2D3E50;">Universidad del Atlántico Medio</p>
+            <p style="margin: 2px 0 0; font-family: 'Montserrat', Arial, sans-serif; font-size: 13px; font-weight: 400; color: #595959;">Biblioteca</p>
+          </td>
+        </tr>
+      </table>
     </div>
     <div style="padding: 32px;">
       <h1 style="margin: 0 0 16px; font-family: 'Montserrat', Arial, sans-serif; font-size: 22px; color: #2D3E50;">
@@ -21,10 +47,13 @@ const emailLayout = (title: string, bodyHtml: string) => `
       </h1>
       ${bodyHtml}
     </div>
-    <div style="background-color: #F2F4F7; padding: 20px 32px; font-size: 12px; color: #595959;">
-      <p style="margin: 0 0 4px;">Biblioteca de la Universidad del Atlántico Medio</p>
+    <div style="background-color: #F2F4F7; padding: 20px 32px; font-size: 12px; line-height: 1.5; color: #595959;">
+      <p style="margin: 0 0 4px; font-weight: 600; color: #2D3E50;">Biblioteca de la Universidad del Atlántico Medio</p>
       <p style="margin: 0 0 4px;">Edificio EMU de Usos Múltiples · Carretera de Quilmes, 37 · Las Palmas de Gran Canaria</p>
-      <p style="margin: 0;">${CONTACT_PHONE} · <a href="mailto:${CONTACT_EMAIL}" style="color: #3BACBD;">${CONTACT_EMAIL}</a></p>
+      <p style="margin: 0 0 12px;">${CONTACT_PHONE} · <a href="mailto:${CONTACT_EMAIL}" style="color: #3BACBD;">${CONTACT_EMAIL}</a></p>
+      <p style="margin: 0; padding-top: 12px; border-top: 1px solid #E0E0E0; font-size: 11px; color: #8A8A8A;">
+        Este mensaje se ha generado automáticamente desde la web de la Biblioteca. Si necesitas ayuda, escríbenos a la dirección indicada.
+      </p>
     </div>
   </div>
 </div>
@@ -72,7 +101,7 @@ export const sendPinEmail = async (payload: Payload, { to, pin, name, expiration
     </p>
   `
 
-  await payload.sendEmail({
+  await sendBrandedEmail(payload, {
     to,
     subject: "Tu código de verificación — Biblioteca UNAM",
     html: emailLayout("Código de verificación", body),
@@ -108,7 +137,7 @@ export const sendWelcomeEmail = async (payload: Payload, { to, name }: SendWelco
     ${ctaButton("Explorar el catálogo", `${SITE_URL}/recursos/catalogo`)}
   `
 
-  await payload.sendEmail({
+  await sendBrandedEmail(payload, {
     to,
     subject: "Bienvenido/a a la Biblioteca UNAM",
     html: emailLayout(`¡Bienvenido/a, ${name}!`, body),
@@ -160,7 +189,7 @@ export const sendLoanNotificationEmail = async (payload: Payload, { to, name, ty
     ${ctaButton("Gestionar mi cuenta", `${SITE_URL}/login`)}
   `
 
-  await payload.sendEmail({
+  await sendBrandedEmail(payload, {
     to,
     subject: copy.subject,
     html: emailLayout(copy.title, body),
@@ -218,7 +247,7 @@ export const sendBookSuggestionEmail = async (payload: Payload, { solicitante, l
     ${booksHtml(libros)}
   `
 
-  await payload.sendEmail({
+  await sendBrandedEmail(payload, {
     to: process.env.SUGGESTIONS_EMAIL_TO || CONTACT_EMAIL,
     replyTo: solicitante.email,
     subject: `Sugerencia de ${libros.length === 1 ? "libro" : `${libros.length} libros`} de ${solicitante.nombre}`,
@@ -236,7 +265,7 @@ export const sendBookSuggestionConfirmationEmail = async (payload: Payload, { so
     ${booksHtml(libros)}
   `
 
-  await payload.sendEmail({
+  await sendBrandedEmail(payload, {
     to: solicitante.email,
     subject: "Hemos recibido tu sugerencia de libro — Biblioteca UNAM",
     html: emailLayout("Sugerencia recibida", body),
@@ -285,7 +314,7 @@ export const Email: CollectionConfig = {
             <p style="margin: 0 0 8px; font-size: 14px; color: #333333;"><strong>Nombre:</strong> ${doc.name}</p>
             <p style="margin: 0; font-size: 14px; color: #333333;"><strong>Mensaje:</strong> ${doc.message}</p>
           `
-                await payload.sendEmail({
+                await sendBrandedEmail(payload, {
                     to: 'mansourlol440@gmail.com',
                     subject: `Nuevo mensaje: ${doc.about}`,
                     html: emailLayout('Nuevo mensaje de contacto', body),
