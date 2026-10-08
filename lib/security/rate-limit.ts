@@ -219,3 +219,20 @@ export async function checkLimits(
 
   return { allowed: violated.length === 0, violated }
 }
+
+/*
+ * Devuelve la cuota gastada por un checkLimits que SÍ permitió la petición (el envío falló después,
+ * p. ej. el SMTP cayó). Mismo `rules` y mismo `now`. Best-effort: nunca lanza. Si checkLimits
+ * rechazó, no debe llamarse (ya deshizo lo suyo y las reglas de actor no se reembolsan).
+ */
+export async function refundLimits(store: RateLimitStore, rules: RateLimitRule[], now: number): Promise<void> {
+  for (const rule of rules) {
+    try {
+      const p = prepare(rule)
+      if (p.blocked) continue
+      await store.decrement(p.storeKey, p.windowMs, now)
+    } catch {
+      // Un fallo del store al reembolsar no debe tapar el error original del envío
+    }
+  }
+}

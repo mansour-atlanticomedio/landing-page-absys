@@ -612,22 +612,9 @@ export interface SendEmail {
   id: number;
   name?: string | null;
   email?: string | null;
+  rol?: string | null;
   about?: string | null;
-  message?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
+  message?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -1387,6 +1374,7 @@ export interface FaqSelect<T extends boolean = true> {
 export interface SendEmailSelect<T extends boolean = true> {
   name?: T;
   email?: T;
+  rol?: T;
   about?: T;
   message?: T;
   updatedAt?: T;

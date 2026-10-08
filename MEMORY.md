@@ -42,6 +42,23 @@ Comprobado: el formulario **no enviaba nada** (el modal era simulado) y el servi
 
 ---
 
+## 2026-10-08 — Fase 2 de seguridad: `/contacto` en servidor, con sesión y límites
+
+Hasta ahora `/contacto` hacía `POST /api/sendEmail` anónimo: sin límites, sin escapar, con destino a un Gmail personal fijo, y un hook `afterChange` enviaba el correo. Ahora es una server action (`contacto/actions.ts` → `procesarContacto`) que **exige sesión** por decisión del usuario (el solicitante sale de la sesión; formulario solo pide asunto y mensaje), usa `lib/security` y guarda el histórico en `sendEmail`, que pasa a `adminOnly`, sin hook y con `message` como texto (migración `contacto_mensaje_texto`, escrita a mano para conservar los mensajes existentes). Detalle del flujo y variables en `CLAUDE.md` → "Capa anti-abuso". El tope global del buzón interno pasó de 200 a 300/día (≈30 IPs a 10/día) a petición del usuario, y ahora es por tipo de correo para que contacto no bloquee sugerencias.
+Revisado con `reviewer` y `security-auditor` (sin bloqueantes; veredicto "cerrar con 4 condiciones"). Correcciones de la revisión: la regla de IP de autenticados ya no cuenta peticiones que su regla de usuario rechazó (una cuenta podía bloquear a todo el sitio), reembolso de cupos si falla el SMTP, histórico solo tras envío correcto, aviso propio de duplicado, migración que conserva saltos de línea, test del escapado y de que el solicitante sale de la sesión. Se probó y **se descartó** `serverActions.bodySizeLimit: 100kb`: es global y también afecta al admin de Payload (riesgo sin verificar); queda el máximo por validación (mensaje 2000 caracteres).
+Probado: `tsc` limpio y 271 tests; migración con 8 formas de dato y `npm run migrate` limpio contra BD vacía (9 migraciones); en vivo, `/contacto` sin sesión (tarjeta de login) y con sesión (formulario) en 200, y `/api/sendEmail` da 403 a anónimos y lectores. **No probado**: envío real por SMTP, el formulario en navegador, ni el rechazo real de cuerpos grandes.
+
+### Qué quedó pendiente
+- **Antes de producción:** definir y verificar `TRUSTED_IP_HEADER`/`TRUSTED_IP_HOP` según el nginx real; backup de `send_email` antes de aplicar la migración; una sola réplica de `frontend` mientras el almacén sea en memoria (el reinicio resetea los cupos); comprobar tras nginx que las server actions no se rechazan por `Host`.
+- **Token del campus (preexistente):** AES-128-CBC sin MAC; con un token válido ajeno se puede mantener "fresco" más de 300 s. Pedir a Daniel un HMAC o AES-GCM y confirmar si el campus emite tokens para externos con registro abierto (de eso depende cuántas identidades puede conseguir un atacante).
+- El enlace "Iniciar sesión" de `ContactoLoginCard` va a `/login` (igual que Servicios y `requireSession`, cambio temporal del usuario): tras entrar no vuelve a `/contacto`.
+- Teléfono y correo de `ContactoLoginCard` van fijos (el global `contact` solo tiene `hero`).
+- `too_fast` responde éxito falso: pegar y enviar en menos de 3 s desde el render pierde el mensaje sin aviso (registrado en log).
+- `components/SimpleForm.tsx` queda sin uso.
+- Fase 3: límites y dedupe en las sugerencias de libro (y revisar que `solicitante.nombre` va en el asunto de `sendBookSuggestionEmail`).
+
+---
+
 ## 2026-10-08 — Fase 1 de seguridad: `lib/security/` (limitadores, honeypot y política de correo)
 
 Funciones puras con almacén y reloj inyectados, sin conectar todavía (estado y contrato en `CLAUDE.md` → "Capa anti-abuso"). Tres rondas de revisión (reviewer + security-auditor) rediseñaron lo que salió de la primera versión: el limitador **incrementaba todas las reglas aunque una fallara**, así que una sola IP podía agotar el cupo de dominio/destinatario de terceros (p. ej. bloquear los PIN de `alu.atlanticomedio.es`); ahora hay dos niveles (actor/compartido) con `peek`, tope `limit+1` y compensación. También se cerraron: expulsión de contadores por inundación de claves, IPv6 sin agrupar, alias `+tag`/Gmail y buzón interno, secreto vacío del honeypot, `windowMs` inválido que fallaba abierto, reloj hacia atrás y falsos positivos del honeypot.

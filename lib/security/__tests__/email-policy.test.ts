@@ -89,14 +89,16 @@ describe('buildEmailRules', () => {
     const rules = buildEmailRules({ kind: 'pin', ip: '1.2.3.4', recipient: 'x@evil-atlanticomedio.es' })
     expect(find(rules, 'domain')[0].limit).toBe(20)
   })
-  it('buzón interno: tope global 200/día, sin reglas de destinatario ni dominio', () => {
+  it('buzón interno: tope global 300/día, sin reglas de destinatario ni dominio', () => {
     const rules = buildEmailRules({
       kind: 'contacto',
       ip: '1.2.3.4',
       recipient: 'Biblioteca@AtlanticoMedio.es',
       internalRecipient: 'biblioteca@atlanticomedio.es',
     })
-    expect(find(rules, 'global').map((r) => [r.limit, r.windowMs])).toEqual([[200, 86_400_000]])
+    expect(find(rules, 'global').map((r) => [r.key, r.limit, r.windowMs])).toEqual([
+      ['internal-mailbox:contacto', 300, 86_400_000],
+    ])
     expect(find(rules, 'recipient')).toHaveLength(0)
     expect(find(rules, 'domain')).toHaveLength(0)
   })
@@ -337,6 +339,54 @@ describe('buildEmailRules: NAT del campus y agregado por tipo', () => {
       ['pin:10.0.0.1:auth', 200, 3_600_000],
       ['pin:10.0.0.1:auth', 1000, 86_400_000],
     ])
+    expect(ipRules.every((r) => r.tier === 'shared')).toBe(true)
+  })
+
+  it('el buzón interno tiene un cupo por tipo: contacto no bloquea sugerencias', async () => {
+    const limits = structuredClone(DEFAULT_EMAIL_LIMITS)
+    limits.contacto.internalGlobal = [{ limit: 1, windowMs: 86_400_000 }]
+    const store = createMemoryStore()
+    const go = (kind: 'contacto' | 'sugerencia', userId: string) =>
+      checkLimits(
+        store,
+        buildEmailRules({
+          kind,
+          ip,
+          userId,
+          recipient: 'biblioteca@atlanticomedio.es',
+          internalRecipient: 'biblioteca@atlanticomedio.es',
+          limits,
+        }),
+        t,
+      )
+    expect((await go('contacto', 'a')).allowed).toBe(true)
+    expect((await go('contacto', 'b')).allowed).toBe(false)
+    expect((await go('sugerencia', 'b')).allowed).toBe(true)
+  })
+
+  it('una cuenta que supera su cupo de usuario no consume el cupo de IP de los demás', async () => {
+    const limits = structuredClone(DEFAULT_EMAIL_LIMITS)
+    limits.contacto.ipAuthenticated = [{ limit: 6, windowMs: 3_600_000 }]
+    const store = createMemoryStore()
+    const go = (userId: string, i: number) =>
+      checkLimits(
+        store,
+        buildEmailRules({ kind: 'contacto', ip, userId, recipient: `x${userId}${i}@alu.atlanticomedio.es`, limits }),
+        t,
+      )
+    let aceptadas = 0
+    for (let i = 0; i < 20; i++) if ((await go('abusona', i)).allowed) aceptadas++
+    expect(aceptadas).toBe(5)
+    const ipCounter = await store.peek(`ip:contacto:${ip}:auth:3600000`, 3_600_000, t)
+    expect(ipCounter.current).toBe(5)
+    expect((await go('otra', 0)).allowed).toBe(true)
+    expect((await go('otra', 1)).allowed).toBe(false)
+  })
+
+  it('autenticado con IP desconocida: sin regla de IP, solo manda user', () => {
+    const rules = buildEmailRules({ kind: 'contacto', ip: 'unknown', userId: 1, recipient: 'a@gmail.com' })
+    expect(rules.filter((r) => r.dimension === 'ip')).toHaveLength(0)
+    expect(rules.filter((r) => r.dimension === 'user').length).toBeGreaterThan(0)
   })
 
   it('el agregado institucional es por tipo: agotar contacto no afecta a pin', async () => {

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { checkLimits, defaultTier, slidingWindowCount, type RateLimitRule, type RateLimitStore } from '../rate-limit'
+import { checkLimits, defaultTier, refundLimits, slidingWindowCount, type RateLimitRule, type RateLimitStore } from '../rate-limit'
 import { createMemoryStore } from '../stores/memory'
 
 const W = 60_000
@@ -320,5 +320,40 @@ describe('checkLimits: saturación, cap y compensación', () => {
     await Promise.all(Array.from({ length: 20 }, () => checkLimits(store, rules, t)))
     expect((await store.peek(`recipient:v@gmail.com:${W}`, W, t)).current).toBeGreaterThanOrEqual(3)
     expect((await checkLimits(store, rules, t)).allowed).toBe(false)
+  })
+})
+
+describe('refundLimits', () => {
+  const now = 1_700_000_000_000
+  const rules: RateLimitRule[] = [
+    { dimension: 'user', key: 'u1', limit: 2, windowMs: 3_600_000 },
+    { dimension: 'global', key: 'g', limit: 5, windowMs: 3_600_000 },
+    { dimension: 'domain', key: 'bloqueada', limit: 0, windowMs: 3_600_000 },
+  ]
+
+  it('decrementa lo que checkLimits incrementó y deja libre el cupo', async () => {
+    const store = createMemoryStore()
+    const okRules = rules.slice(0, 2)
+    expect((await checkLimits(store, okRules, now)).allowed).toBe(true)
+    expect((await checkLimits(store, okRules, now)).allowed).toBe(true)
+    await refundLimits(store, okRules, now)
+    expect((await store.peek('user:u1:3600000', 3_600_000, now)).current).toBe(1)
+    expect((await store.peek('global:g:3600000', 3_600_000, now)).current).toBe(1)
+    expect((await checkLimits(store, okRules, now)).allowed).toBe(true)
+  })
+
+  it('ignora reglas bloqueadas y nunca baja de 0', async () => {
+    const store = createMemoryStore()
+    await refundLimits(store, rules, now)
+    expect((await store.peek('user:u1:3600000', 3_600_000, now)).current).toBe(0)
+  })
+
+  it('nunca lanza aunque el store falle', async () => {
+    const roto: RateLimitStore = {
+      increment: async () => { throw new Error('db') },
+      peek: async () => { throw new Error('db') },
+      decrement: async () => { throw new Error('db') },
+    }
+    await expect(refundLimits(roto, rules, now)).resolves.toBeUndefined()
   })
 })

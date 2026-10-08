@@ -53,7 +53,8 @@ const baseLimits = (): KindLimits => ({
     { limit: 5, windowMs: HOUR },
     { limit: 20, windowMs: DAY },
   ],
-  internalGlobal: [{ limit: 200, windowMs: DAY }],
+  // Tope del buzón interno POR TIPO (clave global:internal-mailbox:<kind>): 300/día = ~30 IPs agotando su cupo de 10/día (ip) antes de saturarlo
+  internalGlobal: [{ limit: 300, windowMs: DAY }],
   externalDomain: [{ limit: 20, windowMs: HOUR }],
   institutionalDomain: [{ limit: 500, windowMs: DAY }],
   institutionalAggregate: [{ limit: 1000, windowMs: DAY }],
@@ -158,8 +159,14 @@ export function buildEmailRules(input: BuildEmailRulesInput): RateLimitRule[] {
   // IP inválida o no fiable cae en el cubo estricto compartido
   const ipKey = ipRateLimitKey(input.ip)
   if (hasUser) {
-    // Detrás del NAT del campus muchos usuarios comparten IP: la regla estricta es la de `user`
-    rules.push(...toRules('ip', `${input.kind}:${ipKey}:auth`, cfg.ipAuthenticated))
+    // Detrás del NAT del campus muchos usuarios comparten IP: la regla estricta es la de `user`.
+    // Con IP desconocida no hay cubo de IP (sería uno solo para todo el sitio): manda `user`.
+    // Nivel shared: solo cuenta si user y el resto pasan, así una cuenta no quema el cupo de la IP de todos
+    if (ipKey !== UNKNOWN_IP) {
+      rules.push(
+        ...toRules('ip', `${input.kind}:${ipKey}:auth`, cfg.ipAuthenticated).map((r) => ({ ...r, tier: 'shared' as const })),
+      )
+    }
   } else if (ipKey === UNKNOWN_IP) {
     rules.push(...toRules('ip', `${input.kind}:${UNKNOWN_IP}`, cfg.unknownIp))
   } else {
@@ -174,7 +181,8 @@ export function buildEmailRules(input: BuildEmailRulesInput): RateLimitRule[] {
   const internalRaw = input.internalRecipient?.trim()
   const internal = internalRaw ? canonicalRecipient(internalRaw) : null
   if (internal && recipient === internal) {
-    rules.push(...toRules('global', 'internal-mailbox', cfg.internalGlobal))
+    // Un cupo por tipo: contacto no bloquea sugerencias
+    rules.push(...toRules('global', `internal-mailbox:${input.kind}`, cfg.internalGlobal))
   } else {
     rules.push(...toRules('recipient', recipient, cfg.recipient))
     if (isInstitutionalDomain(domain, input.institutionalDomains)) {

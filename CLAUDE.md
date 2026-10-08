@@ -60,7 +60,7 @@ Payload Admin → Globals → Collections → Pages → RenderBlocks → Compone
 - **En dev** (`NODE_ENV !== 'production'`, contenedor `biblioteca-frontend` con `Dockerfile.dev`), el adapter de Postgres usa `push: true` por defecto: cualquier collection/global nuevo o campo añadido se sincroniza solo contra la BD la primera vez que se inicializa Payload (el spinner "Pulling schema from database..." que se ve al lanzar un seed o `next dev`).
 - **En producción** (`Dockerfile` fija `NODE_ENV=production`), `push` es `false`: la BD **solo** se actualiza aplicando migraciones (`payload migrate`). Si se añade una collection/global/campo nuevo y no se genera su migración, en producción esa tabla/columna directamente no existe — cualquier `payload.create`/`payload.updateGlobal` contra ella revienta con `relation "..." does not exist`, aunque en dev funcione perfectamente (por eso puede pasar desapercibido toda una sesión de trabajo).
 - **Regla**: después de crear o modificar cualquier collection/global (`collections/*.ts`, `globals/*.ts`), además de `npx payload generate:types`, hay que generar la migración correspondiente con `npx payload migrate:create <nombre-descriptivo>` (se puede correr contra la BD de dev ya sincronizada por push — la migración generada refleja el diff acumulado desde la última migración) y comprobar que `npm run migrate` aplica limpio contra una BD nueva antes de dar el cambio por terminado.
-- Migraciones existentes: `migrations/20260731_114550_baseline.ts` (base) + `migrations/20260915_162539_session_2026_09_14_content_globals.ts` (todo el schema de la sesión de recursos-electrónicos/quiénes-somos/investigación/formación/horarios — se generó a posteriori porque no se había estado corriendo `migrate:create` en cada paso; a partir de ahora generar la migración en el mismo momento en que se toca el schema, no al final) + `migrations/20260928_114829_login_campus.ts` (collection `loginCampus_service`) + `migrations/20260929_102432_actualizar_colectivos_campus.ts` (enum `colectivo` de `loginCampus_service`: de ALUMN/PDI/PAS/EXT a los 5 tipos reales ADULT/ALUMN/ANONI/INVIT/PROFE — el `up` remapea filas existentes con `UPDATE ... CASE`, no un cast directo, porque un cast directo revienta con valores que ya no están en el enum nuevo) + `migrations/20260929_110457_layout_enlaces_externos.ts` (tabla nueva para `layout.enlaces_externos[]`) + `migrations/20261007_164512_solicitud_compra_global.ts` (tabla nueva del global `solicitud_compra`)
+- Migraciones existentes: `migrations/20260731_114550_baseline.ts` (base) + `migrations/20260915_162539_session_2026_09_14_content_globals.ts` (todo el schema de la sesión de recursos-electrónicos/quiénes-somos/investigación/formación/horarios — se generó a posteriori porque no se había estado corriendo `migrate:create` en cada paso; a partir de ahora generar la migración en el mismo momento en que se toca el schema, no al final) + `migrations/20260928_114829_login_campus.ts` (collection `loginCampus_service`) + `migrations/20260929_102432_actualizar_colectivos_campus.ts` (enum `colectivo` de `loginCampus_service`: de ALUMN/PDI/PAS/EXT a los 5 tipos reales ADULT/ALUMN/ANONI/INVIT/PROFE — el `up` remapea filas existentes con `UPDATE ... CASE`, no un cast directo, porque un cast directo revienta con valores que ya no están en el enum nuevo) + `migrations/20260929_110457_layout_enlaces_externos.ts` (tabla nueva para `layout.enlaces_externos[]`) + `migrations/20261007_164512_solicitud_compra_global.ts` (tabla nueva del global `solicitud_compra`) + `migrations/20261008_151100_contacto_mensaje_texto.ts` (`send_email.message` de jsonb a texto conservando los mensajes: texto plano o árbol Lexical con saltos de línea; añade `rol`; el `down` es lossy)
 
 ### Collections (25 registradas)
 
@@ -133,9 +133,9 @@ Pendientes conocidos (marcados con `TODO` en el código): `lepassLegacy` / compa
 
 #### Collection de email (1, hidden)
 
-| Slug | Fichero | Hook |
-|------|---------|------|
-| `sendEmail` | `collections/Email.service.ts` | `afterChange` → envía email a `mansourlol440@gmail.com` con asunto `Nuevo mensaje: ${doc.about}`. Campos: `name`, `email`, `about`, `message` (richText). El mismo fichero exporta los correos transaccionales (PIN, bienvenida, préstamos, sugerencia de libro): todos pasan por `sendBrandedEmail`, que usa la plantilla `emailLayout` (cabecera blanca con el escudo `public/logos/unam-color-logo.png` incrustado por `cid`, filete turquesa, pie con datos de contacto) |
+| Slug | Fichero | Notas |
+|------|---------|-------|
+| `sendEmail` | `collections/Email.service.ts` | **Histórico** de los mensajes de `/contacto` (campos `name`, `email`, `rol`, `about`, `message` como texto), todo `adminOnly`; ya no tiene hook ni se crea por REST. El envío lo hace la server action `app/(frontend)/contacto/actions.ts` → `procesarContacto` (`lib/contacto-envio.ts`) → `sendContactEmail` a `CONTACT_EMAIL_TO` (por defecto `biblioteca@atlanticomedio.es`). El mismo fichero exporta los correos transaccionales (PIN, bienvenida, préstamos, sugerencia de libro): todos pasan por `sendBrandedEmail`, que usa la plantilla `emailLayout` (cabecera blanca con el escudo `public/logos/unam-color-logo.png` incrustado por `cid`, filete turquesa, pie con datos de contacto) |
 
 #### Constantes compartidas (no es collection)
 
@@ -254,7 +254,7 @@ La web lee por Local API, que no pasa por `access`, así que cerrar la lectura R
 
 ### Capa anti-abuso (`lib/security/`, 2026-10-08)
 
-Lógica pura y testeable (reloj y almacén inyectados) para limitar el abuso de la API y del correo. **Aún no está conectada a ningún handler**: las fases 2 y 3 la usan en el formulario de contacto y en las sugerencias de libro. No hay Redis: el almacén definitivo será Postgres (fase 4).
+Lógica pura y testeable (reloj y almacén inyectados) para limitar el abuso de la API y del correo. **Conectada hoy a `/contacto`** (`lib/contacto-envio.ts`); la fase 3 la usará en las sugerencias de libro. No hay Redis: el almacén definitivo será Postgres (fase 4).
 
 | Fichero | Función |
 |---------|---------|
@@ -264,11 +264,13 @@ Lógica pura y testeable (reloj y almacén inyectados) para limitar el abuso de 
 | `honeypot.ts` | Token de formulario firmado con HMAC (`signFormToken`/`verifyFormToken`, `purpose` dentro de la firma, rotación con varios secretos) y campo trampa `website_url`. Secreto < 32 caracteres o de baja entropía lanza `SecurityConfigError`. Contrato: éxito falso solo para `honeypot` y `too_fast`; `expired`, `invalid_token` y `clock_skew` piden "recarga la página". El token es reutilizable 2 h (replay inherente; lo compensa el rate limit) |
 | `email-policy.ts` | Límites por tipo de correo (`DEFAULT_EMAIL_LIMITS`), `canonicalRecipient` (quita `+tag` y puntos de Gmail), `extractDomain` estricto, agregado `domain:institutional:<kind>` para `*.atlanticomedio.es`, tope global del buzón interno, `buildEmailRules` (autenticados: regla `ip` holgada y `user` estricta, por el NAT del campus) y `dedupeHash` |
 
+Uso actual en `/contacto` (2026-10-08): **exige sesión** (los lectores del campus; nombre, correo y rol salen de `getSession()`, nunca del formulario; sin sesión se muestra `ContactoLoginCard`). Orden en `procesarContacto`: sesión → honeypot (`website_url` + `form_token` firmado, secreto de `lib/security/config.ts`: `FORM_TOKEN_SECRET` o derivado por HMAC de `PAYLOAD_SECRET`) → validación (`lib/contacto.ts`: asunto 3-150 sin saltos, mensaje 10-2000) → límites (`user` 5/h y 20/día; regla `ip` de autenticados holgada y solo si la regla de usuario pasó; buzón interno 300/día **por tipo de correo**) → dedupe 10 min → envío → histórico. Si el SMTP falla se reembolsan los cupos (`refundLimits`). Variables nuevas (ver `env.local.Example`): `CONTACT_EMAIL_TO`, `FORM_TOKEN_SECRET`, `FORM_TOKEN_SECRET_PREVIOUS`, `TRUSTED_IP_HEADER`, `TRUSTED_IP_HOP`.
+
 Contrato para quien lo use (fases 2/3): si el store o `dedupeHash` lanzan, responder 503 **sin enviar**; `SecurityConfigError` es 500 controlado + log; registrar cada descarte silencioso y cada violación con dimensión y tipo; el destinatario de PIN/confirmación sale de la identidad autenticada, nunca del cuerpo de la petición. Requisitos operativos (fuera del repo): nginx debe **sobrescribir** `X-Real-IP`/`X-Forwarded-For` y el puerto 8085 del contenedor no debe estar expuesto, o la IP es falsificable; si la cabecera no coincide con los proxies reales todo el tráfico cae en `unknown`.
 
 ### Hooks
 
-Solo `sendEmail` tiene hook: `afterChange` que envía email de notificación.
+Ninguna collection tiene hooks de envío de correo: el de `sendEmail` se retiró el 2026-10-08 (el envío vive en las server actions, donde se aplican los límites).
 
 ---
 
