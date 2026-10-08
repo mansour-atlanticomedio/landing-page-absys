@@ -77,7 +77,7 @@ export default async function Servicios() {
               <p className="text-sm text-slate-600 mb-4">
                 Consulta el catálogo para localizar los libros y recursos disponibles y comprobar
                 su ubicación y disponibilidad.
-              </p> 
+              </p>
               <Link href={'/recursos/catalogo'}  >
                 <button className="bg-slate-800 text-white text-sm font-medium rounded-md px-4 py-2 cursor-pointer">
                   Ir al Catálogo
@@ -141,21 +141,6 @@ export default async function Servicios() {
           </div>
 
           <div className="space-y-6">
-            <div className="border rounded-lg p-6">
-              <h3 className="flex items-center gap-2 font-bold text-slate-800 mb-2">
-                <BookPlus className="h-4 w-4" /> Solicitud de compra
-              </h3>
-              <p className="text-sm text-slate-600 mb-4">
-                Propón la adquisición de libros u obras que necesites para tu docencia, estudio o investigación.
-              </p>
-              <Link href={sugerirLibroHref} >
-                <button className="w-full border-2 border-teal-700 text-teal-700 rounded-md py-2.5 font-medium cursor-pointer">
-                  Sugerir libro
-                </button>
-              </Link>
-              <p className="w-full text-xs text-center text-gray-400 mt-2" >Identifícate con tu cuenta para acceder</p>
-            </div>
-
             <div className="bg-slate-800 text-white rounded-lg p-6">
               <h3 className="flex items-center gap-2 font-bold mb-2">
                 <User className="h-4 w-4" /> Mi Cuenta
@@ -168,6 +153,24 @@ export default async function Servicios() {
                   Iniciar Sesión
                 </button>
               </Link>
+            </div>
+            <div className="border rounded-lg p-6">
+              <h3 className="flex items-center gap-2 font-bold text-slate-800 mb-2">
+                <BookPlus className="h-4 w-4" /> Solicitud de compra
+              </h3>
+              <p className="text-sm text-slate-600 mb-4">
+                Propón la adquisición de libros u obras que necesites para tu docencia, estudio o investigación.
+              </p>
+              <Link href={sugerirLibroHref} >
+                <button className="w-full border-2 border-teal-700 text-teal-700 rounded-md py-2.5 font-medium cursor-pointer">
+                  Sugerir libro
+                </button>
+              </Link>
+              {
+                !session && (
+                  <p className="w-full text-xs text-center text-gray-400 mt-2" >Identifícate con tu cuenta para acceder</p>
+                )
+              }
             </div>
           </div>
         </div>
