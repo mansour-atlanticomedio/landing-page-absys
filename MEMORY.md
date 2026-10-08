@@ -42,6 +42,14 @@ Comprobado: el formulario **no enviaba nada** (el modal era simulado) y el servi
 
 ---
 
+## 2026-10-08 — Rama `feat/seguridad-api-email`: arranque y primeros cierres
+
+Issue: capa de seguridad para la API y el correo (rate limiting por varias dimensiones, honeypot, cola con workers, kill switch). Se trabajó con `architect` (plan por fases) y `security-auditor` (línea base); el plan y los hallazgos están en la conversación y se irán volcando aquí fase a fase. Decisiones del usuario: empezar por la fase 0 (cerrar el control de acceso de collections/globals), contacto a `CONTACT_EMAIL_TO` (por defecto biblioteca@atlanticomedio.es) con `message` pasando de richText a texto, y no se sabe si habrá varias réplicas, así que los contadores van a Postgres desde el principio y la cabecera de IP será configurable.
+- Retirado `FEATURE_DEV_TOOLS` (ver entrada de abajo).
+- `POST /api/loginAbsys_service/login/:credentials` devuelve 404 en producción. **Consecuencia**: la pantalla `/login` antigua (`app/(auth)/login/page.tsx`) llama a ese endpoint, así que en producción no puede iniciar sesión (`/signin` sigue abierto). El login real es el del campus; hay que decidir qué pasa con esa pantalla y con el colectivo EXT.
+
+---
+
 ## 2026-10-08 — Simulador del campus tras un flag de entorno
 
 - **`lib/env.ts`**: `isProduction` y `devToolsEnabled` (`NODE_ENV !== production`; el flag `FEATURE_DEV_TOOLS` que se añadió aquí se **retiró el 2026-10-08** porque activarlo en producción habilitaba el simulador, que firma tokens para cualquier correo: la auditoría de seguridad lo marcó como toma de cuenta total). Aplicado solo al simulador del campus (`simular-campus/page.tsx`, `emitir/route.ts` y el fallback al simulador de `auth/login/route.ts`). Quedan con su `NODE_ENV` directo, sin migrar, los endpoints temporales de `LoginCampus.service.ts`, las cookies `secure` y los `console.log` de componentes. `NODE_ENV` no se define en el `.env` (lo gestiona Next; el Dockerfile fija `production`); 

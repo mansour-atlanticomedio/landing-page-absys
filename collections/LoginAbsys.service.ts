@@ -1,5 +1,6 @@
 import type { CollectionConfig, PayloadHandler } from "payload";
 import { absys, AbsysInvalidDataError, type Lector } from "@/lib/integrations/absys";
+import { isProduction } from "@/lib/env";
 
 const REQUIRED_FIELDS = ["leapel", "lenomb", "lepass", "lecolp", "ledi11"] as const;
 
@@ -12,7 +13,10 @@ const toLegacyLector = (lector: Lector) => ({
   lemail: lector.email
 });
 
+// Cerrado en producción: sin la comparación de contraseña (TODO F01) devuelve la ficha de cualquier lector solo con su email
 export const handleLoginLector: PayloadHandler = async (req) => {
+  if (isProduction) return jsonError("No disponible", 404);
+
   try {
     const { credentials } = req.routeParams as { credentials: string };
     const searchParams = Buffer.from(credentials || '', 'base64').toString('utf-8');
