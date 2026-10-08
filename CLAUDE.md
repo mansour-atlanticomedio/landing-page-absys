@@ -252,6 +252,20 @@ La web lee por Local API, que no pasa por `access`, así que cerrar la lectura R
 - Tras añadir o cambiar un `access` hay que reiniciar el contenedor (`docker restart biblioteca-frontend`), si no sigue activa la regla anterior.
 - Riesgo aceptado: `payload-locked-documents` conserva el default de Payload (un lector autenticado puede leerlo o crear locks falsos, sin acceso a contenido).
 
+### Capa anti-abuso (`lib/security/`, 2026-10-08)
+
+Lógica pura y testeable (reloj y almacén inyectados) para limitar el abuso de la API y del correo. **Aún no está conectada a ningún handler**: las fases 2 y 3 la usan en el formulario de contacto y en las sugerencias de libro. No hay Redis: el almacén definitivo será Postgres (fase 4).
+
+| Fichero | Función |
+|---------|---------|
+| `rate-limit.ts` | `checkLimits(store, reglas, now)`: ventana deslizante en **dos niveles**. Primero las reglas de *actor* (`ip`, `user`, `apiKey`): siempre se incrementan (insistir penaliza) con tope `limit+1`; si alguna se viola se rechaza **sin tocar** los contadores compartidos. Después las *compartidas* (`recipient`, `domain`, `global`): `peek` y solo si todas pasan se incrementan (con compensación `decrement` si una carrera las desborda). Una petición rechazada no quema cuota ajena. Límite 0, ventana inválida o clave vacía fallan cerrado |
+| `stores/memory.ts` | `RateLimitStore` en memoria (`getMemoryStore()` singleton en `globalThis`). **Solo dev / una réplica**: producción multi-réplica exige el store Postgres atómico. Cuota de claves por dimensión con cubos de desbordamiento por hash (no expulsa contadores vivos), hook `onPressure` al 80 % |
+| `client-ip.ts` | `getClientIp` lee la IP solo de la cabecera de confianza configurada (`trustedHeader`, `trustedHopFromRight`); sin ella devuelve `unknown`. IPv6 se agrupa por /64 (`ipRateLimitKey`) |
+| `honeypot.ts` | Token de formulario firmado con HMAC (`signFormToken`/`verifyFormToken`, `purpose` dentro de la firma, rotación con varios secretos) y campo trampa `website_url`. Secreto < 32 caracteres o de baja entropía lanza `SecurityConfigError`. Contrato: éxito falso solo para `honeypot` y `too_fast`; `expired`, `invalid_token` y `clock_skew` piden "recarga la página". El token es reutilizable 2 h (replay inherente; lo compensa el rate limit) |
+| `email-policy.ts` | Límites por tipo de correo (`DEFAULT_EMAIL_LIMITS`), `canonicalRecipient` (quita `+tag` y puntos de Gmail), `extractDomain` estricto, agregado `domain:institutional:<kind>` para `*.atlanticomedio.es`, tope global del buzón interno, `buildEmailRules` (autenticados: regla `ip` holgada y `user` estricta, por el NAT del campus) y `dedupeHash` |
+
+Contrato para quien lo use (fases 2/3): si el store o `dedupeHash` lanzan, responder 503 **sin enviar**; `SecurityConfigError` es 500 controlado + log; registrar cada descarte silencioso y cada violación con dimensión y tipo; el destinatario de PIN/confirmación sale de la identidad autenticada, nunca del cuerpo de la petición. Requisitos operativos (fuera del repo): nginx debe **sobrescribir** `X-Real-IP`/`X-Forwarded-For` y el puerto 8085 del contenedor no debe estar expuesto, o la IP es falsificable; si la cabecera no coincide con los proxies reales todo el tráfico cae en `unknown`.
+
 ### Hooks
 
 Solo `sendEmail` tiene hook: `afterChange` que envía email de notificación.

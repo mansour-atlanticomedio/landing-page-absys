@@ -42,6 +42,21 @@ Comprobado: el formulario **no enviaba nada** (el modal era simulado) y el servi
 
 ---
 
+## 2026-10-08 — Fase 1 de seguridad: `lib/security/` (limitadores, honeypot y política de correo)
+
+Funciones puras con almacén y reloj inyectados, sin conectar todavía (estado y contrato en `CLAUDE.md` → "Capa anti-abuso"). Tres rondas de revisión (reviewer + security-auditor) rediseñaron lo que salió de la primera versión: el limitador **incrementaba todas las reglas aunque una fallara**, así que una sola IP podía agotar el cupo de dominio/destinatario de terceros (p. ej. bloquear los PIN de `alu.atlanticomedio.es`); ahora hay dos niveles (actor/compartido) con `peek`, tope `limit+1` y compensación. También se cerraron: expulsión de contadores por inundación de claves, IPv6 sin agrupar, alias `+tag`/Gmail y buzón interno, secreto vacío del honeypot, `windowMs` inválido que fallaba abierto, reloj hacia atrás y falsos positivos del honeypot.
+Probado: `tsc` limpio y 231 tests (134 en `lib/security`) con los escenarios de ataque (saturación, NAT del campus con 30 usuarios, 20 peticiones concurrentes). **No probado**: nada en vivo, porque aún no está conectado.
+
+### Qué quedó pendiente
+- **Saturación (residual):** tras llenar una dimensión con ~5000 /64 distintos, ~24 % de IPs nuevas legítimas caen en cubos ya bloqueados (medido: 762 de 1000). Mitigación real: store Postgres con TTL (fase 4).
+- **`internal-mailbox` (200/día global):** unas ~20 IPs distintas pueden agotarlo y bloquear el contacto de todos. Decisión de producto pendiente: aceptarlo, o exigir sesión/captcha en `/contacto`.
+- **Agregado institucional 1000/día por tipo:** valor inicial a confirmar con el volumen real (matrícula).
+- **Store Postgres (fase 4):** `increment` atómico con `cap`, `peek`, `decrement`, y a ser posible un `incrementMany` transaccional; purga de ventanas caducadas y reloj consistente entre réplicas.
+- **Ops:** nginx sobrescribe la IP real, puerto 8085 solo en localhost, `trustedHopFromRight` acorde a los proxies reales, alerta cuando se vea `unknown` en producción.
+- Dedupe: es solo anti-duplicado accidental (homoglifos y espacios Unicode no-Cf lo esquivan); el rate limit es el control real.
+
+---
+
 ## 2026-10-08 — Fase 0 de seguridad: `access` explícito en todo Payload
 
 Se **confirmó** en dev el hallazgo de la auditoría: con la cookie de un lector del campus, `POST /api/users` creaba un admin (201), y `POST/PATCH/DELETE` de contenido y `GET /api/users|sendEmail|loginAbsys_service` también funcionaban. Tras el cambio todo da 403 (con lector y anónimo). Detalle de reglas en `CLAUDE.md` → "Access Control". Pasaron `reviewer` (sin bloqueantes) y `security-auditor` (veredicto: cierra la escalada original; dos residuales de Payload). De ahí: `unlock: isAdmin` en las 3 collections auth (su default permitía a un lector resetear el bloqueo de un admin y hacer fuerza bruta alternando `login`/`unlock`) y `isAdminOrSelf` renombrado a `isAdminOrSelfReader` (su filtro por id no distingue collections). Probado en vivo con cookie de lector tras reiniciar el contenedor: `unlock` y `POST /users` dan 403. No hay schema, no hay migración.
