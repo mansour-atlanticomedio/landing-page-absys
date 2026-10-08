@@ -100,7 +100,7 @@ Payload Admin → Globals → Collections → Pages → RenderBlocks → Compone
 | `absys_service` | `collections/Absys.service.ts` | `GET /:name` (buscar recurso), `GET /` (búsqueda con paginación `?page`, `?limit`, `?search`) | `NEXT_ABSYS_API` + Basic Auth |
 | `book_cover_service` | `collections/BookCovers.service.ts` | `GET /cover/:isbn` (cascade: Amazon → Google Books → Open Library → null), `GET /` (health check) | Amazon CDN, Google Books API, Open Library API |
 | `author_service` | `collections/Author.service.ts` | `GET /:authorName`, `GET /` | Wikipedia en español (búsqueda estricta con keyword matching) |
-| `loginAbsys_service` | `collections/LoginAbsys.service.ts` | `POST /signin` (crear lector), `POST /login/:credentials` (autenticar; **404 en producción** desde 2026-10-08: sin comparación de contraseña devolvía la ficha de cualquier lector solo con su email, así que la pantalla `/login` antigua no puede iniciar sesión en producción), `GET /me` (perfil) | `NEXT_ABSYS_API` + Basic Auth. Auth collection con `tokenExpiration: 1800` |
+| `loginAbsys_service` | `collections/LoginAbsys.service.ts` | `POST /signin` (crear lector; **404 en producción** desde 2026-10-08, era anónimo y daba de alta lectores reales en Absys eligiendo el colectivo, y la pantalla `/login` antigua no puede registrar en producción), `POST /login/:credentials` (autenticar; **404 en producción** desde 2026-10-08: sin comparación de contraseña devolvía la ficha de cualquier lector solo con su email, así que la pantalla `/login` antigua no puede iniciar sesión en producción), `GET /me` (perfil) | `NEXT_ABSYS_API` + Basic Auth. Auth collection con `tokenExpiration: 1800` |
 
 | `loginCampus_service` | `collections/LoginCampus.service.ts` | `POST /login/password/:id` y `POST /api/loginCampus/login/password[/:id]` (global) — **temporales**, solo dev, prueban el descifrado del token | Auth collection de los lectores que entran desde el campus (ver "Login desde el campus"). Campos: `absysId`, `nombre`, `apellidos`, `colectivo`... Migración `20260928_114829_login_campus` |
 
@@ -250,7 +250,7 @@ La web lee por Local API, que no pasa por `access`, así que cerrar la lectura R
 - `unlock` hay que declararlo en cada collection `auth`: su default permite a cualquier usuario autenticado resetear el bloqueo de otro.
 - `media`: solo jpeg, png, webp y avif (sin SVG) y `upload.limits.fileSize` de 10 MB en `payload.config.ts`.
 - Tras añadir o cambiar un `access` hay que reiniciar el contenedor (`docker restart biblioteca-frontend`), si no sigue activa la regla anterior.
-- Abierto a propósito o pendiente: `payload-locked-documents` conserva el default de Payload (un lector autenticado puede leerlo o crear locks falsos); `POST /api/loginAbsys_service/signin` sigue anónimo.
+- Riesgo aceptado: `payload-locked-documents` conserva el default de Payload (un lector autenticado puede leerlo o crear locks falsos, sin acceso a contenido).
 
 ### Hooks
 

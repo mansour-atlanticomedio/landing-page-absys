@@ -48,8 +48,8 @@ Se **confirmó** en dev el hallazgo de la auditoría: con la cookie de un lector
 
 ### Qué quedó pendiente
 - `payload-locked-documents` (default de Payload: un lector puede leer o crear locks falsos; arreglo posible `lockDocuments: false` en todas las collections/globals).
-- `POST /api/loginAbsys_service/signin` anónimo (crea lectores reales en Absys con `colectivo` a elección): decisión del usuario.
-- `collections/Library.ts` (no registrada, `create` abierto) y las llamadas a `/api/library/` de `BooksList`/`/libros`, que dan 404.
+- *(resuelto después)* `signin` cerrado en producción y `collections/Library.ts` eliminada; `payload-locked-documents` es riesgo aceptado por el usuario.
+- `BooksList` (página `/biblioteca`) y `/libros` siguen llamando a `/api/library/`, que no existe: dan 404 y muestran lista vacía.
 - No verificado: que un admin real edite tras el cambio (sin credenciales en dev), el `/first-register` real, y subir SVG o más de 10 MB.
 - `POST /api/sendEmail` sigue abierto hasta la fase 2.
 - El seed de solicitud de compra no es idempotente (duplica docs e imagen en cada ejecución).

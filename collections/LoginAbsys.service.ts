@@ -47,7 +47,10 @@ const jsonError = (message: string, status = 500) =>
   Response.json({ success: false, message }, { status });
 
 
+// Cerrado en producción: era anónimo y daba de alta lectores reales en Absys eligiendo el colectivo
 export const handleCreateLector: PayloadHandler = async (req) => {
+  if (isProduction) return jsonError("No disponible", 404);
+
   try {
     let body: Record<string, any> = {};
  
