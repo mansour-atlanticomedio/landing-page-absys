@@ -1,10 +1,11 @@
 import { notFound } from "next/navigation";
 import SimularCampusForm from "@/components/auth/SimularCampusForm";
 import { safeNextPath } from "@/lib/auth/redirects";
+import { devToolsEnabled } from "@/lib/env";
 
 // Solo desarrollo: sustituye al campus mientras Daniel no tenga lista la redirección real
 export default async function SimularCampusPage({ searchParams }: { searchParams: Promise<{ next?: string }> }) {
-  if (process.env.NODE_ENV === "production") notFound();
+  if (!devToolsEnabled) notFound();
 
   const { next } = await searchParams;
 
