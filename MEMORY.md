@@ -42,6 +42,20 @@ Comprobado: el formulario **no enviaba nada** (el modal era simulado) y el servi
 
 ---
 
+## 2026-10-08 — Fase 0 de seguridad: `access` explícito en todo Payload
+
+Se **confirmó** en dev el hallazgo de la auditoría: con la cookie de un lector del campus, `POST /api/users` creaba un admin (201), y `POST/PATCH/DELETE` de contenido y `GET /api/users|sendEmail|loginAbsys_service` también funcionaban. Tras el cambio todo da 403 (con lector y anónimo). Detalle de reglas en `CLAUDE.md` → "Access Control". Pasaron `reviewer` (sin bloqueantes) y `security-auditor` (veredicto: cierra la escalada original; dos residuales de Payload). De ahí: `unlock: isAdmin` en las 3 collections auth (su default permitía a un lector resetear el bloqueo de un admin y hacer fuerza bruta alternando `login`/`unlock`) y `isAdminOrSelf` renombrado a `isAdminOrSelfReader` (su filtro por id no distingue collections). Probado en vivo con cookie de lector tras reiniciar el contenedor: `unlock` y `POST /users` dan 403. No hay schema, no hay migración.
+
+### Qué quedó pendiente
+- `payload-locked-documents` (default de Payload: un lector puede leer o crear locks falsos; arreglo posible `lockDocuments: false` en todas las collections/globals).
+- `POST /api/loginAbsys_service/signin` anónimo (crea lectores reales en Absys con `colectivo` a elección): decisión del usuario.
+- `collections/Library.ts` (no registrada, `create` abierto) y las llamadas a `/api/library/` de `BooksList`/`/libros`, que dan 404.
+- No verificado: que un admin real edite tras el cambio (sin credenciales en dev), el `/first-register` real, y subir SVG o más de 10 MB.
+- `POST /api/sendEmail` sigue abierto hasta la fase 2.
+- El seed de solicitud de compra no es idempotente (duplica docs e imagen en cada ejecución).
+
+---
+
 ## 2026-10-08 — Rama `feat/seguridad-api-email`: arranque y primeros cierres
 
 Issue: capa de seguridad para la API y el correo (rate limiting por varias dimensiones, honeypot, cola con workers, kill switch). Se trabajó con `architect` (plan por fases) y `security-auditor` (línea base); el plan y los hallazgos están en la conversación y se irán volcando aquí fase a fase. Decisiones del usuario: empezar por la fase 0 (cerrar el control de acceso de collections/globals), contacto a `CONTACT_EMAIL_TO` (por defecto biblioteca@atlanticomedio.es) con `message` pasando de richText a texto, y no se sabe si habrá varias réplicas, así que los contadores van a Postgres desde el principio y la cabecera de IP será configurable.

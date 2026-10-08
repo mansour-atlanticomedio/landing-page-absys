@@ -230,17 +230,27 @@ information). `legal_advice`/`privacy_policie`/`privacy_cookies` siguen siendo t
 
 ### Access Control
 
-| Collection | Regla | Efecto |
-|------------|-------|--------|
-| `hero` | `read: () => true` | Público |
-| `media` | `read: () => true` | Público |
-| `header` | `read: () => true` | Público |
-| `login_page` | `read: () => true` | Público |
-| `sendEmail` | `create: () => true` | Cualquiera puede crear |
-| `absys_service` | `read: () => true` | Público |
-| `book_cover_service` | `read: () => true`, `create: () => true` | Totalmente abierto |
-| `author_service` | `read: () => true` | Público |
-| `loginAbsys_service` | `read: (user) => user !== null` | Solo autenticados |
+Desde 2026-10-08 **toda collection y global tiene `access` explícito** (`lib/access.ts`). Antes, sin `access`, Payload
+usaba `Boolean(user)` y cualquier lector del campus podía por REST crear admins en `users`, editar/borrar contenido,
+subir ficheros y leer los mensajes de contacto. Al registrar una collection o global nuevo hay que declarar su `access`
+(no dejar el default). Las funciones: `isAdmin` (`user.collection === 'users'`), `anyone`, `isAdminOrSelfReader`
+(solo para `loginCampus_service`), y los conjuntos `adminOnly`, `publicReadAdminWrite` y `adminOnlyGlobal`.
+La web lee por Local API, que no pasa por `access`, así que cerrar la lectura REST no afecta a las páginas.
+
+| Collection / global | Regla | Efecto |
+|---------------------|-------|--------|
+| `hero`, `media`, `header`, `login_page`, `absys_service`, `author_service` | `publicReadAdminWrite` | Lectura pública, escritura solo admin |
+| `book_cover_service` | `read` público; create/update/delete admin | Se quitó el `create` abierto |
+| `sendEmail` | `create: () => true` (**temporal**, hasta mover /contacto a server action); read/update/delete admin | Cualquiera puede crear, nadie salvo admin lee |
+| `users`, `loginAbsys_service` | todo `isAdmin`, `unlock: isAdmin`, `admin: () => false` en las de lectores | Solo admin |
+| `loginCampus_service` | read `isAdminOrSelfReader` (el lector solo se lee a sí mismo), resto `isAdmin` | Ver "Login desde el campus" |
+| Resto de collections de contenido | `adminOnly` | Solo admin (la web las lee por Local API) |
+| Los 13 globals | `adminOnlyGlobal` | Solo admin |
+
+- `unlock` hay que declararlo en cada collection `auth`: su default permite a cualquier usuario autenticado resetear el bloqueo de otro.
+- `media`: solo jpeg, png, webp y avif (sin SVG) y `upload.limits.fileSize` de 10 MB en `payload.config.ts`.
+- Tras añadir o cambiar un `access` hay que reiniciar el contenedor (`docker restart biblioteca-frontend`), si no sigue activa la regla anterior.
+- Abierto a propósito o pendiente: `payload-locked-documents` conserva el default de Payload (un lector autenticado puede leerlo o crear locks falsos); `POST /api/loginAbsys_service/signin` sigue anónimo.
 
 ### Hooks
 

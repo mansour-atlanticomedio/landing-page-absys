@@ -1,7 +1,9 @@
 import type { GlobalConfig } from "payload";
+import { adminOnlyGlobal } from "@/lib/access";
 
 export const QuienesSomos: GlobalConfig = {
     slug: 'quienes_somos',
+    access: adminOnlyGlobal,
     label: 'Quiénes Somos',
     fields: [
         {

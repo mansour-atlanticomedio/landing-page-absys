@@ -1,8 +1,10 @@
 import type { CollectionConfig } from "payload";
 import { iconsSocialMedia } from "./Icons.ts";
+import { adminOnly } from "@/lib/access";
 
 export const Speakers: CollectionConfig = {
     slug: 'speakers',
+    access: adminOnly,
     labels: {
         singular: 'Ponentes',
         plural: 'Ponentes'

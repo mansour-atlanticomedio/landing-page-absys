@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { publicReadAdminWrite } from '@/lib/access'
 
 export const Media: CollectionConfig = {
   slug: 'media',
@@ -6,9 +7,7 @@ export const Media: CollectionConfig = {
     singular: 'Imagen',
     plural: 'Galeria de Imagenes'
   },
-  access: {
-    read: () => true  
-  },
+  access: publicReadAdminWrite,
   fields: [
     {
       name: 'alt',
@@ -26,6 +25,6 @@ export const Media: CollectionConfig = {
         position: 'centre',
       },
     ],
-    mimeTypes: ['image/*']
+    mimeTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/avif'],
   },
 }

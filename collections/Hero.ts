@@ -1,13 +1,12 @@
 import type { CollectionConfig } from "payload"
+import { publicReadAdminWrite } from "@/lib/access";
 
 export const Hero: CollectionConfig = {
     slug: 'hero',
     admin: {
         useAsTitle: 'title'
     },
-    access: {
-        read: () => true,
-    },
+    access: publicReadAdminWrite,
     labels: {
         singular: 'Seccion Principal',
         plural: 'Seccion Principal'

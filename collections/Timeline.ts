@@ -1,7 +1,9 @@
 import type { CollectionConfig } from "payload";
+import { adminOnly } from "@/lib/access";
 
 export const Timeline: CollectionConfig = {
     slug: 'timeline',
+    access: adminOnly,
     labels: {
         singular: 'Línea del tiempo',
         plural: 'Línea del tiempo'

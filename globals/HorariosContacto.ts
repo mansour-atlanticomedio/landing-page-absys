@@ -1,7 +1,9 @@
 import type { GlobalConfig } from "payload";
+import { adminOnlyGlobal } from "@/lib/access";
 
 export const HorariosContacto: GlobalConfig = {
     slug: 'horarios_contacto',
+    access: adminOnlyGlobal,
     label: 'Horarios, Ubicación y Contacto',
     fields: [
         {

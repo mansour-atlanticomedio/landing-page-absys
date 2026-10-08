@@ -1,7 +1,9 @@
 import type { CollectionConfig } from "payload";
+import { adminOnly } from "@/lib/access";
 
 export const PartnersCollection : CollectionConfig = {
     slug: 'partners',
+    access: adminOnly,
     labels: {
         singular: 'Patrocinador',
         plural: 'Patrocinadores',

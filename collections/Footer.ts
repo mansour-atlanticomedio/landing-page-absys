@@ -1,9 +1,11 @@
 import { CollectionConfig } from "payload";
 import { enlaceFields } from "./fields/enlace";
 import { appIcons, iconsSocialMedia } from "./Icons";
+import { adminOnly } from "@/lib/access";
 
 export const Footer: CollectionConfig = {
     slug: 'footer',
+    access: adminOnly,
     labels: {
         singular: 'Pie de pagina',
         plural: 'pie de pagina'

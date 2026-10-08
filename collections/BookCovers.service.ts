@@ -1,4 +1,5 @@
 import type { CollectionConfig } from "payload";
+import { isAdmin } from "@/lib/access";
 
 // Función auxiliar para convertir ISBN-13 (978...) a ISBN-10 de forma matemática
 function convertIsbn13To10(isbn: string): string | null {
@@ -33,7 +34,9 @@ export const BookCoverService: CollectionConfig = {
     },
     access: {
         read: () => true, // Permite que tu frontend Next.js consulte sin problemas de permisos
-        create: () => true,
+        create: isAdmin,
+        update: isAdmin,
+        delete: isAdmin,
     },
     fields: [
         {

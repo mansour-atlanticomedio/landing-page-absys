@@ -1,7 +1,9 @@
 import type { CollectionConfig } from "payload";
+import { adminOnly } from "@/lib/access";
 
 export const BlogsCollection: CollectionConfig = {
     slug: 'blogs',
+    access: adminOnly,
     labels: {
         singular: 'Sección de Blog',
         plural: 'Secciones de Blogs'

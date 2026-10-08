@@ -119,6 +119,8 @@ export default buildConfig({
       connectionString: process.env.DATABASE_URI || process.env.DATABASE_URL || "",
     },
   }),
+  // Tope de tamaño de subida (solo hay una collection de upload: media)
+  upload: { limits: { fileSize: 10 * 1024 * 1024 } },
   sharp,
   plugins: [],
   email: nodemailerAdapter({

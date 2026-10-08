@@ -1,5 +1,6 @@
 import path from "node:path"
 import type { CollectionConfig, Payload } from "payload"
+import { isAdmin } from "@/lib/access"
 
 const SITE_URL = process.env.NEXT_PUBLIC_SERVER_URL || "https://www.atlanticomedio.es/biblioteca"
 const CONTACT_PHONE = "+34 828 019 019"
@@ -282,7 +283,11 @@ export const Email: CollectionConfig = {
         hidden: true
     },
     access: {
+        // Abierto solo mientras /contacto envíe por REST; cerrar al pasar a server action
         create: () => true,
+        read: isAdmin,
+        update: isAdmin,
+        delete: isAdmin,
     },
     fields: [
         {

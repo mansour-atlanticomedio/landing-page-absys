@@ -1,7 +1,9 @@
 import type { CollectionConfig } from "payload";
+import { adminOnly } from "@/lib/access";
 
 export const FAQ : CollectionConfig = {
     slug: 'faq',
+    access: adminOnly,
     labels: {
         singular: "Preguntas Frecuentes",
         plural: "Preguntas Frecuentes"

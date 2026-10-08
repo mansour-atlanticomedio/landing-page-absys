@@ -1,7 +1,9 @@
 import type { GlobalConfig } from "payload";
+import { adminOnlyGlobal } from "@/lib/access";
 
 export const Repositories: GlobalConfig = {
     slug: 'repository',
+    access: adminOnlyGlobal,
     label: 'Repositorios',
     fields: [
         {

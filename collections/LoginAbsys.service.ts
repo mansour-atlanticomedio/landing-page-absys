@@ -1,4 +1,5 @@
 import type { CollectionConfig, PayloadHandler } from "payload";
+import { isAdmin } from "@/lib/access";
 import { absys, AbsysInvalidDataError, type Lector } from "@/lib/integrations/absys";
 import { isProduction } from "@/lib/env";
 
@@ -140,10 +141,12 @@ export const LoginAbsysService: CollectionConfig = {
     useAsTitle: "email",
   },
   access: {
-    read: ({ req: { user } }) => {
-      if (!user) return false;
-      return true;
-    },
+    read: isAdmin,
+    create: isAdmin,
+    update: isAdmin,
+    delete: isAdmin,
+    unlock: isAdmin,
+    admin: () => false,
   },
   fields: [
     { name: "dni", type: "text", required: true, unique: true, index: true },

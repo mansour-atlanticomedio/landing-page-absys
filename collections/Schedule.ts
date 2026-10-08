@@ -1,7 +1,9 @@
 import type { CollectionConfig } from "payload";
+import { adminOnly } from "@/lib/access";
 
 export const Schedule: CollectionConfig = {
     slug: 'schedule',
+    access: adminOnly,
     labels: {
         singular: 'Horario',
         plural: 'Horarios',

@@ -1,7 +1,9 @@
 import { GlobalConfig } from "payload";
+import { adminOnlyGlobal } from "@/lib/access";
 
 export const Formation : GlobalConfig = {
     slug: "formation",
+    access: adminOnlyGlobal,
     label: "Formación",
     fields: [
     {

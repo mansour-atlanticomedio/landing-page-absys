@@ -1,8 +1,10 @@
 import type { CollectionConfig } from "payload";
 import { appIcons } from './Icons.ts'
+import { adminOnly } from "@/lib/access";
 
 export const ElectronicResourcesAccess: CollectionConfig = {
     slug: 'electronic_resources_access',
+    access: adminOnly,
     labels: {
         singular: 'Acceso Destacado',
         plural: 'Accesos Destacados'

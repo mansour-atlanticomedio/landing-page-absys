@@ -1,8 +1,10 @@
 import { GlobalConfig } from "payload";
 import { ENLACES_EXTERNOS_KEYS } from "@/lib/links";
+import { adminOnlyGlobal } from "@/lib/access";
 
 export const Layout : GlobalConfig = {
     slug: 'layout',
+    access: adminOnlyGlobal,
     label: 'Plantilla',
     fields: [
         {
