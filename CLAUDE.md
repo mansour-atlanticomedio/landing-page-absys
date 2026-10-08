@@ -135,7 +135,7 @@ Pendientes conocidos (marcados con `TODO` en el código): `lepassLegacy` / compa
 
 | Slug | Fichero | Hook |
 |------|---------|------|
-| `sendEmail` | `collections/Email.service.ts` | `afterChange` → envía email a `mansourlol440@gmail.com` con asunto `Nuevo mensaje: ${doc.about}`. Campos: `name`, `email`, `about`, `message` (richText) |
+| `sendEmail` | `collections/Email.service.ts` | `afterChange` → envía email a `mansourlol440@gmail.com` con asunto `Nuevo mensaje: ${doc.about}`. Campos: `name`, `email`, `about`, `message` (richText). El mismo fichero exporta los correos transaccionales (PIN, bienvenida, préstamos, sugerencia de libro): todos pasan por `sendBrandedEmail`, que usa la plantilla `emailLayout` (cabecera blanca con el escudo `public/logos/unam-color-logo.png` incrustado por `cid`, filete turquesa, pie con datos de contacto) |
 
 #### Constantes compartidas (no es collection)
 

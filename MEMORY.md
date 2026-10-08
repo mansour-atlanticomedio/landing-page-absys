@@ -18,6 +18,14 @@ regla de cuándo añadir una entrada (obligatorio al terminar cada tarea).
 
 ---
 
+## 2026-10-08 — Correos con logo de la UNAM
+
+- **Correos** (`collections/Email.service.ts`): cabecera blanca con el escudo de la UNAM (`public/logos/unam-color-logo.png`, ya incluido en la imagen Docker) y filete turquesa, y pie con la dirección y una nota de mensaje automático. El logo va **incrustado por `cid`** como adjunto inline en vez de enlazado por URL: se ve en desarrollo y no depende de que el sitio sea público ni de que el cliente bloquee imágenes remotas. Todos los envíos pasan por `sendBrandedEmail` para no olvidar el adjunto.
+- Probado: `tsc` limpio; correos construidos con el transporte de pruebas de nodemailer (parte `Content-ID: <unam-logo>` y PNG presentes). **No probado**: el aspecto en Gmail/Outlook reales ni el envío SMTP real.
+- Observado sin tocar: el aviso de `/contacto` (`sendEmail`) mete `doc.message` (richText Lexical) directamente en el HTML, así que sale `[object Object]`, y los datos del formulario no se escapan.
+
+---
+
 ## 2026-10-07 — Envío real del formulario de sugerencia de libros por correo
 
 ### Qué se hizo y por qué
