@@ -44,7 +44,7 @@ Comprobado: el formulario **no enviaba nada** (el modal era simulado) y el servi
 
 ## 2026-10-08 — Simulador del campus tras un flag de entorno
 
-- **`lib/env.ts`**: `isProduction` y `devToolsEnabled` (`NODE_ENV !== production` o `FEATURE_DEV_TOOLS=true`). Aplicado solo al simulador del campus (`simular-campus/page.tsx`, `emitir/route.ts` y el fallback al simulador de `auth/login/route.ts`). Quedan con su `NODE_ENV` directo, sin migrar, los endpoints temporales de `LoginCampus.service.ts`, las cookies `secure` y los `console.log` de componentes. `NODE_ENV` no se define en el `.env` (lo gestiona Next; el Dockerfile fija `production`); `FEATURE_DEV_TOOLS` sí, y es variable de servidor (se lee en runtime, no hace falta rebuild).
+- **`lib/env.ts`**: `isProduction` y `devToolsEnabled` (`NODE_ENV !== production`; el flag `FEATURE_DEV_TOOLS` que se añadió aquí se **retiró el 2026-10-08** porque activarlo en producción habilitaba el simulador, que firma tokens para cualquier correo: la auditoría de seguridad lo marcó como toma de cuenta total). Aplicado solo al simulador del campus (`simular-campus/page.tsx`, `emitir/route.ts` y el fallback al simulador de `auth/login/route.ts`). Quedan con su `NODE_ENV` directo, sin migrar, los endpoints temporales de `LoginCampus.service.ts`, las cookies `secure` y los `console.log` de componentes. `NODE_ENV` no se define en el `.env` (lo gestiona Next; el Dockerfile fija `production`); 
 - Probado: `tsc` limpio; `devToolsEnabled` con development / production / production+flag; el simulador sigue en 200 en dev. **No probado**: el 404 con un build de producción real.
 
 ---
