@@ -43,7 +43,7 @@ export default function News({ title, visible_cards, style, newsItems }: NewsBox
         : items;
 
     return (
-        <section id="noticias" className="bg-background py-10">
+        <section id="noticias" className="bg-background py-10 scroll-mt-24">
             <div className="mx-auto max-w-7xl px-6">
                 <div className="mb-10 flex items-end justify-between">
                     {title != null && title != '' &&

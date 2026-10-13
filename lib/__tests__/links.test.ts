@@ -1,27 +1,70 @@
 import { describe, expect, it } from "vitest";
-import { resolveEnlaceExterno } from "../links";
+import { resolveEnlace, resolveFooterLinks, resolveNavbar } from "../links";
 
-const enlaces = [
-  { key: "opac", label: "Catálogo OPAC", url: "https://demo.baratz.es/opac" },
-  { key: "dspace", label: "Repositorio institucional", url: "https://repositorio.atlanticomedio.es" },
-];
+const enlaces = [{ key: "dspace", label: "DSpace", url: "https://repo.example.com" }];
 
-describe("resolveEnlaceExterno", () => {
-  it("devuelve la URL del enlace configurado en Payload", () => {
-    expect(resolveEnlaceExterno(enlaces, "opac", "https://fallback.example")).toBe("https://demo.baratz.es/opac");
+describe("resolveEnlace", () => {
+  it("trata un enlace sin tipo como interno", () => {
+    expect(resolveEnlace({ to: "/servicios" }, enlaces)).toEqual({ href: "/servicios", external: false, newTab: false });
   });
 
-  it("usa el fallback si no hay ningún enlace con ese key", () => {
-    expect(resolveEnlaceExterno(enlaces, "instagram", "https://fallback.example")).toBe("https://fallback.example");
+  it("un interno con http sigue siendo externo (datos anteriores a tipo)", () => {
+    expect(resolveEnlace({ to: "http://x.es/a" }, enlaces)).toEqual({ href: "http://x.es/a", external: true, newTab: true });
   });
 
-  it("usa el fallback si el enlace existe pero su url está vacía", () => {
-    const conUrlVacia = [{ key: "opac", label: "Catálogo OPAC", url: "" }];
-    expect(resolveEnlaceExterno(conUrlVacia, "opac", "https://fallback.example")).toBe("https://fallback.example");
+  it("resuelve una ancla de la lista cerrada", () => {
+    expect(resolveEnlace({ tipo: "ancla", ancla: "investigacion-apoyo" }, enlaces).href).toBe("/investigacion#cta-apoyo");
+    expect(resolveEnlace({ tipo: "ancla", ancla: "home-noticias" }, enlaces).href).toBe("/#noticias");
   });
 
-  it("usa el fallback si enlaces es null o undefined", () => {
-    expect(resolveEnlaceExterno(null, "opac", "https://fallback.example")).toBe("https://fallback.example");
-    expect(resolveEnlaceExterno(undefined, "opac", "https://fallback.example")).toBe("https://fallback.example");
+  it("ancla desconocida no tiene destino", () => {
+    expect(resolveEnlace({ tipo: "ancla", ancla: "no-existe" }, enlaces).href).toBeUndefined();
+  });
+
+  it("resuelve una key del registro y respeta nueva_pestana", () => {
+    expect(resolveEnlace({ tipo: "registro", enlace_key: "dspace", nueva_pestana: false }, enlaces)).toEqual({
+      href: "https://repo.example.com",
+      external: true,
+      newTab: false,
+    });
+  });
+
+  it("key sin entrada en el registro no tiene destino", () => {
+    expect(resolveEnlace({ tipo: "registro", enlace_key: "opac" }, enlaces).href).toBeUndefined();
+  });
+
+  it("externo lee url y, si no, el campo legacy link", () => {
+    expect(resolveEnlace({ tipo: "externo", url: "https://a.es" }, enlaces).href).toBe("https://a.es");
+    expect(resolveEnlace({ tipo: "externo", link: "https://b.es" }, enlaces).href).toBe("https://b.es");
+  });
+});
+
+describe("resolveNavbar", () => {
+  it("descarta desplegables sin destino y secciones vacías, conserva padres con hijos", () => {
+    const result = resolveNavbar(
+      [
+        { name: "recursos", items: [{ label: "OPAC", tipo: "registro", enlace_key: "opac" }, { label: "DSpace", tipo: "registro", enlace_key: "dspace" }] },
+        { name: "vacía", tipo: "registro", enlace_key: "opac", items: [] },
+        { name: "inicio", to: "/" },
+      ],
+      enlaces
+    );
+    expect(result.map((s) => s.name)).toEqual(["recursos", "inicio"]);
+    expect(result[0].items).toHaveLength(1);
+  });
+});
+
+describe("resolveFooterLinks", () => {
+  it("descarta redes sin destino y conserva filas de información sin enlace", () => {
+    const result = resolveFooterLinks(
+      {
+        social_medias: [{ icon: "FaYoutube", tipo: "registro", enlace_key: "youtube" }, { icon: "FaFacebook", tipo: "externo", url: "https://fb.com/x" }],
+        seccion_info: [{ title: "Servicio", information: [{ label: "Horario" }, { label: "Tel", tipo: "externo", url: "tel:+34" }] }],
+      },
+      enlaces
+    );
+    expect(result.social_medias).toHaveLength(1);
+    expect(result.seccion_info[0].information[0].href).toBeUndefined();
+    expect(result.seccion_info[0].information).toHaveLength(2);
   });
 });

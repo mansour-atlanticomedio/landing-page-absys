@@ -1,4 +1,5 @@
 import { CollectionConfig } from "payload";
+import { enlaceFields } from "./fields/enlace";
 import { appIcons, iconsSocialMedia } from "./Icons";
 
 export const Footer: CollectionConfig = {
@@ -40,11 +41,7 @@ export const Footer: CollectionConfig = {
                     type: 'select',
                     options: iconsSocialMedia
                 },
-                {
-                    name: 'link',
-                    label: 'Enlace',
-                    type: 'text'
-                }
+                ...enlaceFields({ externalName: 'link', defaultTipo: 'externo' })
             ]
         },
         {
@@ -73,11 +70,7 @@ export const Footer: CollectionConfig = {
                             label: 'Etiqueta',
                             type: 'text'
                         },
-                        {
-                            name: 'url',
-                            label: 'Enlace',
-                            type: 'text'
-                        }
+                        ...enlaceFields({ externalName: 'url', defaultTipo: 'externo' })
                     ]
                 }
             ]

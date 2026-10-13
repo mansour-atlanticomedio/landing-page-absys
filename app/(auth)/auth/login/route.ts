@@ -1,6 +1,7 @@
 import type { NextRequest } from "next/server";
 import { getSession } from "@/lib/auth/session";
 import { buildCampusLoginUrl, redirectResponse, safeNextPath } from "@/lib/auth/redirects";
+import { devToolsEnabled } from "@/lib/env";
 
 export const dynamic = "force-dynamic";
 
@@ -16,7 +17,7 @@ export async function GET(request: NextRequest) {
   }
 
   // Mientras el campus no esté configurado, en desarrollo se simula su redirección
-  if (process.env.NODE_ENV !== "production") {
+  if (devToolsEnabled) {
     return redirectResponse(`/auth/simular-campus?next=${encodeURIComponent(next)}`);
   }
   return redirectResponse("/auth/error");

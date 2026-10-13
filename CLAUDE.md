@@ -60,7 +60,7 @@ Payload Admin → Globals → Collections → Pages → RenderBlocks → Compone
 - **En dev** (`NODE_ENV !== 'production'`, contenedor `biblioteca-frontend` con `Dockerfile.dev`), el adapter de Postgres usa `push: true` por defecto: cualquier collection/global nuevo o campo añadido se sincroniza solo contra la BD la primera vez que se inicializa Payload (el spinner "Pulling schema from database..." que se ve al lanzar un seed o `next dev`).
 - **En producción** (`Dockerfile` fija `NODE_ENV=production`), `push` es `false`: la BD **solo** se actualiza aplicando migraciones (`payload migrate`). Si se añade una collection/global/campo nuevo y no se genera su migración, en producción esa tabla/columna directamente no existe — cualquier `payload.create`/`payload.updateGlobal` contra ella revienta con `relation "..." does not exist`, aunque en dev funcione perfectamente (por eso puede pasar desapercibido toda una sesión de trabajo).
 - **Regla**: después de crear o modificar cualquier collection/global (`collections/*.ts`, `globals/*.ts`), además de `npx payload generate:types`, hay que generar la migración correspondiente con `npx payload migrate:create <nombre-descriptivo>` (se puede correr contra la BD de dev ya sincronizada por push — la migración generada refleja el diff acumulado desde la última migración) y comprobar que `npm run migrate` aplica limpio contra una BD nueva antes de dar el cambio por terminado.
-- Migraciones existentes: `migrations/20260731_114550_baseline.ts` (base) + `migrations/20260915_162539_session_2026_09_14_content_globals.ts` (todo el schema de la sesión de recursos-electrónicos/quiénes-somos/investigación/formación/horarios — se generó a posteriori porque no se había estado corriendo `migrate:create` en cada paso; a partir de ahora generar la migración en el mismo momento en que se toca el schema, no al final) + `migrations/20260928_114829_login_campus.ts` (collection `loginCampus_service`) + `migrations/20260929_102432_actualizar_colectivos_campus.ts` (enum `colectivo` de `loginCampus_service`: de ALUMN/PDI/PAS/EXT a los 5 tipos reales ADULT/ALUMN/ANONI/INVIT/PROFE — el `up` remapea filas existentes con `UPDATE ... CASE`, no un cast directo, porque un cast directo revienta con valores que ya no están en el enum nuevo) + `migrations/20260929_110457_layout_enlaces_externos.ts` (tabla nueva para `layout.enlaces_externos[]`)
+- Migraciones existentes: `migrations/20260731_114550_baseline.ts` (base) + `migrations/20260915_162539_session_2026_09_14_content_globals.ts` (todo el schema de la sesión de recursos-electrónicos/quiénes-somos/investigación/formación/horarios — se generó a posteriori porque no se había estado corriendo `migrate:create` en cada paso; a partir de ahora generar la migración en el mismo momento en que se toca el schema, no al final) + `migrations/20260928_114829_login_campus.ts` (collection `loginCampus_service`) + `migrations/20260929_102432_actualizar_colectivos_campus.ts` (enum `colectivo` de `loginCampus_service`: de ALUMN/PDI/PAS/EXT a los 5 tipos reales ADULT/ALUMN/ANONI/INVIT/PROFE — el `up` remapea filas existentes con `UPDATE ... CASE`, no un cast directo, porque un cast directo revienta con valores que ya no están en el enum nuevo) + `migrations/20260929_110457_layout_enlaces_externos.ts` (tabla nueva para `layout.enlaces_externos[]`) + `migrations/20261007_164512_solicitud_compra_global.ts` (tabla nueva del global `solicitud_compra`)
 
 ### Collections (25 registradas)
 
@@ -135,13 +135,13 @@ Pendientes conocidos (marcados con `TODO` en el código): `lepassLegacy` / compa
 
 | Slug | Fichero | Hook |
 |------|---------|------|
-| `sendEmail` | `collections/Email.service.ts` | `afterChange` → envía email a `mansourlol440@gmail.com` con asunto `Nuevo mensaje: ${doc.about}`. Campos: `name`, `email`, `about`, `message` (richText) |
+| `sendEmail` | `collections/Email.service.ts` | `afterChange` → envía email a `mansourlol440@gmail.com` con asunto `Nuevo mensaje: ${doc.about}`. Campos: `name`, `email`, `about`, `message` (richText). El mismo fichero exporta los correos transaccionales (PIN, bienvenida, préstamos, sugerencia de libro): todos pasan por `sendBrandedEmail`, que usa la plantilla `emailLayout` (cabecera blanca con el escudo `public/logos/unam-color-logo.png` incrustado por `cid`, filete turquesa, pie con datos de contacto) |
 
 #### Constantes compartidas (no es collection)
 
 - **`collections/Icons.ts`**: exporta `appIcons` (Lightbulb, BookOpen, Microscope, Star, User, Briefcase, Phone, Mail, MapPin, Calendar) y `iconsSocialMedia` (FaFacebook, FaTwitter, FaInstagram, FaLinkedin, FaYoutube, Globe)
 
-### Globals (12)
+### Globals (13)
 
 | Slug | Fichero | Campos | Categoría |
 |------|---------|--------|-----------|
@@ -156,6 +156,7 @@ Pendientes conocidos (marcados con `TODO` en el código): `lepassLegacy` / compa
 | `horarios_contacto` | `globals/HorariosContacto.ts` | `hero` (rel→hero), `edificio_nombre`/`edificio_subtitulo`, `horario` (rel→schedule), `direccion_linea1`/`direccion_linea2`, `telefono`, `email`, `mapa_url`, `mapa_embed_url`, `ayuda_cta` (rel→cta) | Página parcial |
 | `electronic_resources` | `globals/ElectronicResources.ts` | `hero` (rel→hero, reutiliza la collection existente), `accesos_destacados` (rel→electronic_resources_access) | Página parcial |
 | `quienes_somos` | `globals/QuienesSomos.ts` | `hero` (rel→hero), `imagen_dirigidos` (upload→media), `ayudas` (rel→features), `dirigidos` (rel→features) — `ayudas`/`dirigidos` reutilizan la collection `features` existente con dos docs distintos | Página parcial |
+| `solicitud_compra` | `globals/SolicitudCompra.ts` | `hero` (rel→hero). Cabecera de `/adquisiciones/solicitud-compra`; el formulario sigue en `SolicitudCompraForm` | Página parcial |
 | `layout` | `globals/Layout.ts` | `header` (rel→header), `footer` (rel→footer), `enlaces_externos[]` (`key`/`label`/`url`, ver "Enlaces externos") | Template del sitio |
 
 #### Block types del `layout` (11, usados en Home/Services/Formation/Investigation/Repositories)
@@ -203,6 +204,29 @@ de entorno, ver "Login desde el campus").
   tiene alguna otra key libre antes de aplicar esta migración allí**, el `ELSE` de la migración
   deja pasar cualquier otro valor tal cual y el cast final reventaría si no coincide con el enum
   nuevo).
+
+#### Enlaces de navbar y footer (2026-10-06)
+
+Los enlaces de `header.navbar[]` / `navbar[].items[]` y de `footer.social_medias[]` /
+`footer.seccion_info[].information[]` ya no son una URL de texto libre: cada uno lleva un `tipo`
+(helper `collections/fields/enlace.ts` → `enlaceFields({ externalName, defaultTipo })`):
+
+| `tipo` | Campo | Resultado |
+|---|---|---|
+| `interno` | `to` | Ruta de la web (`Link`). Un `to` que empiece por http se sigue tratando como externo |
+| `ancla` | `ancla` (select de `ANCLAS`) | `ruta#id`. Lista cerrada en `lib/links.ts`, cada entrada con su página y el `id` real del DOM |
+| `registro` | `enlace_key` (select de `ENLACES_EXTERNOS_KEYS`) | URL tomada de `layout.enlaces_externos` — un solo sitio donde editarla |
+| `externo` | `url` (footer social: `link`) | URL libre para casos puntuales |
+
+Más `nueva_pestana` (por defecto solo los externos). Defaults para no migrar datos: header
+`tipo=interno` (reutiliza `to`), footer `tipo=externo` (conserva `link` en social y `url` en
+information). `legal_advice`/`privacy_policie`/`privacy_cookies` siguen siendo texto plano.
+
+- **Resolución en servidor**: `app/(frontend)/layout.tsx` pasa `header.navbar` por `resolveNavbar` y el footer por `resolveFooterLinks` (`lib/links.ts`, puras, con tests en `lib/__tests__/links.test.ts`) y los componentes reciben `{ href, external, newTab }` ya resuelto. Un destino que no resuelve (key sin entrada en el registro, ancla desconocida) oculta el enlace en vez de pintarlo roto; en el footer las filas solo-texto se conservan sin `<a>`.
+- **Añadir una ancla**: poner el `id` (con `scroll-mt-24`) en el componente destino + una entrada en `ANCLAS`. Hoy: `home-noticias` (`/#noticias`) e `investigacion-apoyo` (`/investigacion#cta-apoyo`).
+- ⚠️ `ancla` y `enlace_key` son enums de Postgres: **añadir una ancla o key nueva en código requiere una migración con `ALTER TYPE ... ADD VALUE`** (en dev lo cubre `push`, en producción el guardado fallaría). Vale igual para `ENLACES_EXTERNOS_KEYS`.
+- Anclas en la misma página: `NavAnchor` (Header) hace scroll suave + `history.replaceState` sin recargar; entre páginas navega `Link` con el hash.
+- Migración: `migrations/20261006_112738_enlaces_navbar_footer.ts` (solo `CREATE TYPE` + `ADD COLUMN`, no destructiva). Si producción tiene filas con `to`/`url` http, ninguna migración las toca: se resuelven por el criterio de `resolveEnlace`.
 
 ### Access Control
 
@@ -340,6 +364,7 @@ Cada bloque se envuelve en `<section key={id} data-block-type={blockType}>`.
 | `/libros` | Client component, fetch a Absys API via axios |
 | `/recursos/repositorio-institucional` | Todo hardcodeado |
 | `/recursos/catalogo` | Todo hardcodeado, enlace a OPAC externo |
+| `/adquisiciones/solicitud-compra` | Formulario de desiderata (sugerir libro) en `components/SolicitudCompraForm.tsx` (client: varios libros, modal de éxito). **privada** (`requireSession`: sin sesión va al login), el solicitante sale de la sesión y ya no se pide en el formulario. Hero desde el global `solicitud_compra` (con texto de respaldo si está vacío); el envío es la server action `adquisiciones/solicitud-compra/actions.ts` → `sendBookSuggestionEmail` (aviso a la Biblioteca, `replyTo` = solicitante, destino `SUGGESTIONS_EMAIL_TO` o `biblioteca@atlanticomedio.es`) + `sendBookSuggestionConfirmationEmail` (copia al solicitante), ambos en `collections/Email.service.ts`. Nombre, correo y rol salen de la sesión del servidor, nunca del formulario; la validación (`lib/sugerencias.ts`) limita a 10 libros y solo admite enlaces http(s). **No se guarda en BD**, solo se envía el correo (ver `MEMORY.md` 2026-10-07). Enlazado desde la tarjeta "Solicitud de compra" de `/servicios` |
 | `/recursos/catalogo/busqueda` | Client, fetch a `absys_service` con paginación |
 | `/recursos/catalogo/libro/[isbn]` | Client, fetch a `absys_service` + `book_cover_service` |
 
@@ -411,7 +436,7 @@ Expuesto de solo lectura en `/perfil` (fila "Rol", con las mismas etiquetas que 
 | `app/(auth)/auth/login/route.ts` | Entrada única al login: con sesión vuelve a `next`; sin ella, al campus. Sin `NEXT_CAMPUS_LOGIN_URL`: en dev → `/auth/simular-campus`, en prod → `/auth/error` |
 | `app/(auth)/auth/logout/route.ts` | `POST`, revoca la sesión y vuelve a `/` |
 | `app/(auth)/auth/error/page.tsx` | Un único mensaje genérico (2026-09-30, antes distinguía `?motivo=invalido\|caducado\|absys\|config` en la URL — se quitó para no exponer el motivo interno en el enlace). El motivo real de cada caso sigue quedando en los logs del servidor (`payload.logger.warn`/`error` en `auth/campus/route.ts` y `auth/login/route.ts`) |
-| `app/(auth)/auth/simular-campus/` | **Solo dev** (404 en producción): formulario con un email que genera un token real y vuelve al callback. Es la forma de probar el flujo hasta que Daniel tenga lista la redirección |
+| `app/(auth)/auth/simular-campus/` | **Solo dev** (404 cuando `devToolsEnabled` es false, ver `lib/env.ts`: `NODE_ENV !== production` o `FEATURE_DEV_TOOLS=true`): formulario con un email que genera un token real y vuelve al callback. Es la forma de probar el flujo hasta que Daniel tenga lista la redirección |
 | `app/(frontend)/(cuenta)/perfil/page.tsx` + `perfil/actions.ts` + `components/cuenta/PerfilForm.tsx` | Privada: datos del lector en Absys, con nombre/apellidos editables (`absys.updateLector`, vía `operation=modify`); dirección/colectivo/email no se pueden editar desde aquí (decisión del usuario, 2026-09-29). Muestra también el rol (`session.colectivo`, solo lectura). Si Absys está caído muestra los guardados en Payload |
 
 Variables (ver `env.local.Example`): `NEXT_CAMPUS_SECRET_KEY`, `NEXT_CAMPUS_TIMEZONE`, `NEXT_CAMPUS_TOKEN_MAX_AGE`, `NEXT_CAMPUS_TOKEN_PARAM` (`token`), `NEXT_CAMPUS_LOGIN_URL`, `NEXT_CAMPUS_RETURN_PARAM` (`return`). La URL de login del campus y el nombre de sus parámetros están **pendientes de confirmar con Daniel**; por eso son configurables.

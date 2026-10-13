@@ -9,6 +9,171 @@ regla de cuándo añadir una entrada (obligatorio al terminar cada tarea).
 
 ---
 
+## 2026-10-07 — Solicitud de libro solo con sesión y modal de confirmación sin `history.back()`
+
+- `/adquisiciones/solicitud-compra` usa `requireSession`: sin sesión redirige a `/login` (hoy `requireSession` apunta a `/login` fijo, un cambio temporal del usuario, así que no vuelve a la página tras entrar); con sesión muestra el formulario.
+- El usuario quitó del formulario la sección "Datos del solicitante" (sale de la sesión). El modal usaba ese campo para el nombre ("Gracias, ."), ahora recibe `solicitante` (nombre + email de la sesión) por props desde el page.
+- El botón "Aceptar" con `window.history.back()` se sustituyó por dos acciones: "Volver a servicios" (`Link`) y "Sugerir otro libro" (cierra y limpia). `history.back()` dependía de que el usuario llegara desde otra página de la web.
+- Probado con `curl`: sin cookie 307 a `/biblioteca/login`; con cookie del simulador de campus 200 con el formulario. No probado en navegador. El envío sigue simulado.
+
+---
+
+## 2026-10-08 — Correos con logo de la UNAM
+
+- **Correos** (`collections/Email.service.ts`): cabecera blanca con el escudo de la UNAM (`public/logos/unam-color-logo.png`, ya incluido en la imagen Docker) y filete turquesa, y pie con la dirección y una nota de mensaje automático. El logo va **incrustado por `cid`** como adjunto inline en vez de enlazado por URL: se ve en desarrollo y no depende de que el sitio sea público ni de que el cliente bloquee imágenes remotas. Todos los envíos pasan por `sendBrandedEmail` para no olvidar el adjunto.
+- Probado: `tsc` limpio; correos construidos con el transporte de pruebas de nodemailer (parte `Content-ID: <unam-logo>` y PNG presentes). **No probado**: el aspecto en Gmail/Outlook reales ni el envío SMTP real.
+- Observado sin tocar: el aviso de `/contacto` (`sendEmail`) mete `doc.message` (richText Lexical) directamente en el HTML, así que sale `[object Object]`, y los datos del formulario no se escapan.
+
+---
+
+## 2026-10-07 — Envío real del formulario de sugerencia de libros por correo
+
+### Qué se hizo y por qué
+Comprobado: el formulario **no enviaba nada** (el modal era simulado) y el servicio de email (`nodemailerAdapter` + helpers de `collections/Email.service.ts`) solo lo usaba `/contacto`. Se añadió `sendBookSuggestionEmail` (aviso a la Biblioteca con `replyTo` al solicitante) y `sendBookSuggestionConfirmationEmail` (copia al solicitante, porque el modal la promete), con la plantilla de los otros correos. Se llaman desde una server action (`actions.ts`) que toma nombre, apellidos, correo y rol de `getSession()` en el servidor (el cliente no puede falsearlos) y valida con `lib/sugerencias.ts` (máx. 10 libros, título y autor obligatorios, longitudes, enlaces solo http/https). El texto del usuario se escapa antes de entrar en el HTML del correo. Si falla el aviso a la Biblioteca se avisa al usuario con un toast; si falla solo la confirmación se registra en log y no se le dice nada. Se añadió `COLECTIVO_LABELS` a `mappers/lector.ts` (el select de rol de `perfil/page.tsx` mantiene su copia local).
+
+### Cómo se probó
+`tsc` limpio, 92 tests (6 nuevos de validación), y los dos correos generados con un `payload` falso: destinatario, `replyTo`, asunto y HTML escapado (un `<script>` en el título no llega crudo). **No se mandó ningún correo real** ni se probó la server action de punta a punta ni en navegador.
+
+### Qué quedó pendiente
+- Probar un envío real (con `SUGGESTIONS_EMAIL_TO` apuntando a una cuenta de prueba): el SMTP actual es el de `.env`, y el remitente por defecto del adaptador es `Mansour Lo Lo`.
+- Definir el destino real de producción (`SUGGESTIONS_EMAIL_TO`; por defecto `biblioteca@atlanticomedio.es`).
+- No se guarda registro en BD: si el SMTP falla en el momento, la sugerencia se pierde (el usuario ve el error y puede reintentar). Una collection de sugerencias sería el siguiente paso si se quiere histórico.
+- Sin límite de frecuencia por usuario.
+
+---
+
+## 2026-10-08 — Simulador del campus tras un flag de entorno
+
+- **`lib/env.ts`**: `isProduction` y `devToolsEnabled` (`NODE_ENV !== production` o `FEATURE_DEV_TOOLS=true`). Aplicado solo al simulador del campus (`simular-campus/page.tsx`, `emitir/route.ts` y el fallback al simulador de `auth/login/route.ts`). Quedan con su `NODE_ENV` directo, sin migrar, los endpoints temporales de `LoginCampus.service.ts`, las cookies `secure` y los `console.log` de componentes. `NODE_ENV` no se define en el `.env` (lo gestiona Next; el Dockerfile fija `production`); `FEATURE_DEV_TOOLS` sí, y es variable de servidor (se lee en runtime, no hace falta rebuild).
+- Probado: `tsc` limpio; `devToolsEnabled` con development / production / production+flag; el simulador sigue en 200 en dev. **No probado**: el 404 con un build de producción real.
+
+---
+
+## 2026-10-07 — La comprobación de sesión de "Sugerir libro" pasa a `/servicios`
+
+El usuario no quiso que el redirect ocurriera al llegar a la página privada. `/servicios` hace `getSession()` y el botón "Sugerir libro" apunta a `/adquisiciones/solicitud-compra` con sesión o a `/login` sin ella. La página de destino conserva su `requireSession` como red de seguridad para quien entre por URL directa (el formulario necesita el solicitante de la sesión); quitarlo es una decisión pendiente del usuario. Probado con `curl` con y sin cookie: el href cambia como se espera.
+
+---
+
+## 2026-10-07 — Global `solicitud_compra`: cabecera de la página editable desde Payload
+
+### Qué se hizo y por qué
+Se interpretó "editar el header" como la cabecera (Hero) de `/adquisiciones/solicitud-compra`, que iba
+fija en código; el header global del sitio ya se edita desde `layout`. Global nuevo
+`solicitud_compra` con `hero` → collection `hero`, mismo patrón que `electronic_resources`;
+migración `20261007_164512_solicitud_compra_global` (solo `CREATE TABLE` + FK + índice) y
+`seeds/solicitudCompra.seed.ts` (registrado en `seeds/index.ts`). La página conserva los textos
+anteriores como respaldo si el global está vacío. En la misma sesión se cambió "Proponer una compra"
+por "Sugerir libro" y el carrito por `BookPlus`.
+
+### Cómo se probó
+Migraciones aplicadas limpias contra una BD temporal vacía (8), seed ejecutado en el contenedor y fila
+comprobada en la BD de dev, reinicio de `biblioteca-frontend` y `curl` 200 con el hero servido desde el
+media de Payload. Los seeds hay que lanzarlos dentro del contenedor (`docker exec biblioteca-frontend
+npx tsx seeds/<x>.seed.ts`); en el host fallan con "missing secret key".
+
+### Qué quedó pendiente
+El envío del formulario sigue simulado (ver entrada siguiente).
+
+---
+
+## 2026-10-07 — Página `/adquisiciones/solicitud-compra` y tarjeta en Servicios (rama `feat/enlaces-externos`)
+
+### Qué se hizo y por qué
+- La tarjeta "Acceso al catálogo" de `/servicios` pasa a "Solicitud de compra" y enlaza a la página nueva.
+- Página nueva a partir de `desiderata_universidad_del_atlantico_medio.html` (borrador del usuario), rehecha con la plantilla del sitio: `Hero`, shadcn (`Card`, `Input`, `Label`, `Select`, `Dialog`, `Button`), tokens de color del sistema (`primary`/`accent`/`muted`, no los slate/amber del HTML) y `font-display`. El estado vive en un client component (`SolicitudCompraForm`); el `page.tsx` es server y solo pone el Hero. Cada libro lleva un id propio para no mezclar valores al borrar uno del medio.
+- Siguiendo el patrón "UI primero, datos después", el Hero va fijo en el page, sin global de Payload.
+
+### Cómo se probó
+`tsc --noEmit` limpio y `curl` 200 en `/servicios` y en la página nueva, con el href bajo `/biblioteca`. No probado en navegador (añadir/quitar libros, modal, validación del Select).
+
+### Qué quedó pendiente
+- **El envío es simulado**: el modal dice "enviada con éxito" pero no se guarda ni se envía nada. Decidir destino (collection + email, o Absys) antes de publicar. `sendEmail` hoy escribe a un Gmail fijo, no reutilizar tal cual.
+- Los colectivos del select (alumno/profesor/PDI/PAS) vienen del HTML y no coinciden con los 5 tipos de Absys (ADULT/ALUMN/ANONI/INVIT/PROFE).
+- Si se conecta a Payload: global con `hero` editable, y añadir la página como `ancla`/enlace en el navbar.
+- El HTML original sigue sin trackear en esa carpeta y trae texto suelto tras `</html>`.
+
+---
+
+## 2026-10-06 — Header y Footer con enlaces del registro, anclas y URLs propias (rama `feat/enlaces-externos`)
+
+### Qué se hizo y por qué
+Para no duplicar URLs externas entre el registro (`layout.enlaces_externos`) y el navbar/footer, cada
+enlace de ambos lleva ahora un `tipo` (interno / ancla / registro / externo). Estado resultante y
+tabla de campos en `CLAUDE.md` → "Enlaces de navbar y footer". Decisiones: anclas de **lista cerrada**
+(`ANCLAS` en `lib/links.ts`, con ruta + `id` real) para que el admin no pueda apuntar a un id
+inventado; resolución en **servidor** (`resolveNavbar`/`resolveFooterLinks`) para que Header/Footer
+solo pinten `{ href, external, newTab }`; defaults (`interno` en header reutilizando `to`,
+`externo` en footer conservando `link`/`url`) para que la migración no toque datos. Fuera de alcance
+a propósito: las políticas legales del footer siguen siendo texto plano.
+Trabajo repartido: resolver + tests (orquestador), schema/migración/seed (`backend`), Header/Footer
+(`designer`), revisión (`reviewer`).
+Arreglos del Header de paso: los botones de primer nivel eran `<button>` con `div` dentro
+(HTML inválido, sin ctrl+click); ahora son enlaces reales, y el desplegable abre también con foco de
+teclado. El Footer ya no pinta `<a href={null}>` en filas solo-texto.
+
+### Cómo se probó
+`npm test` (86 tests, 9 nuevos del resolver), `tsc --noEmit` limpio, migración aplicada limpia contra
+una BD temporal vacía (7 migraciones), seed ejecutado contra la BD de dev y filas comprobadas, `curl`
+200 en home/investigacion/formacion con hrefs correctos bajo `/biblioteca`. **No** probado en
+navegador: scroll suave de anclas, dropdown con teclado, aspecto visual.
+
+### Qué quedó pendiente
+- `ancla`/`enlace_key` son enums de Postgres: añadir valores nuevos exige migración `ALTER TYPE ... ADD VALUE`.
+- Accesibilidad pendiente del desplegable (`aria-expanded`, cierre con Escape, táctil: un item con
+  enlace y desplegable navega al tocar y no abre el menú).
+- Si producción tiene `to`/`url` http en filas existentes, se resuelven como externos por criterio, no por migración.
+- El seed añade el desplegable "Apoyo a la investigación" (ancla) a investigación como ejemplo; decidir si se queda.
+- Anclas útiles aún sin `id` en el DOM (p. ej. Formación · Guías y tutoriales).
+
+---
+
+## 2026-10-05 — Catálogo cerrado de keys para enlaces externos (rama `feat/enlaces-externos`)
+
+A petición del usuario: completar `layout.enlaces_externos[]` (infraestructura creada el
+2026-09-29) con todas las keys previsibles del sitio, para que salgan como opciones en el select
+del admin en vez de tener que escribirlas a mano.
+
+### Qué se hizo
+- `lib/links.ts`: `ENLACES_EXTERNOS_KEYS` con `opac`, `dspace`, `campus` y las 5 redes sociales
+  que ya tenía el proyecto en algún sitio (`facebook`/`twitter`/`instagram`/`linkedin`/`youtube`,
+  del `iconsSocialMedia` de `collections/Icons.ts`) + `tiktok` como añadido razonable para una
+  universidad hoy.
+- `globals/Layout.ts`: el campo `key` pasa de `text` a `select` con esas opciones.
+- Cableados `investigacion/page.tsx` (link de `dspace`) y `FooterSimple.tsx` (las 5 redes
+  sociales, componente pasado a `async` para poder leer el global `layout`) — este último sigue
+  sin usarse en ninguna página, se cableó porque era el único sitio con URLs de redes sociales
+  realmente hardcodeadas en código (las del `Footer` real vienen de la collection `footer`, no de
+  este registro).
+- **Decisión explícita de no tocar `recursos/catalogo/page.tsx`**: el único rastro de un enlace a
+  OPAC ahí es una línea comentada muerta, sin ningún botón real que la use — forzar un refactor
+  (habría que partir la página en server+client component solo para esto) no estaba justificado
+  por el alcance pedido.
+- **Hallazgo real durante la migración**: la BD de dev ya tenía una fila en
+  `layout_enlaces_externos` con `key='catalogo'` (tecleada a mano desde el admin, apuntando a
+  `https://demo.baratz.es/opac`, antes de que este campo tuviera lista cerrada). La migración que
+  cambia `key` a enum remapea ese valor a `opac` antes del cast (mismo patrón que la migración de
+  `colectivo` del 2026-09-29) — sin este remapeo, el cast habría reventado contra esa fila. Dato
+  real conservado, no se perdió nada.
+
+### Cómo se probó
+- `npx payload migrate:create` + aplicada contra un Postgres nuevo (contenedor Docker temporal,
+  destruido al terminar) — las 6 migraciones en orden, limpias.
+- Contra la BD de dev real: intentar `npm run migrate` ahí falló como es esperable (está
+  sincronizada por `push`, no por migraciones — el propio Payload avisa de "data loss" y, al
+  confirmarlo, la migración baseline revienta porque las tablas ya existen fuera de su control;
+  rollback automático, no se perdió nada). Se remapeó esa fila a mano (`catalogo`→`opac`) y se
+  reinició el contenedor de dev para que el `push` aplicase el nuevo tipo de columna — confirmado
+  con `\d layout_enlaces_externos` (columna ya es `enum_layout_enlaces_externos_key`) y `curl` a
+  `/investigacion`, `/recursos/recursos-electronicos`, `/recursos/catalogo` (200 los tres).
+- `npm test` (81 tests) y `tsc --noEmit` en verde.
+
+### Qué quedó pendiente
+- Revisar si **producción** tiene alguna otra key libre en `layout_enlaces_externos` antes de
+  aplicar esta migración allí — el `ELSE` de la migración deja pasar cualquier valor que no sea
+  `catalogo` tal cual, y el cast final revienta si no coincide con el enum nuevo.
+- El repositorio institucional del navbar (`seeds/layout.seed.ts`) y el acceso a OPAC de
+  `recursos/catalogo/page.tsx` siguen sin usar este registro (ver razones arriba).
 ## 2026-09-30 — Primer despliegue a producción del login de campus: batería de bugs reales
 
 El PR #16 (`feat/login-microsoft-emails`, todo el trabajo de login de campus documentado en las

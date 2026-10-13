@@ -1,12 +1,13 @@
 import type { NextRequest } from "next/server";
 import { redirectResponse, safeNextPath } from "@/lib/auth/redirects";
 import { encryptCampusToken } from "@/lib/integrations/campus/token";
+import { devToolsEnabled } from "@/lib/env";
 
 export const dynamic = "force-dynamic";
 
 // Solo desarrollo: hace de campus, cifra el email con NEXT_CAMPUS_SECRET_KEY y vuelve al callback real
 export async function GET(request: NextRequest) {
-  if (process.env.NODE_ENV === "production") return new Response("No disponible", { status: 404 });
+  if (!devToolsEnabled) return new Response("No disponible", { status: 404 });
 
   const params = request.nextUrl.searchParams;
   const email = params.get("email")?.trim();

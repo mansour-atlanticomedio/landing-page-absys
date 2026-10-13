@@ -150,6 +150,7 @@ export interface Config {
     electronic_resources: ElectronicResource;
     quienes_somos: QuienesSomo;
     horarios_contacto: HorariosContacto;
+    solicitud_compra: SolicitudCompra;
   };
   globalsSelect: {
     home: HomeSelect<false> | HomeSelect<true>;
@@ -164,6 +165,7 @@ export interface Config {
     electronic_resources: ElectronicResourcesSelect<false> | ElectronicResourcesSelect<true>;
     quienes_somos: QuienesSomosSelect<false> | QuienesSomosSelect<true>;
     horarios_contacto: HorariosContactoSelect<false> | HorariosContactoSelect<true>;
+    solicitud_compra: SolicitudCompraSelect<false> | SolicitudCompraSelect<true>;
   };
   locale: null;
   widgets: {
@@ -311,11 +313,41 @@ export interface Header {
   navbar?:
     | {
         name?: string | null;
+        tipo?: ('interno' | 'ancla' | 'registro' | 'externo') | null;
         to?: string | null;
+        ancla?: ('home-noticias' | 'investigacion-apoyo') | null;
+        enlace_key?:
+          | ('opac' | 'dspace' | 'campus' | 'facebook' | 'twitter' | 'instagram' | 'linkedin' | 'youtube' | 'tiktok')
+          | null;
+        url?: string | null;
+        /**
+         * Por defecto se abre en pestaña nueva solo si es externo
+         */
+        nueva_pestana?: boolean | null;
         items?:
           | {
-              to?: string | null;
               label?: string | null;
+              tipo?: ('interno' | 'ancla' | 'registro' | 'externo') | null;
+              to?: string | null;
+              ancla?: ('home-noticias' | 'investigacion-apoyo') | null;
+              enlace_key?:
+                | (
+                    | 'opac'
+                    | 'dspace'
+                    | 'campus'
+                    | 'facebook'
+                    | 'twitter'
+                    | 'instagram'
+                    | 'linkedin'
+                    | 'youtube'
+                    | 'tiktok'
+                  )
+                | null;
+              url?: string | null;
+              /**
+               * Por defecto se abre en pestaña nueva solo si es externo
+               */
+              nueva_pestana?: boolean | null;
               id?: string | null;
             }[]
           | null;
@@ -670,7 +702,17 @@ export interface Footer {
   social_medias?:
     | {
         icon?: ('FaFacebook' | 'FaTwitter' | 'FaInstagram' | 'FaLinkedin' | 'FaYoutube' | 'Globe') | null;
+        tipo?: ('interno' | 'ancla' | 'registro' | 'externo') | null;
+        to?: string | null;
+        ancla?: ('home-noticias' | 'investigacion-apoyo') | null;
+        enlace_key?:
+          | ('opac' | 'dspace' | 'campus' | 'facebook' | 'twitter' | 'instagram' | 'linkedin' | 'youtube' | 'tiktok')
+          | null;
         link?: string | null;
+        /**
+         * Por defecto se abre en pestaña nueva solo si es externo
+         */
+        nueva_pestana?: boolean | null;
         id?: string | null;
       }[]
     | null;
@@ -702,7 +744,27 @@ export interface Footer {
                   )
                 | null;
               label?: string | null;
+              tipo?: ('interno' | 'ancla' | 'registro' | 'externo') | null;
+              to?: string | null;
+              ancla?: ('home-noticias' | 'investigacion-apoyo') | null;
+              enlace_key?:
+                | (
+                    | 'opac'
+                    | 'dspace'
+                    | 'campus'
+                    | 'facebook'
+                    | 'twitter'
+                    | 'instagram'
+                    | 'linkedin'
+                    | 'youtube'
+                    | 'tiktok'
+                  )
+                | null;
               url?: string | null;
+              /**
+               * Por defecto se abre en pestaña nueva solo si es externo
+               */
+              nueva_pestana?: boolean | null;
               id?: string | null;
             }[]
           | null;
@@ -1149,12 +1211,22 @@ export interface HeaderSelect<T extends boolean = true> {
     | T
     | {
         name?: T;
+        tipo?: T;
         to?: T;
+        ancla?: T;
+        enlace_key?: T;
+        url?: T;
+        nueva_pestana?: T;
         items?:
           | T
           | {
-              to?: T;
               label?: T;
+              tipo?: T;
+              to?: T;
+              ancla?: T;
+              enlace_key?: T;
+              url?: T;
+              nueva_pestana?: T;
               id?: T;
             };
         id?: T;
@@ -1385,7 +1457,12 @@ export interface FooterSelect<T extends boolean = true> {
     | T
     | {
         icon?: T;
+        tipo?: T;
+        to?: T;
+        ancla?: T;
+        enlace_key?: T;
         link?: T;
+        nueva_pestana?: T;
         id?: T;
       };
   seccion_info?:
@@ -1397,7 +1474,12 @@ export interface FooterSelect<T extends boolean = true> {
           | {
               icon?: T;
               label?: T;
+              tipo?: T;
+              to?: T;
+              ancla?: T;
+              enlace_key?: T;
               url?: T;
+              nueva_pestana?: T;
               id?: T;
             };
         id?: T;
@@ -2121,6 +2203,16 @@ export interface HorariosContacto {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "solicitud_compra".
+ */
+export interface SolicitudCompra {
+  id: number;
+  hero?: (number | null) | Hero;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "home_select".
  */
 export interface HomeSelect<T extends boolean = true> {
@@ -2700,6 +2792,16 @@ export interface HorariosContactoSelect<T extends boolean = true> {
   mapa_url?: T;
   mapa_embed_url?: T;
   ayuda_cta?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "solicitud_compra_select".
+ */
+export interface SolicitudCompraSelect<T extends boolean = true> {
+  hero?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
