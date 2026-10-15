@@ -116,7 +116,7 @@ export default buildConfig({
   },
   db: postgresAdapter({
     pool: {
-      connectionString: process.env.DATABASE_URI || process.env.DATABASE_URL || "",
+      connectionString: process.env.DATABASE_URI || "",
     },
   }),
   // Tope de tamaño de subida (solo hay una collection de upload: media)
