@@ -631,3 +631,8 @@ todos los casos).
 - Dashboard (`DashboardWelcome`, server async con `payload.count`), `NavHelp` (afterNavLinks), `PageEditTips` (Description de Home), banners de ayuda en listas de media y news, `ItemRowLabel` (RowLabel con `useRowLabel` en speakers.people, faq.faqs, timeline.calendar, news.newsItems). Estilos `unam-*` en `custom.scss`.
 - Verificado: `tsc` limpio, importMap regenerado, rutas del admin responden 200 sin sesión.
 - Pendiente: probar autenticado; confirmar que ningún enlace duplica `/biblioteca` (Card `href` y `Button el="link"` llevan el prefijo a mano y Payload podría añadirlo otra vez); extender `PageEditTips`/banners a más páginas si gustan.
+
+## 2026-10-15 — Tabs en más globals
+
+- `horarios_contacto` (Cabecera / Edificio y horario / Contacto y dirección / Mapa / Ayuda), `layout` (Cabecera y pie / Enlaces externos) y `quienes_somos` (Cabecera / Ayudas / Dirigidos), con tabs sin `name`: sin cambio de esquema, comprobado que la lista de `name:` por fichero coincide con HEAD.
+- Pendiente: `about_us` y `electronic_resources` sin tabs (el segundo solo tiene 2 campos); ver en navegador autenticado.
