@@ -1,0 +1,267 @@
+@font-face {
+  font-family: 'Montserrat';
+  src: url('/biblioteca/fonts/Montserrat/static/Montserrat-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  src: url('/biblioteca/fonts/Montserrat/static/Montserrat-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  src: url('/biblioteca/fonts/Montserrat/static/Montserrat-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-display: swap;
+}
+
+:root {
+  --unam-primary: #2d3e50;
+  --unam-accent: #3bacbd;
+  --unam-muted: #f2f4f7;
+  --unam-text: #333333;
+
+  --color-base-0: #ffffff;
+  --color-base-50: #f2f4f7;
+  --color-base-100: #e9ecf1;
+  --color-base-150: #dde1e8;
+  --color-base-200: #cccccc;
+  --color-base-250: #bcc2cb;
+  --color-base-300: #a9b0bb;
+  --color-base-350: #969ea9;
+  --color-base-400: #838c99;
+  --color-base-450: #727b89;
+  --color-base-500: #647080;
+  --color-base-550: #595959;
+  --color-base-600: #4f5c6c;
+  --color-base-650: #46556a;
+  --color-base-700: #3d4d60;
+  --color-base-750: #364659;
+  --color-base-800: #2d3e50;
+  --color-base-850: #243243;
+  --color-base-900: #1b2733;
+  --color-base-950: #121a22;
+  --color-base-1000: #0a0f14;
+
+  --color-success-50: hsl(187 53% 96%);
+  --color-success-100: hsl(187 53% 92%);
+  --color-success-150: hsl(187 53% 87%);
+  --color-success-200: hsl(187 53% 80%);
+  --color-success-250: hsl(187 53% 73%);
+  --color-success-300: hsl(187 53% 66%);
+  --color-success-350: hsl(187 53% 60%);
+  --color-success-400: hsl(187 53% 55%);
+  --color-success-450: hsl(187 53% 52%);
+  --color-success-500: hsl(187 53% 49%);
+  --color-success-550: hsl(187 53% 42%);
+  --color-success-600: hsl(187 53% 36%);
+  --color-success-650: hsl(187 53% 31%);
+  --color-success-700: hsl(187 53% 27%);
+  --color-success-750: hsl(187 53% 23%);
+  --color-success-800: hsl(187 53% 19%);
+  --color-success-850: hsl(187 53% 15%);
+  --color-success-900: hsl(187 53% 12%);
+  --color-success-950: hsl(187 53% 9%);
+
+  --font-body: 'Open Sans', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+  --style-radius-s: 4px;
+  --style-radius-m: 6px;
+  --style-radius-l: 8px;
+}
+
+html[data-theme='light'] {
+  --theme-text: var(--unam-text);
+}
+
+html {
+  --base-body-size: 12;
+}
+
+body {
+  font-size: 1rem;
+  line-height: 1.6;
+}
+
+h1,
+h2,
+h3,
+h4,
+.doc-header__title,
+.collection-list__header h1,
+.dashboard__group h2,
+.card__title {
+  font-family: 'Montserrat', var(--font-body);
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+html[data-theme='light'] h1,
+html[data-theme='light'] h2,
+html[data-theme='light'] h3,
+html[data-theme='light'] .doc-header__title {
+  color: var(--unam-primary);
+}
+
+a:not([class]) {
+  color: var(--color-success-700);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+html[data-theme='dark'] a:not([class]) {
+  color: var(--color-success-400);
+}
+
+:focus-visible {
+  outline: 2px solid var(--unam-accent);
+  outline-offset: 2px;
+}
+
+.field-label,
+.field-type .label,
+label.field-label {
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 0.4rem;
+}
+
+.field-description {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--theme-elevation-600);
+  margin-top: 0.4rem;
+}
+
+input,
+textarea,
+select,
+.rs__control {
+  font-size: 1rem;
+}
+
+.template-default__wrap,
+.document-fields__main {
+  line-height: 1.6;
+}
+
+.field-type:not(:last-child) {
+  margin-bottom: 1.25rem;
+}
+
+.card:hover,
+.card--has-onclick:hover {
+  border-color: var(--unam-accent);
+  transition: border-color 0.15s ease;
+}
+
+.nav__link {
+  font-size: 0.95rem;
+}
+
+.nav__link.active,
+.nav__link:hover {
+  color: var(--color-success-700);
+}
+
+html[data-theme='dark'] .nav__link.active,
+html[data-theme='dark'] .nav__link:hover {
+  color: var(--color-success-400);
+}
+
+.nav-group__toggle {
+  font-family: 'Montserrat', var(--font-body);
+  font-weight: 600;
+}
+
+.unam-admin-logo {
+  display: inline-block;
+  max-width: 100%;
+}
+
+.unam-admin-logo img {
+  display: block;
+  width: 260px;
+  max-width: 100%;
+  height: auto;
+}
+
+.unam-admin-logo__dark {
+  display: none !important;
+}
+
+html[data-theme='dark'] .unam-admin-logo__light {
+  display: none !important;
+}
+
+html[data-theme='dark'] .unam-admin-logo__dark {
+  display: block !important;
+}
+
+.unam-admin-icon {
+  display: block;
+  width: 28px;
+  height: auto;
+}
+
+.unam-welcome {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  border: 1px solid var(--theme-border-color);
+  border-left: 4px solid var(--unam-accent);
+  border-radius: var(--style-radius-l);
+  background: var(--theme-elevation-50);
+}
+
+.unam-welcome__title {
+  margin: 0 0 0.25rem;
+  font-size: 1.35rem;
+}
+
+.unam-welcome__text {
+  margin: 0 0 1.25rem;
+  color: var(--theme-elevation-600);
+}
+
+.unam-welcome__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.unam-welcome__card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  height: 100%;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--theme-border-color);
+  border-radius: var(--style-radius-m);
+  background: var(--theme-bg);
+  text-decoration: none;
+  transition:
+    border-color 0.15s ease,
+    transform 0.15s ease;
+}
+
+.unam-welcome__card:hover {
+  border-color: var(--unam-accent);
+  transform: scale(1.02);
+}
+
+.unam-welcome__label {
+  font-family: 'Montserrat', var(--font-body);
+  font-weight: 600;
+  color: var(--theme-text);
+}
+
+.unam-welcome__desc {
+  font-size: 0.875rem;
+  color: var(--theme-elevation-600);
+}

@@ -61,6 +61,18 @@ export default buildConfig({
   },
   admin: {
     user: Users.slug,
+    meta: {
+      titleSuffix: ' – Biblioteca UNAM – Administración',
+      defaultOGImageType: 'off',
+      icons: [{ rel: 'icon', type: 'image/png', url: '/biblioteca/logos/unam-color-logo.png' }],
+    },
+    components: {
+      graphics: {
+        Logo: '/components/admin/AdminLogo',
+        Icon: '/components/admin/AdminIcon',
+      },
+      beforeDashboard: ['/components/admin/DashboardWelcome'],
+    },
     importMap: {
       baseDir: path.resolve(dirname),
     },
