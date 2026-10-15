@@ -1,4 +1,4 @@
-import { ValidationError, type CollectionConfig } from 'payload'
+import { APIError, ValidationError, type CollectionConfig } from 'payload'
 import { adminOnly, isAdmin } from '@/lib/access'
 import { pageBlocks } from '@/blocks'
 import { BASE_PATH } from '@/lib/auth/redirects'
@@ -39,7 +39,7 @@ export const Pages: CollectionConfig = {
                     nextStatus: (data as any)?._status,
                     isDraftSave: query?.draft === 'true' || query?.draft === true || (req as any)?.context?.draftSave === true,
                 })
-                if (error) throw new ValidationError({ errors: [{ path: '_status', message: error }] })
+                if (error) throw new APIError(error, 400, undefined, true)
                 return data
             },
         ],
@@ -54,7 +54,7 @@ export const Pages: CollectionConfig = {
                     req,
                 })
                 const error = lockedDeleteError(doc?.slug)
-                if (error) throw new Error(error)
+                if (error) throw new APIError(error, 400, undefined, true)
             },
         ],
     },
