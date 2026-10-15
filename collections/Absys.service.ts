@@ -45,7 +45,11 @@ export const handleResourceByName: PayloadHandler = async (req) => {
 
 export const AbsysService: CollectionConfig = {
   slug: "absys_service",
-  admin: { hidden: true },
+  admin: {
+    group: "Servicios internos",
+    description: "Servicio técnico de consulta del catálogo.",
+    hidden: true,
+  },
   access: publicReadAdminWrite,
   fields: [
     { name: "isbn", label: "ISBN", type: "text" },

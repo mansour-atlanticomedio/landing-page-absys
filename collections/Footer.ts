@@ -5,6 +5,10 @@ import { adminOnly } from "@/lib/access";
 
 export const Footer: CollectionConfig = {
     slug: 'footer',
+    admin: {
+        group: 'Navegación y pie',
+        description: 'Pie de página: logo, redes sociales y secciones de información.'
+    },
     access: adminOnly,
     labels: {
         singular: 'Pie de pagina',

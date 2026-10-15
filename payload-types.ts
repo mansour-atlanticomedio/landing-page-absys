@@ -232,6 +232,8 @@ export interface LoginCampusServiceAuthOperations {
   };
 }
 /**
+ * Personas con acceso a este panel de administración.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
@@ -257,6 +259,8 @@ export interface User {
   collection: 'users';
 }
 /**
+ * Imágenes del sitio. Sube aquí las fotos y logos y descríbelas en el texto alternativo.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media".
  */
@@ -286,6 +290,8 @@ export interface Media {
   };
 }
 /**
+ * Cabeceras con imagen de fondo, título y botón que se reutilizan en las páginas.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "hero".
  */
@@ -301,6 +307,8 @@ export interface Hero {
   createdAt: string;
 }
 /**
+ * Cabecera del sitio: logo, teléfono, correo y menú de navegación.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "header".
  */
@@ -358,6 +366,8 @@ export interface Header {
   createdAt: string;
 }
 /**
+ * Carruseles de diapositivas con imagen, título y descripción para la parte superior de una página.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "hero_carrusel".
  */
@@ -375,6 +385,8 @@ export interface HeroCarrusel {
   createdAt: string;
 }
 /**
+ * Personas ponentes con foto, cargo y redes sociales.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "speakers".
  */
@@ -416,6 +428,8 @@ export interface Speaker {
   createdAt: string;
 }
 /**
+ * Cifras destacadas con icono y descripción.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "statistics".
  */
@@ -451,6 +465,8 @@ export interface Statistic {
   createdAt: string;
 }
 /**
+ * Bloques de texto informativo con título y artículo.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "about".
  */
@@ -476,6 +492,8 @@ export interface About {
   createdAt: string;
 }
 /**
+ * Conjuntos de tarjetas con icono, título y descripción.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "features".
  */
@@ -512,6 +530,8 @@ export interface Feature {
   createdAt: string;
 }
 /**
+ * Calendarios o líneas del tiempo con días y eventos.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "timeline".
  */
@@ -550,6 +570,8 @@ export interface Timeline {
   createdAt: string;
 }
 /**
+ * Buscadores o campos de texto con título y texto de ejemplo.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "input".
  */
@@ -561,6 +583,8 @@ export interface Input {
   createdAt: string;
 }
 /**
+ * Llamadas a la acción: título, subtítulo y botón con enlace.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "cta".
  */
@@ -574,6 +598,8 @@ export interface Cta {
   createdAt: string;
 }
 /**
+ * Listados de preguntas frecuentes con sus respuestas.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "faq".
  */
@@ -605,6 +631,8 @@ export interface Faq {
   createdAt: string;
 }
 /**
+ * Histórico de los mensajes enviados desde el formulario de contacto.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "sendEmail".
  */
@@ -619,6 +647,8 @@ export interface SendEmail {
   createdAt: string;
 }
 /**
+ * Listados de artículos o entradas de blog.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "blogs".
  */
@@ -637,6 +667,8 @@ export interface Blog {
   createdAt: string;
 }
 /**
+ * Logotipos de entidades colaboradoras y patrocinadores.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "partners".
  */
@@ -654,6 +686,8 @@ export interface Partner {
   createdAt: string;
 }
 /**
+ * Bloques de noticias con imagen, etiqueta y enlace.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "news".
  */
@@ -679,6 +713,8 @@ export interface News {
   createdAt: string;
 }
 /**
+ * Pie de página: logo, redes sociales y secciones de información.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "footer".
  */
@@ -765,6 +801,8 @@ export interface Footer {
   createdAt: string;
 }
 /**
+ * Imagen de la pantalla de inicio de sesión.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "login_page".
  */
@@ -775,6 +813,8 @@ export interface LoginPage {
   createdAt: string;
 }
 /**
+ * Servicio técnico de consulta del catálogo.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "absys_service".
  */
@@ -787,6 +827,8 @@ export interface AbsysService {
   createdAt: string;
 }
 /**
+ * Servicio técnico de portadas de libros.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "book_cover_service".
  */
@@ -797,6 +839,8 @@ export interface BookCoverService {
   createdAt: string;
 }
 /**
+ * Servicio técnico de información de autores.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "author_service".
  */
@@ -807,6 +851,8 @@ export interface AuthorService {
   createdAt: string;
 }
 /**
+ * Lectores del acceso antiguo con Absys. Uso técnico.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "loginAbsys_service".
  */
@@ -840,6 +886,8 @@ export interface LoginAbsysService {
   collection: 'loginAbsys_service';
 }
 /**
+ * Conjuntos de accesos directos con icono, texto y enlace.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "electronic_resources_access".
  */
@@ -878,6 +926,8 @@ export interface ElectronicResourcesAccess {
   createdAt: string;
 }
 /**
+ * Horarios de apertura por días y franjas.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "schedule".
  */
@@ -896,6 +946,8 @@ export interface Schedule {
   createdAt: string;
 }
 /**
+ * Lectores que han entrado desde el campus. Se crean solos al iniciar sesión.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "loginCampus_service".
  */
@@ -1654,11 +1706,16 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   createdAt?: T;
 }
 /**
+ * Página de inicio: cabecera, carrusel y bloques de contenido.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "home".
  */
 export interface Home {
   id: number;
+  /**
+   * Cabecera con imagen, título y subtítulo de la página.
+   */
   hero?: (number | null) | Hero;
   hero_carrusel?: (number | null) | HeroCarrusel;
   layout?:
@@ -1735,6 +1792,8 @@ export interface Home {
   createdAt?: string | null;
 }
 /**
+ * Página de la biblioteca: cabecera.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "library".
  */
@@ -1745,6 +1804,8 @@ export interface Library {
   createdAt?: string | null;
 }
 /**
+ * Elige la cabecera y el pie del sitio y gestiona el registro de enlaces externos.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "layout".
  */
@@ -1770,11 +1831,16 @@ export interface Layout {
   createdAt?: string | null;
 }
 /**
+ * Página de servicios: cabecera, carrusel y bloques de contenido.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "services".
  */
 export interface Service {
   id: number;
+  /**
+   * Cabecera con imagen, título y subtítulo de la página.
+   */
   hero?: (number | null) | Hero;
   hero_carrusel?: (number | null) | HeroCarrusel;
   layout?:
@@ -1851,11 +1917,16 @@ export interface Service {
   createdAt?: string | null;
 }
 /**
+ * Página de investigación: cabecera, accesos rápidos y tarjetas.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "investigation".
  */
 export interface Investigation {
   id: number;
+  /**
+   * Cabecera con imagen, título y subtítulo de la página.
+   */
   hero?: (number | null) | Hero;
   hero_carrusel?: (number | null) | HeroCarrusel;
   accesos_rapidos?: (number | null) | Feature;
@@ -1935,6 +2006,8 @@ export interface Investigation {
   createdAt?: string | null;
 }
 /**
+ * Página de repositorios: cabecera y bloques de contenido.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "repository".
  */
@@ -2015,11 +2088,16 @@ export interface Repository {
   createdAt?: string | null;
 }
 /**
+ * Página de formación: cabecera, textos, enlaces y guías.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "formation".
  */
 export interface Formation {
   id: number;
+  /**
+   * Cabecera con imagen, título y subtítulo de la página.
+   */
   hero?: (number | null) | Hero;
   hero_carrusel?: (number | null) | HeroCarrusel;
   buscar_parrafo_1?: string | null;
@@ -2109,6 +2187,8 @@ export interface Formation {
   createdAt?: string | null;
 }
 /**
+ * Página de contacto: cabecera.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "contact".
  */
@@ -2119,6 +2199,8 @@ export interface Contact {
   createdAt?: string | null;
 }
 /**
+ * Imágenes de la sección Conócenos (quiénes somos, horarios y normativa).
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "about_us".
  */
@@ -2146,6 +2228,8 @@ export interface AboutUs {
   createdAt?: string | null;
 }
 /**
+ * Página de recursos electrónicos: cabecera y accesos destacados.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "electronic_resources".
  */
@@ -2157,6 +2241,8 @@ export interface ElectronicResource {
   createdAt?: string | null;
 }
 /**
+ * Página Quiénes somos: cabecera, imagen y tarjetas de servicios.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "quienes_somos".
  */
@@ -2170,6 +2256,8 @@ export interface QuienesSomo {
   createdAt?: string | null;
 }
 /**
+ * Página de horarios, ubicación y contacto: edificio, horario, dirección y mapa.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "horarios_contacto".
  */
@@ -2190,6 +2278,8 @@ export interface HorariosContacto {
   createdAt?: string | null;
 }
 /**
+ * Cabecera de la página de solicitud de compra de libros.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "solicitud_compra".
  */

@@ -3,6 +3,11 @@ import { adminOnly } from "@/lib/access";
 
 export const FAQ : CollectionConfig = {
     slug: 'faq',
+    admin: {
+        group: 'Bloques de contenido',
+        description: 'Listados de preguntas frecuentes con sus respuestas.',
+        useAsTitle: 'title'
+    },
     access: adminOnly,
     labels: {
         singular: "Preguntas Frecuentes",

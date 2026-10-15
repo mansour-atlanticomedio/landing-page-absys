@@ -3,6 +3,10 @@ import { adminOnlyGlobal } from "@/lib/access";
 
 export const QuienesSomos: GlobalConfig = {
     slug: 'quienes_somos',
+    admin: {
+        group: 'Páginas',
+        description: 'Página Quiénes somos: cabecera, imagen y tarjetas de servicios.'
+    },
     access: adminOnlyGlobal,
     label: 'Quiénes Somos',
     fields: [

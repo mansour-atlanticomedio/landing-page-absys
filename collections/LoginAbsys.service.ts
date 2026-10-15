@@ -53,12 +53,12 @@ export const handleCreateLector: PayloadHandler = async (req) => {
 
   try {
     let body: Record<string, any> = {};
- 
+
     if ((req as any).data && Object.keys((req as any).data).length > 0) {
       body = (req as any).data;
     } else {
       const contentType = req.headers.get("content-type") || "";
- 
+
       if (contentType.includes("application/x-www-form-urlencoded")) {
         if (typeof req.formData === "function") {
           const formData = await req.formData();
@@ -71,12 +71,12 @@ export const handleCreateLector: PayloadHandler = async (req) => {
         body = await req.json();
       }
     }
- 
+
     const missing = REQUIRED_FIELDS.filter((field) => !body[field]);
     if (missing.length > 0) {
       return jsonError(`Campos obligatorios incompletos: ${missing.join(", ")}`, 400);
     }
- 
+
     // TODO(contrato-front): normalizar en issue aparte
     const lector = await absys.createLector({
       nombre: body.lenomb,
@@ -87,7 +87,7 @@ export const handleCreateLector: PayloadHandler = async (req) => {
       email: body.lemail,
       telefono: body.letfn1,
     });
- 
+
     return jsonOk({ lenlec: lector.id }, 201);
   } catch (error) {
     if (error instanceof AbsysInvalidDataError) {
@@ -141,6 +141,9 @@ export const LoginAbsysService: CollectionConfig = {
     },
   },
   admin: {
+    hidden: true,
+    group: 'Servicios internos',
+    description: 'Lectores del acceso antiguo con Absys. Uso técnico.',
     useAsTitle: "email",
   },
   access: {

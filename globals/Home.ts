@@ -3,12 +3,23 @@ import { adminOnlyGlobal } from "@/lib/access";
 
 export const Home: GlobalConfig = {
   slug: 'home',
+    admin: {
+        group: 'Páginas',
+        description: 'Página de inicio: cabecera, carrusel y bloques de contenido.'
+    },
   access: adminOnlyGlobal,
   label: "Inicio",
   fields: [
     {
+      type: 'tabs',
+      tabs: [
+        {
+          label: 'Cabecera',
+          fields: [
+    {
       name: 'hero',
       label: 'Seccion Principal',
+      admin: { description: 'Cabecera con imagen, título y subtítulo de la página.' },
       type: 'relationship',
       relationTo: 'hero',
       hasMany: false,
@@ -20,6 +31,11 @@ export const Home: GlobalConfig = {
       relationTo: 'hero_carrusel',
       hasMany: false,
     },
+          ],
+        },
+        {
+          label: 'Bloques',
+          fields: [
     {
       name: 'layout',
       labels: {
@@ -198,6 +214,10 @@ export const Home: GlobalConfig = {
               hasMany: true,
             },
           ]
+        },
+      ],
+    },
+          ],
         },
       ],
     },

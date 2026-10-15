@@ -4,6 +4,10 @@ import { enlaceFields } from "./fields/enlace";
 
 export const Header: CollectionConfig = {
     slug: 'header',
+    admin: {
+        group: 'Navegación y pie',
+        description: 'Cabecera del sitio: logo, teléfono, correo y menú de navegación.'
+    },
     labels: {
         singular: "Encabezamiento",
         plural: "Encabezamiento",

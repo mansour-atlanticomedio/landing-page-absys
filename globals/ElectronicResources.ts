@@ -3,6 +3,10 @@ import { adminOnlyGlobal } from "@/lib/access";
 
 export const ElectronicResources: GlobalConfig = {
     slug: 'electronic_resources',
+    admin: {
+        group: 'Páginas',
+        description: 'Página de recursos electrónicos: cabecera y accesos destacados.'
+    },
     access: adminOnlyGlobal,
     label: 'Recursos Electrónicos',
     fields: [

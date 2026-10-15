@@ -30,6 +30,8 @@ function convertIsbn13To10(isbn: string): string | null {
 export const BookCoverService: CollectionConfig = {
     slug: 'book_cover_service',
     admin: {
+        group: 'Servicios internos',
+        description: 'Servicio técnico de portadas de libros.',
         hidden: true // Lo mantenemos oculto en el panel de administración ya que es solo un servicio API
     },
     access: {

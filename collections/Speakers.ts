@@ -4,6 +4,11 @@ import { adminOnly } from "@/lib/access";
 
 export const Speakers: CollectionConfig = {
     slug: 'speakers',
+    admin: {
+        group: 'Bloques de contenido',
+        description: 'Personas ponentes con foto, cargo y redes sociales.',
+        useAsTitle: 'title'
+    },
     access: adminOnly,
     labels: {
         singular: 'Ponentes',

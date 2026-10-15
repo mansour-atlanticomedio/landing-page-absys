@@ -3,6 +3,10 @@ import { adminOnlyGlobal } from "@/lib/access";
 
 export const HorariosContacto: GlobalConfig = {
     slug: 'horarios_contacto',
+    admin: {
+        group: 'Páginas',
+        description: 'Página de horarios, ubicación y contacto: edificio, horario, dirección y mapa.'
+    },
     access: adminOnlyGlobal,
     label: 'Horarios, Ubicación y Contacto',
     fields: [

@@ -3,12 +3,23 @@ import { adminOnlyGlobal } from "@/lib/access";
 
 export const Investigation : GlobalConfig = {
     slug: 'investigation',
+    admin: {
+        group: 'Páginas',
+        description: 'Página de investigación: cabecera, accesos rápidos y tarjetas.'
+    },
     access: adminOnlyGlobal,
     label: "Investigación",
     fields: [
     {
+      type: 'tabs',
+      tabs: [
+        {
+          label: 'Cabecera',
+          fields: [
+    {
       name: 'hero',
       label: 'Seccion Principal',
+      admin: { description: 'Cabecera con imagen, título y subtítulo de la página.' },
       type: 'relationship',
       relationTo: 'hero',
       hasMany: false,
@@ -20,6 +31,11 @@ export const Investigation : GlobalConfig = {
       relationTo: 'hero_carrusel',
       hasMany: false,
     },
+          ],
+        },
+        {
+          label: 'Contenido',
+          fields: [
     {
       name: 'accesos_rapidos',
       label: 'Accesos rápidos',
@@ -41,6 +57,11 @@ export const Investigation : GlobalConfig = {
       relationTo: 'cta',
       hasMany: false,
     },
+          ],
+        },
+        {
+          label: 'Bloques',
+          fields: [
     {
       name: 'layout',
       labels: {
@@ -219,6 +240,10 @@ export const Investigation : GlobalConfig = {
               hasMany: true,
             },
           ]
+        },
+      ],
+    },
+          ],
         },
       ],
     },

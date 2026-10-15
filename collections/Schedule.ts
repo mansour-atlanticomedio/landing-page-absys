@@ -3,6 +3,11 @@ import { adminOnly } from "@/lib/access";
 
 export const Schedule: CollectionConfig = {
     slug: 'schedule',
+    admin: {
+        group: 'Bloques de contenido',
+        description: 'Horarios de apertura por días y franjas.',
+        useAsTitle: 'title'
+    },
     access: adminOnly,
     labels: {
         singular: 'Horario',

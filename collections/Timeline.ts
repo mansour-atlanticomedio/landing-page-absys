@@ -3,6 +3,11 @@ import { adminOnly } from "@/lib/access";
 
 export const Timeline: CollectionConfig = {
     slug: 'timeline',
+    admin: {
+        group: 'Bloques de contenido',
+        description: 'Calendarios o líneas del tiempo con días y eventos.',
+        useAsTitle: 'title'
+    },
     access: adminOnly,
     labels: {
         singular: 'Línea del tiempo',

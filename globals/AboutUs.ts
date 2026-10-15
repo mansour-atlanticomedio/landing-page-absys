@@ -3,6 +3,10 @@ import { adminOnlyGlobal } from "@/lib/access";
 
 export const AboutUs : GlobalConfig = {
     slug: 'about_us',
+    admin: {
+        group: 'Páginas',
+        description: 'Imágenes de la sección Conócenos (quiénes somos, horarios y normativa).'
+    },
     access: adminOnlyGlobal,
     label: "Conocenos",
     fields: [

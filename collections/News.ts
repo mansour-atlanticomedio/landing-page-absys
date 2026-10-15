@@ -3,6 +3,11 @@ import { adminOnly } from "@/lib/access";
 
 export const NewsCollection: CollectionConfig = {
     slug: 'news',
+    admin: {
+        group: 'Bloques de contenido',
+        description: 'Bloques de noticias con imagen, etiqueta y enlace.',
+        useAsTitle: 'title'
+    },
     access: adminOnly,
     labels: {
         singular: 'Noticia',

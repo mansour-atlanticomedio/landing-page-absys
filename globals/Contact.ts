@@ -3,6 +3,10 @@ import { adminOnlyGlobal } from "@/lib/access";
 
 export const Contact: GlobalConfig = {
     slug: 'contact',
+    admin: {
+        group: 'Páginas',
+        description: 'Página de contacto: cabecera.'
+    },
     access: adminOnlyGlobal,
     label: "Contacto",
     fields: [

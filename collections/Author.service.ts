@@ -132,7 +132,11 @@ export const handleGetAuthorInfo: PayloadHandler = async (req) => {
 
 export const AuthorService: CollectionConfig = {
   slug: "author_service",
-  admin: { hidden: true },
+  admin: {
+    group: "Servicios internos",
+    description: "Servicio técnico de información de autores.",
+    hidden: true,
+  },
   access: publicReadAdminWrite,
   fields: [
     { name: "authorName", label: "Nombre del Autor", type: "text" },

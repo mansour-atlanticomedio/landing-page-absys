@@ -3,6 +3,10 @@ import { adminOnly } from "@/lib/access";
 
 export const PartnersCollection : CollectionConfig = {
     slug: 'partners',
+    admin: {
+        group: 'Bloques de contenido',
+        description: 'Logotipos de entidades colaboradoras y patrocinadores.'
+    },
     access: adminOnly,
     labels: {
         singular: 'Patrocinador',

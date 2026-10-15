@@ -4,6 +4,10 @@ import { adminOnlyGlobal } from "@/lib/access";
 
 export const Layout : GlobalConfig = {
     slug: 'layout',
+    admin: {
+        group: 'Navegación y pie',
+        description: 'Elige la cabecera y el pie del sitio y gestiona el registro de enlaces externos.'
+    },
     access: adminOnlyGlobal,
     label: 'Plantilla',
     fields: [

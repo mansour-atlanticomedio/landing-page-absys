@@ -4,6 +4,10 @@ import { adminOnly } from "@/lib/access";
 
 export const Statistics: CollectionConfig = {
     slug: 'statistics',
+    admin: {
+        group: 'Bloques de contenido',
+        description: 'Cifras destacadas con icono y descripción.'
+    },
     access: adminOnly,
     labels: {
         singular: 'Estadísticas',

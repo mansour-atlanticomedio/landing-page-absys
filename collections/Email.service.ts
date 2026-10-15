@@ -318,6 +318,8 @@ export const sendContactEmail = async (payload: Payload, { solicitante, asunto, 
 export const Email: CollectionConfig = {
     slug: 'sendEmail',
     admin: {
+        group: 'Servicios internos',
+        description: 'Histórico de los mensajes enviados desde el formulario de contacto.',
         hidden: true
     },
     access: adminOnly,

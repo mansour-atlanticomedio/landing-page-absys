@@ -4,6 +4,11 @@ import { adminOnly } from "@/lib/access";
 
 export const ElectronicResourcesAccess: CollectionConfig = {
     slug: 'electronic_resources_access',
+    admin: {
+        group: 'Bloques de contenido',
+        description: 'Conjuntos de accesos directos con icono, texto y enlace.',
+        useAsTitle: 'title'
+    },
     access: adminOnly,
     labels: {
         singular: 'Acceso Destacado',

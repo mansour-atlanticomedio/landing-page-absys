@@ -3,6 +3,10 @@ import { adminOnlyGlobal } from "@/lib/access";
 
 export const Repositories: GlobalConfig = {
     slug: 'repository',
+    admin: {
+        group: 'Páginas',
+        description: 'Página de repositorios: cabecera y bloques de contenido.'
+    },
     access: adminOnlyGlobal,
     label: 'Repositorios',
     fields: [

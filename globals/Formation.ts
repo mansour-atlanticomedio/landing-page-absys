@@ -3,12 +3,23 @@ import { adminOnlyGlobal } from "@/lib/access";
 
 export const Formation : GlobalConfig = {
     slug: "formation",
+    admin: {
+        group: 'Páginas',
+        description: 'Página de formación: cabecera, textos, enlaces y guías.'
+    },
     access: adminOnlyGlobal,
     label: "Formación",
     fields: [
     {
+      type: 'tabs',
+      tabs: [
+        {
+          label: 'Cabecera',
+          fields: [
+    {
       name: 'hero',
       label: 'Seccion Principal',
+      admin: { description: 'Cabecera con imagen, título y subtítulo de la página.' },
       type: 'relationship',
       relationTo: 'hero',
       hasMany: false,
@@ -20,6 +31,11 @@ export const Formation : GlobalConfig = {
       relationTo: 'hero_carrusel',
       hasMany: false,
     },
+          ],
+        },
+        {
+          label: 'Contenido',
+          fields: [
     {
       name: 'buscar_parrafo_1',
       label: 'Buscar y evaluar información — párrafo 1',
@@ -79,6 +95,11 @@ export const Formation : GlobalConfig = {
       label: 'Actividades formativas — estado actual',
       type: 'text',
     },
+          ],
+        },
+        {
+          label: 'Bloques',
+          fields: [
     {
       name: 'layout',
       labels: {
@@ -257,6 +278,10 @@ export const Formation : GlobalConfig = {
               hasMany: true,
             },
           ]
+        },
+      ],
+    },
+          ],
         },
       ],
     },
