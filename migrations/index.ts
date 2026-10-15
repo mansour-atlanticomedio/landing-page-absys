@@ -8,6 +8,7 @@ import * as migration_20261006_112738_enlaces_navbar_footer from './20261006_112
 import * as migration_20261007_164512_solicitud_compra_global from './20261007_164512_solicitud_compra_global';
 import * as migration_20261008_151100_contacto_mensaje_texto from './20261008_151100_contacto_mensaje_texto';
 import * as migration_20261015_163900_conocenos_tabs from './20261015_163900_conocenos_tabs';
+import * as migration_20261015_163937_about_us_blocks from './20261015_163937_about_us_blocks';
 
 export const migrations = [
   {
@@ -58,6 +59,11 @@ export const migrations = [
   {
     up: migration_20261015_163900_conocenos_tabs.up,
     down: migration_20261015_163900_conocenos_tabs.down,
-    name: '20261015_163900_conocenos_tabs'
+    name: '20261015_163900_conocenos_tabs',
+  },
+  {
+    up: migration_20261015_163937_about_us_blocks.up,
+    down: migration_20261015_163937_about_us_blocks.down,
+    name: '20261015_163937_about_us_blocks'
   },
 ];

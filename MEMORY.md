@@ -643,3 +643,10 @@ todos los casos).
 - Migración `20261015_163900_conocenos_tabs` escrita a mano (`migrate:create` es interactivo y se cuelga); probada en BD nueva con `NODE_ENV=production` y filas de prueba. Con datos reales de producción NO probada: hacer backup antes.
 - No existe página índice `/conocenos`.
 - Pendiente: sembrar dev (`npx tsx seeds/aboutUs.seed.ts`, crea media duplicados), ver las 3 páginas con datos, subir el PDF de normativa, apuntar `seeds/horarios.seed.ts` y `seeds/quienesSomos.seed.ts` a `about_us` o retirarlos, fase 2 (DROP de `quienes_somos`/`horarios_contacto`).
+
+## 2026-10-15 — Conócenos en bloques
+
+- Cada pestaña de `about_us` = `hero` + `layout` de bloques (`blocks/conocenos/*`, 9 bloques iguales en las tres) para poder mezclarlos y reordenarlos. Render con `components/conocenos/ConocenosBlocks.tsx`.
+- Migración nueva `20261015_163937_about_us_blocks` (no edita la anterior): copia datos a bloques; probada en BD temporal con filas de prueba. `down` lossy.
+- Decisiones del frontend a revisar: "Cómo llegar" toma la URL del primer `map_block`; el título de tarjetas/horario cae al `title` del objeto relacionado si el bloque no tiene; botones pasan de `<a><button>` a `<a>`, hover `scale-[1.02]`.
+- Pendiente: aplicar migración en dev y ver con datos; reutilizar los bloques en otros globals; fase 2 (DROP globals antiguos); fecha de PDF sin subir.

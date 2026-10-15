@@ -2227,94 +2227,279 @@ export interface Contact {
 export interface AboutUs {
   id: number;
   /**
-   * Página Quiénes somos: cabecera, imagen y tarjetas de servicios.
+   * Página Quiénes somos: cabecera y bloques de contenido.
    */
   quienes_somos?: {
     hero?: (number | null) | Hero;
-    imagen_dirigidos?: (number | null) | Media;
-    ayudas?: (number | null) | Feature;
-    dirigidos?: (number | null) | Feature;
+    /**
+     * Añade, ordena y elimina los bloques de contenido de esta página.
+     */
+    layout?:
+      | (
+          | CardsFeaturesBlock
+          | ImageTextBlock
+          | ScheduleBlock
+          | ContactInfoBlock
+          | MapBlock
+          | HelpCtaBlock
+          | RulesCardsBlock
+          | NoticeBlock
+          | DownloadBlock
+        )[]
+      | null;
   };
   /**
-   * Página de horarios, ubicación y contacto.
+   * Página de horarios, ubicación y contacto: cabecera y bloques de contenido.
    */
   horarios?: {
     hero?: (number | null) | Hero;
-    info_titulo?: string | null;
-    edificio_nombre?: string | null;
-    edificio_subtitulo?: string | null;
-    horario_titulo?: string | null;
-    horario?: (number | null) | Schedule;
-    ubicacion_titulo?: string | null;
-    direccion_linea1?: string | null;
-    direccion_linea2?: string | null;
-    contacto_titulo?: string | null;
-    telefono?: string | null;
-    email?: string | null;
-    boton_contactar?: string | null;
-    boton_como_llegar?: string | null;
-    mapa_url?: string | null;
-    mapa_embed_url?: string | null;
-    ayuda_cta?: (number | null) | Cta;
+    /**
+     * Añade, ordena y elimina los bloques de contenido de esta página.
+     */
+    layout?:
+      | (
+          | CardsFeaturesBlock
+          | ImageTextBlock
+          | ScheduleBlock
+          | ContactInfoBlock
+          | MapBlock
+          | HelpCtaBlock
+          | RulesCardsBlock
+          | NoticeBlock
+          | DownloadBlock
+        )[]
+      | null;
   };
   /**
-   * Página de normativa y condiciones de uso.
+   * Página de normativa y condiciones de uso: cabecera y bloques de contenido.
    */
   normativa?: {
     hero?: (number | null) | Hero;
     /**
-     * Hasta 6 tarjetas con las normas principales.
+     * Añade, ordena y elimina los bloques de contenido de esta página.
      */
-    tarjetas?:
-      | {
-          icon:
-            | 'Lightbulb'
-            | 'BookOpen'
-            | 'Microscope'
-            | 'Star'
-            | 'User'
-            | 'Briefcase'
-            | 'Phone'
-            | 'Mail'
-            | 'MapPin'
-            | 'Calendar'
-            | 'Search'
-            | 'Megaphone'
-            | 'Lock'
-            | 'Fingerprint'
-            | 'BarChart3'
-            | 'HeartHandshake'
-            | 'BookOpenCheck'
-            | 'Landmark'
-            | 'Users'
-            | 'FileText'
-            | 'Library'
-            | 'Monitor'
-            | 'AlertTriangle';
-          title: string;
-          /**
-           * Ej. "Próximamente". Se muestra como insignia en la tarjeta.
-           */
-          badge?: string | null;
-          description?: string | null;
-          puntos?:
-            | {
-                texto: string;
-                id?: string | null;
-              }[]
-            | null;
-          nota_titulo?: string | null;
-          nota_texto?: string | null;
-          id?: string | null;
-        }[]
+    layout?:
+      | (
+          | CardsFeaturesBlock
+          | ImageTextBlock
+          | ScheduleBlock
+          | ContactInfoBlock
+          | MapBlock
+          | HelpCtaBlock
+          | RulesCardsBlock
+          | NoticeBlock
+          | DownloadBlock
+        )[]
       | null;
-    responsabilidad_titulo?: string | null;
-    responsabilidad_texto?: string | null;
-    pdf_texto_boton?: string | null;
-    pdf?: (number | null) | Media;
   };
   updatedAt?: string | null;
   createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CardsFeaturesBlock".
+ */
+export interface CardsFeaturesBlock {
+  /**
+   * Título visible encima de las tarjetas. Déjalo vacío si no quieres título.
+   */
+  title?: string | null;
+  /**
+   * Elige el conjunto de tarjetas (icono, título y descripción) que se mostrará.
+   */
+  features?: (number | null) | Feature;
+  style?: ('default' | 'muted') | null;
+  /**
+   * Si la añades, aparece junto a las tarjetas.
+   */
+  image?: (number | null) | Media;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'cards_features_block';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ImageTextBlock".
+ */
+export interface ImageTextBlock {
+  image?: (number | null) | Media;
+  title?: string | null;
+  /**
+   * Texto con formato (negritas, listas, enlaces...).
+   */
+  text?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  image_position?: ('left' | 'right') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'image_text_block';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ScheduleBlock".
+ */
+export interface ScheduleBlock {
+  /**
+   * Ej. "Horario de atención".
+   */
+  title?: string | null;
+  /**
+   * Elige el horario que se mostrará en este bloque.
+   */
+  schedule?: (number | null) | Schedule;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'schedule_block';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ContactInfoBlock".
+ */
+export interface ContactInfoBlock {
+  /**
+   * Ej. "Información General".
+   */
+  title?: string | null;
+  building_name?: string | null;
+  building_subtitle?: string | null;
+  location_title?: string | null;
+  address_line1?: string | null;
+  address_line2?: string | null;
+  directions_button_label?: string | null;
+  contact_title?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  contact_button_label?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'contact_info_block';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "MapBlock".
+ */
+export interface MapBlock {
+  title?: string | null;
+  /**
+   * Dirección que se abre al pulsar el botón "Cómo llegar".
+   */
+  map_url?: string | null;
+  /**
+   * URL del iframe que genera Google Maps en Compartir > Insertar un mapa.
+   */
+  map_embed_url?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'map_block';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "HelpCtaBlock".
+ */
+export interface HelpCtaBlock {
+  /**
+   * Elige la llamada a la acción (título, subtítulo y botón) que se mostrará.
+   */
+  cta?: (number | null) | Cta;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'help_cta_block';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "RulesCardsBlock".
+ */
+export interface RulesCardsBlock {
+  /**
+   * Hasta 6 tarjetas con las normas principales.
+   */
+  cards?:
+    | {
+        icon:
+          | 'Lightbulb'
+          | 'BookOpen'
+          | 'Microscope'
+          | 'Star'
+          | 'User'
+          | 'Briefcase'
+          | 'Phone'
+          | 'Mail'
+          | 'MapPin'
+          | 'Calendar'
+          | 'Search'
+          | 'Megaphone'
+          | 'Lock'
+          | 'Fingerprint'
+          | 'BarChart3'
+          | 'HeartHandshake'
+          | 'BookOpenCheck'
+          | 'Landmark'
+          | 'Users'
+          | 'FileText'
+          | 'Library'
+          | 'Monitor'
+          | 'AlertTriangle';
+        title: string;
+        /**
+         * Ej. "Próximamente". Se muestra como insignia en la tarjeta.
+         */
+        badge?: string | null;
+        description?: string | null;
+        points?:
+          | {
+              text: string;
+              id?: string | null;
+            }[]
+          | null;
+        note_title?: string | null;
+        note_text?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'rules_cards_block';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "NoticeBlock".
+ */
+export interface NoticeBlock {
+  title?: string | null;
+  text?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'notice_block';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "DownloadBlock".
+ */
+export interface DownloadBlock {
+  /**
+   * Ej. "Descargar normativa completa (PDF)".
+   */
+  button_label?: string | null;
+  /**
+   * Si no hay documento, el botón no se muestra.
+   */
+  file?: (number | null) | Media;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'download_block';
 }
 /**
  * Página de recursos electrónicos: cabecera y accesos destacados.
@@ -2901,60 +3086,177 @@ export interface AboutUsSelect<T extends boolean = true> {
     | T
     | {
         hero?: T;
-        imagen_dirigidos?: T;
-        ayudas?: T;
-        dirigidos?: T;
+        layout?:
+          | T
+          | {
+              cards_features_block?: T | CardsFeaturesBlockSelect<T>;
+              image_text_block?: T | ImageTextBlockSelect<T>;
+              schedule_block?: T | ScheduleBlockSelect<T>;
+              contact_info_block?: T | ContactInfoBlockSelect<T>;
+              map_block?: T | MapBlockSelect<T>;
+              help_cta_block?: T | HelpCtaBlockSelect<T>;
+              rules_cards_block?: T | RulesCardsBlockSelect<T>;
+              notice_block?: T | NoticeBlockSelect<T>;
+              download_block?: T | DownloadBlockSelect<T>;
+            };
       };
   horarios?:
     | T
     | {
         hero?: T;
-        info_titulo?: T;
-        edificio_nombre?: T;
-        edificio_subtitulo?: T;
-        horario_titulo?: T;
-        horario?: T;
-        ubicacion_titulo?: T;
-        direccion_linea1?: T;
-        direccion_linea2?: T;
-        contacto_titulo?: T;
-        telefono?: T;
-        email?: T;
-        boton_contactar?: T;
-        boton_como_llegar?: T;
-        mapa_url?: T;
-        mapa_embed_url?: T;
-        ayuda_cta?: T;
+        layout?:
+          | T
+          | {
+              cards_features_block?: T | CardsFeaturesBlockSelect<T>;
+              image_text_block?: T | ImageTextBlockSelect<T>;
+              schedule_block?: T | ScheduleBlockSelect<T>;
+              contact_info_block?: T | ContactInfoBlockSelect<T>;
+              map_block?: T | MapBlockSelect<T>;
+              help_cta_block?: T | HelpCtaBlockSelect<T>;
+              rules_cards_block?: T | RulesCardsBlockSelect<T>;
+              notice_block?: T | NoticeBlockSelect<T>;
+              download_block?: T | DownloadBlockSelect<T>;
+            };
       };
   normativa?:
     | T
     | {
         hero?: T;
-        tarjetas?:
+        layout?:
           | T
           | {
-              icon?: T;
-              title?: T;
-              badge?: T;
-              description?: T;
-              puntos?:
-                | T
-                | {
-                    texto?: T;
-                    id?: T;
-                  };
-              nota_titulo?: T;
-              nota_texto?: T;
-              id?: T;
+              cards_features_block?: T | CardsFeaturesBlockSelect<T>;
+              image_text_block?: T | ImageTextBlockSelect<T>;
+              schedule_block?: T | ScheduleBlockSelect<T>;
+              contact_info_block?: T | ContactInfoBlockSelect<T>;
+              map_block?: T | MapBlockSelect<T>;
+              help_cta_block?: T | HelpCtaBlockSelect<T>;
+              rules_cards_block?: T | RulesCardsBlockSelect<T>;
+              notice_block?: T | NoticeBlockSelect<T>;
+              download_block?: T | DownloadBlockSelect<T>;
             };
-        responsabilidad_titulo?: T;
-        responsabilidad_texto?: T;
-        pdf_texto_boton?: T;
-        pdf?: T;
       };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CardsFeaturesBlock_select".
+ */
+export interface CardsFeaturesBlockSelect<T extends boolean = true> {
+  title?: T;
+  features?: T;
+  style?: T;
+  image?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ImageTextBlock_select".
+ */
+export interface ImageTextBlockSelect<T extends boolean = true> {
+  image?: T;
+  title?: T;
+  text?: T;
+  image_position?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ScheduleBlock_select".
+ */
+export interface ScheduleBlockSelect<T extends boolean = true> {
+  title?: T;
+  schedule?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ContactInfoBlock_select".
+ */
+export interface ContactInfoBlockSelect<T extends boolean = true> {
+  title?: T;
+  building_name?: T;
+  building_subtitle?: T;
+  location_title?: T;
+  address_line1?: T;
+  address_line2?: T;
+  directions_button_label?: T;
+  contact_title?: T;
+  phone?: T;
+  email?: T;
+  contact_button_label?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "MapBlock_select".
+ */
+export interface MapBlockSelect<T extends boolean = true> {
+  title?: T;
+  map_url?: T;
+  map_embed_url?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "HelpCtaBlock_select".
+ */
+export interface HelpCtaBlockSelect<T extends boolean = true> {
+  cta?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "RulesCardsBlock_select".
+ */
+export interface RulesCardsBlockSelect<T extends boolean = true> {
+  cards?:
+    | T
+    | {
+        icon?: T;
+        title?: T;
+        badge?: T;
+        description?: T;
+        points?:
+          | T
+          | {
+              text?: T;
+              id?: T;
+            };
+        note_title?: T;
+        note_text?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "NoticeBlock_select".
+ */
+export interface NoticeBlockSelect<T extends boolean = true> {
+  title?: T;
+  text?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "DownloadBlock_select".
+ */
+export interface DownloadBlockSelect<T extends boolean = true> {
+  button_label?: T;
+  file?: T;
+  id?: T;
+  blockName?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

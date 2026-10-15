@@ -129,71 +129,93 @@ try {
     data: {
       quienes_somos: {
         hero: quienesHero.id,
-        imagen_dirigidos: campusImg.id,
-        ayudas: ayudas.id,
-        dirigidos: dirigidos.id,
+        layout: [
+          { blockType: 'cards_features_block', title: '¿Cómo podemos ayudarte?', features: ayudas.id, style: 'default' },
+          {
+            blockType: 'cards_features_block',
+            title: 'A quién se dirigen nuestros servicios',
+            features: dirigidos.id,
+            style: 'muted',
+            image: campusImg.id,
+          },
+        ],
       },
       horarios: {
         hero: horariosHero.id,
-        info_titulo: 'Información General',
-        edificio_nombre: 'Edificio EMU de Usos Múltiples',
-        edificio_subtitulo: '🏛 Campus Universitario',
-        horario_titulo: 'Horario de atención',
-        horario: horario.id,
-        ubicacion_titulo: 'Ubicación',
-        direccion_linea1: 'Edificio EMU de Usos Múltiples',
-        direccion_linea2: 'Carretera de Quilmes, 37',
-        contacto_titulo: 'Contacto Directo',
-        telefono: '+34 828 019 019',
-        email: 'biblioteca@atlanticomedio.es',
-        boton_contactar: 'Contactar con la Biblioteca',
-        boton_como_llegar: 'Cómo llegar',
-        mapa_url:
-          'https://www.google.com/maps?ll=28.069492,-15.451801&z=16&t=m&hl=es&gl=ES&mapclient=embed&cid=2474455529394761746',
-        mapa_embed_url:
-          'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2562.3405726995734!2d-15.452000045269175!3d28.06915669043545!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xc409577ccdecaa7%3A0x225708319a137012!2sUniversidad%20del%20Atl%C3%A1ntico%20Medio%20(UNAM)!5e0!3m2!1ses!2ses!4v1784738876377!5m2!1ses!2ses',
-        ayuda_cta: ayudaCta.id,
+        layout: [
+          {
+            blockType: 'contact_info_block',
+            title: 'Información General',
+            building_name: 'Edificio EMU de Usos Múltiples',
+            building_subtitle: '🏛 Campus Universitario',
+            location_title: 'Ubicación',
+            address_line1: 'Edificio EMU de Usos Múltiples',
+            address_line2: 'Carretera de Quilmes, 37',
+            directions_button_label: 'Cómo llegar',
+            contact_title: 'Contacto Directo',
+            phone: '+34 828 019 019',
+            email: 'biblioteca@atlanticomedio.es',
+            contact_button_label: 'Contactar con la Biblioteca',
+          },
+          { blockType: 'schedule_block', title: 'Horario de atención', schedule: horario.id },
+          {
+            blockType: 'map_block',
+            title: 'Ubicación',
+            map_url:
+              'https://www.google.com/maps?ll=28.069492,-15.451801&z=16&t=m&hl=es&gl=ES&mapclient=embed&cid=2474455529394761746',
+            map_embed_url:
+              'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2562.3405726995734!2d-15.452000045269175!3d28.06915669043545!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xc409577ccdecaa7%3A0x225708319a137012!2sUniversidad%20del%20Atl%C3%A1ntico%20Medio%20(UNAM)!5e0!3m2!1ses!2ses!4v1784738876377!5m2!1ses!2ses',
+          },
+          { blockType: 'help_cta_block', cta: ayudaCta.id },
+        ],
       },
       normativa: {
         hero: normativaHero.id,
-        tarjetas: [
+        layout: [
           {
-            icon: 'Users',
-            title: 'Personas usuarias',
-            description:
-              'Tienen acceso a los servicios de la Biblioteca todos los miembros de la comunidad universitaria (estudiantes, PDI, PTGAS). Otras personas pueden acceder en condiciones específicas según los convenios vigentes, requiriendo acreditación mediante la tarjeta universitaria o documento equivalente.',
-          },
-          {
-            icon: 'FileText',
-            title: 'Préstamos y renovaciones',
-            badge: 'Próximamente',
-            description:
-              'Información detallada sobre plazos, límites de ejemplares y procesos de renovación estará disponible en esta sección en la próxima actualización de la normativa.',
-          },
-          {
-            icon: 'Library',
-            title: 'Espacios y recursos',
-            puntos: [
-              { texto: 'Mantener un ambiente de estudio silencioso en las salas de lectura generales.' },
-              { texto: 'Respetar las normas de uso de las salas de trabajo en grupo (reserva previa necesaria).' },
-              { texto: 'No consumir alimentos o bebidas (excepto agua en envases con cierre) en las zonas de estudio.' },
-              { texto: 'Hacer un uso adecuado de los equipos informáticos y de reproducción.' },
+            blockType: 'rules_cards_block',
+            cards: [
+              {
+                icon: 'Users',
+                title: 'Personas usuarias',
+                description:
+                  'Tienen acceso a los servicios de la Biblioteca todos los miembros de la comunidad universitaria (estudiantes, PDI, PTGAS). Otras personas pueden acceder en condiciones específicas según los convenios vigentes, requiriendo acreditación mediante la tarjeta universitaria o documento equivalente.',
+              },
+              {
+                icon: 'FileText',
+                title: 'Préstamos y renovaciones',
+                badge: 'Próximamente',
+                description:
+                  'Información detallada sobre plazos, límites de ejemplares y procesos de renovación estará disponible en esta sección en la próxima actualización de la normativa.',
+              },
+              {
+                icon: 'Library',
+                title: 'Espacios y recursos',
+                points: [
+                  { text: 'Mantener un ambiente de estudio silencioso en las salas de lectura generales.' },
+                  { text: 'Respetar las normas de uso de las salas de trabajo en grupo (reserva previa necesaria).' },
+                  { text: 'No consumir alimentos o bebidas (excepto agua en envases con cierre) en las zonas de estudio.' },
+                  { text: 'Hacer un uso adecuado de los equipos informáticos y de reproducción.' },
+                ],
+              },
+              {
+                icon: 'Monitor',
+                title: 'Recursos electrónicos',
+                description:
+                  'El acceso a las bases de datos, revistas y libros electrónicos suscritos está sujeto a las licencias de uso firmadas con los proveedores.',
+                note_title: 'Restricciones importantes:',
+                note_text:
+                  'Se prohíbe la descarga masiva de contenidos y el uso de los recursos para fines comerciales o ajenos a las actividades académicas de la institución.',
+              },
             ],
           },
           {
-            icon: 'Monitor',
-            title: 'Recursos electrónicos',
-            description:
-              'El acceso a las bases de datos, revistas y libros electrónicos suscritos está sujeto a las licencias de uso firmadas con los proveedores.',
-            nota_titulo: 'Restricciones importantes:',
-            nota_texto:
-              'Se prohíbe la descarga masiva de contenidos y el uso de los recursos para fines comerciales o ajenos a las actividades académicas de la institución.',
+            blockType: 'notice_block',
+            title: 'Responsabilidad sobre los materiales',
+            text: 'Las personas usuarias son responsables de la conservación de los fondos y equipamientos de la Biblioteca. El deterioro, mutilación o pérdida de las obras prestadas obligará a su reposición o, en caso de estar agotadas, al pago de su valor estimado o a la entrega de una obra de similares características.',
           },
+          { blockType: 'download_block', button_label: 'Descargar normativa completa (PDF)' },
         ],
-        responsabilidad_titulo: 'Responsabilidad sobre los materiales',
-        responsabilidad_texto:
-          'Las personas usuarias son responsables de la conservación de los fondos y equipamientos de la Biblioteca. El deterioro, mutilación o pérdida de las obras prestadas obligará a su reposición o, en caso de estar agotadas, al pago de su valor estimado o a la entrega de una obra de similares características.',
-        pdf_texto_boton: 'Descargar normativa completa (PDF)',
       },
     } as any,
   })
