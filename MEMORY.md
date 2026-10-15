@@ -650,3 +650,19 @@ todos los casos).
 - Migración nueva `20261015_163937_about_us_blocks` (no edita la anterior): copia datos a bloques; probada en BD temporal con filas de prueba. `down` lossy.
 - Decisiones del frontend a revisar: "Cómo llegar" toma la URL del primer `map_block`; el título de tarjetas/horario cae al `title` del objeto relacionado si el bloque no tiene; botones pasan de `<a><button>` a `<a>`, hover `scale-[1.02]`.
 - Pendiente: aplicar migración en dev y ver con datos; reutilizar los bloques en otros globals; fase 2 (DROP globals antiguos); fecha de PDF sin subir.
+
+## 2026-10-15 — Collection `pages` + catch-all + live preview
+
+- Decisión: contenido propio de una página = bloque en línea; compartido = collection referenciada; ajustes = global. Conócenos pasa de `about_us` a 3 documentos de `pages` (`conocenos/*`), `about_us` queda oculto.
+- Migración `20261015_170639_pages_collection` (esquema por `migrate:create` con ENTER por pty + copia por Local API); ciclo migrate/down/migrate probado en BD temporal. Producción: asumido que las migraciones de Conócenos NO están aplicadas allí; la migración es idempotente.
+- Live preview elegido por el usuario (`@payloadcms/live-preview-react` 3.86.0 exacta). Slug de las 3 páginas de Conócenos solo lectura.
+- Verificado: `npm test` 280/280, `tsc` limpio. NO verificado: preview/live preview en navegador, renderizado de las páginas con datos, bloqueo de slug en UI.
+- Gotcha: el volumen `node_modules` del contenedor no tiene el paquete nuevo (`/biblioteca/conocenos/*` da 500 con "Module not found"): `docker exec biblioteca-frontend npm install` + `payload migrate` + `docker restart biblioteca-frontend`.
+- `.next/types/validator.ts` arrastra tipos de las carpetas borradas hasta el siguiente `next dev`.
+
+## 2026-10-15 — Arreglos de revisión de `pages`
+
+- Slug: en borrador/autosave solo se normaliza (vacío → `undefined`); formato y reservados se validan al publicar. `LOCKED_SLUGS` ahora impide borrar y despublicar (`beforeDelete`/`beforeChange`).
+- Catch-all: `depth: 3`, `robots: noindex` en borrador, `<h1>` con `page.title` si el hero no existe.
+- **Sin verificar contra Payload real**: que "Unpublish" llegue con `_status: 'draft'` sin `?draft=true` y se distinga de un guardado de borrador/autosave (suposición del agente backend). Probar en el admin antes de fiarse.
+- Anotado, sin arreglar: la migración usa la Local API y depende del esquema vigente (puede fallar si se añaden columnas a `pages` y se corre en BD limpia); su `down` borra las ediciones hechas en `pages`; la cookie de draftMode persiste hasta `/auth/preview/exit`.

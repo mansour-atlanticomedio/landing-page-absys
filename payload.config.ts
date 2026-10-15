@@ -43,6 +43,7 @@ import { Header } from "./collections/Header.ts";
 import { Footer } from "./collections/Footer.ts";
 import { ElectronicResourcesAccess } from "./collections/ElectronicResourcesAccess.ts";
 import { Schedule } from "./collections/Schedule.ts";
+import { Pages } from "./collections/Pages.ts";
 
 
 import { AbsysService } from "./collections/Absys.service.ts";
@@ -74,6 +75,14 @@ export default buildConfig({
       beforeDashboard: ['/components/admin/DashboardWelcome'],
       afterNavLinks: ['/components/admin/NavHelp'],
     },
+    livePreview: {
+      collections: ['pages'],
+      breakpoints: [
+        { name: 'mobile', label: 'Móvil', width: 375, height: 667 },
+        { name: 'tablet', label: 'Tablet', width: 768, height: 1024 },
+        { name: 'desktop', label: 'Escritorio', width: 1440, height: 900 },
+      ],
+    },
     importMap: {
       baseDir: path.resolve(dirname),
     },
@@ -104,7 +113,8 @@ export default buildConfig({
     LoginAbsysService,
     ElectronicResourcesAccess,
     Schedule,
-    LoginCampusService
+    LoginCampusService,
+    Pages
   ],
   globals: [
     Home,

@@ -9,7 +9,7 @@ import path from 'path'
 const SEEDS = [
   'layout.seed.ts',
   'home.seed.ts',
-  'aboutUs.seed.ts',
+  'pages.seed.ts',
   'electronicResources.seed.ts',
   'quienesSomos.seed.ts',
   'investigation.seed.ts',

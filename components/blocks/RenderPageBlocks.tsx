@@ -1,14 +1,14 @@
-import { CardsFeaturesSection } from "./CardsFeaturesSection"
-import { ImageTextSection } from "./ImageTextSection"
-import { ScheduleSection } from "./ScheduleSection"
-import { ContactInfoSection } from "./ContactInfoSection"
-import { MapSection } from "./MapSection"
-import { HelpCtaSection } from "./HelpCtaSection"
-import { RulesCardsSection } from "./RulesCardsSection"
-import { NoticeSection } from "./NoticeSection"
-import { DownloadSection } from "./DownloadSection"
+import { CardsFeaturesSection } from "@/components/conocenos/CardsFeaturesSection"
+import { ImageTextSection } from "@/components/conocenos/ImageTextSection"
+import { ScheduleSection } from "@/components/conocenos/ScheduleSection"
+import { ContactInfoSection } from "@/components/conocenos/ContactInfoSection"
+import { MapSection } from "@/components/conocenos/MapSection"
+import { HelpCtaSection } from "@/components/conocenos/HelpCtaSection"
+import { RulesCardsSection } from "@/components/conocenos/RulesCardsSection"
+import { NoticeSection } from "@/components/conocenos/NoticeSection"
+import { DownloadSection } from "@/components/conocenos/DownloadSection"
 
-export function ConocenosBlocks({ layout }: { layout?: any[] | null }) {
+export function RenderPageBlocks({ layout }: { layout?: any[] | null }) {
   const blocks = (layout || []).filter(Boolean)
   const mapUrl: string | undefined = blocks.find((b) => b.blockType === "map_block" && b.map_url)?.map_url
 

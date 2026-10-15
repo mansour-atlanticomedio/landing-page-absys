@@ -9,6 +9,7 @@ import * as migration_20261007_164512_solicitud_compra_global from './20261007_1
 import * as migration_20261008_151100_contacto_mensaje_texto from './20261008_151100_contacto_mensaje_texto';
 import * as migration_20261015_163900_conocenos_tabs from './20261015_163900_conocenos_tabs';
 import * as migration_20261015_163937_about_us_blocks from './20261015_163937_about_us_blocks';
+import * as migration_20261015_170639_pages_collection from './20261015_170639_pages_collection';
 
 export const migrations = [
   {
@@ -64,6 +65,11 @@ export const migrations = [
   {
     up: migration_20261015_163937_about_us_blocks.up,
     down: migration_20261015_163937_about_us_blocks.down,
-    name: '20261015_163937_about_us_blocks'
+    name: '20261015_163937_about_us_blocks',
+  },
+  {
+    up: migration_20261015_170639_pages_collection.up,
+    down: migration_20261015_170639_pages_collection.down,
+    name: '20261015_170639_pages_collection'
   },
 ];

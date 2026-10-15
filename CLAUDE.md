@@ -62,7 +62,7 @@ Payload Admin → Globals → Collections → Pages → RenderBlocks → Compone
 - **Regla**: después de crear o modificar cualquier collection/global (`collections/*.ts`, `globals/*.ts`), además de `npx payload generate:types`, hay que generar la migración correspondiente con `npx payload migrate:create <nombre-descriptivo>` (se puede correr contra la BD de dev ya sincronizada por push — la migración generada refleja el diff acumulado desde la última migración) y comprobar que `npm run migrate` aplica limpio contra una BD nueva antes de dar el cambio por terminado.
 - Migraciones existentes: `migrations/20260731_114550_baseline.ts` (base) + `migrations/20260915_162539_session_2026_09_14_content_globals.ts` (todo el schema de la sesión de recursos-electrónicos/quiénes-somos/investigación/formación/horarios — se generó a posteriori porque no se había estado corriendo `migrate:create` en cada paso; a partir de ahora generar la migración en el mismo momento en que se toca el schema, no al final) + `migrations/20260928_114829_login_campus.ts` (collection `loginCampus_service`) + `migrations/20260929_102432_actualizar_colectivos_campus.ts` (enum `colectivo` de `loginCampus_service`: de ALUMN/PDI/PAS/EXT a los 5 tipos reales ADULT/ALUMN/ANONI/INVIT/PROFE — el `up` remapea filas existentes con `UPDATE ... CASE`, no un cast directo, porque un cast directo revienta con valores que ya no están en el enum nuevo) + `migrations/20260929_110457_layout_enlaces_externos.ts` (tabla nueva para `layout.enlaces_externos[]`) + `migrations/20261007_164512_solicitud_compra_global.ts` (tabla nueva del global `solicitud_compra`) + `migrations/20261008_151100_contacto_mensaje_texto.ts` (`send_email.message` de jsonb a texto conservando los mensajes: texto plano o árbol Lexical con saltos de línea; añade `rol`; el `down` es lossy) + `migrations/20261015_163900_conocenos_tabs.ts` (`about_us` con pestañas con name, luego convertido a bloques por `20261015_163937_about_us_blocks.ts`, que copia los datos a filas de bloques y elimina las columnas viejas: copia con UPDATE desde `quienes_somos`/`horarios_contacto`, siembra la normativa, `ADD VALUE` de 5 iconos en los enums de `appIcons`, elimina los 3 arrays de imágenes viejos; los globals antiguos siguen en BD hasta la fase 2; el `down` es lossy)
 
-### Collections (25 registradas)
+### Collections (26 registradas)
 
 #### Collections de contenido (15)
 
@@ -152,7 +152,7 @@ Pendientes conocidos (marcados con `TODO` en el código): `lepassLegacy` / compa
 | `repository` | `globals/Repositories.ts` | `hero` + `layout` (sin hero_carrusel). **Bug**: labels de `input_block` son "Sobre Nosotros" | Página parcial |
 | `library` | `globals/Library.ts` | Solo `hero` | Mínimo |
 | `contact` | `globals/Contact.ts` | Solo `hero` | Mínimo |
-| `about_us` | `globals/AboutUs.ts` | **Conócenos** (2026-10-15). 3 pestañas con `name` (`quienes_somos`, `horarios`, `normativa`), cada una con `hero` fijo + `layout` de **bloques** reutilizables definidos en `blocks/conocenos/` (`cards_features_block`, `image_text_block`, `schedule_block`, `contact_info_block`, `map_block`, `help_cta_block`, `rules_cards_block`, `notice_block`, `download_block`; los mismos 9 en las tres pestañas). Lo pintan las 3 páginas de `/conocenos/*` con `components/conocenos/ConocenosBlocks.tsx` | Página completa |
+| `about_us` | `globals/AboutUs.ts` | **Obsoleto** (2026-10-15): oculto en el admin, el contenido vive ahora en la collection `pages` (slugs `conocenos/*`). Conserva sus tablas (pestañas `quienes_somos`/`horarios`/`normativa` con `hero` + `layout`) hasta la fase 2 (DROP) | Obsoleto |
 | `horarios_contacto` | `globals/HorariosContacto.ts` | `hero` (rel→hero), `edificio_nombre`/`edificio_subtitulo`, `horario` (rel→schedule), `direccion_linea1`/`direccion_linea2`, `telefono`, `email`, `mapa_url`, `mapa_embed_url`, `ayuda_cta` (rel→cta) | **Obsoleto** (2026-10-15): oculto en el admin, se edita en `about_us.horarios`. Tabla conservada hasta la fase 2 (DROP) |
 | `electronic_resources` | `globals/ElectronicResources.ts` | `hero` (rel→hero, reutiliza la collection existente), `accesos_destacados` (rel→electronic_resources_access) | Página parcial |
 | `quienes_somos` | `globals/QuienesSomos.ts` | `hero` (rel→hero), `imagen_dirigidos` (upload→media), `ayudas` (rel→features), `dirigidos` (rel→features) — `ayudas`/`dirigidos` reutilizan la collection `features` existente con dos docs distintos | **Obsoleto** (2026-10-15): oculto en el admin, se edita en `about_us.quienes_somos`. Tabla conservada hasta la fase 2 (DROP) |
@@ -359,6 +359,18 @@ Cada bloque se envuelve en `<section key={id} data-block-type={blockType}>`.
 
 ---
 
+### Collection `pages` y catch-all (2026-10-15)
+
+Páginas compuestas desde el admin sin tocar código. **Principio**: contenido propio de una página = bloque en línea; contenido compartido = collection referenciada desde un bloque (`features`, `schedule`, `cta`, `hero`); ajustes del sitio = global.
+
+- **Collection** `pages` (`collections/Pages.ts`, grupo "Páginas"): `title`, `slug` (único, sin `/` inicial, p. ej. `conocenos/quienes-somos`), `meta_description`, `hero` (rel→hero), `hero_variant` (`simple`|`split`), `layout` (bloques). `versions.drafts` con autosave, `access`: `adminOnly` + `readVersions: isAdmin`. **La Local API ignora `access`: toda lectura debe filtrar `_status: published` fuera de draftMode** (centralizado en `getPage`).
+- **Bloques** (`blocks/conocenos/*`, registro `blocks/index.ts` → `pageBlocks`): `cards_features_block`, `image_text_block`, `schedule_block`, `contact_info_block`, `map_block`, `help_cta_block`, `rules_cards_block`, `notice_block`, `download_block`. Los wrappers de relación del `layout` de Home/Repositories (`RenderBlocks`) conviven sin tocar; si se crean versiones en línea de stats/news/cta/faq usar slugs distintos (`*_inline_block`).
+- **Ruta**: `app/(frontend)/[...slug]/page.tsx` (`force-dynamic`, `generateMetadata`, `notFound`), render con `components/blocks/PageHero.tsx` + `RenderPageBlocks.tsx` (reutiliza `components/conocenos/*Section.tsx`). Una ruta estática siempre gana al catch-all: `lib/pages.ts` define `RESERVED_SEGMENTS` (admin, api, auth, login, biblioteca, libros, perfil, prestamos, reservas, contacto, servicios, formacion, investigacion, repositorios, recursos, adquisiciones, _next, media, graphql...) y `LOCKED_SLUGS` (las 3 de Conócenos, de solo lectura). `lib/__tests__/pages.test.ts` comprueba que cada carpeta nueva bajo `app/` está reservada: **al añadir una ruta estática, añadirla a `RESERVED_SEGMENTS`**.
+- **Vista previa**: `app/(auth)/auth/preview` (solo `users`, activa `draftMode`, redirige con `safeNextPath`/`redirectResponse`) y `/auth/preview/exit`. Live preview con `@payloadcms/live-preview-react` 3.86.0 (versión exacta, igual que `payload` instalado) vía `RefreshRouteOnSave` en `components/blocks/LivePreviewListener.tsx`. Admin y lector comparten cookie `payload-token`: previsualizar cierra la sesión de lector en ese navegador.
+- **Migración** `migrations/20261015_170639_pages_collection.ts`: esquema + copia de `about_us` a 3 páginas por Local API (idempotente por slug; salta si `about_us` ya no está en la config). Seeds: `seeds/pages.seed.ts` (sustituye a `aboutUs.seed.ts`).
+- **Riesgo**: cambiar el slug rompe enlaces escritos a mano (navbar, `HomeQuickLinks`, `AuthErrorCard`, `InvestigationContent`); fase 2: tipo de enlace "página" en `collections/fields/enlace.ts`.
+- **Fase 2 pendiente**: DROP de `about_us`, `quienes_somos`, `horarios_contacto`; versiones en línea de stats/news/cta/faq; mover `blocks/conocenos/` a `blocks/`; migrar `servicios`, etc. a `pages`; `not-found.tsx` propio.
+
 ## Estructura de páginas
 
 ### Layout principal (`app/(frontend)/layout.tsx`)
@@ -378,9 +390,9 @@ Cada bloque se envuelve en `<section key={id} data-block-type={blockType}>`.
 | `/investigacion` | `investigation` | No (se quitó `RenderBlocks`, sin usar) | Hero + accesos rápidos + tarjetas + CTA editables desde Payload; interactividad con framer-motion vía `InvestigationContent` (client component) |
 | `/biblioteca` | `library` | No | Hero + BooksList |
 | `/contacto` | `contact` | No | Hero + SimpleForm + info contacto |
-| `/conocenos/quienes-somos` | `about_us` (`quienes_somos`) | No | Hero + tarjetas "ayudas"/"dirigidos" + imagen, todo desde Payload, sin fallbacks |
-| `/conocenos/normativa-...` | `about_us` (`normativa`) | No | Hero, tarjetas, responsabilidad y botón de PDF desde Payload, sin fallbacks |
-| `/conocenos/horarios-...` | `about_us` (`horarios`) | No | Hero + horario + contacto/dirección/mapa + CTA, títulos y botones desde Payload, sin fallbacks |
+| `/conocenos/quienes-somos` | `pages` (catch-all) | No | Hero + tarjetas "ayudas"/"dirigidos" + imagen, todo desde Payload, sin fallbacks |
+| `/conocenos/normativa-...` | `pages` (catch-all) | No | Hero, tarjetas, responsabilidad y botón de PDF desde Payload, sin fallbacks |
+| `/conocenos/horarios-...` | `pages` (catch-all) | No | Hero + horario + contacto/dirección/mapa + CTA, títulos y botones desde Payload, sin fallbacks |
 | `/recursos/recursos-electronicos` | `electronic_resources` | No | Hero (title/subtitle/imagen) + accesos destacados editables desde Payload; pestañas de bases de datos/ebooks/multimedia siguen hardcodeadas |
 
 ### Páginas que NO usan Payload (API externa Absys)

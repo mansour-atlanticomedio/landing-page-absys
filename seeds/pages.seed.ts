@@ -1,4 +1,4 @@
-// seeds/aboutUs.seed.ts
+// seeds/pages.seed.ts
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import path from 'path'
@@ -124,12 +124,11 @@ try {
     },
   })
 
-  await payload.updateGlobal({
-    slug: 'about_us',
-    data: {
-      quienes_somos: {
-        hero: quienesHero.id,
-        layout: [
+  const quienesSomos = {
+    title: 'Quiénes somos',
+    hero_variant: 'split',
+    hero: quienesHero.id,
+    layout: [
           { blockType: 'cards_features_block', title: '¿Cómo podemos ayudarte?', features: ayudas.id, style: 'default' },
           {
             blockType: 'cards_features_block',
@@ -138,11 +137,14 @@ try {
             style: 'muted',
             image: campusImg.id,
           },
-        ],
-      },
-      horarios: {
-        hero: horariosHero.id,
-        layout: [
+    ],
+  }
+
+  const horarios = {
+    title: 'Horarios, ubicación y contacto',
+    hero_variant: 'simple',
+    hero: horariosHero.id,
+    layout: [
           {
             blockType: 'contact_info_block',
             title: 'Información General',
@@ -167,11 +169,14 @@ try {
               'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2562.3405726995734!2d-15.452000045269175!3d28.06915669043545!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xc409577ccdecaa7%3A0x225708319a137012!2sUniversidad%20del%20Atl%C3%A1ntico%20Medio%20(UNAM)!5e0!3m2!1ses!2ses!4v1784738876377!5m2!1ses!2ses',
           },
           { blockType: 'help_cta_block', cta: ayudaCta.id },
-        ],
-      },
-      normativa: {
-        hero: normativaHero.id,
-        layout: [
+    ],
+  }
+
+  const normativa = {
+    title: 'Normativa y condiciones de uso',
+    hero_variant: 'simple',
+    hero: normativaHero.id,
+    layout: [
           {
             blockType: 'rules_cards_block',
             cards: [
@@ -216,11 +221,30 @@ try {
           },
           { blockType: 'download_block', button_label: 'Descargar normativa completa (PDF)' },
         ],
-      },
-    } as any,
-  })
+  }
+
+  const pages = [
+    { slug: 'conocenos/quienes-somos', ...quienesSomos },
+    { slug: 'conocenos/horarios-ubicacion-y-contacto', ...horarios },
+    { slug: 'conocenos/normativa-y-condiciones-de-uso', ...normativa },
+  ]
+
+  for (const page of pages) {
+    const existing = await payload.find({
+      collection: 'pages',
+      where: { slug: { equals: page.slug } },
+      limit: 1,
+      depth: 0,
+    })
+    const data = { ...page, _status: 'published' } as any
+    if (existing.docs.length > 0) {
+      await payload.update({ collection: 'pages', id: existing.docs[0].id, data, draft: false })
+    } else {
+      await payload.create({ collection: 'pages', data, draft: false })
+    }
+  }
 } catch (err: any) {
-  console.log('Error en updateGlobal about_us: ', JSON.stringify(err.data?.errors ?? err, null, 2))
+  console.log('Error en seed de pages: ', JSON.stringify(err.data?.errors ?? err, null, 2))
 }
 
 process.exit(0)

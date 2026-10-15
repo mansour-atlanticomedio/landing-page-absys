@@ -6,7 +6,8 @@ export const AboutUs : GlobalConfig = {
     slug: 'about_us',
     admin: {
         group: 'Páginas',
-        description: 'Sección Conócenos: Quiénes somos, Horarios y contacto, y Normativa.'
+        hidden: true,
+        description: "Obsoleto: ahora son páginas en 'Páginas'."
     },
     access: adminOnlyGlobal,
     label: "Conócenos",
