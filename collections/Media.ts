@@ -5,7 +5,10 @@ export const Media: CollectionConfig = {
   slug: 'media',
     admin: {
         group: 'Medios',
-        description: 'Imágenes del sitio. Sube aquí las fotos y logos y descríbelas en el texto alternativo.'
+        description: 'Imágenes del sitio. Sube aquí las fotos y logos y descríbelas en el texto alternativo.',
+        components: {
+            beforeList: ['/components/admin/MediaListHelp'],
+        }
     },
   labels: {
     singular: 'Imagen',

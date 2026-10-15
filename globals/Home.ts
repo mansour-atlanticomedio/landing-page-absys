@@ -5,7 +5,18 @@ export const Home: GlobalConfig = {
   slug: 'home',
     admin: {
         group: 'Páginas',
-        description: 'Página de inicio: cabecera, carrusel y bloques de contenido.'
+        description: 'Página de inicio: cabecera, carrusel y bloques de contenido.',
+        components: {
+            elements: {
+                Description: {
+                    path: '/components/admin/PageEditTips',
+                    clientProps: {
+                        description: 'Página de inicio: cabecera, carrusel y bloques de contenido.',
+                        tips: 'Esta es la portada de la web. Cada pestaña edita una zona; guarda antes de salir y comprueba el resultado en la web.',
+                    },
+                },
+            },
+        }
     },
   access: adminOnlyGlobal,
   label: "Inicio",

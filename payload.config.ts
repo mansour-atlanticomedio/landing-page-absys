@@ -72,6 +72,7 @@ export default buildConfig({
         Icon: '/components/admin/AdminIcon',
       },
       beforeDashboard: ['/components/admin/DashboardWelcome'],
+      afterNavLinks: ['/components/admin/NavHelp'],
     },
     importMap: {
       baseDir: path.resolve(dirname),

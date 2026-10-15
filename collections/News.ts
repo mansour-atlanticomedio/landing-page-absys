@@ -6,6 +6,9 @@ export const NewsCollection: CollectionConfig = {
     admin: {
         group: 'Bloques de contenido',
         description: 'Bloques de noticias con imagen, etiqueta y enlace.',
+        components: {
+            beforeList: ['/components/admin/NewsListHelp'],
+        },
         useAsTitle: 'title'
     },
     access: adminOnly,
@@ -45,6 +48,14 @@ export const NewsCollection: CollectionConfig = {
             type: 'array',
             minRows: 1,
             maxRows: 6,
+            admin: {
+                components: {
+                    RowLabel: {
+                        path: '/components/admin/ItemRowLabel',
+                        clientProps: { field: 'title', singular: 'Noticia' },
+                    },
+                },
+            },
             labels: {
                 singular: 'Noticia',
                 plural: 'Noticias'

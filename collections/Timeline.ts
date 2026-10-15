@@ -27,6 +27,15 @@ export const Timeline: CollectionConfig = {
                 plural: "Calendario",
             },
             type: 'array',
+            admin: {
+                components: {
+                    RowLabel: {
+                        path: '/components/admin/ItemRowLabel',
+                        clientProps: { field: 'title', fallbackField: 'day', singular: 'Día' },
+                    },
+                },
+            },
+
             fields: [
                 {
                     name: 'day',

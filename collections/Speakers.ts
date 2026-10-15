@@ -28,6 +28,15 @@ export const Speakers: CollectionConfig = {
                 plural: "Ponentes"
             },
             type: 'array',
+            admin: {
+                components: {
+                    RowLabel: {
+                        path: '/components/admin/ItemRowLabel',
+                        clientProps: { field: 'name', singular: 'Ponente' },
+                    },
+                },
+            },
+
             fields: [
                 {
                     name: 'photo',

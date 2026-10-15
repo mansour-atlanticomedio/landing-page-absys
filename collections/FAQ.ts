@@ -27,6 +27,15 @@ export const FAQ : CollectionConfig = {
                 plural: "Preguntas"
             },
             type: 'array',
+            admin: {
+                components: {
+                    RowLabel: {
+                        path: '/components/admin/ItemRowLabel',
+                        clientProps: { field: 'question', singular: 'Pregunta' },
+                    },
+                },
+            },
+
             fields: [
                 {
                     name: 'question',
