@@ -672,3 +672,9 @@ todos los casos).
 - Registrado `importExportPlugin` en 10 collections de contenido, exports/imports `adminOnly` (el default del plugin dejaba crear/leer a cualquier lector), síncrono (`disableJobsQueue: true`). Migración `20261015_172126_importar_exportar` (17 migraciones aplican limpias en BD nueva con `NODE_ENV=production`).
 - Error "Module not found: @payloadcms/live-preview-react": el volumen `node_modules` del contenedor no tenía el paquete; `docker exec biblioteca-frontend npm install` + `docker restart biblioteca-frontend`. Con cada dependencia nueva hay que repetirlo.
 - No verificado en UI: exportar/importar de extremo a extremo, `media`, grupo y labels en el admin.
+
+## 2026-10-15 — Borrador solo en vista previa
+
+- La cookie de draftMode persistía en el navegador del admin y la web pública mostraba el borrador y el banner. Ahora `isDraft` = draftMode activo Y (`sec-fetch-dest: iframe` o `?preview=1`); `/auth/preview` redirige a `/<slug>?preview=1`; el banner se oculta dentro del iframe.
+- El error "The following field is invalid: _status" al despublicar es el bloqueo intencionado de `LOCKED_SLUGS` (Conócenos): el mensaje real ("no se puede despublicar") no se ve bien en el toast. Pendiente decidir si se mejora o se desbloquea.
+- No verificado en navegador (cookie + iframe + `?preview=1`).

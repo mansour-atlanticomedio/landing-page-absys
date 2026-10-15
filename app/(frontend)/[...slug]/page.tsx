@@ -1,5 +1,5 @@
 import { cache } from "react"
-import { draftMode } from "next/headers"
+import { draftMode, headers } from "next/headers"
 import { notFound } from "next/navigation"
 import type { Metadata } from "next"
 import { getClient } from "@/lib/payload"
@@ -37,9 +37,21 @@ const getPage = cache(async (segments: string[], isDraft: boolean) => {
   return ((res as any).docs?.[0] ?? null) as any
 })
 
-export async function generateMetadata({ params }: { params: Promise<{ slug: string[] }> }): Promise<Metadata> {
+type PageProps = {
+  params: Promise<{ slug: string[] }>
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>
+}
+
+const resolveIsDraft = async (searchParams: PageProps["searchParams"]) => {
+  if (!(await draftMode()).isEnabled) return false
+  const inIframe = (await headers()).get("sec-fetch-dest") === "iframe"
+  const preview = (await searchParams).preview === "1"
+  return inIframe || preview
+}
+
+export async function generateMetadata({ params, searchParams }: PageProps): Promise<Metadata> {
   const { slug } = await params
-  const isDraft = (await draftMode()).isEnabled
+  const isDraft = await resolveIsDraft(searchParams)
   const page = await getPage(slug, isDraft)
   if (!page) return {}
   const heroSubtitle = typeof page.hero === "object" && page.hero ? page.hero.subtitle : undefined
@@ -50,9 +62,9 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   }
 }
 
-export default async function Page({ params }: { params: Promise<{ slug: string[] }> }) {
+export default async function Page({ params, searchParams }: PageProps) {
   const { slug } = await params
-  const isDraft = (await draftMode()).isEnabled
+  const isDraft = await resolveIsDraft(searchParams)
   const page = await getPage(slug, isDraft)
   if (!page) notFound()
 
