@@ -625,3 +625,9 @@ todos los casos).
 - Visual: logo/escudo en login y nav, paleta navy/teal en `app/(payload)/custom.scss`, Montserrat en títulos, dashboard de bienvenida (`components/admin/`). Enlaces con `success-700` por contraste AA.
 - Verificado: `tsc --noEmit` limpio, `generate:importmap` ok, revisión estática del `reviewer`. **No** se ha visto en navegador.
 - Pendiente: revisar en navegador claro/oscuro (`--base-body-size: 12`), `initCollapsed` en arrays largos (speakers, faq, timeline), labels sin tilde ("Titulo", "Seccion Principal"), cargar Open Sans en el admin, `migrate:create` se colgó en el entorno del agente (confirmar que no genera diff).
+
+## 2026-10-15 — Componentes de @payloadcms/ui en el admin
+
+- Dashboard (`DashboardWelcome`, server async con `payload.count`), `NavHelp` (afterNavLinks), `PageEditTips` (Description de Home), banners de ayuda en listas de media y news, `ItemRowLabel` (RowLabel con `useRowLabel` en speakers.people, faq.faqs, timeline.calendar, news.newsItems). Estilos `unam-*` en `custom.scss`.
+- Verificado: `tsc` limpio, importMap regenerado, rutas del admin responden 200 sin sesión.
+- Pendiente: probar autenticado; confirmar que ningún enlace duplica `/biblioteca` (Card `href` y `Button el="link"` llevan el prefijo a mano y Payload podría añadirlo otra vez); extender `PageEditTips`/banners a más páginas si gustan.
