@@ -10,6 +10,7 @@ import * as migration_20261008_151100_contacto_mensaje_texto from './20261008_15
 import * as migration_20261015_163900_conocenos_tabs from './20261015_163900_conocenos_tabs';
 import * as migration_20261015_163937_about_us_blocks from './20261015_163937_about_us_blocks';
 import * as migration_20261015_170639_pages_collection from './20261015_170639_pages_collection';
+import * as migration_20261015_172126_importar_exportar from './20261015_172126_importar_exportar';
 
 export const migrations = [
   {
@@ -70,6 +71,11 @@ export const migrations = [
   {
     up: migration_20261015_170639_pages_collection.up,
     down: migration_20261015_170639_pages_collection.down,
-    name: '20261015_170639_pages_collection'
+    name: '20261015_170639_pages_collection',
+  },
+  {
+    up: migration_20261015_172126_importar_exportar.up,
+    down: migration_20261015_172126_importar_exportar.down,
+    name: '20261015_172126_importar_exportar'
   },
 ];

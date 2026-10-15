@@ -666,3 +666,9 @@ todos los casos).
 - Catch-all: `depth: 3`, `robots: noindex` en borrador, `<h1>` con `page.title` si el hero no existe.
 - **Sin verificar contra Payload real**: que "Unpublish" llegue con `_status: 'draft'` sin `?draft=true` y se distinga de un guardado de borrador/autosave (suposición del agente backend). Probar en el admin antes de fiarse.
 - Anotado, sin arreglar: la migración usa la Local API y depende del esquema vigente (puede fallar si se añaden columnas a `pages` y se corre en BD limpia); su `down` borra las ediciones hechas en `pages`; la cookie de draftMode persiste hasta `/auth/preview/exit`.
+
+## 2026-10-15 — Plugin de importar/exportar
+
+- Registrado `importExportPlugin` en 10 collections de contenido, exports/imports `adminOnly` (el default del plugin dejaba crear/leer a cualquier lector), síncrono (`disableJobsQueue: true`). Migración `20261015_172126_importar_exportar` (17 migraciones aplican limpias en BD nueva con `NODE_ENV=production`).
+- Error "Module not found: @payloadcms/live-preview-react": el volumen `node_modules` del contenedor no tenía el paquete; `docker exec biblioteca-frontend npm install` + `docker restart biblioteca-frontend`. Con cada dependencia nueva hay que repetirlo.
+- No verificado en UI: exportar/importar de extremo a extremo, `media`, grupo y labels en el admin.

@@ -8,6 +8,7 @@ import { en } from '@payloadcms/translations/languages/en';
 import path from "path";
 import { fileURLToPath } from "url";
 import sharp from "sharp";
+import { importExportPlugin } from "@payloadcms/plugin-import-export";
 
 import { Home } from "./globals/Home.ts";
 import { Library as LibraryGlobal } from "./globals/Library.ts";
@@ -52,6 +53,7 @@ import { AuthorService } from "./collections/Author.service.ts";
 import { LoginAbsysService } from "./collections/LoginAbsys.service.ts";
 import { decryptTestEndpoints, LoginCampusService } from "./collections/LoginCampus.service.ts";
 import { Login } from "./collections/Login.ts";
+import { adminOnly } from "./lib/access.ts";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -145,7 +147,34 @@ export default buildConfig({
   // Tope de tamaño de subida (solo hay una collection de upload: media)
   upload: { limits: { fileSize: 10 * 1024 * 1024 } },
   sharp,
-  plugins: [],
+  plugins: [
+    importExportPlugin({
+      collections: [
+        { slug: 'news' },
+        { slug: 'blogs' },
+        { slug: 'faq' },
+        { slug: 'features' },
+        { slug: 'electronic_resources_access' },
+        { slug: 'schedule' },
+        { slug: 'speakers' },
+        { slug: 'partners' },
+        { slug: 'pages' },
+        { slug: 'media' },
+      ],
+      overrideExportCollection: ({ collection }) => ({
+        ...collection,
+        labels: { singular: 'Exportación', plural: 'Exportaciones' },
+        access: { ...adminOnly },
+        admin: { ...collection.admin, group: 'Usuarios y accesos' },
+      }),
+      overrideImportCollection: ({ collection }) => ({
+        ...collection,
+        labels: { singular: 'Importación', plural: 'Importaciones' },
+        access: { ...adminOnly },
+        admin: { ...collection.admin, group: 'Usuarios y accesos' },
+      }),
+    }),
+  ],
   email: nodemailerAdapter({
     defaultFromAddress: process.env.SMTP_USER as string,
     defaultFromName: 'Mansour Lo Lo',
