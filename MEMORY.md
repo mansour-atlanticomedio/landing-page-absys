@@ -617,3 +617,11 @@ todos los casos).
   `anio`, `materia`).
 - **`News.tsx`**: añadido hover (`hover:scale-[1.02]`, `rounded-xl overflow-hidden`) al estilo 3 de
   tarjetas, que no lo tenía.
+
+## 2026-10-15 — Admin de Payload más simple y con la marca de la universidad (rama `refactor/payload-admin-usuario-final`)
+
+- Objetivo: admin más ordenado e intuitivo para usuarios no técnicos, sin quitar características ni tocar el esquema de BD (no hay migración).
+- Estructura: `admin.group` + `admin.description` en español en las 39 collections/globals (Páginas, Bloques de contenido, Navegación y pie, Medios, Usuarios y accesos, Servicios internos); `useAsTitle: 'title'` donde faltaba; Home/Services/Formation/Investigation con `tabs` sin `name` (con `name` cambiaría el esquema). `loginAbsys_service` ahora `hidden`.
+- Visual: logo/escudo en login y nav, paleta navy/teal en `app/(payload)/custom.scss`, Montserrat en títulos, dashboard de bienvenida (`components/admin/`). Enlaces con `success-700` por contraste AA.
+- Verificado: `tsc --noEmit` limpio, `generate:importmap` ok, revisión estática del `reviewer`. **No** se ha visto en navegador.
+- Pendiente: revisar en navegador claro/oscuro (`--base-body-size: 12`), `initCollapsed` en arrays largos (speakers, faq, timeline), labels sin tilde ("Titulo", "Seccion Principal"), cargar Open Sans en el admin, `migrate:create` se colgó en el entorno del agente (confirmar que no genera diff).
