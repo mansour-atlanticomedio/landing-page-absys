@@ -259,7 +259,7 @@ export interface User {
   collection: 'users';
 }
 /**
- * Imágenes del sitio. Sube aquí las fotos y logos y descríbelas en el texto alternativo.
+ * Imágenes y documentos PDF del sitio. Sube aquí las fotos, logos y PDFs y descríbelos en el texto alternativo.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media".
@@ -455,7 +455,12 @@ export interface Statistic {
           | 'BarChart3'
           | 'HeartHandshake'
           | 'BookOpenCheck'
-          | 'Landmark';
+          | 'Landmark'
+          | 'Users'
+          | 'FileText'
+          | 'Library'
+          | 'Monitor'
+          | 'AlertTriangle';
         value?: number | null;
         description?: string | null;
         id?: string | null;
@@ -520,7 +525,12 @@ export interface Feature {
           | 'BarChart3'
           | 'HeartHandshake'
           | 'BookOpenCheck'
-          | 'Landmark';
+          | 'Landmark'
+          | 'Users'
+          | 'FileText'
+          | 'Library'
+          | 'Monitor'
+          | 'AlertTriangle';
         title?: string | null;
         description?: string | null;
         id?: string | null;
@@ -764,6 +774,11 @@ export interface Footer {
                     | 'HeartHandshake'
                     | 'BookOpenCheck'
                     | 'Landmark'
+                    | 'Users'
+                    | 'FileText'
+                    | 'Library'
+                    | 'Monitor'
+                    | 'AlertTriangle'
                   )
                 | null;
               label?: string | null;
@@ -914,7 +929,12 @@ export interface ElectronicResourcesAccess {
           | 'BarChart3'
           | 'HeartHandshake'
           | 'BookOpenCheck'
-          | 'Landmark';
+          | 'Landmark'
+          | 'Users'
+          | 'FileText'
+          | 'Library'
+          | 'Monitor'
+          | 'AlertTriangle';
         title: string;
         description?: string | null;
         cta?: string | null;
@@ -2199,31 +2219,100 @@ export interface Contact {
   createdAt?: string | null;
 }
 /**
- * Imágenes de la sección Conócenos (quiénes somos, horarios y normativa).
+ * Sección Conócenos: Quiénes somos, Horarios y contacto, y Normativa.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "about_us".
  */
 export interface AboutUs {
   id: number;
-  quienes_somos?:
-    | {
-        images?: (number | null) | Media;
-        id?: string | null;
-      }[]
-    | null;
-  horarios?:
-    | {
-        images?: (number | null) | Media;
-        id?: string | null;
-      }[]
-    | null;
-  normativa?:
-    | {
-        images?: (number | null) | Media;
-        id?: string | null;
-      }[]
-    | null;
+  /**
+   * Página Quiénes somos: cabecera, imagen y tarjetas de servicios.
+   */
+  quienes_somos?: {
+    hero?: (number | null) | Hero;
+    imagen_dirigidos?: (number | null) | Media;
+    ayudas?: (number | null) | Feature;
+    dirigidos?: (number | null) | Feature;
+  };
+  /**
+   * Página de horarios, ubicación y contacto.
+   */
+  horarios?: {
+    hero?: (number | null) | Hero;
+    info_titulo?: string | null;
+    edificio_nombre?: string | null;
+    edificio_subtitulo?: string | null;
+    horario_titulo?: string | null;
+    horario?: (number | null) | Schedule;
+    ubicacion_titulo?: string | null;
+    direccion_linea1?: string | null;
+    direccion_linea2?: string | null;
+    contacto_titulo?: string | null;
+    telefono?: string | null;
+    email?: string | null;
+    boton_contactar?: string | null;
+    boton_como_llegar?: string | null;
+    mapa_url?: string | null;
+    mapa_embed_url?: string | null;
+    ayuda_cta?: (number | null) | Cta;
+  };
+  /**
+   * Página de normativa y condiciones de uso.
+   */
+  normativa?: {
+    hero?: (number | null) | Hero;
+    /**
+     * Hasta 6 tarjetas con las normas principales.
+     */
+    tarjetas?:
+      | {
+          icon:
+            | 'Lightbulb'
+            | 'BookOpen'
+            | 'Microscope'
+            | 'Star'
+            | 'User'
+            | 'Briefcase'
+            | 'Phone'
+            | 'Mail'
+            | 'MapPin'
+            | 'Calendar'
+            | 'Search'
+            | 'Megaphone'
+            | 'Lock'
+            | 'Fingerprint'
+            | 'BarChart3'
+            | 'HeartHandshake'
+            | 'BookOpenCheck'
+            | 'Landmark'
+            | 'Users'
+            | 'FileText'
+            | 'Library'
+            | 'Monitor'
+            | 'AlertTriangle';
+          title: string;
+          /**
+           * Ej. "Próximamente". Se muestra como insignia en la tarjeta.
+           */
+          badge?: string | null;
+          description?: string | null;
+          puntos?:
+            | {
+                texto: string;
+                id?: string | null;
+              }[]
+            | null;
+          nota_titulo?: string | null;
+          nota_texto?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+    responsabilidad_titulo?: string | null;
+    responsabilidad_texto?: string | null;
+    pdf_texto_boton?: string | null;
+    pdf?: (number | null) | Media;
+  };
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -2241,7 +2330,7 @@ export interface ElectronicResource {
   createdAt?: string | null;
 }
 /**
- * Página Quiénes somos: cabecera, imagen y tarjetas de servicios.
+ * Obsoleto: ahora se edita en Conócenos
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "quienes_somos".
@@ -2256,7 +2345,7 @@ export interface QuienesSomo {
   createdAt?: string | null;
 }
 /**
- * Página de horarios, ubicación y contacto: edificio, horario, dirección y mapa.
+ * Obsoleto: ahora se edita en Conócenos
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "horarios_contacto".
@@ -2811,20 +2900,57 @@ export interface AboutUsSelect<T extends boolean = true> {
   quienes_somos?:
     | T
     | {
-        images?: T;
-        id?: T;
+        hero?: T;
+        imagen_dirigidos?: T;
+        ayudas?: T;
+        dirigidos?: T;
       };
   horarios?:
     | T
     | {
-        images?: T;
-        id?: T;
+        hero?: T;
+        info_titulo?: T;
+        edificio_nombre?: T;
+        edificio_subtitulo?: T;
+        horario_titulo?: T;
+        horario?: T;
+        ubicacion_titulo?: T;
+        direccion_linea1?: T;
+        direccion_linea2?: T;
+        contacto_titulo?: T;
+        telefono?: T;
+        email?: T;
+        boton_contactar?: T;
+        boton_como_llegar?: T;
+        mapa_url?: T;
+        mapa_embed_url?: T;
+        ayuda_cta?: T;
       };
   normativa?:
     | T
     | {
-        images?: T;
-        id?: T;
+        hero?: T;
+        tarjetas?:
+          | T
+          | {
+              icon?: T;
+              title?: T;
+              badge?: T;
+              description?: T;
+              puntos?:
+                | T
+                | {
+                    texto?: T;
+                    id?: T;
+                  };
+              nota_titulo?: T;
+              nota_texto?: T;
+              id?: T;
+            };
+        responsabilidad_titulo?: T;
+        responsabilidad_texto?: T;
+        pdf_texto_boton?: T;
+        pdf?: T;
       };
   updatedAt?: T;
   createdAt?: T;

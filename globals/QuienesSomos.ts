@@ -5,7 +5,8 @@ export const QuienesSomos: GlobalConfig = {
     slug: 'quienes_somos',
     admin: {
         group: 'Páginas',
-        description: 'Página Quiénes somos: cabecera, imagen y tarjetas de servicios.'
+        hidden: true,
+        description: 'Obsoleto: ahora se edita en Conócenos'
     },
     access: adminOnlyGlobal,
     label: 'Quiénes Somos',

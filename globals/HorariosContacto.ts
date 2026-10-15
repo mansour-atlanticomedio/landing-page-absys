@@ -5,7 +5,8 @@ export const HorariosContacto: GlobalConfig = {
     slug: 'horarios_contacto',
     admin: {
         group: 'Páginas',
-        description: 'Página de horarios, ubicación y contacto: edificio, horario, dirección y mapa.'
+        hidden: true,
+        description: 'Obsoleto: ahora se edita en Conócenos'
     },
     access: adminOnlyGlobal,
     label: 'Horarios, Ubicación y Contacto',

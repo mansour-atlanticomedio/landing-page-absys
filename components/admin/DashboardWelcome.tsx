@@ -6,8 +6,7 @@ const accesos = [
   { label: 'Servicios', description: 'Servicios de la biblioteca', href: '/admin/globals/services' },
   { label: 'Formación', description: 'Guías y actividades', href: '/admin/globals/formation' },
   { label: 'Investigación', description: 'Apoyo a la investigación', href: '/admin/globals/investigation' },
-  { label: 'Horarios y contacto', description: 'Horario, dirección y mapa', href: '/admin/globals/horarios_contacto' },
-  { label: 'Quiénes somos', description: 'Presentación de la biblioteca', href: '/admin/globals/quienes_somos' },
+  { label: 'Conócenos', description: 'Quiénes somos, horarios y normativa', href: '/admin/globals/about_us' },
   { label: 'Recursos electrónicos', description: 'Accesos destacados', href: '/admin/globals/electronic_resources' },
   { label: 'Cabecera y pie', description: 'Menú, enlaces y redes', href: '/admin/globals/layout' },
 ]

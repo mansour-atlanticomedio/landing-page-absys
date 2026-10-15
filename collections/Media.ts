@@ -5,7 +5,7 @@ export const Media: CollectionConfig = {
   slug: 'media',
     admin: {
         group: 'Medios',
-        description: 'Imágenes del sitio. Sube aquí las fotos y logos y descríbelas en el texto alternativo.',
+        description: 'Imágenes y documentos PDF del sitio. Sube aquí las fotos, logos y PDFs y descríbelos en el texto alternativo.',
         components: {
             beforeList: ['/components/admin/MediaListHelp'],
         }
@@ -32,6 +32,6 @@ export const Media: CollectionConfig = {
         position: 'centre',
       },
     ],
-    mimeTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/avif'],
+    mimeTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/avif', 'application/pdf'],
   },
 }

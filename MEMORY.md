@@ -636,3 +636,10 @@ todos los casos).
 
 - `horarios_contacto` (Cabecera / Edificio y horario / Contacto y dirección / Mapa / Ayuda), `layout` (Cabecera y pie / Enlaces externos) y `quienes_somos` (Cabecera / Ayudas / Dirigidos), con tabs sin `name`: sin cambio de esquema, comprobado que la lista de `name:` por fichero coincide con HEAD.
 - Pendiente: `about_us` y `electronic_resources` sin tabs (el segundo solo tiene 2 campos); ver en navegador autenticado.
+
+## 2026-10-15 — Conócenos unificado en `about_us` con 3 pestañas
+
+- Las 3 páginas de `/conocenos/*` leen de `about_us` (pestañas con `name`: `quienes_somos`, `horarios`, `normativa`); se borraron los `*_FALLBACK`, textos fijos y código muerto. Decisiones del usuario: sin fallbacks, PDF permitido en `media`, globals antiguos en dos fases.
+- Migración `20261015_163900_conocenos_tabs` escrita a mano (`migrate:create` es interactivo y se cuelga); probada en BD nueva con `NODE_ENV=production` y filas de prueba. Con datos reales de producción NO probada: hacer backup antes.
+- No existe página índice `/conocenos`.
+- Pendiente: sembrar dev (`npx tsx seeds/aboutUs.seed.ts`, crea media duplicados), ver las 3 páginas con datos, subir el PDF de normativa, apuntar `seeds/horarios.seed.ts` y `seeds/quienesSomos.seed.ts` a `about_us` o retirarlos, fase 2 (DROP de `quienes_somos`/`horarios_contacto`).

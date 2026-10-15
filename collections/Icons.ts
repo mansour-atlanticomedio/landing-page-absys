@@ -18,6 +18,11 @@ export const appIcons = [
     { label: 'Manos Colaborando', value: 'HeartHandshake' },
     { label: 'Libro Verificado', value: 'BookOpenCheck' },
     { label: 'Institución (Landmark)', value: 'Landmark' },
+    { label: 'Usuarios (Grupo)', value: 'Users' },
+    { label: 'Documento', value: 'FileText' },
+    { label: 'Biblioteca', value: 'Library' },
+    { label: 'Pantalla (Monitor)', value: 'Monitor' },
+    { label: 'Alerta (Triángulo)', value: 'AlertTriangle' },
 ]
 
 export const iconsSocialMedia = [
