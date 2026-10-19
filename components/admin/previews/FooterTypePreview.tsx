@@ -7,14 +7,6 @@ const COLUMNS = [
 const POLICIES = ['Aviso Legal', 'Política de privacidad', 'Política de cookies']
 
 export function FooterTypeThumb({ value }: ThumbProps) {
-  if (value === '2')
-    return (
-      <ThumbFrame bg={C.muted}>
-        <div style={{ flex: 1, border: `1px dashed ${C.sub}`, borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', ...previewFont, fontSize: 10, color: C.sub, textAlign: 'center', padding: 4 }}>
-          Sin pie visible
-        </div>
-      </ThumbFrame>
-    )
   if (value === '1')
     return (
       <ThumbFrame bg={C.navy} pad={4}>
@@ -75,12 +67,6 @@ function Policies({ spread }: { spread?: boolean }) {
 }
 
 export function FooterTypePreview({ value }: PreviewProps) {
-  if (value === '2')
-    return (
-      <div style={{ ...previewFont, background: C.muted, padding: 24, textAlign: 'center', color: C.sub }}>
-        Con este estilo la web no muestra ningún pie de página.
-      </div>
-    )
   const logo = <div style={{ ...displayFont, fontWeight: 700, fontSize: 14, color: C.white, border: '1px solid rgba(255,255,255,0.4)', borderRadius: 4, padding: '6px 12px', display: 'inline-block' }}>UNAM Biblioteca</div>
   if (value === '1')
     return (

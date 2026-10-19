@@ -330,7 +330,6 @@ export interface Hero {
 export interface Header {
   id: number;
   logo?: (number | null) | Media;
-  type?: ('0' | '1' | '2') | null;
   phone?: string | null;
   email?: string | null;
   navbar?:
@@ -745,7 +744,7 @@ export interface News {
  */
 export interface Footer {
   id: number;
-  type?: ('0' | '1' | '2') | null;
+  type?: ('0' | '1') | null;
   logo?: (number | null) | Media;
   social_medias?:
     | {
@@ -1693,7 +1692,6 @@ export interface HeroSelect<T extends boolean = true> {
  */
 export interface HeaderSelect<T extends boolean = true> {
   logo?: T;
-  type?: T;
   phone?: T;
   email?: T;
   navbar?:

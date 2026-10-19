@@ -21,17 +21,6 @@ export const Header: CollectionConfig = {
             relationTo: 'media',
         },
         {
-            name: 'type',
-            label: 'Tipo de encabezamiento',
-            type: 'select',
-            defaultValue: '0',
-            options:  [
-                { label: 'Estilo Clásico', value: '0' },
-                { label: 'Estilo Moderno', value: '1' },
-                { label: 'Estilo Minimalista', value: '2' },
-            ],
-        },
-        {
             type: 'row',
             fields: [
                 {
