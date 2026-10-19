@@ -25,6 +25,21 @@ export const Footer: CollectionConfig = {
                 { label: 'Estilo Vertical', value: '1' },
                 { label: 'Estilo Simple', value: '2' },
             ],
+            admin: {
+                components: {
+                    Field: {
+                        path: '/components/admin/fields/VisualSelectField',
+                        clientProps: {
+                            preview: 'footerType',
+                            options: [
+                                { value: '0', title: 'Horizontal', description: 'Logo y redes a la izquierda, columnas de información al lado' },
+                                { value: '1', title: 'Vertical', description: 'Todo centrado y apilado en una sola columna' },
+                                { value: '2', title: 'Simple', description: 'Sin pie de página visible en la web' },
+                            ],
+                        },
+                    },
+                },
+            },
         },
         {
             name: 'logo',

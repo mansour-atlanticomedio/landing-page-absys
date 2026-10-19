@@ -188,6 +188,12 @@ Ningún global define bloques en línea: todos salen de `blocks/` y se importan 
 - **Miniaturas del selector "Añadir bloque"**: copiar la imagen a `public/admin-blocks/` y añadir `slug: 'fichero.png'` en `BLOCK_IMAGE_FILES` de `blocks/images.ts`; `withBlockImage` pone `imageURL` (`/biblioteca/admin-blocks/<fichero>`) y `imageAltText`. Sin entrada en el mapa no hay `imageURL` y Payload muestra su dibujo por defecto. La miniatura antigua `public/images/blocks/cta_thumbnail.jpeg` ya no se usa (la clave `admin.images.thumbnail` no es válida en `Block`).
 - Al unificar, el label de `input_block` en Repositories pasó de "Sobre Nosotros" (bug) a "Entrada de texto".
 
+#### Selector visual de tipos en el admin (2026-10-19)
+
+Los campos que eligen una variante de diseño usan `components/admin/fields/VisualSelectField.tsx` (`admin.components.Field`, solo cambia cómo se elige: mismos `value`/`options`, sin migración): tarjetas con miniatura + "Vista previa" más grande, con datos reales del formulario cuando los hay. Maquetas en `components/admin/previews/` (CSS inline, sin Tailwind/framer-motion/`next/image`; estilos `unam-vs*` en `custom.scss`). Registrado en `news.style`, `footer.type`, `pages.hero_variant`, `CardsFeaturesBlock.style`, `ImageTextBlock.image_position` y `schedule[].type`. Para añadir otro: maqueta nueva en `previews/`, registrarla en `previews/index.ts` y apuntar con `clientProps.preview` (+ `clientProps.options` si cambian las opciones: hay que mantenerlas sincronizadas con las del campo).
+
+⚠️ `header.type` NO está cubierto: `components/layout/Header.tsx` recibe `type` pero no lo usa (los tres estilos se ven igual). Decidir si se implementan las variantes o se quita el campo. `footer.type = 2` ("Simple") no pinta nada en el frontend.
+
 ### Enlaces externos (2026-09-29)
 
 Registro de enlaces a sitios externos (repositorio, catálogo, redes sociales...) editable desde el

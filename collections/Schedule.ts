@@ -53,6 +53,23 @@ export const Schedule: CollectionConfig = {
                         { label: 'Horario ampliado', value: 'extended' },
                         { label: 'Vacaciones', value: 'holiday' },
                     ],
+            admin: {
+                components: {
+                    Field: {
+                        path: '/components/admin/fields/VisualSelectField',
+                        clientProps: {
+                            preview: 'scheduleType',
+                            contentFields: { day: './day', hours: './hours' },
+                            options: [
+                                { value: 'regular', title: 'Normal', description: 'Horario habitual, texto en gris' },
+                                { value: 'closed', title: 'Cerrado', description: 'Texto en rojo' },
+                                { value: 'extended', title: 'Horario ampliado', description: 'Texto en verde azulado' },
+                                { value: 'holiday', title: 'Vacaciones', description: 'Texto en ámbar' },
+                            ],
+                        },
+                    },
+                },
+            },
                 },
             ],
         },

@@ -123,6 +123,21 @@ export const Pages: CollectionConfig = {
                 { label: 'Cabecera simple', value: 'simple' },
                 { label: 'Cabecera dividida (texto + imagen)', value: 'split' },
             ],
+            admin: {
+                components: {
+                    Field: {
+                        path: '/components/admin/fields/VisualSelectField',
+                        clientProps: {
+                            preview: 'heroVariant',
+                            contentFields: { title: 'title' },
+                            options: [
+                                { value: 'simple', title: 'Simple', description: 'Título y subtítulo sobre fondo blanco' },
+                                { value: 'split', title: 'Dividida', description: 'Texto a la izquierda e imagen a la derecha' },
+                            ],
+                        },
+                    },
+                },
+            },
         },
         {
             name: 'layout',

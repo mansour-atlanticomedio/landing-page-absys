@@ -712,3 +712,9 @@ todos los casos).
 - Arreglo: `iconMap` e `iconsSocialMediaMap` movidos a `lib/icons.ts` (sin `'use client'`); `lib/utils.ts` los reexporta por compatibilidad; los 8 importadores pasan a `@/lib/icons`. Home, Conócenos, Investigación y Formación responden 200.
 - Regla: nada que un Server Component deba leer como dato (mapas, constantes) debe exportarse desde un módulo `'use client'`.
 - Por qué no saltó antes: Home no había renderizado estadísticas con este camino hasta que se sembró `stats_block` en dev (no verificado el historial exacto).
+
+## 2026-10-19 — Selector visual de tipos (VisualSelectField)
+
+- El editor elige variantes con tarjetas + vista previa en vez de "0/1/2": `news.style`, `footer.type`, `pages.hero_variant`, `CardsFeaturesBlock.style`, `ImageTextBlock.image_position`, `schedule[].type`. Sin cambios de esquema.
+- `header.type` sin cubrir: el componente `Header` ignora `type` (variantes no implementadas). Pendiente decidir implementarlas o quitar el campo. `footer.type = 2` no pinta nada.
+- Verificado: `tsc`, `npm test` 285/285, rutas del admin 200 sin sesión. NO verificado: render real en el admin (revisar con sesión: miniaturas, vista previa, que elegir marque el formulario como modificado y Guardar persista, `day`/`hours` en Schedule, tema oscuro).

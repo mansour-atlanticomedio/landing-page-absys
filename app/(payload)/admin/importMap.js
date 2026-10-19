@@ -25,6 +25,7 @@ import { UnderlineFeatureClient as UnderlineFeatureClient_e70f5e05f09f93e00b997e
 import { BoldFeatureClient as BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { ItalicFeatureClient as ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864 } from '@payloadcms/richtext-lexical/client'
 import { default as default_0177cd18e905682ab55a87d6e1f08d31 } from '../../../components/admin/ItemRowLabel'
+import { default as default_e33c84eb3c1230748331fc7a8df9aa80 } from '../../../components/admin/fields/VisualSelectField'
 import { default as default_fbc6a0edd1982d1b89a394c088718fca } from '../../../components/admin/NewsListHelp'
 import { FormatField as FormatField_cdf7e044479f899a31f804427d568b36 } from '@payloadcms/plugin-import-export/rsc'
 import { LimitField as LimitField_cdf7e044479f899a31f804427d568b36 } from '@payloadcms/plugin-import-export/rsc'
@@ -75,6 +76,7 @@ export const importMap = {
   "@payloadcms/richtext-lexical/client#BoldFeatureClient": BoldFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "@payloadcms/richtext-lexical/client#ItalicFeatureClient": ItalicFeatureClient_e70f5e05f09f93e00b997edb1ef0c864,
   "/components/admin/ItemRowLabel#default": default_0177cd18e905682ab55a87d6e1f08d31,
+  "/components/admin/fields/VisualSelectField#default": default_e33c84eb3c1230748331fc7a8df9aa80,
   "/components/admin/NewsListHelp#default": default_fbc6a0edd1982d1b89a394c088718fca,
   "@payloadcms/plugin-import-export/rsc#FormatField": FormatField_cdf7e044479f899a31f804427d568b36,
   "@payloadcms/plugin-import-export/rsc#LimitField": LimitField_cdf7e044479f899a31f804427d568b36,

@@ -22,6 +22,20 @@ export const ImageTextBlock: Block = {
                 { label: 'Izquierda', value: 'left' },
                 { label: 'Derecha', value: 'right' },
             ],
+            admin: {
+                components: {
+                    Field: {
+                        path: '/components/admin/fields/VisualSelectField',
+                        clientProps: {
+                            preview: 'imagePosition',
+                            options: [
+                                { value: 'left', title: 'Izquierda', description: 'Imagen a la izquierda y texto a la derecha' },
+                                { value: 'right', title: 'Derecha', description: 'Texto a la izquierda e imagen a la derecha' },
+                            ],
+                        },
+                    },
+                },
+            },
         },
     ],
 }

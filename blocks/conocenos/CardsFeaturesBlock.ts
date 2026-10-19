@@ -28,6 +28,21 @@ export const CardsFeaturesBlock: Block = {
                 { label: 'Fondo blanco', value: 'default' },
                 { label: 'Fondo gris claro', value: 'muted' },
             ],
+            admin: {
+                components: {
+                    Field: {
+                        path: '/components/admin/fields/VisualSelectField',
+                        clientProps: {
+                            preview: 'cardsStyle',
+                            contentFields: { title: 'title' },
+                            options: [
+                                { value: 'default', title: 'Fondo blanco', description: 'Tarjetas con borde en rejilla de tres' },
+                                { value: 'muted', title: 'Fondo oscuro', description: 'Tarjetas apiladas sobre fondo azul marino' },
+                            ],
+                        },
+                    },
+                },
+            },
         },
         {
             name: 'image',
