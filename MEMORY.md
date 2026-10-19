@@ -705,3 +705,10 @@ todos los casos).
 - Efecto a tener en cuenta: volver a ejecutar un seed pisa lo editado en el admin en esos documentos (`layout.enlaces_externos` no pisa keys existentes).
 - Limitación conocida de `findOrCreateMedia`: si el fichero existe en `media/` pero no hay fila en BD, Payload lo guarda con sufijo `-N` y el helper no lo reencuentra (duplica). Pasa con BD nueva + `media/` de dev sin vaciar. No corregido.
 - Para ejecutar seeds desde WSL: `DATABASE_URI` con `localhost:5433` (el host `bibliotecadb` no resuelve) y `PAYLOAD_SECRET` de `.env.local`.
+
+## 2026-10-19 — Home daba 500: `iconMap` desde un módulo `'use client'`
+
+- Error "Element type is invalid ... got: undefined" en `Stadistics` (Home) tras sembrar el contenedor: `iconMap[icon]` salía `undefined` aunque el icono (`Lightbulb`) era válido. Causa: `iconMap` vivía en `lib/utils.ts`, que lleva `'use client'` (por `useBookCover`), y los Server Components no pueden indexar un objeto exportado de un módulo cliente.
+- Arreglo: `iconMap` e `iconsSocialMediaMap` movidos a `lib/icons.ts` (sin `'use client'`); `lib/utils.ts` los reexporta por compatibilidad; los 8 importadores pasan a `@/lib/icons`. Home, Conócenos, Investigación y Formación responden 200.
+- Regla: nada que un Server Component deba leer como dato (mapas, constantes) debe exportarse desde un módulo `'use client'`.
+- Por qué no saltó antes: Home no había renderizado estadísticas con este camino hasta que se sembró `stats_block` en dev (no verificado el historial exacto).

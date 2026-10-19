@@ -3,7 +3,7 @@ import Image from 'next/image';
 import { X } from 'lucide-react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { overlayVariants, modalVariants, cardVariants } from '@/lib/animations'
-import { iconsSocialMediaMap } from '@/lib/utils';
+import { iconsSocialMediaMap } from '@/lib/icons';
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogOverlay, DialogPortal, DialogTitle, DialogTrigger } from '@radix-ui/react-dialog'
 import { useState } from 'react';
 import { SpeakersProps } from '@/types/common.type';

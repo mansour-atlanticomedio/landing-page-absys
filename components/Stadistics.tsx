@@ -1,4 +1,4 @@
-import { iconMap } from "@/lib/utils"
+import { iconMap } from "@/lib/icons"
 
 interface StatisticsProps {
     icon: any,

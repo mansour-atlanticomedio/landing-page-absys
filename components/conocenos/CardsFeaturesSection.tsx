@@ -1,6 +1,6 @@
 import Image from "next/image"
 import { BookOpen } from "lucide-react"
-import { iconMap } from "@/lib/utils"
+import { iconMap } from "@/lib/icons"
 
 export function CardsFeaturesSection({ block }: { block: any }) {
   const items: any[] = block?.features?.feature || []

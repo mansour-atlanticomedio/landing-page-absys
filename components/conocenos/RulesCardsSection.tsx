@@ -1,5 +1,5 @@
 import { FileText } from "lucide-react"
-import { iconMap } from "@/lib/utils"
+import { iconMap } from "@/lib/icons"
 
 export function RulesCardsSection({ block }: { block: any }) {
   const cards: any[] = block?.cards || []
