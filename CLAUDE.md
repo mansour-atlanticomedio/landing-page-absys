@@ -175,6 +175,19 @@ Pendientes conocidos (marcados con `TODO` en el código): `lepassLegacy` / compa
 | `cta_block` | `cta_relation` | `cta` | `<CTA>` |
 | `faq_block` | `faq_relation` | `faq` | `<FAQ>` |
 
+#### Bloques centralizados (`blocks/`, 2026-10-19)
+
+Ningún global define bloques en línea: todos salen de `blocks/` y se importan desde `@/blocks`.
+
+| Export | Carpeta | Usado por |
+|---|---|---|
+| `layoutBlocks` (los 11 wrappers de relación de la tabla anterior, un fichero por bloque) | `blocks/layout/` | `layout` de Home, Services, Formation, Investigation y Repositories |
+| `pageBlocks` / `conocenosBlocks` (los 9 bloques en línea de Conócenos) | `blocks/conocenos/` | collection `pages` (y `about_us`, obsoleto) |
+
+- **Añadir o cambiar un bloque**: un fichero en la carpeta correspondiente + añadirlo a su `index.ts`; se refleja en todas las páginas que lo importan. Cambiar slugs o nombres de campo SÍ cambia el esquema (necesita migración); cambiar labels o descripciones no.
+- **Miniaturas del selector "Añadir bloque"**: copiar la imagen a `public/admin-blocks/` y añadir `slug: 'fichero.png'` en `BLOCK_IMAGE_FILES` de `blocks/images.ts`; `withBlockImage` pone `imageURL` (`/biblioteca/admin-blocks/<fichero>`) y `imageAltText`. Sin entrada en el mapa no hay `imageURL` y Payload muestra su dibujo por defecto. La miniatura antigua `public/images/blocks/cta_thumbnail.jpeg` ya no se usa (la clave `admin.images.thumbnail` no es válida en `Block`).
+- Al unificar, el label de `input_block` en Repositories pasó de "Sobre Nosotros" (bug) a "Entrada de texto".
+
 ### Enlaces externos (2026-09-29)
 
 Registro de enlaces a sitios externos (repositorio, catálogo, redes sociales...) editable desde el
@@ -560,7 +573,6 @@ tipo(alcance opcional): resumen en imperativo, máx 50 caracteres
 
 ## Bugs conocidos
 
-- `globals/Repositories.ts` líneas 71-72: labels de `input_block` dicen "Sobre Nosotros" en vez de "Entrada de texto"
 - `app/fonts/Monserrat/`: typo en el nombre del directorio (falta una 't'), pero las referencias en `styles.css` apuntan a esa ruta así que funciona
 - Página `/servicios` importa `RenderBlocks` pero no lo usa — tiene JSX hardcodeado (`/investigacion` y `/formacion` ya no importan `RenderBlocks`, ver `MEMORY.md` para el porqué)
 

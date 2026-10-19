@@ -1,4 +1,5 @@
 import type { Block } from 'payload'
+import { withBlockImage } from '../images'
 import { CardsFeaturesBlock } from './CardsFeaturesBlock'
 import { ImageTextBlock } from './ImageTextBlock'
 import { ScheduleBlock } from './ScheduleBlock'
@@ -19,4 +20,4 @@ export const conocenosBlocks: Block[] = [
     RulesCardsBlock,
     NoticeBlock,
     DownloadBlock,
-]
+].map(withBlockImage)

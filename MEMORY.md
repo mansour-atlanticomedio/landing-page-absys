@@ -690,3 +690,10 @@ todos los casos).
 - Causa de las copias en `media` (campus.jpg x76, inicio-destacados.png x50 en el contenedor): cada seed hacía `payload.create({ collection: 'media' })` sin comprobar si existía, en cada ejecución y en cada uso (incluso 3 veces seguidas en `pages.seed.ts`).
 - Arreglo: `seeds/lib/media.ts` → `findOrCreateMedia(payload, { file, alt, req? })`: busca por `filename` exacto, luego por `nombre-N.ext` (el sufijo más bajo), y si no existe crea. Usado en los 10 seeds que creaban media. Mismo fichero con distinto `alt` reutiliza el primer registro.
 - NO se limpiaron los duplicados ya existentes (lo hace el usuario a mano; ojo: las copias están referenciadas desde heroes, noticias, carruseles y pages, borrar una en uso rompe la imagen). Seeds no ejecutados; verificado solo con `tsc`.
+
+## 2026-10-19 — Bloques centralizados y miniaturas
+
+- Los 11 wrappers del `layout` (antes duplicados en 5 globals) viven en `blocks/layout/` (`layoutBlocks`); los 9 de Conócenos en `blocks/conocenos/`. Sin cambios de esquema, `payload-types.ts` idéntico, sin migración. Único cambio visible: label de `input_block` en Repositories ("Sobre Nosotros" → "Entrada de texto", bug conocido).
+- Miniaturas del selector de bloques: `blocks/images.ts` (`BLOCK_IMAGE_FILES`, vacío) + `public/admin-blocks/`. El usuario añadirá las imágenes.
+- Se pierde `admin.images.thumbnail` de `cta_block` (clave inválida, nunca funcionó).
+- Verificado: `tsc`, `npm test` 285/285. No verificado: servir `/biblioteca/admin-blocks/<fichero>` con servidor en marcha.

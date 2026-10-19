@@ -64,13 +64,7 @@ const headerData = {
         {
             "name": "investigación",
             "to": "/investigacion",
-            "items": [
-                {
-                    "tipo": "ancla" as const,
-                    "ancla": "investigacion-apoyo" as const,
-                    "label": "Apoyo a la investigación"
-                }
-            ]
+            "items": []
         },
         {
             "name": "formacion",
