@@ -697,3 +697,11 @@ todos los casos).
 - Miniaturas del selector de bloques: `blocks/images.ts` (`BLOCK_IMAGE_FILES`, vacío) + `public/admin-blocks/`. El usuario añadirá las imágenes.
 - Se pierde `admin.images.thumbnail` de `cta_block` (clave inválida, nunca funcionó).
 - Verificado: `tsc`, `npm test` 285/285. No verificado: servir `/biblioteca/admin-blocks/<fichero>` con servidor en marcha.
+
+## 2026-10-19 — Seeds actualizados y repetibles
+
+- `quienesSomos.seed.ts` y `horarios.seed.ts` retirados (`git rm`; escribían en globals obsoletos, `pages.seed.ts` ya cubría su contenido). El resto de seeds no tenía campos desfasados.
+- Nuevo `seeds/lib/upsert.ts` (`upsertDoc`): find-or-update-or-create por clave natural (`title` en hero, features, cta, schedule, electronic_resources_access, news, input; `items.title` en hero_carrusel; header/footer reutilizan los enlazados por `layout`). Dos ejecuciones de `npm run seed` en una BD nueva dan los mismos conteos y las 3 páginas `conocenos/*` publicadas.
+- Efecto a tener en cuenta: volver a ejecutar un seed pisa lo editado en el admin en esos documentos (`layout.enlaces_externos` no pisa keys existentes).
+- Limitación conocida de `findOrCreateMedia`: si el fichero existe en `media/` pero no hay fila en BD, Payload lo guarda con sufijo `-N` y el helper no lo reencuentra (duplica). Pasa con BD nueva + `media/` de dev sin vaciar. No corregido.
+- Para ejecutar seeds desde WSL: `DATABASE_URI` con `localhost:5433` (el host `bibliotecadb` no resuelve) y `PAYLOAD_SECRET` de `.env.local`.

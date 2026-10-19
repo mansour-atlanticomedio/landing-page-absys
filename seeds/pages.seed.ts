@@ -2,6 +2,7 @@
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import { findOrCreateMedia } from './lib/media'
+import { upsertDoc } from './lib/upsert'
 
 const payload = await getPayload({ config })
 
@@ -13,7 +14,7 @@ try {
   const horariosImg = await media('Horarios, ubicación y contacto', 'campus.jpg')
   const normativaImg = await media('Normativa y condiciones de uso', 'campus.jpg')
 
-  const quienesHero = await payload.create({
+  const quienesHero = await upsertDoc(payload, {
     collection: 'hero',
     data: {
       background_image: quienesImg.id,
@@ -23,7 +24,7 @@ try {
     },
   })
 
-  const ayudas = await payload.create({
+  const ayudas = await upsertDoc(payload, {
     collection: 'features',
     data: {
       title: '¿Cómo podemos ayudarte?',
@@ -50,7 +51,7 @@ try {
     },
   })
 
-  const dirigidos = await payload.create({
+  const dirigidos = await upsertDoc(payload, {
     collection: 'features',
     data: {
       title: 'A quién se dirigen nuestros servicios',
@@ -77,7 +78,7 @@ try {
     },
   })
 
-  const horariosHero = await payload.create({
+  const horariosHero = await upsertDoc(payload, {
     collection: 'hero',
     data: {
       background_image: horariosImg.id,
@@ -87,7 +88,7 @@ try {
     },
   })
 
-  const horario = await payload.create({
+  const horario = await upsertDoc(payload, {
     collection: 'schedule',
     data: {
       title: 'Horario de atención — Biblioteca',
@@ -99,7 +100,7 @@ try {
     },
   })
 
-  const ayudaCta = await payload.create({
+  const ayudaCta = await upsertDoc(payload, {
     collection: 'cta',
     data: {
       title: '¿Necesitas ayuda adicional?',
@@ -109,7 +110,7 @@ try {
     },
   })
 
-  const normativaHero = await payload.create({
+  const normativaHero = await upsertDoc(payload, {
     collection: 'hero',
     data: {
       background_image: normativaImg.id,

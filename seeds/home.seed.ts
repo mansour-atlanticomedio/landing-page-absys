@@ -3,6 +3,7 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 import type { HeroCarrusel, Input, News, Media } from '@/payload-types'
 import { findOrCreateMedia } from './lib/media'
+import { upsertDoc } from './lib/upsert'
 
 const payload = await getPayload({ config })
 
@@ -40,18 +41,19 @@ const carusselData = {
 
 let carruselDoc : any
 try {
-    carruselDoc = await payload.create({
+    carruselDoc = await upsertDoc(payload, {
     collection: 'hero_carrusel',
     data: carusselData,
+    where: { 'items.title': { equals: carusselData.items[0].title } },
   })
 } catch (error) {
-    
+    console.error('Error hero_carrusel: ', error)
 }
 
 // --- INPUT BLOCK ---
 let inputText: any
 try {
-  inputText = await payload.create({
+  inputText = await upsertDoc(payload, {
     collection: 'input',
     data: {
       title: 'Búsqueda',
@@ -69,7 +71,7 @@ for (let i = 1; i <= 4; i++) {
   imageNews.push(media)
 }
 
-const destacadosDoc = await payload.create({
+const destacadosDoc = await upsertDoc(payload, {
   collection: 'news',
   data: {
     title: 'Destacados',
@@ -91,7 +93,7 @@ for (let i = 1; i <= 3; i++) {
   imageRecomendamos.push(media)
 }
 
-const recomendamosDoc = await payload.create({
+const recomendamosDoc = await upsertDoc(payload, {
   collection: 'news',
   data: {
     title: 'Te recomendamos',

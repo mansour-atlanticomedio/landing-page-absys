@@ -2,6 +2,7 @@
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import { findOrCreateMedia } from './lib/media'
+import { upsertDoc } from './lib/upsert'
 
 const payload = await getPayload({ config })
 
@@ -37,9 +38,10 @@ const carruselData = {
 }
 
 try {
-  const carruselDoc = await payload.create({
+  const carruselDoc = await upsertDoc(payload, {
     collection: 'hero_carrusel',
     data: carruselData,
+    where: { 'items.title': { equals: carruselData.items[0].title } },
   })
 
   await payload.updateGlobal({
