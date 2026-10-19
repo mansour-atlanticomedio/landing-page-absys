@@ -1,15 +1,11 @@
 // seeds/formation.seed.ts
 import { getPayload } from 'payload'
 import config from '@payload-config'
-import path from 'path'
+import { findOrCreateMedia } from './lib/media'
 
 const payload = await getPayload({ config })
 
-const heroImage = await payload.create({
-  collection: 'media',
-  data: { alt: 'Formación' },
-  filePath: path.resolve(process.cwd(), 'seeds/assets/campus.jpg'),
-})
+const heroImage = await findOrCreateMedia(payload, { file: 'campus.jpg', alt: 'Formación' })
 
 const heroDoc = await payload.create({
   collection: 'hero',

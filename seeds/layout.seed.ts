@@ -2,14 +2,11 @@
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import type { Header, Footer, Media } from '@/payload-types'
+import { findOrCreateMedia } from './lib/media'
 
 const payload = await getPayload({ config })
 
-const logo = await payload.create({
-    collection: 'media',
-    data: { alt: 'imagen fondo' },
-    filePath: './seeds/assets/unam-color-full.png',
-})
+const logo = await findOrCreateMedia(payload, { file: 'unam-color-full.png', alt: 'imagen fondo' })
 
 const headerData = {
     "logo": logo.id,

@@ -684,3 +684,9 @@ todos los casos).
 - Las tarjetas del panel y el botón "Subir imagen" iban a `/biblioteca/biblioteca/admin/...` (404): `Card` y `Button el="link"` de `@payloadcms/ui` usan el `Link` de Next, que ya antepone el basePath, y yo había puesto `/biblioteca` a mano. Ahora usan rutas sin prefijo (`/admin/...`).
 - Regla: con `Link`/`Card`/`Button el="link"` NO prefijar basePath; con `<a>`, `<img src>`, `Button el="anchor"` y URLs de preview sí.
 - Aviso que ya estaba anotado el 2026-10-15 ("comprobar que ningún enlace duplica /biblioteca").
+
+## 2026-10-19 — Seeds sin imágenes duplicadas
+
+- Causa de las copias en `media` (campus.jpg x76, inicio-destacados.png x50 en el contenedor): cada seed hacía `payload.create({ collection: 'media' })` sin comprobar si existía, en cada ejecución y en cada uso (incluso 3 veces seguidas en `pages.seed.ts`).
+- Arreglo: `seeds/lib/media.ts` → `findOrCreateMedia(payload, { file, alt, req? })`: busca por `filename` exacto, luego por `nombre-N.ext` (el sufijo más bajo), y si no existe crea. Usado en los 10 seeds que creaban media. Mismo fichero con distinto `alt` reutiliza el primer registro.
+- NO se limpiaron los duplicados ya existentes (lo hace el usuario a mano; ojo: las copias están referenciadas desde heroes, noticias, carruseles y pages, borrar una en uso rompe la imagen). Seeds no ejecutados; verificado solo con `tsc`.

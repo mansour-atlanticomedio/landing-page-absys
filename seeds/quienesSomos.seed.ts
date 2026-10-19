@@ -1,21 +1,13 @@
 // seeds/quienesSomos.seed.ts
 import { getPayload } from 'payload'
 import config from '@payload-config'
-import path from 'path'
+import { findOrCreateMedia } from './lib/media'
 
 const payload = await getPayload({ config })
 
-const heroImage = await payload.create({
-  collection: 'media',
-  data: { alt: 'Quiénes somos' },
-  filePath: path.resolve(process.cwd(), 'seeds/assets/quienes_somos.jpg'),
-})
+const heroImage = await findOrCreateMedia(payload, { file: 'quienes_somos.jpg', alt: 'Quiénes somos' })
 
-const dirigidosImage = await payload.create({
-  collection: 'media',
-  data: { alt: 'A quién se dirigen nuestros servicios' },
-  filePath: path.resolve(process.cwd(), 'seeds/assets/campus.jpg'),
-})
+const dirigidosImage = await findOrCreateMedia(payload, { file: 'campus.jpg', alt: 'A quién se dirigen nuestros servicios' })
 
 const heroDoc = await payload.create({
   collection: 'hero',

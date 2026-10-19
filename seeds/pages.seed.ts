@@ -1,16 +1,11 @@
 // seeds/pages.seed.ts
 import { getPayload } from 'payload'
 import config from '@payload-config'
-import path from 'path'
+import { findOrCreateMedia } from './lib/media'
 
 const payload = await getPayload({ config })
 
-const media = async (alt: string, file: string) =>
-  payload.create({
-    collection: 'media',
-    data: { alt },
-    filePath: path.resolve(process.cwd(), `seeds/assets/${file}`),
-  })
+const media = async (alt: string, file: string) => findOrCreateMedia(payload, { file, alt })
 
 try {
   const quienesImg = await media('Quiénes somos', 'quienes_somos.jpg')

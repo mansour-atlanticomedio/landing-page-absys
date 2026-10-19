@@ -1,29 +1,17 @@
 // seeds/heroCarrusel.seed.ts
 import { getPayload } from 'payload'
 import config from '@payload-config'
-import path from 'path'
+import { findOrCreateMedia } from './lib/media'
 
 const payload = await getPayload({ config })
 
-const imageScopus = await payload.create({
-  collection: 'media',
-  data: { alt: 'imagen fondo' },
-  filePath: path.resolve(process.cwd(), 'seeds/assets/screen-inicio-hero.png'),
-})
+const imageScopus = await findOrCreateMedia(payload, { file: 'screen-inicio-hero.png', alt: 'imagen fondo' })
 
-const imageSalaEstudio = await payload.create({
-  collection: 'media',
-  data: { alt: 'imagen fondo' },
-  filePath: path.resolve(process.cwd(), 'seeds/assets/campus.jpg'),
-})
+const imageSalaEstudio = await findOrCreateMedia(payload, { file: 'campus.jpg', alt: 'imagen fondo' })
 
 // Placeholder hasta que se suba el asset real (Gemini_Generated_Image_pjh4c4pjh4c4pjh4.jpg)
 // generado desde el admin, que no existe en este entorno de desarrollo.
-const imageTaller = await payload.create({
-  collection: 'media',
-  data: { alt: 'imagen taller universitaria' },
-  filePath: path.resolve(process.cwd(), 'seeds/assets/campus.jpg'),
-})
+const imageTaller = await findOrCreateMedia(payload, { file: 'campus.jpg', alt: 'imagen taller universitaria' })
 
 const carruselData = {
   items: [
