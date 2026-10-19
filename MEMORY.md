@@ -725,3 +725,6 @@ todos los casos).
 - Vista previa del selector visual: botón "Ver/Ocultar vista previa", oculta por defecto, preferencia en `localStorage` (`unam-admin-vs-preview`).
 - Aviso: `migrate:create` se ejecutó contra la BD de dev con `push` activo; su `header` seguramente ya perdió `type` y su `footer` ya tiene el enum nuevo. Si algún footer de dev estaba en `2`, `push` pudo fallar o dejarlo sin remapear: revisar.
 - Verificado: `tsc`, `npm test` 285/285, `/admin/collections/news/create` 200. NO verificado en navegador: botón de vista previa, tema claro/oscuro, persistencia al recargar.
+
+## 2026-10-19 – fix cn() desde el servidor
+- `lib/utils.ts` tenía `'use client'` por el hook `useBookCover`; `Card` en Server Components (`features_block` en Home) reventaba. Hook movido a `lib/useBookCover.ts`, `utils` sin directiva y reexporta. Home responde 200, `tsc` limpio.

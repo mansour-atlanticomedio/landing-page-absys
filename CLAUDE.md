@@ -504,7 +504,7 @@ Variables (ver `env.local.Example`): `NEXT_CAMPUS_SECRET_KEY`, `NEXT_CAMPUS_TIME
 
 Gotchas:
 - **`SameSite=Lax`, no `Strict`**: la cookie se crea en una redirección que empieza en otro sitio (el campus); con `Strict` el navegador no la manda en ese mismo viaje y el usuario entra en bucle login → campus → login
-- **`Card` de shadcn no se puede renderizar en un Server Component**: `lib/utils.ts` lleva `'use client'` (tiene el hook `useBookCover`), así que `cn()` es una referencia de cliente y revienta en el servidor con `Attempted to call cn() from the server`. Envolver el Card en un componente `"use client"` (como `components/auth/*`, `components/cuenta/PrestamosTabla`)
+- **`lib/utils.ts` ya no lleva `'use client'`** (2026-10-19): `cn()` se usa desde los componentes shadcn en Server Components; el hook `useBookCover` vive aparte en `lib/useBookCover.ts` (`'use client'`) y `utils` lo reexporta. No volver a meter hooks ni `'use client'` en `lib/utils.ts`, o `Card`/`Button` revientan en el servidor con `Attempted to call cn() from the server`
 - `loginCampus_service`: cada lector solo puede leerse a sí mismo por la API; solo admins (`users`) crean/editan/borran
 - Payload usa una única cookie `payload-token` para todas las collections con auth: iniciar sesión como lector en el mismo navegador cierra la sesión del admin y viceversa
 
