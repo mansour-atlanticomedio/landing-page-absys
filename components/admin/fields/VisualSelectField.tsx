@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useMemo, useRef } from 'react'
+import { useCallback, useMemo, useRef, useSyncExternalStore } from 'react'
 import { FieldDescription, FieldError, FieldLabel, useField, useFormFields } from '@payloadcms/ui'
 import type { SelectFieldClientProps } from 'payload'
 import { PREVIEWS } from '../previews'
@@ -14,6 +14,36 @@ type Props = SelectFieldClientProps & {
   previewCaption?: string
 }
 
+const PREVIEW_KEY = 'unam-admin-vs-preview'
+const PREVIEW_EVENT = 'unam-admin-vs-preview-change'
+
+function readPreviewPref() {
+  try {
+    return window.localStorage.getItem(PREVIEW_KEY) === '1'
+  } catch {
+    return memoryPref
+  }
+}
+
+let memoryPref = false
+
+function subscribePreviewPref(callback: () => void) {
+  window.addEventListener('storage', callback)
+  window.addEventListener(PREVIEW_EVENT, callback)
+  return () => {
+    window.removeEventListener('storage', callback)
+    window.removeEventListener(PREVIEW_EVENT, callback)
+  }
+}
+
+function writePreviewPref(next: boolean) {
+  memoryPref = next
+  try {
+    window.localStorage.setItem(PREVIEW_KEY, next ? '1' : '0')
+  } catch {}
+  window.dispatchEvent(new Event(PREVIEW_EVENT))
+}
+
 function resolvePath(path: string, target: string) {
   if (!target.startsWith('./')) return target
   const parent = path.includes('.') ? path.slice(0, path.lastIndexOf('.') + 1) : ''
@@ -24,6 +54,7 @@ export default function VisualSelectField(props: Props) {
   const { field, path, readOnly, preview, options, contentFields, previewCaption } = props
   const entry = PREVIEWS[preview]
   const { value, setValue, showError, errorMessage } = useField<string>({ path })
+  const showPreview = useSyncExternalStore(subscribePreviewPref, readPreviewPref, () => false)
   const refs = useRef<Array<HTMLButtonElement | null>>([])
 
   const paths = useMemo(
@@ -66,6 +97,7 @@ export default function VisualSelectField(props: Props) {
 
   if (!entry) return null
   const { Thumb, Preview } = entry
+  const previewId = `${path}-visual-preview`
   const labelId = `${path}-visual-label`
   const description = field.admin?.description
   const showUnsetNote = value === undefined || value === null || value === ''
@@ -106,18 +138,36 @@ export default function VisualSelectField(props: Props) {
       <FieldError path={path} showError={showError} message={errorMessage} />
       {description ? <FieldDescription description={description} path={path} /> : null}
       {selected ? (
-        <div className="unam-vs__preview" aria-live="polite">
-          <div className="unam-vs__preview-head">
-            <strong>Vista previa</strong>
-            <span>{selected.title}</span>
+        <div className="unam-vs__preview-wrap">
+          <button
+            type="button"
+            className="unam-vs__toggle"
+            aria-expanded={showPreview}
+            aria-controls={previewId}
+            onClick={() => writePreviewPref(!showPreview)}
+          >
+            <svg className="unam-vs__chevron" width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M4 6l4 4 4-4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+            {showPreview ? 'Ocultar vista previa' : 'Ver vista previa'}
+          </button>
+          <div id={previewId}>
+            {showPreview ? (
+              <div className="unam-vs__preview" aria-live="polite">
+                <div className="unam-vs__preview-head">
+                  <strong>Vista previa</strong>
+                  <span>{selected.title}</span>
+                </div>
+                <div className="unam-vs__preview-body">
+                  <Preview value={selected.value} content={content} />
+                </div>
+                <p className="unam-vs__preview-note">
+                  {showUnsetNote ? `Aún no has elegido un estilo: se muestra el estilo por defecto. ` : ''}
+                  {previewCaption ?? 'Es una maqueta con contenido de ejemplo; la web usa tus textos e imágenes reales.'}
+                </p>
+              </div>
+            ) : null}
           </div>
-          <div className="unam-vs__preview-body">
-            <Preview value={selected.value} content={content} />
-          </div>
-          <p className="unam-vs__preview-note">
-            {showUnsetNote ? `Aún no has elegido un estilo: se muestra el estilo por defecto. ` : ''}
-            {previewCaption ?? 'Es una maqueta con contenido de ejemplo; la web usa tus textos e imágenes reales.'}
-          </p>
         </div>
       ) : null}
     </div>

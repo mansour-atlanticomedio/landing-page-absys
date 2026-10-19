@@ -718,3 +718,10 @@ todos los casos).
 - El editor elige variantes con tarjetas + vista previa en vez de "0/1/2": `news.style`, `footer.type`, `pages.hero_variant`, `CardsFeaturesBlock.style`, `ImageTextBlock.image_position`, `schedule[].type`. Sin cambios de esquema.
 - `header.type` sin cubrir: el componente `Header` ignora `type` (variantes no implementadas). Pendiente decidir implementarlas o quitar el campo. `footer.type = 2` no pinta nada.
 - Verificado: `tsc`, `npm test` 285/285, rutas del admin 200 sin sesión. NO verificado: render real en el admin (revisar con sesión: miniaturas, vista previa, que elegir marque el formulario como modificado y Guardar persista, `day`/`hours` en Schedule, tema oscuro).
+
+## 2026-10-19 — Quitar `header.type` y footer tipo 2; vista previa plegable
+
+- `header.type` (el Header no lo usaba) y la opción "Simple" (`2`) de `footer.type` (no pintaba nada) eliminados por decisión del usuario. Migración `20261019_143507_quitar_tipo_header_footer_simple` (UPDATE de `2` a `0` antes de recrear el enum; probada en BD temporal con filas de prueba). `down` lossy y sin probar.
+- Vista previa del selector visual: botón "Ver/Ocultar vista previa", oculta por defecto, preferencia en `localStorage` (`unam-admin-vs-preview`).
+- Aviso: `migrate:create` se ejecutó contra la BD de dev con `push` activo; su `header` seguramente ya perdió `type` y su `footer` ya tiene el enum nuevo. Si algún footer de dev estaba en `2`, `push` pudo fallar o dejarlo sin remapear: revisar.
+- Verificado: `tsc`, `npm test` 285/285, `/admin/collections/news/create` 200. NO verificado en navegador: botón de vista previa, tema claro/oscuro, persistencia al recargar.

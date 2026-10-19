@@ -409,8 +409,45 @@ html[data-theme='dark'] .unam-admin-logo__dark {
   border-radius: 999px;
 }
 
+.unam-vs__preview-wrap {
+  margin-top: 0.75rem;
+}
+
+.unam-vs__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.7rem;
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--unam-primary);
+  cursor: pointer;
+  background: transparent;
+  border: 1px solid var(--theme-border-color);
+  border-radius: var(--style-radius-m);
+}
+
+.unam-vs__toggle:hover {
+  background: var(--unam-muted);
+}
+
+.unam-vs__toggle:focus-visible {
+  outline: 2px solid var(--unam-accent);
+  outline-offset: 2px;
+}
+
+.unam-vs__chevron {
+  transition: transform 0.2s ease;
+}
+
+.unam-vs__toggle[aria-expanded='true'] .unam-vs__chevron {
+  transform: rotate(180deg);
+}
+
 .unam-vs__preview {
-  margin-top: 1rem;
+  margin-top: 0.75rem;
+  animation: unam-vs-reveal 0.2s ease;
   border: 1px solid var(--theme-border-color);
   border-radius: var(--style-radius-m);
   overflow: hidden;
@@ -457,4 +494,33 @@ html[data-theme='dark'] .unam-vs__card--selected {
   background: var(--color-base-800);
   border-color: var(--unam-accent);
   box-shadow: 0 0 0 1px var(--unam-accent);
+}
+
+@keyframes unam-vs-reveal {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .unam-vs__preview {
+    animation: none;
+  }
+
+  .unam-vs__chevron {
+    transition: none;
+  }
+}
+
+html[data-theme='dark'] .unam-vs__toggle {
+  color: #ffffff;
+}
+
+html[data-theme='dark'] .unam-vs__toggle:hover {
+  background: var(--color-base-800);
 }
