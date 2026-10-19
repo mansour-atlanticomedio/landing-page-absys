@@ -149,7 +149,7 @@ Pendientes conocidos (marcados con `TODO` en el código): `lepassLegacy` / compa
 | `services` | `globals/Services.ts` | Igual que Home | Página completa |
 | `formation` | `globals/Formation.ts` | `hero`, `hero_carrusel`, `buscar_parrafo_1`/`buscar_parrafo_2` (texto), `enlaces_rapidos[]` (label+link, inline), `citar_cta` (rel→cta), `guias_tutoriales` (rel→electronic_resources_access), `actividades_texto`/`actividades_estado` (texto), `layout` (11 block types, sin usar por ahora) | Página completa |
 | `investigation` | `globals/Investigation.ts` | `hero`, `hero_carrusel`, `accesos_rapidos` (rel→features), `tarjetas` (rel→electronic_resources_access), `cta` (rel→cta), `layout` (11 block types, sin usar por ahora) | Página completa |
-| `repository` | `globals/Repositories.ts` | `hero` + `layout` (sin hero_carrusel). **Bug**: labels de `input_block` son "Sobre Nosotros" | Página parcial |
+| `repository` | `globals/Repositories.ts` | `hero` + `layout` (sin hero_carrusel). | Página parcial |
 | `library` | `globals/Library.ts` | Solo `hero` | Mínimo |
 | `contact` | `globals/Contact.ts` | Solo `hero` | Mínimo |
 | `about_us` | `globals/AboutUs.ts` | **Obsoleto** (2026-10-15): oculto en el admin, el contenido vive ahora en la collection `pages` (slugs `conocenos/*`). Conserva sus tablas (pestañas `quienes_somos`/`horarios`/`normativa` con `hero` + `layout`) hasta la fase 2 (DROP) | Obsoleto |
