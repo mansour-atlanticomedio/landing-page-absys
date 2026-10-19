@@ -678,3 +678,9 @@ todos los casos).
 - La cookie de draftMode persistía en el navegador del admin y la web pública mostraba el borrador y el banner. Ahora `isDraft` = draftMode activo Y (`sec-fetch-dest: iframe` o `?preview=1`); `/auth/preview` redirige a `/<slug>?preview=1`; el banner se oculta dentro del iframe.
 - El error "The following field is invalid: _status" al despublicar es el bloqueo intencionado de `LOCKED_SLUGS` (Conócenos): el mensaje real ("no se puede despublicar") no se ve bien en el toast. Pendiente decidir si se mejora o se desbloquea.
 - No verificado en navegador (cookie + iframe + `?preview=1`).
+
+## 2026-10-19 — Enlaces del dashboard duplicaban `/biblioteca`
+
+- Las tarjetas del panel y el botón "Subir imagen" iban a `/biblioteca/biblioteca/admin/...` (404): `Card` y `Button el="link"` de `@payloadcms/ui` usan el `Link` de Next, que ya antepone el basePath, y yo había puesto `/biblioteca` a mano. Ahora usan rutas sin prefijo (`/admin/...`).
+- Regla: con `Link`/`Card`/`Button el="link"` NO prefijar basePath; con `<a>`, `<img src>`, `Button el="anchor"` y URLs de preview sí.
+- Aviso que ya estaba anotado el 2026-10-15 ("comprobar que ningún enlace duplica /biblioteca").

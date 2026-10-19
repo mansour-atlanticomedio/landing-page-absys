@@ -52,7 +52,7 @@ export default async function DashboardWelcome({ payload }: { payload?: AdminVie
       </Banner>
 
       <div className="unam-welcome__actions">
-        <Button el="link" to="/biblioteca/admin/collections/media/create" buttonStyle="primary" size="medium">
+        <Button el="link" to="/admin/collections/media/create" buttonStyle="primary" size="medium">
           Subir imagen
         </Button>
         <Button el="anchor" url="/biblioteca" newTab buttonStyle="secondary" size="medium">
@@ -64,7 +64,7 @@ export default async function DashboardWelcome({ payload }: { payload?: AdminVie
       <ul className="unam-welcome__grid">
         {accesos.map((a) => (
           <li key={a.href}>
-            <Card title={a.label} titleAs="h4" href={`/biblioteca${a.href}`} buttonAriaLabel={`Editar ${a.label}: ${a.description}`} />
+            <Card title={a.label} titleAs="h4" href={a.href} buttonAriaLabel={`Editar ${a.label}: ${a.description}`} />
             <span className="unam-welcome__desc">{a.description}</span>
           </li>
         ))}
