@@ -1,5 +1,5 @@
 import type { CollectionConfig } from 'payload'
-import { publicReadAdminWrite } from '@/lib/access'
+import { contentAccessPublic } from '@/lib/access'
 
 export const Media: CollectionConfig = {
   slug: 'media',
@@ -14,7 +14,7 @@ export const Media: CollectionConfig = {
     singular: 'Imagen',
     plural: 'Galeria de Imagenes'
   },
-  access: publicReadAdminWrite,
+  access: contentAccessPublic,
   fields: [
     {
       name: 'alt',

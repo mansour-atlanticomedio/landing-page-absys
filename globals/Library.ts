@@ -1,5 +1,5 @@
 import type { GlobalConfig } from "payload";
-import { adminOnlyGlobal } from "@/lib/access";
+import { contentGlobal } from "@/lib/access";
 
 export const Library : GlobalConfig = {
     slug: 'library',
@@ -7,7 +7,7 @@ export const Library : GlobalConfig = {
         group: 'Páginas',
         description: 'Página de la biblioteca: cabecera.'
     },
-    access: adminOnlyGlobal,
+    access: contentGlobal,
     label: 'Biblioteca',
     fields: [
         {

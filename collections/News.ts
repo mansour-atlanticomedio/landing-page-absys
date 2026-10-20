@@ -1,5 +1,5 @@
 import type { CollectionConfig } from "payload";
-import { adminOnly } from "@/lib/access";
+import { contentAccess } from "@/lib/access";
 
 export const NewsCollection: CollectionConfig = {
     slug: 'news',
@@ -11,7 +11,7 @@ export const NewsCollection: CollectionConfig = {
         },
         useAsTitle: 'title'
     },
-    access: adminOnly,
+    access: contentAccess,
     labels: {
         singular: 'Noticia',
         plural: 'Noticias'

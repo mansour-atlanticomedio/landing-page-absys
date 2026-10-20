@@ -1,5 +1,5 @@
 import { GlobalConfig } from "payload";
-import { adminOnlyGlobal } from "@/lib/access";
+import { contentGlobal } from "@/lib/access";
 import { conocenosBlocks } from "@/blocks/conocenos";
 
 export const AboutUs : GlobalConfig = {
@@ -9,7 +9,7 @@ export const AboutUs : GlobalConfig = {
         hidden: true,
         description: "Obsoleto: ahora son páginas en 'Páginas'."
     },
-    access: adminOnlyGlobal,
+    access: contentGlobal,
     label: "Conócenos",
     fields: [
         {

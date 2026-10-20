@@ -75,6 +75,7 @@ export default buildConfig({
         Icon: '/components/admin/AdminIcon',
       },
       beforeDashboard: ['/components/admin/DashboardWelcome'],
+      header: ['/components/admin/ViewerBanner'],
       afterNavLinks: ['/components/admin/NavHelp'],
     },
     livePreview: {

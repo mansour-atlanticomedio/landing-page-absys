@@ -1,5 +1,5 @@
 import { CollectionConfig } from "payload";
-import { adminOnly } from "@/lib/access";
+import { contentAccess } from "@/lib/access";
 
 export const Input: CollectionConfig = {
     slug: 'input',
@@ -8,7 +8,7 @@ export const Input: CollectionConfig = {
         description: 'Buscadores o campos de texto con título y texto de ejemplo.',
         useAsTitle: 'title'
     },
-    access: adminOnly,
+    access: contentAccess,
     labels: {
         singular: 'Entrada de texto',
         plural: 'Entrada de texto'

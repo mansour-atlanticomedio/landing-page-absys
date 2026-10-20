@@ -1,6 +1,6 @@
 import type { GlobalConfig } from "payload";
 import { layoutBlocks } from "@/blocks";
-import { adminOnlyGlobal } from "@/lib/access";
+import { contentGlobal } from "@/lib/access";
 
 export const Home: GlobalConfig = {
   slug: 'home',
@@ -19,7 +19,7 @@ export const Home: GlobalConfig = {
             },
         }
     },
-  access: adminOnlyGlobal,
+  access: contentGlobal,
   label: "Inicio",
   fields: [
     {

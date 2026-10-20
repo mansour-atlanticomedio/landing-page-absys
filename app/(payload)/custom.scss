@@ -524,3 +524,12 @@ html[data-theme='dark'] .unam-vs__toggle {
 html[data-theme='dark'] .unam-vs__toggle:hover {
   background: var(--color-base-800);
 }
+
+.unam-viewer-banner {
+  padding: 0.6rem 1rem;
+  background: var(--unam-primary);
+  color: #fff;
+  border-bottom: 3px solid var(--unam-accent);
+  font-size: 0.9rem;
+  text-align: center;
+}

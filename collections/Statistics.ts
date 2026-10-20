@@ -1,6 +1,6 @@
 import type { CollectionConfig } from "payload";
 import { appIcons } from "./Icons.ts";
-import { adminOnly } from "@/lib/access";
+import { contentAccess } from "@/lib/access";
 
 export const Statistics: CollectionConfig = {
     slug: 'statistics',
@@ -8,7 +8,7 @@ export const Statistics: CollectionConfig = {
         group: 'Bloques de contenido',
         description: 'Cifras destacadas con icono y descripción.'
     },
-    access: adminOnly,
+    access: contentAccess,
     labels: {
         singular: 'Estadísticas',
         plural: 'Estadísticas'

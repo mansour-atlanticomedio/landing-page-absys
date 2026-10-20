@@ -1,5 +1,5 @@
 import type { GlobalConfig } from "payload";
-import { adminOnlyGlobal } from "@/lib/access";
+import { contentGlobal } from "@/lib/access";
 
 export const Contact: GlobalConfig = {
     slug: 'contact',
@@ -7,7 +7,7 @@ export const Contact: GlobalConfig = {
         group: 'Páginas',
         description: 'Página de contacto: cabecera.'
     },
-    access: adminOnlyGlobal,
+    access: contentGlobal,
     label: "Contacto",
     fields: [
         {

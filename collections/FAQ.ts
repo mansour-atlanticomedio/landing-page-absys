@@ -1,5 +1,5 @@
 import type { CollectionConfig } from "payload";
-import { adminOnly } from "@/lib/access";
+import { contentAccess } from "@/lib/access";
 
 export const FAQ : CollectionConfig = {
     slug: 'faq',
@@ -8,7 +8,7 @@ export const FAQ : CollectionConfig = {
         description: 'Listados de preguntas frecuentes con sus respuestas.',
         useAsTitle: 'title'
     },
-    access: adminOnly,
+    access: contentAccess,
     labels: {
         singular: "Preguntas Frecuentes",
         plural: "Preguntas Frecuentes"

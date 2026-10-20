@@ -252,7 +252,7 @@ information). `legal_advice`/`privacy_policie`/`privacy_cookies` siguen siendo t
 Desde 2026-10-08 **toda collection y global tiene `access` explícito** (`lib/access.ts`). Antes, sin `access`, Payload
 usaba `Boolean(user)` y cualquier lector del campus podía por REST crear admins en `users`, editar/borrar contenido,
 subir ficheros y leer los mensajes de contacto. Al registrar una collection o global nuevo hay que declarar su `access`
-(no dejar el default). Las funciones: `isAdmin` (`user.collection === 'users'`), `anyone`, `isAdminOrSelfReader`
+(no dejar el default). Las funciones: `isAdmin` (collection `users` con `role: admin`, ver "Roles del panel"), `anyone`, `isAdminOrSelfReader`
 (solo para `loginCampus_service`), y los conjuntos `adminOnly`, `publicReadAdminWrite` y `adminOnlyGlobal`.
 La web lee por Local API, que no pasa por `access`, así que cerrar la lectura REST no afecta a las páginas.
 
@@ -270,6 +270,22 @@ La web lee por Local API, que no pasa por `access`, así que cerrar la lectura R
 - `media`: solo jpeg, png, webp y avif (sin SVG) y `upload.limits.fileSize` de 10 MB en `payload.config.ts`.
 - Tras añadir o cambiar un `access` hay que reiniciar el contenedor (`docker restart biblioteca-frontend`), si no sigue activa la regla anterior.
 - Riesgo aceptado: `payload-locked-documents` conserva el default de Payload (un lector autenticado puede leerlo o crear locks falsos, sin acceso a contenido).
+
+#### Roles del panel (2026-10-20)
+
+`users` tiene el campo `role` (`admin` | `editor` | `viewer`, por defecto `viewer`, en el JWT). Migración `20261020_101500_roles_usuarios` (los usuarios existentes pasan a `admin`). Un `role` ausente o desconocido no da ningún permiso.
+
+| Rol | Contenido (collections, pages, media, globals) | Usuarios | Sensible (`sendEmail`, lectores, `exports`/`imports`) |
+|---|---|---|---|
+| `admin` | todo | todo, incluido cambiar roles y `unlock` | sí |
+| `editor` | leer, crear, editar, borrar | solo su ficha (el `role` no lo cambia) | no |
+| `viewer` | solo leer; el panel muestra el aviso `ViewerBanner` | solo su ficha | no |
+
+- Funciones en `lib/access.ts`: `isAdmin` (users + role admin), `isEditor` (admin o editor), `isPanelUser` (users con rol válido), `isAdminField`, `isAdminOrSelfUser`. Conjuntos nuevos: `contentAccess`, `contentAccessPublic` (lectura pública, escritura editor+: `media`, `hero`, `header`, `login_page`) y `contentGlobal`. Al crear una collection de contenido usar esos, no `adminOnly`.
+- `absys_service`, `author_service` y `book_cover_service` siguen en `publicReadAdminWrite` (escritura solo admin): son servicios, no contenido editable.
+- Reglas de `lib/users-roles.ts`: el primer usuario de una BD vacía queda `admin`; no se puede degradar ni borrar al último admin (`APIError` público).
+- Banner: `components/admin/ViewerBanner.tsx` registrado en `admin.components.header`; solo se muestra a `viewer`.
+- Sin verificar en navegador: el banner, que Payload oculte "Guardar" con `update:false`, create-first-user en BD vacía y la migración sobre una BD nueva.
 
 ### Capa anti-abuso (`lib/security/`, 2026-10-08)
 

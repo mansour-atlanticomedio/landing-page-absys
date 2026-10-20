@@ -254,6 +254,10 @@ export interface LoginCampusServiceAuthOperations {
  */
 export interface User {
   id: number;
+  /**
+   * Administrador: todo. Editor: edita el contenido. Lector: solo consulta.
+   */
+  role: 'admin' | 'editor' | 'viewer';
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -1623,6 +1627,7 @@ export interface PayloadMigration {
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
+  role?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;

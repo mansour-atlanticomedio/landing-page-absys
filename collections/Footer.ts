@@ -1,7 +1,7 @@
 import { CollectionConfig } from "payload";
 import { enlaceFields } from "./fields/enlace";
 import { appIcons, iconsSocialMedia } from "./Icons";
-import { adminOnly } from "@/lib/access";
+import { contentAccess } from "@/lib/access";
 
 export const Footer: CollectionConfig = {
     slug: 'footer',
@@ -9,7 +9,7 @@ export const Footer: CollectionConfig = {
         group: 'Navegación y pie',
         description: 'Pie de página: logo, redes sociales y secciones de información.'
     },
-    access: adminOnly,
+    access: contentAccess,
     labels: {
         singular: 'Pie de pagina',
         plural: 'pie de pagina'

@@ -1,6 +1,6 @@
 import type { CollectionConfig } from "payload";
 import { iconsSocialMedia } from "./Icons.ts";
-import { adminOnly } from "@/lib/access";
+import { contentAccess } from "@/lib/access";
 
 export const Speakers: CollectionConfig = {
     slug: 'speakers',
@@ -9,7 +9,7 @@ export const Speakers: CollectionConfig = {
         description: 'Personas ponentes con foto, cargo y redes sociales.',
         useAsTitle: 'title'
     },
-    access: adminOnly,
+    access: contentAccess,
     labels: {
         singular: 'Ponentes',
         plural: 'Ponentes'

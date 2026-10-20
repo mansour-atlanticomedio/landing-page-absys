@@ -1,5 +1,5 @@
 import { CollectionConfig } from "payload";
-import { publicReadAdminWrite } from "@/lib/access";
+import { contentAccessPublic } from "@/lib/access";
 import { enlaceFields } from "./fields/enlace";
 
 export const Header: CollectionConfig = {
@@ -12,7 +12,7 @@ export const Header: CollectionConfig = {
         singular: "Encabezamiento",
         plural: "Encabezamiento",
     },
-    access: publicReadAdminWrite,
+    access: contentAccessPublic,
     fields: [
         {
             name: 'logo',

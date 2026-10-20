@@ -1,5 +1,5 @@
 import type { CollectionConfig } from "payload";
-import { adminOnly } from "@/lib/access";
+import { contentAccess } from "@/lib/access";
 
 export const Timeline: CollectionConfig = {
     slug: 'timeline',
@@ -8,7 +8,7 @@ export const Timeline: CollectionConfig = {
         description: 'Calendarios o líneas del tiempo con días y eventos.',
         useAsTitle: 'title'
     },
-    access: adminOnly,
+    access: contentAccess,
     labels: {
         singular: 'Línea del tiempo',
         plural: 'Línea del tiempo'

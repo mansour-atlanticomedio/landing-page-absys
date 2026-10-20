@@ -728,3 +728,8 @@ todos los casos).
 
 ## 2026-10-19 – fix cn() desde el servidor
 - `lib/utils.ts` tenía `'use client'` por el hook `useBookCover`; `Card` en Server Components (`features_block` en Home) reventaba. Hook movido a `lib/useBookCover.ts`, `utils` sin directiva y reexporta. Home responde 200, `tsc` limpio.
+
+## 2026-10-20 – roles del panel (admin / editor / lector)
+- `users.role` (admin | editor | viewer, defecto viewer); `lib/access.ts` con `isEditor`/`isPanelUser`, `contentAccess`, `contentAccessPublic`, `contentGlobal`; banner de solo lectura (`ViewerBanner`). Migración `20261020_101500_roles_usuarios` (existentes → admin). Primer usuario = admin; no se degrada ni borra al último admin.
+- Verificado por REST con 3 usuarios temporales (borrados) y 294 tests. Sin verificar: banner y botón Guardar en navegador, create-first-user, migración en BD nueva.
+- Decisión: roles fijos, sin permisos sueltos por usuario (fase 2 si hace falta). Aplicar en producción: copia de la BD antes de `payload migrate`.

@@ -1,6 +1,6 @@
 import { GlobalConfig } from "payload";
 import { layoutBlocks } from "@/blocks";
-import { adminOnlyGlobal } from "@/lib/access";
+import { contentGlobal } from "@/lib/access";
 
 export const Services : GlobalConfig = {
     slug: "services",
@@ -8,7 +8,7 @@ export const Services : GlobalConfig = {
         group: 'Páginas',
         description: 'Página de servicios: cabecera, carrusel y bloques de contenido.'
     },
-    access: adminOnlyGlobal,
+    access: contentGlobal,
     label: "Servicios",
     fields: [
     {
