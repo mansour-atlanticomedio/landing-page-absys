@@ -27,7 +27,10 @@ services:
     depends_on:
       bibliotecadb:
         condition: service_healthy
+    volumes:
+      - media_prod_data:/app/media
     restart: always
 
 volumes:
   postgres_prod_data:
+  media_prod_data:
