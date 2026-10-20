@@ -37,7 +37,7 @@ export default async function FooterSimple() {
 
   return (
     <footer className="flex flex-col items-center justify-center bg-primary text-primary-foreground bottom-0" >
-      <div className="flex flex-col items-center justify-center max-w-7xl my-20 gap-10 text-center">
+      <div className="flex flex-col items-center justify-center max-w-7xl my-12 md:my-20 px-6 gap-10 text-center">
         <h2 className="text-white text-3xl font-bold">
           {title}
         </h2>
@@ -53,7 +53,7 @@ export default async function FooterSimple() {
             biblioteca@atlanticomedio.es
           </a>
         </div>
-        <div className="flex gap-3">
+        <div className="flex flex-wrap justify-center gap-3">
           {socialmedias.map((socialmedia, i) => {
             const IconComponent = socialmedia.icon;
 
