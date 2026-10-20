@@ -52,9 +52,9 @@ export default async function Servicios() {
       {/* <SiteHeader active="SERVICIOS" /> */}
 
       <section className="mx-auto max-w-6xl px-6 py-14">
-        <div className="grid grid-cols-[1fr_320px] gap-10">
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-10">
           <div>
-            <h1 className="text-4xl font-extrabold text-slate-800">Servicios bibliotecarios</h1>
+            <h1 className="text-3xl md:text-4xl font-extrabold text-slate-800">Servicios bibliotecarios</h1>
             <p className="mt-3 text-slate-600">
               La Biblioteca ofrece servicios destinados a facilitar el acceso, la consulta y la
               utilización de los recursos de información disponibles en la Universidad. En esta
@@ -67,8 +67,8 @@ export default async function Servicios() {
           </div>
         </div>
 
-        <div className="mt-10 grid grid-cols-[1fr_320px] gap-6">
-          <div className="grid grid-cols-2 gap-6">
+        <div className="mt-10 grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
             <div className="border rounded-lg p-6">
               <div className="bg-sky-100 text-sky-700 rounded-md h-10 w-10 flex items-center justify-center mb-4">
                 <Search className="h-5 w-5" />

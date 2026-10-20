@@ -18,13 +18,13 @@ interface TimeLineBoxProps {
 export default function Timeline({ title, calendar }: TimeLineBoxProps) {
 
   return (
-    <section className="py-20">
+    <section className="py-12 md:py-20">
       <div className="max-w-5xl mx-auto px-6">
         <h2 className="section-title">{title}</h2>
         <div className="flex flex-col gap-12 mt-10">
           {calendar.map((p, index) => (
-            <div key={index} className="flex gap-8 border-l-4 border-accent pl-6 ">
-              <div className="w-52" >
+            <div key={index} className="flex flex-col sm:flex-row gap-2 sm:gap-8 border-l-4 border-accent pl-6 ">
+              <div className="sm:w-52 sm:shrink-0">
                 <div className="flex items-center gap-2 text-accent">
                   <Calendar className="w-5 h-5" />
                   <span className="uppercase text-sm font-semibold tracking-wider">{p.day}</span>

@@ -14,8 +14,8 @@ interface StatisticsBoxProps {
 export default function Stadistics({ id, stats }: StatisticsBoxProps) {
 
     return (
-        <section className="bg-primary/90 text-primary-foreground py-14">
-            <div className="max-w-6xl mx-auto px-6 flex justify-around items-center gap-8">
+        <section className="bg-primary/90 text-primary-foreground py-10 md:py-14">
+            <div className="max-w-6xl mx-auto px-6 flex flex-wrap justify-around items-center gap-x-6 gap-y-8">
                 {stats.map(({ icon, value, description }, index) => {
                     const IconComponent = iconMap[icon]
                     return (

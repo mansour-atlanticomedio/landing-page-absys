@@ -195,7 +195,7 @@ export default function BusquedaPage() {
             Encuentra libros, revistas, artículos y más recursos disponibles en nuestra red.
           </p>
 
-          <div className="flex gap-3">
+          <div className="flex flex-col sm:flex-row gap-3">
             <div className="relative flex-1">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-accent" />
               <Input
@@ -384,7 +384,7 @@ export default function BusquedaPage() {
               </div>
             </div>
 
-            <div className={`grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 md:grid-cols-4 sm:grid-cols-3 xs: grid-cols-2 gap-5 transition-opacity ${loading ? 'opacity-50' : 'opacity-100'}`}>
+            <div className={`grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-5 transition-opacity ${loading ? 'opacity-50' : 'opacity-100'}`}>
               {records.map((record, i) => {
                 const book = transformMarcToBook(record.datafield);
 

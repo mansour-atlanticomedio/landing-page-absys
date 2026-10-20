@@ -7,7 +7,7 @@ interface AboutProps {
 
 export default function About({ title, article }: AboutProps) {
     return (
-        <section className="py-20">
+        <section className="py-12 md:py-20">
             <div className="container-narrow">
                 <h2 className="section-title">{title}</h2>
                 <article className="text-muted-foreground text-center mt-4 leading-relaxed text-lg flex flex-col gap-6" >

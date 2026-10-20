@@ -11,7 +11,7 @@ interface BlogBoxProps {
 
 export default function Blogs({ title, blogItems: blogs }: BlogBoxProps) {
     return (
-        <section className="bg-secondary py-20">
+        <section className="bg-secondary py-12 md:py-20">
             <div className="mx-auto max-w-7xl px-6">
                 {/* Título dinámico usando la clase global 'section-title' de tu referencia */}
                 <h2 className="section-title mb-10">{title}</h2>
