@@ -1,5 +1,6 @@
 import type { CollectionConfig } from 'payload'
 import { publicReadAdminWrite } from '@/lib/access'
+import { blockDeleteIfMediaInUse } from '@/lib/media-usage'
 
 export const Media: CollectionConfig = {
   slug: 'media',
@@ -15,6 +16,9 @@ export const Media: CollectionConfig = {
     plural: 'Galeria de Imagenes'
   },
   access: publicReadAdminWrite,
+  hooks: {
+    beforeDelete: [blockDeleteIfMediaInUse],
+  },
   fields: [
     {
       name: 'alt',
