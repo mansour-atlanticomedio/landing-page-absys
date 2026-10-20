@@ -4,7 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { HeartHandshake, Mail, Search } from "lucide-react";
-import { iconMap } from "@/lib/utils";
+import { iconMap } from "@/lib/icons";
 
 interface AccesoRapido {
   icon: string;

@@ -1,17 +1,14 @@
 // seeds/investigation.seed.ts
 import { getPayload } from 'payload'
 import config from '@payload-config'
-import path from 'path'
+import { findOrCreateMedia } from './lib/media'
+import { upsertDoc } from './lib/upsert'
 
 const payload = await getPayload({ config })
 
-const heroImage = await payload.create({
-  collection: 'media',
-  data: { alt: 'Apoyo a la investigación' },
-  filePath: path.resolve(process.cwd(), 'seeds/assets/campus.jpg'),
-})
+const heroImage = await findOrCreateMedia(payload, { file: 'campus.jpg', alt: 'Apoyo a la investigación' })
 
-const heroDoc = await payload.create({
+const heroDoc = await upsertDoc(payload, {
   collection: 'hero',
   data: {
     background_image: heroImage.id,
@@ -21,7 +18,7 @@ const heroDoc = await payload.create({
   },
 })
 
-const accesosRapidosDoc = await payload.create({
+const accesosRapidosDoc = await upsertDoc(payload, {
   collection: 'features',
   data: {
     title: 'Accesos rápidos',
@@ -35,7 +32,7 @@ const accesosRapidosDoc = await payload.create({
   },
 })
 
-const tarjetasDoc = await payload.create({
+const tarjetasDoc = await upsertDoc(payload, {
   collection: 'electronic_resources_access',
   data: {
     title: 'Investigación: tarjetas de contenido',
@@ -78,7 +75,7 @@ const tarjetasDoc = await payload.create({
   },
 })
 
-const ctaDoc = await payload.create({
+const ctaDoc = await upsertDoc(payload, {
   collection: 'cta',
   data: {
     title: 'Solicitar apoyo',

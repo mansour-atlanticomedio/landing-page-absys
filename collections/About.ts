@@ -1,7 +1,14 @@
 import type { CollectionConfig } from "payload";
+import { adminOnly } from "@/lib/access";
 
 export const About : CollectionConfig = {
     slug: 'about',
+    admin: {
+        group: 'Bloques de contenido',
+        description: 'Bloques de texto informativo con título y artículo.',
+        useAsTitle: 'title'
+    },
+    access: adminOnly,
     labels: {
         singular: {
             es: 'Información',

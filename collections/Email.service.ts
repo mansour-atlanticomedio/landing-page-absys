@@ -1,5 +1,6 @@
 import path from "node:path"
 import type { CollectionConfig, Payload } from "payload"
+import { adminOnly } from "@/lib/access"
 
 const SITE_URL = process.env.NEXT_PUBLIC_SERVER_URL || "https://www.atlanticomedio.es/biblioteca"
 const CONTACT_PHONE = "+34 828 019 019"
@@ -273,17 +274,55 @@ export const sendBookSuggestionConfirmationEmail = async (payload: Payload, { so
 }
 
 // ---------------------------------------------------------------------------
-// Collection de contacto (formulario público /contacto)
+// 5. Aviso de contacto (formulario /contacto, solo lectores con sesión)
 // ---------------------------------------------------------------------------
 
+interface SendContactEmailParams {
+  solicitante: { nombre: string; email: string; rol?: string }
+  asunto: string
+  mensaje: string
+}
+
+// Buzón al que llegan los mensajes de contacto; lo usa también la action para el tope del buzón interno
+export const getContactMailbox = () => process.env.CONTACT_EMAIL_TO || CONTACT_EMAIL
+
+// Cabeceras (asunto, replyTo): sin CR/LF para que nadie inyecte otras cabeceras
+const oneLine = (value: string) => value.replace(/[\r\n\u2028\u2029]+/g, " ").trim()
+
+// Todo lo que escribe el lector se escapa; los saltos de línea se convierten después para no escapar el <br>
+export const sendContactEmail = async (payload: Payload, { solicitante, asunto, mensaje }: SendContactEmailParams) => {
+  const body = `
+    <p style="margin: 0 0 4px; font-size: 14px; color: #333333;"><strong>De:</strong> ${escapeHtml(solicitante.nombre)}</p>
+    <p style="margin: 0 0 4px; font-size: 14px; color: #333333;"><strong>Correo:</strong> ${escapeHtml(solicitante.email)}</p>
+    ${solicitante.rol ? `<p style="margin: 0 0 4px; font-size: 14px; color: #333333;"><strong>Rol:</strong> ${escapeHtml(solicitante.rol)}</p>` : ""}
+    <p style="margin: 12px 0 8px; font-size: 14px; color: #333333;"><strong>Asunto:</strong> ${escapeHtml(asunto)}</p>
+    <div style="margin: 0; padding: 12px 16px; background-color: #F2F4F7; border-radius: 6px; font-size: 14px; line-height: 1.6; color: #333333;">
+      ${escapeHtml(mensaje).replace(/\r?\n/g, "<br>")}
+    </div>
+  `
+
+  await sendBrandedEmail(payload, {
+    to: getContactMailbox(),
+    // Responder desde el buzón contesta directamente al lector
+    replyTo: oneLine(solicitante.email),
+    subject: oneLine(`Contacto web: ${asunto}`),
+    html: emailLayout("Nuevo mensaje de contacto", body),
+  })
+}
+
+// ---------------------------------------------------------------------------
+// Collection de contacto: histórico de los mensajes recibidos desde /contacto
+// ---------------------------------------------------------------------------
+
+// El envío del correo lo hace la server action de /contacto (con sus límites anti-abuso); aquí solo se guarda el registro
 export const Email: CollectionConfig = {
     slug: 'sendEmail',
     admin: {
+        group: 'Servicios internos',
+        description: 'Histórico de los mensajes enviados desde el formulario de contacto.',
         hidden: true
     },
-    access: {
-        create: () => true,
-    },
+    access: adminOnly,
     fields: [
         {
             name: 'name',
@@ -296,6 +335,11 @@ export const Email: CollectionConfig = {
             type: 'email'
         },
         {
+            name: 'rol',
+            label: 'Rol',
+            type: 'text'
+        },
+        {
             name: 'about',
             label: 'Asunto',
             type: 'text'
@@ -303,23 +347,7 @@ export const Email: CollectionConfig = {
         {
             name: 'message',
             label: 'Mensaje',
-            type: 'richText'
+            type: 'textarea'
         },
     ],
-    hooks: {
-        afterChange: [
-            async ({ req: { payload }, doc }) => {
-                const body = `
-            <p style="margin: 0 0 8px; font-size: 14px; color: #333333;"><strong>Email:</strong> ${doc.email}</p>
-            <p style="margin: 0 0 8px; font-size: 14px; color: #333333;"><strong>Nombre:</strong> ${doc.name}</p>
-            <p style="margin: 0; font-size: 14px; color: #333333;"><strong>Mensaje:</strong> ${doc.message}</p>
-          `
-                await sendBrandedEmail(payload, {
-                    to: 'mansourlol440@gmail.com',
-                    subject: `Nuevo mensaje: ${doc.about}`,
-                    html: emailLayout('Nuevo mensaje de contacto', body),
-                })
-            },
-        ],
-    },
 }

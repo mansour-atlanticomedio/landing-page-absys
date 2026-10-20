@@ -1,19 +1,15 @@
 // seeds/header.seed.ts
 import { getPayload } from 'payload'
 import config from '@payload-config'
-import type { Header, Footer, Media } from '@/payload-types'
+import type { Footer, Media } from '@/payload-types'
+import { findOrCreateMedia } from './lib/media'
 
 const payload = await getPayload({ config })
 
-const logo = await payload.create({
-    collection: 'media',
-    data: { alt: 'imagen fondo' },
-    filePath: './seeds/assets/unam-color-full.png',
-})
+const logo = await findOrCreateMedia(payload, { file: 'unam-color-full.png', alt: 'imagen fondo' })
 
 const headerData = {
     "logo": logo.id,
-    "type": '0' as Header['type'],
     "phone": "+34 123 456 789",
     "email": "biblioteca@atlanticomedio.es",
     "navbar": [
@@ -67,13 +63,7 @@ const headerData = {
         {
             "name": "investigación",
             "to": "/investigacion",
-            "items": [
-                {
-                    "tipo": "ancla" as const,
-                    "ancla": "investigacion-apoyo" as const,
-                    "label": "Apoyo a la investigación"
-                }
-            ]
+            "items": []
         },
         {
             "name": "formacion",
@@ -138,16 +128,18 @@ const footerData = {
 }
 
 try {
-    const headerDoc = await payload.create({
-        collection: 'header',
-        data: headerData,
-    })
-    
-    const footerDoc = await payload.create({
-        collection: 'footer',
-        data: footerData,
-    })
-    
+    const layoutPrevio: any = await payload.findGlobal({ slug: 'layout', depth: 0 })
+    const headerPrevio = layoutPrevio.header?.id ?? layoutPrevio.header
+    const footerPrevio = layoutPrevio.footer?.id ?? layoutPrevio.footer
+
+    const headerDoc = headerPrevio
+        ? await payload.update({ collection: 'header', id: headerPrevio, data: headerData, depth: 0 })
+        : await payload.create({ collection: 'header', data: headerData, depth: 0 })
+
+    const footerDoc = footerPrevio
+        ? await payload.update({ collection: 'footer', id: footerPrevio, data: footerData, depth: 0 })
+        : await payload.create({ collection: 'footer', data: footerData, depth: 0 })
+
     // Solo se añaden las keys que aún no existan en el registro, para no pisar lo editado en el admin
     const layoutActual: any = await payload.findGlobal({ slug: 'layout', depth: 0 })
     const enlacesActuales: any[] = layoutActual.enlaces_externos ?? []

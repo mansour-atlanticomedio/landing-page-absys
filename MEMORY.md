@@ -43,6 +43,67 @@ Comprobado: el formulario **no enviaba nada** (el modal era simulado) y el servi
 
 ---
 
+## 2026-10-08 — Fase 2 de seguridad: `/contacto` en servidor, con sesión y límites
+
+Hasta ahora `/contacto` hacía `POST /api/sendEmail` anónimo: sin límites, sin escapar, con destino a un Gmail personal fijo, y un hook `afterChange` enviaba el correo. Ahora es una server action (`contacto/actions.ts` → `procesarContacto`) que **exige sesión** por decisión del usuario (el solicitante sale de la sesión; formulario solo pide asunto y mensaje), usa `lib/security` y guarda el histórico en `sendEmail`, que pasa a `adminOnly`, sin hook y con `message` como texto (migración `contacto_mensaje_texto`, escrita a mano para conservar los mensajes existentes). Detalle del flujo y variables en `CLAUDE.md` → "Capa anti-abuso". El tope global del buzón interno pasó de 200 a 300/día (≈30 IPs a 10/día) a petición del usuario, y ahora es por tipo de correo para que contacto no bloquee sugerencias.
+Revisado con `reviewer` y `security-auditor` (sin bloqueantes; veredicto "cerrar con 4 condiciones"). Correcciones de la revisión: la regla de IP de autenticados ya no cuenta peticiones que su regla de usuario rechazó (una cuenta podía bloquear a todo el sitio), reembolso de cupos si falla el SMTP, histórico solo tras envío correcto, aviso propio de duplicado, migración que conserva saltos de línea, test del escapado y de que el solicitante sale de la sesión. Se probó y **se descartó** `serverActions.bodySizeLimit: 100kb`: es global y también afecta al admin de Payload (riesgo sin verificar); queda el máximo por validación (mensaje 2000 caracteres).
+Probado: `tsc` limpio y 271 tests; migración con 8 formas de dato y `npm run migrate` limpio contra BD vacía (9 migraciones); en vivo, `/contacto` sin sesión (tarjeta de login) y con sesión (formulario) en 200, y `/api/sendEmail` da 403 a anónimos y lectores. **No probado**: envío real por SMTP, el formulario en navegador, ni el rechazo real de cuerpos grandes.
+
+### Qué quedó pendiente
+- **Antes de producción:** definir y verificar `TRUSTED_IP_HEADER`/`TRUSTED_IP_HOP` según el nginx real; backup de `send_email` antes de aplicar la migración; una sola réplica de `frontend` mientras el almacén sea en memoria (el reinicio resetea los cupos); comprobar tras nginx que las server actions no se rechazan por `Host`.
+- **Token del campus (preexistente):** AES-128-CBC sin MAC; con un token válido ajeno se puede mantener "fresco" más de 300 s. Pedir a Daniel un HMAC o AES-GCM y confirmar si el campus emite tokens para externos con registro abierto (de eso depende cuántas identidades puede conseguir un atacante).
+- El enlace "Iniciar sesión" de `ContactoLoginCard` va a `/login` (igual que Servicios y `requireSession`, cambio temporal del usuario): tras entrar no vuelve a `/contacto`.
+- Teléfono y correo de `ContactoLoginCard` van fijos (el global `contact` solo tiene `hero`).
+- `too_fast` responde éxito falso: pegar y enviar en menos de 3 s desde el render pierde el mensaje sin aviso (registrado en log).
+- `components/SimpleForm.tsx` queda sin uso.
+- Fase 3: límites y dedupe en las sugerencias de libro (y revisar que `solicitante.nombre` va en el asunto de `sendBookSuggestionEmail`).
+
+---
+
+## 2026-10-08 — Fase 1 de seguridad: `lib/security/` (limitadores, honeypot y política de correo)
+
+Funciones puras con almacén y reloj inyectados, sin conectar todavía (estado y contrato en `CLAUDE.md` → "Capa anti-abuso"). Tres rondas de revisión (reviewer + security-auditor) rediseñaron lo que salió de la primera versión: el limitador **incrementaba todas las reglas aunque una fallara**, así que una sola IP podía agotar el cupo de dominio/destinatario de terceros (p. ej. bloquear los PIN de `alu.atlanticomedio.es`); ahora hay dos niveles (actor/compartido) con `peek`, tope `limit+1` y compensación. También se cerraron: expulsión de contadores por inundación de claves, IPv6 sin agrupar, alias `+tag`/Gmail y buzón interno, secreto vacío del honeypot, `windowMs` inválido que fallaba abierto, reloj hacia atrás y falsos positivos del honeypot.
+Probado: `tsc` limpio y 231 tests (134 en `lib/security`) con los escenarios de ataque (saturación, NAT del campus con 30 usuarios, 20 peticiones concurrentes). **No probado**: nada en vivo, porque aún no está conectado.
+
+### Qué quedó pendiente
+- **Saturación (residual):** tras llenar una dimensión con ~5000 /64 distintos, ~24 % de IPs nuevas legítimas caen en cubos ya bloqueados (medido: 762 de 1000). Mitigación real: store Postgres con TTL (fase 4).
+- **`internal-mailbox` (200/día global):** unas ~20 IPs distintas pueden agotarlo y bloquear el contacto de todos. Decisión de producto pendiente: aceptarlo, o exigir sesión/captcha en `/contacto`.
+- **Agregado institucional 1000/día por tipo:** valor inicial a confirmar con el volumen real (matrícula).
+- **Store Postgres (fase 4):** `increment` atómico con `cap`, `peek`, `decrement`, y a ser posible un `incrementMany` transaccional; purga de ventanas caducadas y reloj consistente entre réplicas.
+- **Ops:** nginx sobrescribe la IP real, puerto 8085 solo en localhost, `trustedHopFromRight` acorde a los proxies reales, alerta cuando se vea `unknown` en producción.
+- Dedupe: es solo anti-duplicado accidental (homoglifos y espacios Unicode no-Cf lo esquivan); el rate limit es el control real.
+
+---
+
+## 2026-10-08 — Fase 0 de seguridad: `access` explícito en todo Payload
+
+Se **confirmó** en dev el hallazgo de la auditoría: con la cookie de un lector del campus, `POST /api/users` creaba un admin (201), y `POST/PATCH/DELETE` de contenido y `GET /api/users|sendEmail|loginAbsys_service` también funcionaban. Tras el cambio todo da 403 (con lector y anónimo). Detalle de reglas en `CLAUDE.md` → "Access Control". Pasaron `reviewer` (sin bloqueantes) y `security-auditor` (veredicto: cierra la escalada original; dos residuales de Payload). De ahí: `unlock: isAdmin` en las 3 collections auth (su default permitía a un lector resetear el bloqueo de un admin y hacer fuerza bruta alternando `login`/`unlock`) y `isAdminOrSelf` renombrado a `isAdminOrSelfReader` (su filtro por id no distingue collections). Probado en vivo con cookie de lector tras reiniciar el contenedor: `unlock` y `POST /users` dan 403. No hay schema, no hay migración.
+
+### Qué quedó pendiente
+- `payload-locked-documents` (default de Payload: un lector puede leer o crear locks falsos; arreglo posible `lockDocuments: false` en todas las collections/globals).
+- *(resuelto después)* `signin` cerrado en producción y `collections/Library.ts` eliminada; `payload-locked-documents` es riesgo aceptado por el usuario.
+- `BooksList` (página `/biblioteca`) y `/libros` siguen llamando a `/api/library/`, que no existe: dan 404 y muestran lista vacía.
+- No verificado: que un admin real edite tras el cambio (sin credenciales en dev), el `/first-register` real, y subir SVG o más de 10 MB.
+- `POST /api/sendEmail` sigue abierto hasta la fase 2.
+- El seed de solicitud de compra no es idempotente (duplica docs e imagen en cada ejecución).
+
+---
+
+## 2026-10-08 — Rama `feat/seguridad-api-email`: arranque y primeros cierres
+
+Issue: capa de seguridad para la API y el correo (rate limiting por varias dimensiones, honeypot, cola con workers, kill switch). Se trabajó con `architect` (plan por fases) y `security-auditor` (línea base); el plan y los hallazgos están en la conversación y se irán volcando aquí fase a fase. Decisiones del usuario: empezar por la fase 0 (cerrar el control de acceso de collections/globals), contacto a `CONTACT_EMAIL_TO` (por defecto biblioteca@atlanticomedio.es) con `message` pasando de richText a texto, y no se sabe si habrá varias réplicas, así que los contadores van a Postgres desde el principio y la cabecera de IP será configurable.
+- Retirado `FEATURE_DEV_TOOLS` (ver entrada de abajo).
+- `POST /api/loginAbsys_service/login/:credentials` devuelve 404 en producción. **Consecuencia**: la pantalla `/login` antigua (`app/(auth)/login/page.tsx`) llama a ese endpoint, así que en producción no puede iniciar sesión (`/signin` sigue abierto). El login real es el del campus; hay que decidir qué pasa con esa pantalla y con el colectivo EXT.
+
+---
+
+## 2026-10-08 — Simulador del campus tras un flag de entorno
+
+- **`lib/env.ts`**: `isProduction` y `devToolsEnabled` (`NODE_ENV !== production`; el flag `FEATURE_DEV_TOOLS` que se añadió aquí se **retiró el 2026-10-08** porque activarlo en producción habilitaba el simulador, que firma tokens para cualquier correo: la auditoría de seguridad lo marcó como toma de cuenta total). Aplicado solo al simulador del campus (`simular-campus/page.tsx`, `emitir/route.ts` y el fallback al simulador de `auth/login/route.ts`). Quedan con su `NODE_ENV` directo, sin migrar, los endpoints temporales de `LoginCampus.service.ts`, las cookies `secure` y los `console.log` de componentes. `NODE_ENV` no se define en el `.env` (lo gestiona Next; el Dockerfile fija `production`); 
+- Probado: `tsc` limpio; `devToolsEnabled` con development / production / production+flag; el simulador sigue en 200 en dev. **No probado**: el 404 con un build de producción real.
+
+---
+
 ## 2026-10-07 — La comprobación de sesión de "Sugerir libro" pasa a `/servicios`
 
 El usuario no quiso que el redirect ocurriera al llegar a la página privada. `/servicios` hace `getSession()` y el botón "Sugerir libro" apunta a `/adquisiciones/solicitud-compra` con sesión o a `/login` sin ella. La página de destino conserva su `requireSession` como red de seguridad para quien entre por URL directa (el formulario necesita el solicitante de la sesión); quitarlo es una decisión pendiente del usuario. Probado con `curl` con y sin cookie: el href cambia como se espera.
@@ -620,3 +681,114 @@ todos los casos).
   `anio`, `materia`).
 - **`News.tsx`**: añadido hover (`hover:scale-[1.02]`, `rounded-xl overflow-hidden`) al estilo 3 de
   tarjetas, que no lo tenía.
+
+## 2026-10-15 — Admin de Payload más simple y con la marca de la universidad (rama `refactor/payload-admin-usuario-final`)
+
+- Objetivo: admin más ordenado e intuitivo para usuarios no técnicos, sin quitar características ni tocar el esquema de BD (no hay migración).
+- Estructura: `admin.group` + `admin.description` en español en las 39 collections/globals (Páginas, Bloques de contenido, Navegación y pie, Medios, Usuarios y accesos, Servicios internos); `useAsTitle: 'title'` donde faltaba; Home/Services/Formation/Investigation con `tabs` sin `name` (con `name` cambiaría el esquema). `loginAbsys_service` ahora `hidden`.
+- Visual: logo/escudo en login y nav, paleta navy/teal en `app/(payload)/custom.scss`, Montserrat en títulos, dashboard de bienvenida (`components/admin/`). Enlaces con `success-700` por contraste AA.
+- Verificado: `tsc --noEmit` limpio, `generate:importmap` ok, revisión estática del `reviewer`. **No** se ha visto en navegador.
+- Pendiente: revisar en navegador claro/oscuro (`--base-body-size: 12`), `initCollapsed` en arrays largos (speakers, faq, timeline), labels sin tilde ("Titulo", "Seccion Principal"), cargar Open Sans en el admin, `migrate:create` se colgó en el entorno del agente (confirmar que no genera diff).
+
+## 2026-10-15 — Componentes de @payloadcms/ui en el admin
+
+- Dashboard (`DashboardWelcome`, server async con `payload.count`), `NavHelp` (afterNavLinks), `PageEditTips` (Description de Home), banners de ayuda en listas de media y news, `ItemRowLabel` (RowLabel con `useRowLabel` en speakers.people, faq.faqs, timeline.calendar, news.newsItems). Estilos `unam-*` en `custom.scss`.
+- Verificado: `tsc` limpio, importMap regenerado, rutas del admin responden 200 sin sesión.
+- Pendiente: probar autenticado; confirmar que ningún enlace duplica `/biblioteca` (Card `href` y `Button el="link"` llevan el prefijo a mano y Payload podría añadirlo otra vez); extender `PageEditTips`/banners a más páginas si gustan.
+
+## 2026-10-15 — Tabs en más globals
+
+- `horarios_contacto` (Cabecera / Edificio y horario / Contacto y dirección / Mapa / Ayuda), `layout` (Cabecera y pie / Enlaces externos) y `quienes_somos` (Cabecera / Ayudas / Dirigidos), con tabs sin `name`: sin cambio de esquema, comprobado que la lista de `name:` por fichero coincide con HEAD.
+- Pendiente: `about_us` y `electronic_resources` sin tabs (el segundo solo tiene 2 campos); ver en navegador autenticado.
+
+## 2026-10-15 — Conócenos unificado en `about_us` con 3 pestañas
+
+- Las 3 páginas de `/conocenos/*` leen de `about_us` (pestañas con `name`: `quienes_somos`, `horarios`, `normativa`); se borraron los `*_FALLBACK`, textos fijos y código muerto. Decisiones del usuario: sin fallbacks, PDF permitido en `media`, globals antiguos en dos fases.
+- Migración `20261015_163900_conocenos_tabs` escrita a mano (`migrate:create` es interactivo y se cuelga); probada en BD nueva con `NODE_ENV=production` y filas de prueba. Con datos reales de producción NO probada: hacer backup antes.
+- No existe página índice `/conocenos`.
+- Pendiente: sembrar dev (`npx tsx seeds/aboutUs.seed.ts`, crea media duplicados), ver las 3 páginas con datos, subir el PDF de normativa, apuntar `seeds/horarios.seed.ts` y `seeds/quienesSomos.seed.ts` a `about_us` o retirarlos, fase 2 (DROP de `quienes_somos`/`horarios_contacto`).
+
+## 2026-10-15 — Conócenos en bloques
+
+- Cada pestaña de `about_us` = `hero` + `layout` de bloques (`blocks/conocenos/*`, 9 bloques iguales en las tres) para poder mezclarlos y reordenarlos. Render con `components/conocenos/ConocenosBlocks.tsx`.
+- Migración nueva `20261015_163937_about_us_blocks` (no edita la anterior): copia datos a bloques; probada en BD temporal con filas de prueba. `down` lossy.
+- Decisiones del frontend a revisar: "Cómo llegar" toma la URL del primer `map_block`; el título de tarjetas/horario cae al `title` del objeto relacionado si el bloque no tiene; botones pasan de `<a><button>` a `<a>`, hover `scale-[1.02]`.
+- Pendiente: aplicar migración en dev y ver con datos; reutilizar los bloques en otros globals; fase 2 (DROP globals antiguos); fecha de PDF sin subir.
+
+## 2026-10-15 — Collection `pages` + catch-all + live preview
+
+- Decisión: contenido propio de una página = bloque en línea; compartido = collection referenciada; ajustes = global. Conócenos pasa de `about_us` a 3 documentos de `pages` (`conocenos/*`), `about_us` queda oculto.
+- Migración `20261015_170639_pages_collection` (esquema por `migrate:create` con ENTER por pty + copia por Local API); ciclo migrate/down/migrate probado en BD temporal. Producción: asumido que las migraciones de Conócenos NO están aplicadas allí; la migración es idempotente.
+- Live preview elegido por el usuario (`@payloadcms/live-preview-react` 3.86.0 exacta). Slug de las 3 páginas de Conócenos solo lectura.
+- Verificado: `npm test` 280/280, `tsc` limpio. NO verificado: preview/live preview en navegador, renderizado de las páginas con datos, bloqueo de slug en UI.
+- Gotcha: el volumen `node_modules` del contenedor no tiene el paquete nuevo (`/biblioteca/conocenos/*` da 500 con "Module not found"): `docker exec biblioteca-frontend npm install` + `payload migrate` + `docker restart biblioteca-frontend`.
+- `.next/types/validator.ts` arrastra tipos de las carpetas borradas hasta el siguiente `next dev`.
+
+## 2026-10-15 — Arreglos de revisión de `pages`
+
+- Slug: en borrador/autosave solo se normaliza (vacío → `undefined`); formato y reservados se validan al publicar. `LOCKED_SLUGS` ahora impide borrar y despublicar (`beforeDelete`/`beforeChange`).
+- Catch-all: `depth: 3`, `robots: noindex` en borrador, `<h1>` con `page.title` si el hero no existe.
+- **Sin verificar contra Payload real**: que "Unpublish" llegue con `_status: 'draft'` sin `?draft=true` y se distinga de un guardado de borrador/autosave (suposición del agente backend). Probar en el admin antes de fiarse.
+- Anotado, sin arreglar: la migración usa la Local API y depende del esquema vigente (puede fallar si se añaden columnas a `pages` y se corre en BD limpia); su `down` borra las ediciones hechas en `pages`; la cookie de draftMode persiste hasta `/auth/preview/exit`.
+
+## 2026-10-15 — Plugin de importar/exportar
+
+- Registrado `importExportPlugin` en 10 collections de contenido, exports/imports `adminOnly` (el default del plugin dejaba crear/leer a cualquier lector), síncrono (`disableJobsQueue: true`). Migración `20261015_172126_importar_exportar` (17 migraciones aplican limpias en BD nueva con `NODE_ENV=production`).
+- Error "Module not found: @payloadcms/live-preview-react": el volumen `node_modules` del contenedor no tenía el paquete; `docker exec biblioteca-frontend npm install` + `docker restart biblioteca-frontend`. Con cada dependencia nueva hay que repetirlo.
+- No verificado en UI: exportar/importar de extremo a extremo, `media`, grupo y labels en el admin.
+
+## 2026-10-15 — Borrador solo en vista previa
+
+- La cookie de draftMode persistía en el navegador del admin y la web pública mostraba el borrador y el banner. Ahora `isDraft` = draftMode activo Y (`sec-fetch-dest: iframe` o `?preview=1`); `/auth/preview` redirige a `/<slug>?preview=1`; el banner se oculta dentro del iframe.
+- El error "The following field is invalid: _status" al despublicar es el bloqueo intencionado de `LOCKED_SLUGS` (Conócenos): el mensaje real ("no se puede despublicar") no se ve bien en el toast. Pendiente decidir si se mejora o se desbloquea.
+- No verificado en navegador (cookie + iframe + `?preview=1`).
+
+## 2026-10-19 — Enlaces del dashboard duplicaban `/biblioteca`
+
+- Las tarjetas del panel y el botón "Subir imagen" iban a `/biblioteca/biblioteca/admin/...` (404): `Card` y `Button el="link"` de `@payloadcms/ui` usan el `Link` de Next, que ya antepone el basePath, y yo había puesto `/biblioteca` a mano. Ahora usan rutas sin prefijo (`/admin/...`).
+- Regla: con `Link`/`Card`/`Button el="link"` NO prefijar basePath; con `<a>`, `<img src>`, `Button el="anchor"` y URLs de preview sí.
+- Aviso que ya estaba anotado el 2026-10-15 ("comprobar que ningún enlace duplica /biblioteca").
+
+## 2026-10-19 — Seeds sin imágenes duplicadas
+
+- Causa de las copias en `media` (campus.jpg x76, inicio-destacados.png x50 en el contenedor): cada seed hacía `payload.create({ collection: 'media' })` sin comprobar si existía, en cada ejecución y en cada uso (incluso 3 veces seguidas en `pages.seed.ts`).
+- Arreglo: `seeds/lib/media.ts` → `findOrCreateMedia(payload, { file, alt, req? })`: busca por `filename` exacto, luego por `nombre-N.ext` (el sufijo más bajo), y si no existe crea. Usado en los 10 seeds que creaban media. Mismo fichero con distinto `alt` reutiliza el primer registro.
+- NO se limpiaron los duplicados ya existentes (lo hace el usuario a mano; ojo: las copias están referenciadas desde heroes, noticias, carruseles y pages, borrar una en uso rompe la imagen). Seeds no ejecutados; verificado solo con `tsc`.
+
+## 2026-10-19 — Bloques centralizados y miniaturas
+
+- Los 11 wrappers del `layout` (antes duplicados en 5 globals) viven en `blocks/layout/` (`layoutBlocks`); los 9 de Conócenos en `blocks/conocenos/`. Sin cambios de esquema, `payload-types.ts` idéntico, sin migración. Único cambio visible: label de `input_block` en Repositories ("Sobre Nosotros" → "Entrada de texto", bug conocido).
+- Miniaturas del selector de bloques: `blocks/images.ts` (`BLOCK_IMAGE_FILES`, vacío) + `public/admin-blocks/`. El usuario añadirá las imágenes.
+- Se pierde `admin.images.thumbnail` de `cta_block` (clave inválida, nunca funcionó).
+- Verificado: `tsc`, `npm test` 285/285. No verificado: servir `/biblioteca/admin-blocks/<fichero>` con servidor en marcha.
+
+## 2026-10-19 — Seeds actualizados y repetibles
+
+- `quienesSomos.seed.ts` y `horarios.seed.ts` retirados (`git rm`; escribían en globals obsoletos, `pages.seed.ts` ya cubría su contenido). El resto de seeds no tenía campos desfasados.
+- Nuevo `seeds/lib/upsert.ts` (`upsertDoc`): find-or-update-or-create por clave natural (`title` en hero, features, cta, schedule, electronic_resources_access, news, input; `items.title` en hero_carrusel; header/footer reutilizan los enlazados por `layout`). Dos ejecuciones de `npm run seed` en una BD nueva dan los mismos conteos y las 3 páginas `conocenos/*` publicadas.
+- Efecto a tener en cuenta: volver a ejecutar un seed pisa lo editado en el admin en esos documentos (`layout.enlaces_externos` no pisa keys existentes).
+- Limitación conocida de `findOrCreateMedia`: si el fichero existe en `media/` pero no hay fila en BD, Payload lo guarda con sufijo `-N` y el helper no lo reencuentra (duplica). Pasa con BD nueva + `media/` de dev sin vaciar. No corregido.
+- Para ejecutar seeds desde WSL: `DATABASE_URI` con `localhost:5433` (el host `bibliotecadb` no resuelve) y `PAYLOAD_SECRET` de `.env.local`.
+
+## 2026-10-19 — Home daba 500: `iconMap` desde un módulo `'use client'`
+
+- Error "Element type is invalid ... got: undefined" en `Stadistics` (Home) tras sembrar el contenedor: `iconMap[icon]` salía `undefined` aunque el icono (`Lightbulb`) era válido. Causa: `iconMap` vivía en `lib/utils.ts`, que lleva `'use client'` (por `useBookCover`), y los Server Components no pueden indexar un objeto exportado de un módulo cliente.
+- Arreglo: `iconMap` e `iconsSocialMediaMap` movidos a `lib/icons.ts` (sin `'use client'`); `lib/utils.ts` los reexporta por compatibilidad; los 8 importadores pasan a `@/lib/icons`. Home, Conócenos, Investigación y Formación responden 200.
+- Regla: nada que un Server Component deba leer como dato (mapas, constantes) debe exportarse desde un módulo `'use client'`.
+- Por qué no saltó antes: Home no había renderizado estadísticas con este camino hasta que se sembró `stats_block` en dev (no verificado el historial exacto).
+
+## 2026-10-19 — Selector visual de tipos (VisualSelectField)
+
+- El editor elige variantes con tarjetas + vista previa en vez de "0/1/2": `news.style`, `footer.type`, `pages.hero_variant`, `CardsFeaturesBlock.style`, `ImageTextBlock.image_position`, `schedule[].type`. Sin cambios de esquema.
+- `header.type` sin cubrir: el componente `Header` ignora `type` (variantes no implementadas). Pendiente decidir implementarlas o quitar el campo. `footer.type = 2` no pinta nada.
+- Verificado: `tsc`, `npm test` 285/285, rutas del admin 200 sin sesión. NO verificado: render real en el admin (revisar con sesión: miniaturas, vista previa, que elegir marque el formulario como modificado y Guardar persista, `day`/`hours` en Schedule, tema oscuro).
+
+## 2026-10-19 — Quitar `header.type` y footer tipo 2; vista previa plegable
+
+- `header.type` (el Header no lo usaba) y la opción "Simple" (`2`) de `footer.type` (no pintaba nada) eliminados por decisión del usuario. Migración `20261019_143507_quitar_tipo_header_footer_simple` (UPDATE de `2` a `0` antes de recrear el enum; probada en BD temporal con filas de prueba). `down` lossy y sin probar.
+- Vista previa del selector visual: botón "Ver/Ocultar vista previa", oculta por defecto, preferencia en `localStorage` (`unam-admin-vs-preview`).
+- Aviso: `migrate:create` se ejecutó contra la BD de dev con `push` activo; su `header` seguramente ya perdió `type` y su `footer` ya tiene el enum nuevo. Si algún footer de dev estaba en `2`, `push` pudo fallar o dejarlo sin remapear: revisar.
+- Verificado: `tsc`, `npm test` 285/285, `/admin/collections/news/create` 200. NO verificado en navegador: botón de vista previa, tema claro/oscuro, persistencia al recargar.
+
+## 2026-10-19 – fix cn() desde el servidor
+- `lib/utils.ts` tenía `'use client'` por el hook `useBookCover`; `Card` en Server Components (`features_block` en Home) reventaba. Hook movido a `lib/useBookCover.ts`, `utils` sin directiva y reexporta. Home responde 200, `tsc` limpio.

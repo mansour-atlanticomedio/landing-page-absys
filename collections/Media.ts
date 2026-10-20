@@ -1,14 +1,20 @@
 import type { CollectionConfig } from 'payload'
+import { publicReadAdminWrite } from '@/lib/access'
 
 export const Media: CollectionConfig = {
   slug: 'media',
+    admin: {
+        group: 'Medios',
+        description: 'Imágenes y documentos PDF del sitio. Sube aquí las fotos, logos y PDFs y descríbelos en el texto alternativo.',
+        components: {
+            beforeList: ['/components/admin/MediaListHelp'],
+        }
+    },
   labels: {
     singular: 'Imagen',
     plural: 'Galeria de Imagenes'
   },
-  access: {
-    read: () => true  
-  },
+  access: publicReadAdminWrite,
   fields: [
     {
       name: 'alt',
@@ -26,6 +32,6 @@ export const Media: CollectionConfig = {
         position: 'centre',
       },
     ],
-    mimeTypes: ['image/*']
+    mimeTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/avif', 'application/pdf'],
   },
 }

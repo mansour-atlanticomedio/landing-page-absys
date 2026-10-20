@@ -95,7 +95,11 @@ export interface Config {
     electronic_resources_access: ElectronicResourcesAccess;
     schedule: Schedule;
     loginCampus_service: LoginCampusService;
+    pages: Page;
+    exports: Export;
+    imports: Import;
     'payload-kv': PayloadKv;
+    'payload-jobs': PayloadJob;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
     'payload-migrations': PayloadMigration;
@@ -128,7 +132,11 @@ export interface Config {
     electronic_resources_access: ElectronicResourcesAccessSelect<false> | ElectronicResourcesAccessSelect<true>;
     schedule: ScheduleSelect<false> | ScheduleSelect<true>;
     loginCampus_service: LoginCampusServiceSelect<false> | LoginCampusServiceSelect<true>;
+    pages: PagesSelect<false> | PagesSelect<true>;
+    exports: ExportsSelect<false> | ExportsSelect<true>;
+    imports: ImportsSelect<false> | ImportsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
+    'payload-jobs': PayloadJobsSelect<false> | PayloadJobsSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
     'payload-migrations': PayloadMigrationsSelect<false> | PayloadMigrationsSelect<true>;
@@ -173,7 +181,14 @@ export interface Config {
   };
   user: User | LoginAbsysService | LoginCampusService;
   jobs: {
-    tasks: unknown;
+    tasks: {
+      createCollectionExport: TaskCreateCollectionExport;
+      createCollectionImport: TaskCreateCollectionImport;
+      inline: {
+        input: unknown;
+        output: unknown;
+      };
+    };
     workflows: unknown;
   };
 }
@@ -232,6 +247,8 @@ export interface LoginCampusServiceAuthOperations {
   };
 }
 /**
+ * Personas con acceso a este panel de administración.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "users".
  */
@@ -257,6 +274,8 @@ export interface User {
   collection: 'users';
 }
 /**
+ * Imágenes y documentos PDF del sitio. Sube aquí las fotos, logos y PDFs y descríbelos en el texto alternativo.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "media".
  */
@@ -286,6 +305,8 @@ export interface Media {
   };
 }
 /**
+ * Cabeceras con imagen de fondo, título y botón que se reutilizan en las páginas.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "hero".
  */
@@ -301,13 +322,14 @@ export interface Hero {
   createdAt: string;
 }
 /**
+ * Cabecera del sitio: logo, teléfono, correo y menú de navegación.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "header".
  */
 export interface Header {
   id: number;
   logo?: (number | null) | Media;
-  type?: ('0' | '1' | '2') | null;
   phone?: string | null;
   email?: string | null;
   navbar?:
@@ -358,6 +380,8 @@ export interface Header {
   createdAt: string;
 }
 /**
+ * Carruseles de diapositivas con imagen, título y descripción para la parte superior de una página.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "hero_carrusel".
  */
@@ -375,6 +399,8 @@ export interface HeroCarrusel {
   createdAt: string;
 }
 /**
+ * Personas ponentes con foto, cargo y redes sociales.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "speakers".
  */
@@ -416,6 +442,8 @@ export interface Speaker {
   createdAt: string;
 }
 /**
+ * Cifras destacadas con icono y descripción.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "statistics".
  */
@@ -441,7 +469,12 @@ export interface Statistic {
           | 'BarChart3'
           | 'HeartHandshake'
           | 'BookOpenCheck'
-          | 'Landmark';
+          | 'Landmark'
+          | 'Users'
+          | 'FileText'
+          | 'Library'
+          | 'Monitor'
+          | 'AlertTriangle';
         value?: number | null;
         description?: string | null;
         id?: string | null;
@@ -451,6 +484,8 @@ export interface Statistic {
   createdAt: string;
 }
 /**
+ * Bloques de texto informativo con título y artículo.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "about".
  */
@@ -476,6 +511,8 @@ export interface About {
   createdAt: string;
 }
 /**
+ * Conjuntos de tarjetas con icono, título y descripción.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "features".
  */
@@ -502,7 +539,12 @@ export interface Feature {
           | 'BarChart3'
           | 'HeartHandshake'
           | 'BookOpenCheck'
-          | 'Landmark';
+          | 'Landmark'
+          | 'Users'
+          | 'FileText'
+          | 'Library'
+          | 'Monitor'
+          | 'AlertTriangle';
         title?: string | null;
         description?: string | null;
         id?: string | null;
@@ -512,6 +554,8 @@ export interface Feature {
   createdAt: string;
 }
 /**
+ * Calendarios o líneas del tiempo con días y eventos.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "timeline".
  */
@@ -550,6 +594,8 @@ export interface Timeline {
   createdAt: string;
 }
 /**
+ * Buscadores o campos de texto con título y texto de ejemplo.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "input".
  */
@@ -561,6 +607,8 @@ export interface Input {
   createdAt: string;
 }
 /**
+ * Llamadas a la acción: título, subtítulo y botón con enlace.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "cta".
  */
@@ -574,6 +622,8 @@ export interface Cta {
   createdAt: string;
 }
 /**
+ * Listados de preguntas frecuentes con sus respuestas.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "faq".
  */
@@ -605,6 +655,8 @@ export interface Faq {
   createdAt: string;
 }
 /**
+ * Histórico de los mensajes enviados desde el formulario de contacto.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "sendEmail".
  */
@@ -612,26 +664,15 @@ export interface SendEmail {
   id: number;
   name?: string | null;
   email?: string | null;
+  rol?: string | null;
   about?: string | null;
-  message?: {
-    root: {
-      type: string;
-      children: {
-        type: any;
-        version: number;
-        [k: string]: unknown;
-      }[];
-      direction: ('ltr' | 'rtl') | null;
-      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-      indent: number;
-      version: number;
-    };
-    [k: string]: unknown;
-  } | null;
+  message?: string | null;
   updatedAt: string;
   createdAt: string;
 }
 /**
+ * Listados de artículos o entradas de blog.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "blogs".
  */
@@ -650,6 +691,8 @@ export interface Blog {
   createdAt: string;
 }
 /**
+ * Logotipos de entidades colaboradoras y patrocinadores.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "partners".
  */
@@ -667,6 +710,8 @@ export interface Partner {
   createdAt: string;
 }
 /**
+ * Bloques de noticias con imagen, etiqueta y enlace.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "news".
  */
@@ -692,12 +737,14 @@ export interface News {
   createdAt: string;
 }
 /**
+ * Pie de página: logo, redes sociales y secciones de información.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "footer".
  */
 export interface Footer {
   id: number;
-  type?: ('0' | '1' | '2') | null;
+  type?: ('0' | '1') | null;
   logo?: (number | null) | Media;
   social_medias?:
     | {
@@ -741,6 +788,11 @@ export interface Footer {
                     | 'HeartHandshake'
                     | 'BookOpenCheck'
                     | 'Landmark'
+                    | 'Users'
+                    | 'FileText'
+                    | 'Library'
+                    | 'Monitor'
+                    | 'AlertTriangle'
                   )
                 | null;
               label?: string | null;
@@ -778,6 +830,8 @@ export interface Footer {
   createdAt: string;
 }
 /**
+ * Imagen de la pantalla de inicio de sesión.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "login_page".
  */
@@ -788,6 +842,8 @@ export interface LoginPage {
   createdAt: string;
 }
 /**
+ * Servicio técnico de consulta del catálogo.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "absys_service".
  */
@@ -800,6 +856,8 @@ export interface AbsysService {
   createdAt: string;
 }
 /**
+ * Servicio técnico de portadas de libros.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "book_cover_service".
  */
@@ -810,6 +868,8 @@ export interface BookCoverService {
   createdAt: string;
 }
 /**
+ * Servicio técnico de información de autores.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "author_service".
  */
@@ -820,6 +880,8 @@ export interface AuthorService {
   createdAt: string;
 }
 /**
+ * Lectores del acceso antiguo con Absys. Uso técnico.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "loginAbsys_service".
  */
@@ -853,6 +915,8 @@ export interface LoginAbsysService {
   collection: 'loginAbsys_service';
 }
 /**
+ * Conjuntos de accesos directos con icono, texto y enlace.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "electronic_resources_access".
  */
@@ -879,7 +943,12 @@ export interface ElectronicResourcesAccess {
           | 'BarChart3'
           | 'HeartHandshake'
           | 'BookOpenCheck'
-          | 'Landmark';
+          | 'Landmark'
+          | 'Users'
+          | 'FileText'
+          | 'Library'
+          | 'Monitor'
+          | 'AlertTriangle';
         title: string;
         description?: string | null;
         cta?: string | null;
@@ -891,6 +960,8 @@ export interface ElectronicResourcesAccess {
   createdAt: string;
 }
 /**
+ * Horarios de apertura por días y franjas.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "schedule".
  */
@@ -909,6 +980,8 @@ export interface Schedule {
   createdAt: string;
 }
 /**
+ * Lectores que han entrado desde el campus. Se crean solos al iniciar sesión.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "loginCampus_service".
  */
@@ -943,6 +1016,325 @@ export interface LoginCampusService {
   collection: 'loginCampus_service';
 }
 /**
+ * Páginas de contenido de la web: cabecera y bloques de contenido.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages".
+ */
+export interface Page {
+  id: number;
+  title: string;
+  /**
+   * Ruta de la página sin barra inicial, p. ej. "conocenos/equipo". Solo minúsculas, números y guiones.
+   */
+  slug: string;
+  /**
+   * Texto breve que se muestra en los resultados de búsqueda.
+   */
+  meta_description?: string | null;
+  hero?: (number | null) | Hero;
+  hero_variant: 'simple' | 'split';
+  /**
+   * Añade, ordena y elimina los bloques de contenido de esta página.
+   */
+  layout?:
+    | (
+        | CardsFeaturesBlock
+        | ImageTextBlock
+        | ScheduleBlock
+        | ContactInfoBlock
+        | MapBlock
+        | HelpCtaBlock
+        | RulesCardsBlock
+        | NoticeBlock
+        | DownloadBlock
+      )[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CardsFeaturesBlock".
+ */
+export interface CardsFeaturesBlock {
+  /**
+   * Título visible encima de las tarjetas. Déjalo vacío si no quieres título.
+   */
+  title?: string | null;
+  /**
+   * Elige el conjunto de tarjetas (icono, título y descripción) que se mostrará.
+   */
+  features?: (number | null) | Feature;
+  style?: ('default' | 'muted') | null;
+  /**
+   * Si la añades, aparece junto a las tarjetas.
+   */
+  image?: (number | null) | Media;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'cards_features_block';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ImageTextBlock".
+ */
+export interface ImageTextBlock {
+  image?: (number | null) | Media;
+  title?: string | null;
+  /**
+   * Texto con formato (negritas, listas, enlaces...).
+   */
+  text?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  image_position?: ('left' | 'right') | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'image_text_block';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ScheduleBlock".
+ */
+export interface ScheduleBlock {
+  /**
+   * Ej. "Horario de atención".
+   */
+  title?: string | null;
+  /**
+   * Elige el horario que se mostrará en este bloque.
+   */
+  schedule?: (number | null) | Schedule;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'schedule_block';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ContactInfoBlock".
+ */
+export interface ContactInfoBlock {
+  /**
+   * Ej. "Información General".
+   */
+  title?: string | null;
+  building_name?: string | null;
+  building_subtitle?: string | null;
+  location_title?: string | null;
+  address_line1?: string | null;
+  address_line2?: string | null;
+  directions_button_label?: string | null;
+  contact_title?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  contact_button_label?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'contact_info_block';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "MapBlock".
+ */
+export interface MapBlock {
+  title?: string | null;
+  /**
+   * Dirección que se abre al pulsar el botón "Cómo llegar".
+   */
+  map_url?: string | null;
+  /**
+   * URL del iframe que genera Google Maps en Compartir > Insertar un mapa.
+   */
+  map_embed_url?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'map_block';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "HelpCtaBlock".
+ */
+export interface HelpCtaBlock {
+  /**
+   * Elige la llamada a la acción (título, subtítulo y botón) que se mostrará.
+   */
+  cta?: (number | null) | Cta;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'help_cta_block';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "RulesCardsBlock".
+ */
+export interface RulesCardsBlock {
+  /**
+   * Hasta 6 tarjetas con las normas principales.
+   */
+  cards?:
+    | {
+        icon:
+          | 'Lightbulb'
+          | 'BookOpen'
+          | 'Microscope'
+          | 'Star'
+          | 'User'
+          | 'Briefcase'
+          | 'Phone'
+          | 'Mail'
+          | 'MapPin'
+          | 'Calendar'
+          | 'Search'
+          | 'Megaphone'
+          | 'Lock'
+          | 'Fingerprint'
+          | 'BarChart3'
+          | 'HeartHandshake'
+          | 'BookOpenCheck'
+          | 'Landmark'
+          | 'Users'
+          | 'FileText'
+          | 'Library'
+          | 'Monitor'
+          | 'AlertTriangle';
+        title: string;
+        /**
+         * Ej. "Próximamente". Se muestra como insignia en la tarjeta.
+         */
+        badge?: string | null;
+        description?: string | null;
+        points?:
+          | {
+              text: string;
+              id?: string | null;
+            }[]
+          | null;
+        note_title?: string | null;
+        note_text?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'rules_cards_block';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "NoticeBlock".
+ */
+export interface NoticeBlock {
+  title?: string | null;
+  text?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'notice_block';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "DownloadBlock".
+ */
+export interface DownloadBlock {
+  /**
+   * Ej. "Descargar normativa completa (PDF)".
+   */
+  button_label?: string | null;
+  /**
+   * Si no hay documento, el botón no se muestra.
+   */
+  file?: (number | null) | Media;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'download_block';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "exports".
+ */
+export interface Export {
+  id: number;
+  name?: string | null;
+  format: 'csv' | 'json';
+  limit?: number | null;
+  page?: number | null;
+  sort?: string | null;
+  sortOrder?: ('asc' | 'desc') | null;
+  drafts?: ('yes' | 'no') | null;
+  selectionToUse?: ('currentSelection' | 'currentFilters' | 'all') | null;
+  fields?: string[] | null;
+  collectionSlug: string;
+  where?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "imports".
+ */
+export interface Import {
+  id: number;
+  collectionSlug: string;
+  importMode?: ('create' | 'update' | 'upsert') | null;
+  matchField?: string | null;
+  status?: ('pending' | 'completed' | 'partial' | 'failed') | null;
+  summary?: {
+    imported?: number | null;
+    updated?: number | null;
+    total?: number | null;
+    issues?: number | null;
+    issueDetails?:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+  url?: string | null;
+  thumbnailURL?: string | null;
+  filename?: string | null;
+  mimeType?: string | null;
+  filesize?: number | null;
+  width?: number | null;
+  height?: number | null;
+  focalX?: number | null;
+  focalY?: number | null;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
@@ -958,6 +1350,98 @@ export interface PayloadKv {
     | number
     | boolean
     | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-jobs".
+ */
+export interface PayloadJob {
+  id: number;
+  /**
+   * Input data provided to the job
+   */
+  input?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  taskStatus?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  completedAt?: string | null;
+  totalTried?: number | null;
+  /**
+   * If hasError is true this job will not be retried
+   */
+  hasError?: boolean | null;
+  /**
+   * If hasError is true, this is the error that caused it
+   */
+  error?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
+  /**
+   * Task execution log
+   */
+  log?:
+    | {
+        executedAt: string;
+        completedAt: string;
+        taskSlug: 'inline' | 'createCollectionExport' | 'createCollectionImport';
+        taskID: string;
+        input?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        output?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        state: 'failed' | 'succeeded';
+        error?:
+          | {
+              [k: string]: unknown;
+            }
+          | unknown[]
+          | string
+          | number
+          | boolean
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  taskSlug?: ('inline' | 'createCollectionExport' | 'createCollectionImport') | null;
+  queue?: string | null;
+  waitUntil?: string | null;
+  processing?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1069,6 +1553,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'loginCampus_service';
         value: number | LoginCampusService;
+      } | null)
+    | ({
+        relationTo: 'pages';
+        value: number | Page;
       } | null);
   globalSlug?: string | null;
   user:
@@ -1204,7 +1692,6 @@ export interface HeroSelect<T extends boolean = true> {
  */
 export interface HeaderSelect<T extends boolean = true> {
   logo?: T;
-  type?: T;
   phone?: T;
   email?: T;
   navbar?:
@@ -1387,6 +1874,7 @@ export interface FaqSelect<T extends boolean = true> {
 export interface SendEmailSelect<T extends boolean = true> {
   name?: T;
   email?: T;
+  rol?: T;
   about?: T;
   message?: T;
   updatedAt?: T;
@@ -1627,11 +2115,245 @@ export interface LoginCampusServiceSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages_select".
+ */
+export interface PagesSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  meta_description?: T;
+  hero?: T;
+  hero_variant?: T;
+  layout?:
+    | T
+    | {
+        cards_features_block?: T | CardsFeaturesBlockSelect<T>;
+        image_text_block?: T | ImageTextBlockSelect<T>;
+        schedule_block?: T | ScheduleBlockSelect<T>;
+        contact_info_block?: T | ContactInfoBlockSelect<T>;
+        map_block?: T | MapBlockSelect<T>;
+        help_cta_block?: T | HelpCtaBlockSelect<T>;
+        rules_cards_block?: T | RulesCardsBlockSelect<T>;
+        notice_block?: T | NoticeBlockSelect<T>;
+        download_block?: T | DownloadBlockSelect<T>;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CardsFeaturesBlock_select".
+ */
+export interface CardsFeaturesBlockSelect<T extends boolean = true> {
+  title?: T;
+  features?: T;
+  style?: T;
+  image?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ImageTextBlock_select".
+ */
+export interface ImageTextBlockSelect<T extends boolean = true> {
+  image?: T;
+  title?: T;
+  text?: T;
+  image_position?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ScheduleBlock_select".
+ */
+export interface ScheduleBlockSelect<T extends boolean = true> {
+  title?: T;
+  schedule?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ContactInfoBlock_select".
+ */
+export interface ContactInfoBlockSelect<T extends boolean = true> {
+  title?: T;
+  building_name?: T;
+  building_subtitle?: T;
+  location_title?: T;
+  address_line1?: T;
+  address_line2?: T;
+  directions_button_label?: T;
+  contact_title?: T;
+  phone?: T;
+  email?: T;
+  contact_button_label?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "MapBlock_select".
+ */
+export interface MapBlockSelect<T extends boolean = true> {
+  title?: T;
+  map_url?: T;
+  map_embed_url?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "HelpCtaBlock_select".
+ */
+export interface HelpCtaBlockSelect<T extends boolean = true> {
+  cta?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "RulesCardsBlock_select".
+ */
+export interface RulesCardsBlockSelect<T extends boolean = true> {
+  cards?:
+    | T
+    | {
+        icon?: T;
+        title?: T;
+        badge?: T;
+        description?: T;
+        points?:
+          | T
+          | {
+              text?: T;
+              id?: T;
+            };
+        note_title?: T;
+        note_text?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "NoticeBlock_select".
+ */
+export interface NoticeBlockSelect<T extends boolean = true> {
+  title?: T;
+  text?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "DownloadBlock_select".
+ */
+export interface DownloadBlockSelect<T extends boolean = true> {
+  button_label?: T;
+  file?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "exports_select".
+ */
+export interface ExportsSelect<T extends boolean = true> {
+  name?: T;
+  format?: T;
+  limit?: T;
+  page?: T;
+  sort?: T;
+  sortOrder?: T;
+  drafts?: T;
+  selectionToUse?: T;
+  fields?: T;
+  collectionSlug?: T;
+  where?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "imports_select".
+ */
+export interface ImportsSelect<T extends boolean = true> {
+  collectionSlug?: T;
+  importMode?: T;
+  matchField?: T;
+  status?: T;
+  summary?:
+    | T
+    | {
+        imported?: T;
+        updated?: T;
+        total?: T;
+        issues?: T;
+        issueDetails?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  url?: T;
+  thumbnailURL?: T;
+  filename?: T;
+  mimeType?: T;
+  filesize?: T;
+  width?: T;
+  height?: T;
+  focalX?: T;
+  focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv_select".
  */
 export interface PayloadKvSelect<T extends boolean = true> {
   key?: T;
   data?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "payload-jobs_select".
+ */
+export interface PayloadJobsSelect<T extends boolean = true> {
+  input?: T;
+  taskStatus?: T;
+  completedAt?: T;
+  totalTried?: T;
+  hasError?: T;
+  error?: T;
+  log?:
+    | T
+    | {
+        executedAt?: T;
+        completedAt?: T;
+        taskSlug?: T;
+        taskID?: T;
+        input?: T;
+        output?: T;
+        state?: T;
+        error?: T;
+        id?: T;
+      };
+  taskSlug?: T;
+  queue?: T;
+  waitUntil?: T;
+  processing?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1666,11 +2388,16 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   createdAt?: T;
 }
 /**
+ * Página de inicio: cabecera, carrusel y bloques de contenido.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "home".
  */
 export interface Home {
   id: number;
+  /**
+   * Cabecera con imagen, título y subtítulo de la página.
+   */
   hero?: (number | null) | Hero;
   hero_carrusel?: (number | null) | HeroCarrusel;
   layout?:
@@ -1747,6 +2474,8 @@ export interface Home {
   createdAt?: string | null;
 }
 /**
+ * Página de la biblioteca: cabecera.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "library".
  */
@@ -1757,6 +2486,8 @@ export interface Library {
   createdAt?: string | null;
 }
 /**
+ * Elige la cabecera y el pie del sitio y gestiona el registro de enlaces externos.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "layout".
  */
@@ -1782,11 +2513,16 @@ export interface Layout {
   createdAt?: string | null;
 }
 /**
+ * Página de servicios: cabecera, carrusel y bloques de contenido.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "services".
  */
 export interface Service {
   id: number;
+  /**
+   * Cabecera con imagen, título y subtítulo de la página.
+   */
   hero?: (number | null) | Hero;
   hero_carrusel?: (number | null) | HeroCarrusel;
   layout?:
@@ -1863,11 +2599,16 @@ export interface Service {
   createdAt?: string | null;
 }
 /**
+ * Página de investigación: cabecera, accesos rápidos y tarjetas.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "investigation".
  */
 export interface Investigation {
   id: number;
+  /**
+   * Cabecera con imagen, título y subtítulo de la página.
+   */
   hero?: (number | null) | Hero;
   hero_carrusel?: (number | null) | HeroCarrusel;
   accesos_rapidos?: (number | null) | Feature;
@@ -1947,6 +2688,8 @@ export interface Investigation {
   createdAt?: string | null;
 }
 /**
+ * Página de repositorios: cabecera y bloques de contenido.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "repository".
  */
@@ -2027,11 +2770,16 @@ export interface Repository {
   createdAt?: string | null;
 }
 /**
+ * Página de formación: cabecera, textos, enlaces y guías.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "formation".
  */
 export interface Formation {
   id: number;
+  /**
+   * Cabecera con imagen, título y subtítulo de la página.
+   */
   hero?: (number | null) | Hero;
   hero_carrusel?: (number | null) | HeroCarrusel;
   buscar_parrafo_1?: string | null;
@@ -2121,6 +2869,8 @@ export interface Formation {
   createdAt?: string | null;
 }
 /**
+ * Página de contacto: cabecera.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "contact".
  */
@@ -2131,33 +2881,85 @@ export interface Contact {
   createdAt?: string | null;
 }
 /**
+ * Obsoleto: ahora son páginas en 'Páginas'.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "about_us".
  */
 export interface AboutUs {
   id: number;
-  quienes_somos?:
-    | {
-        images?: (number | null) | Media;
-        id?: string | null;
-      }[]
-    | null;
-  horarios?:
-    | {
-        images?: (number | null) | Media;
-        id?: string | null;
-      }[]
-    | null;
-  normativa?:
-    | {
-        images?: (number | null) | Media;
-        id?: string | null;
-      }[]
-    | null;
+  /**
+   * Página Quiénes somos: cabecera y bloques de contenido.
+   */
+  quienes_somos?: {
+    hero?: (number | null) | Hero;
+    /**
+     * Añade, ordena y elimina los bloques de contenido de esta página.
+     */
+    layout?:
+      | (
+          | CardsFeaturesBlock
+          | ImageTextBlock
+          | ScheduleBlock
+          | ContactInfoBlock
+          | MapBlock
+          | HelpCtaBlock
+          | RulesCardsBlock
+          | NoticeBlock
+          | DownloadBlock
+        )[]
+      | null;
+  };
+  /**
+   * Página de horarios, ubicación y contacto: cabecera y bloques de contenido.
+   */
+  horarios?: {
+    hero?: (number | null) | Hero;
+    /**
+     * Añade, ordena y elimina los bloques de contenido de esta página.
+     */
+    layout?:
+      | (
+          | CardsFeaturesBlock
+          | ImageTextBlock
+          | ScheduleBlock
+          | ContactInfoBlock
+          | MapBlock
+          | HelpCtaBlock
+          | RulesCardsBlock
+          | NoticeBlock
+          | DownloadBlock
+        )[]
+      | null;
+  };
+  /**
+   * Página de normativa y condiciones de uso: cabecera y bloques de contenido.
+   */
+  normativa?: {
+    hero?: (number | null) | Hero;
+    /**
+     * Añade, ordena y elimina los bloques de contenido de esta página.
+     */
+    layout?:
+      | (
+          | CardsFeaturesBlock
+          | ImageTextBlock
+          | ScheduleBlock
+          | ContactInfoBlock
+          | MapBlock
+          | HelpCtaBlock
+          | RulesCardsBlock
+          | NoticeBlock
+          | DownloadBlock
+        )[]
+      | null;
+  };
   updatedAt?: string | null;
   createdAt?: string | null;
 }
 /**
+ * Página de recursos electrónicos: cabecera y accesos destacados.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "electronic_resources".
  */
@@ -2169,6 +2971,8 @@ export interface ElectronicResource {
   createdAt?: string | null;
 }
 /**
+ * Obsoleto: ahora se edita en Conócenos
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "quienes_somos".
  */
@@ -2182,6 +2986,8 @@ export interface QuienesSomo {
   createdAt?: string | null;
 }
 /**
+ * Obsoleto: ahora se edita en Conócenos
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "horarios_contacto".
  */
@@ -2202,6 +3008,8 @@ export interface HorariosContacto {
   createdAt?: string | null;
 }
 /**
+ * Cabecera de la página de solicitud de compra de libros.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "solicitud_compra".
  */
@@ -2733,20 +3541,56 @@ export interface AboutUsSelect<T extends boolean = true> {
   quienes_somos?:
     | T
     | {
-        images?: T;
-        id?: T;
+        hero?: T;
+        layout?:
+          | T
+          | {
+              cards_features_block?: T | CardsFeaturesBlockSelect<T>;
+              image_text_block?: T | ImageTextBlockSelect<T>;
+              schedule_block?: T | ScheduleBlockSelect<T>;
+              contact_info_block?: T | ContactInfoBlockSelect<T>;
+              map_block?: T | MapBlockSelect<T>;
+              help_cta_block?: T | HelpCtaBlockSelect<T>;
+              rules_cards_block?: T | RulesCardsBlockSelect<T>;
+              notice_block?: T | NoticeBlockSelect<T>;
+              download_block?: T | DownloadBlockSelect<T>;
+            };
       };
   horarios?:
     | T
     | {
-        images?: T;
-        id?: T;
+        hero?: T;
+        layout?:
+          | T
+          | {
+              cards_features_block?: T | CardsFeaturesBlockSelect<T>;
+              image_text_block?: T | ImageTextBlockSelect<T>;
+              schedule_block?: T | ScheduleBlockSelect<T>;
+              contact_info_block?: T | ContactInfoBlockSelect<T>;
+              map_block?: T | MapBlockSelect<T>;
+              help_cta_block?: T | HelpCtaBlockSelect<T>;
+              rules_cards_block?: T | RulesCardsBlockSelect<T>;
+              notice_block?: T | NoticeBlockSelect<T>;
+              download_block?: T | DownloadBlockSelect<T>;
+            };
       };
   normativa?:
     | T
     | {
-        images?: T;
-        id?: T;
+        hero?: T;
+        layout?:
+          | T
+          | {
+              cards_features_block?: T | CardsFeaturesBlockSelect<T>;
+              image_text_block?: T | ImageTextBlockSelect<T>;
+              schedule_block?: T | ScheduleBlockSelect<T>;
+              contact_info_block?: T | ContactInfoBlockSelect<T>;
+              map_block?: T | MapBlockSelect<T>;
+              help_cta_block?: T | HelpCtaBlockSelect<T>;
+              rules_cards_block?: T | RulesCardsBlockSelect<T>;
+              notice_block?: T | NoticeBlockSelect<T>;
+              download_block?: T | DownloadBlockSelect<T>;
+            };
       };
   updatedAt?: T;
   createdAt?: T;
@@ -2815,6 +3659,85 @@ export interface CollectionsWidget {
     [k: string]: unknown;
   };
   width: 'full';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskCreateCollectionExport".
+ */
+export interface TaskCreateCollectionExport {
+  input: {
+    id: string;
+    name: string;
+    batchSize?: number | null;
+    collectionSlug:
+      | 'users'
+      | 'media'
+      | 'hero'
+      | 'header'
+      | 'hero_carrusel'
+      | 'speakers'
+      | 'statistics'
+      | 'about'
+      | 'features'
+      | 'timeline'
+      | 'input'
+      | 'cta'
+      | 'faq'
+      | 'sendEmail'
+      | 'blogs'
+      | 'partners'
+      | 'news'
+      | 'footer'
+      | 'login_page'
+      | 'absys_service'
+      | 'book_cover_service'
+      | 'author_service'
+      | 'loginAbsys_service'
+      | 'electronic_resources_access'
+      | 'schedule'
+      | 'loginCampus_service'
+      | 'pages'
+      | 'exports'
+      | 'imports';
+    drafts?: ('yes' | 'no') | null;
+    exportCollection: string;
+    fields?: string[] | null;
+    format: 'csv' | 'json';
+    limit?: number | null;
+    locale?: string | null;
+    maxLimit?: number | null;
+    page?: number | null;
+    sort?: string | null;
+    userCollection?: string | null;
+    userID?: string | null;
+    where?:
+      | {
+          [k: string]: unknown;
+        }
+      | unknown[]
+      | string
+      | number
+      | boolean
+      | null;
+  };
+  output?: unknown;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TaskCreateCollectionImport".
+ */
+export interface TaskCreateCollectionImport {
+  input: {
+    importId: string;
+    importCollection: string;
+    userID?: string | null;
+    userCollection?: string | null;
+    batchSize?: number | null;
+    debug?: boolean | null;
+    defaultVersionStatus?: ('draft' | 'published') | null;
+    maxLimit?: number | null;
+  };
+  output?: unknown;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

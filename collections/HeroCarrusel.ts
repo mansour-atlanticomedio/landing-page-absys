@@ -1,7 +1,13 @@
 import { CollectionConfig } from "payload";
+import { adminOnly } from "@/lib/access";
 
 export const HeroCarrusel : CollectionConfig = {
     slug: 'hero_carrusel',
+    admin: {
+        group: 'Bloques de contenido',
+        description: 'Carruseles de diapositivas con imagen, título y descripción para la parte superior de una página.'
+    },
+    access: adminOnly,
     labels: {
         singular: 'Seccion de Carrusel Principal',
         plural: 'Seccion de Carrusel Principal'

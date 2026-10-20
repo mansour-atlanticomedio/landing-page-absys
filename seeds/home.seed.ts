@@ -1,29 +1,18 @@
 // seeds/home.seed.ts
 import { getPayload } from 'payload'
 import config from '@payload-config'
-import path from 'path'
 import type { HeroCarrusel, Input, News, Media } from '@/payload-types'
+import { findOrCreateMedia } from './lib/media'
+import { upsertDoc } from './lib/upsert'
 
 const payload = await getPayload({ config })
 
 // --- HERO CARRUSEL ---
-const imageCarusel_1 = await payload.create({
-  collection: 'media',
-  data: { alt: 'imagen fondo' },
-  filePath: path.resolve(process.cwd(), 'seeds/assets/screen-inicio-hero.png'),
-})
+const imageCarusel_1 = await findOrCreateMedia(payload, { file: 'screen-inicio-hero.png', alt: 'imagen fondo' })
 
-const imageCarusel_2 = await payload.create({
-  collection: 'media',
-  data: { alt: 'imagen fondo' },
-  filePath: path.resolve(process.cwd(), 'seeds/assets/campus.jpg'),
-})
+const imageCarusel_2 = await findOrCreateMedia(payload, { file: 'campus.jpg', alt: 'imagen fondo' })
 
-const imageCarusel_3 = await payload.create({
-  collection: 'media',
-  data: { alt: 'imagen fondo' },
-  filePath: path.resolve(process.cwd(), 'seeds/assets/Gemini_Generated_Image_pjh4c4pjh4c4pjh4.jpg'),
-})
+const imageCarusel_3 = await findOrCreateMedia(payload, { file: 'Gemini_Generated_Image_pjh4c4pjh4c4pjh4.jpg', alt: 'imagen fondo' })
 
 const carusselData = {
   items: [
@@ -52,18 +41,19 @@ const carusselData = {
 
 let carruselDoc : any
 try {
-    carruselDoc = await payload.create({
+    carruselDoc = await upsertDoc(payload, {
     collection: 'hero_carrusel',
     data: carusselData,
+    where: { 'items.title': { equals: carusselData.items[0].title } },
   })
 } catch (error) {
-    
+    console.error('Error hero_carrusel: ', error)
 }
 
 // --- INPUT BLOCK ---
 let inputText: any
 try {
-  inputText = await payload.create({
+  inputText = await upsertDoc(payload, {
     collection: 'input',
     data: {
       title: 'Búsqueda',
@@ -77,15 +67,11 @@ try {
 // --- DESTACADOS (un solo doc de news, con 4 items en newsItems) ---
 const imageNews: Media[] = []
 for (let i = 1; i <= 4; i++) {
-  const media = await payload.create({
-    collection: 'media',
-    data: { alt: 'imagen fondo' },
-    filePath: path.resolve(process.cwd(), `seeds/assets/inicio-destacados-${i}.png`),
-  })
+  const media = await findOrCreateMedia(payload, { file: `inicio-destacados-${i}.png`, alt: 'imagen fondo' })
   imageNews.push(media)
 }
 
-const destacadosDoc = await payload.create({
+const destacadosDoc = await upsertDoc(payload, {
   collection: 'news',
   data: {
     title: 'Destacados',
@@ -103,15 +89,11 @@ const destacadosDoc = await payload.create({
 // --- TE RECOMENDAMOS (otro doc de news, con 3 items en newsItems) ---
 const imageRecomendamos: Media[] = []
 for (let i = 1; i <= 3; i++) {
-  const media = await payload.create({
-    collection: 'media',
-    data: { alt: 'imagen recomendamos' },
-    filePath: path.resolve(process.cwd(), `seeds/assets/inicio-recomendamos-${i}.png`),
-  })
+  const media = await findOrCreateMedia(payload, { file: `inicio-recomendamos-${i}.png`, alt: 'imagen recomendamos' })
   imageRecomendamos.push(media)
 }
 
-const recomendamosDoc = await payload.create({
+const recomendamosDoc = await upsertDoc(payload, {
   collection: 'news',
   data: {
     title: 'Te recomendamos',
@@ -152,4 +134,4 @@ try {
   console.log('Error en updateGlobal layout home: ', JSON.stringify(err.data?.errors ?? err, null, 2))
 }
 
-process.exit(0)
+process.exit(0)

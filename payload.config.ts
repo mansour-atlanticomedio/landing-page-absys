@@ -8,6 +8,7 @@ import { en } from '@payloadcms/translations/languages/en';
 import path from "path";
 import { fileURLToPath } from "url";
 import sharp from "sharp";
+import { importExportPlugin } from "@payloadcms/plugin-import-export";
 
 import { Home } from "./globals/Home.ts";
 import { Library as LibraryGlobal } from "./globals/Library.ts";
@@ -43,6 +44,7 @@ import { Header } from "./collections/Header.ts";
 import { Footer } from "./collections/Footer.ts";
 import { ElectronicResourcesAccess } from "./collections/ElectronicResourcesAccess.ts";
 import { Schedule } from "./collections/Schedule.ts";
+import { Pages } from "./collections/Pages.ts";
 
 
 import { AbsysService } from "./collections/Absys.service.ts";
@@ -51,6 +53,7 @@ import { AuthorService } from "./collections/Author.service.ts";
 import { LoginAbsysService } from "./collections/LoginAbsys.service.ts";
 import { decryptTestEndpoints, LoginCampusService } from "./collections/LoginCampus.service.ts";
 import { Login } from "./collections/Login.ts";
+import { adminOnly } from "./lib/access.ts";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -61,6 +64,27 @@ export default buildConfig({
   },
   admin: {
     user: Users.slug,
+    meta: {
+      titleSuffix: ' – Biblioteca UNAM – Administración',
+      defaultOGImageType: 'off',
+      icons: [{ rel: 'icon', type: 'image/png', url: '/biblioteca/logos/unam-color-logo.png' }],
+    },
+    components: {
+      graphics: {
+        Logo: '/components/admin/AdminLogo',
+        Icon: '/components/admin/AdminIcon',
+      },
+      beforeDashboard: ['/components/admin/DashboardWelcome'],
+      afterNavLinks: ['/components/admin/NavHelp'],
+    },
+    livePreview: {
+      collections: ['pages'],
+      breakpoints: [
+        { name: 'mobile', label: 'Móvil', width: 375, height: 667 },
+        { name: 'tablet', label: 'Tablet', width: 768, height: 1024 },
+        { name: 'desktop', label: 'Escritorio', width: 1440, height: 900 },
+      ],
+    },
     importMap: {
       baseDir: path.resolve(dirname),
     },
@@ -91,7 +115,8 @@ export default buildConfig({
     LoginAbsysService,
     ElectronicResourcesAccess,
     Schedule,
-    LoginCampusService
+    LoginCampusService,
+    Pages
   ],
   globals: [
     Home,
@@ -116,11 +141,40 @@ export default buildConfig({
   },
   db: postgresAdapter({
     pool: {
-      connectionString: process.env.DATABASE_URI || process.env.DATABASE_URL || "",
+      connectionString: process.env.DATABASE_URI || "",
     },
   }),
+  // Tope de tamaño de subida (solo hay una collection de upload: media)
+  upload: { limits: { fileSize: 10 * 1024 * 1024 } },
   sharp,
-  plugins: [],
+  plugins: [
+    importExportPlugin({
+      collections: [
+        { slug: 'news' },
+        { slug: 'blogs' },
+        { slug: 'faq' },
+        { slug: 'features' },
+        { slug: 'electronic_resources_access' },
+        { slug: 'schedule' },
+        { slug: 'speakers' },
+        { slug: 'partners' },
+        { slug: 'pages' },
+        { slug: 'media' },
+      ],
+      overrideExportCollection: ({ collection }) => ({
+        ...collection,
+        labels: { singular: 'Exportación', plural: 'Exportaciones' },
+        access: { ...adminOnly },
+        admin: { ...collection.admin, group: 'Usuarios y accesos' },
+      }),
+      overrideImportCollection: ({ collection }) => ({
+        ...collection,
+        labels: { singular: 'Importación', plural: 'Importaciones' },
+        access: { ...adminOnly },
+        admin: { ...collection.admin, group: 'Usuarios y accesos' },
+      }),
+    }),
+  ],
   email: nodemailerAdapter({
     defaultFromAddress: process.env.SMTP_USER as string,
     defaultFromName: 'Mansour Lo Lo',

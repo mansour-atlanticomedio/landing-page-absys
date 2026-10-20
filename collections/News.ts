@@ -1,7 +1,17 @@
 import type { CollectionConfig } from "payload";
+import { adminOnly } from "@/lib/access";
 
 export const NewsCollection: CollectionConfig = {
     slug: 'news',
+    admin: {
+        group: 'Bloques de contenido',
+        description: 'Bloques de noticias con imagen, etiqueta y enlace.',
+        components: {
+            beforeList: ['/components/admin/NewsListHelp'],
+        },
+        useAsTitle: 'title'
+    },
+    access: adminOnly,
     labels: {
         singular: 'Noticia',
         plural: 'Noticias'
@@ -28,6 +38,21 @@ export const NewsCollection: CollectionConfig = {
                 { label: 'Estilo 3: Moderno Overlay (Texto sobre imagen)', value: '3' },
             ],
             admin: {
+                components: {
+                    Field: {
+                        path: '/components/admin/fields/VisualSelectField',
+                        clientProps: {
+                            preview: 'newsStyle',
+                            contentFields: { title: 'title', visible_cards: 'visible_cards', itemTitle: 'newsItems.0.title', tag: 'newsItems.0.tag', description: 'newsItems.0.description' },
+                            options: [
+                                { value: '0', title: 'Clásico', description: 'Imagen arriba, etiqueta y texto debajo' },
+                                { value: '1', title: 'Enmarcado', description: 'Tarjeta con borde y la imagen redondeada dentro' },
+                                { value: '2', title: 'Horizontal', description: 'Imagen a la izquierda y texto a la derecha' },
+                                { value: '3', title: 'Texto sobre imagen', description: 'Imagen a toda la tarjeta con el título encima' },
+                            ],
+                        },
+                    },
+                },
                 description: 'Define cómo se verá la sección de noticias en el frontend.',
                 // layout: "vertical",
             }
@@ -38,6 +63,14 @@ export const NewsCollection: CollectionConfig = {
             type: 'array',
             minRows: 1,
             maxRows: 6,
+            admin: {
+                components: {
+                    RowLabel: {
+                        path: '/components/admin/ItemRowLabel',
+                        clientProps: { field: 'title', singular: 'Noticia' },
+                    },
+                },
+            },
             labels: {
                 singular: 'Noticia',
                 plural: 'Noticias'

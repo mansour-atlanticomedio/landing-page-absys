@@ -1,9 +1,15 @@
 import { CollectionConfig } from "payload";
 import { enlaceFields } from "./fields/enlace";
 import { appIcons, iconsSocialMedia } from "./Icons";
+import { adminOnly } from "@/lib/access";
 
 export const Footer: CollectionConfig = {
     slug: 'footer',
+    admin: {
+        group: 'Navegación y pie',
+        description: 'Pie de página: logo, redes sociales y secciones de información.'
+    },
+    access: adminOnly,
     labels: {
         singular: 'Pie de pagina',
         plural: 'pie de pagina'
@@ -17,8 +23,21 @@ export const Footer: CollectionConfig = {
             options: [
                 { label: 'Estilo Horizontal', value: '0' },
                 { label: 'Estilo Vertical', value: '1' },
-                { label: 'Estilo Simple', value: '2' },
             ],
+            admin: {
+                components: {
+                    Field: {
+                        path: '/components/admin/fields/VisualSelectField',
+                        clientProps: {
+                            preview: 'footerType',
+                            options: [
+                                { value: '0', title: 'Horizontal', description: 'Logo y redes a la izquierda, columnas de información al lado' },
+                                { value: '1', title: 'Vertical', description: 'Todo centrado y apilado en una sola columna' },
+                            ],
+                        },
+                    },
+                },
+            },
         },
         {
             name: 'logo',

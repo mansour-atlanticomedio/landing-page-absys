@@ -6,6 +6,12 @@ import * as migration_20260929_110457_layout_enlaces_externos from './20260929_1
 import * as migration_20261005_114927_enlaces_externos_key_select from './20261005_114927_enlaces_externos_key_select';
 import * as migration_20261006_112738_enlaces_navbar_footer from './20261006_112738_enlaces_navbar_footer';
 import * as migration_20261007_164512_solicitud_compra_global from './20261007_164512_solicitud_compra_global';
+import * as migration_20261008_151100_contacto_mensaje_texto from './20261008_151100_contacto_mensaje_texto';
+import * as migration_20261015_163900_conocenos_tabs from './20261015_163900_conocenos_tabs';
+import * as migration_20261015_163937_about_us_blocks from './20261015_163937_about_us_blocks';
+import * as migration_20261015_170639_pages_collection from './20261015_170639_pages_collection';
+import * as migration_20261015_172126_importar_exportar from './20261015_172126_importar_exportar';
+import * as migration_20261019_143507_quitar_tipo_header_footer_simple from './20261019_143507_quitar_tipo_header_footer_simple';
 
 export const migrations = [
   {
@@ -46,6 +52,36 @@ export const migrations = [
   {
     up: migration_20261007_164512_solicitud_compra_global.up,
     down: migration_20261007_164512_solicitud_compra_global.down,
-    name: '20261007_164512_solicitud_compra_global'
+    name: '20261007_164512_solicitud_compra_global',
+  },
+  {
+    up: migration_20261008_151100_contacto_mensaje_texto.up,
+    down: migration_20261008_151100_contacto_mensaje_texto.down,
+    name: '20261008_151100_contacto_mensaje_texto',
+  },
+  {
+    up: migration_20261015_163900_conocenos_tabs.up,
+    down: migration_20261015_163900_conocenos_tabs.down,
+    name: '20261015_163900_conocenos_tabs',
+  },
+  {
+    up: migration_20261015_163937_about_us_blocks.up,
+    down: migration_20261015_163937_about_us_blocks.down,
+    name: '20261015_163937_about_us_blocks',
+  },
+  {
+    up: migration_20261015_170639_pages_collection.up,
+    down: migration_20261015_170639_pages_collection.down,
+    name: '20261015_170639_pages_collection',
+  },
+  {
+    up: migration_20261015_172126_importar_exportar.up,
+    down: migration_20261015_172126_importar_exportar.down,
+    name: '20261015_172126_importar_exportar',
+  },
+  {
+    up: migration_20261019_143507_quitar_tipo_header_footer_simple.up,
+    down: migration_20261019_143507_quitar_tipo_header_footer_simple.down,
+    name: '20261019_143507_quitar_tipo_header_footer_simple'
   },
 ];

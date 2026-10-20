@@ -1,8 +1,15 @@
 import type { CollectionConfig } from "payload";
 import { iconsSocialMedia } from "./Icons.ts";
+import { adminOnly } from "@/lib/access";
 
 export const Speakers: CollectionConfig = {
     slug: 'speakers',
+    admin: {
+        group: 'Bloques de contenido',
+        description: 'Personas ponentes con foto, cargo y redes sociales.',
+        useAsTitle: 'title'
+    },
+    access: adminOnly,
     labels: {
         singular: 'Ponentes',
         plural: 'Ponentes'
@@ -21,6 +28,15 @@ export const Speakers: CollectionConfig = {
                 plural: "Ponentes"
             },
             type: 'array',
+            admin: {
+                components: {
+                    RowLabel: {
+                        path: '/components/admin/ItemRowLabel',
+                        clientProps: { field: 'name', singular: 'Ponente' },
+                    },
+                },
+            },
+
             fields: [
                 {
                     name: 'photo',

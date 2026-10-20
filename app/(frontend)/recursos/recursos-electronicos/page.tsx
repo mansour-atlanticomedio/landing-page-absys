@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { getClient } from "@/lib/payload"
-import { iconMap } from "@/lib/utils"
+import { iconMap } from "@/lib/icons"
 
 const resourceCategories = [
   {

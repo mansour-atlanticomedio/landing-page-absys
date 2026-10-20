@@ -60,16 +60,16 @@ Payload Admin → Globals → Collections → Pages → RenderBlocks → Compone
 - **En dev** (`NODE_ENV !== 'production'`, contenedor `biblioteca-frontend` con `Dockerfile.dev`), el adapter de Postgres usa `push: true` por defecto: cualquier collection/global nuevo o campo añadido se sincroniza solo contra la BD la primera vez que se inicializa Payload (el spinner "Pulling schema from database..." que se ve al lanzar un seed o `next dev`).
 - **En producción** (`Dockerfile` fija `NODE_ENV=production`), `push` es `false`: la BD **solo** se actualiza aplicando migraciones (`payload migrate`). Si se añade una collection/global/campo nuevo y no se genera su migración, en producción esa tabla/columna directamente no existe — cualquier `payload.create`/`payload.updateGlobal` contra ella revienta con `relation "..." does not exist`, aunque en dev funcione perfectamente (por eso puede pasar desapercibido toda una sesión de trabajo).
 - **Regla**: después de crear o modificar cualquier collection/global (`collections/*.ts`, `globals/*.ts`), además de `npx payload generate:types`, hay que generar la migración correspondiente con `npx payload migrate:create <nombre-descriptivo>` (se puede correr contra la BD de dev ya sincronizada por push — la migración generada refleja el diff acumulado desde la última migración) y comprobar que `npm run migrate` aplica limpio contra una BD nueva antes de dar el cambio por terminado.
-- Migraciones existentes: `migrations/20260731_114550_baseline.ts` (base) + `migrations/20260915_162539_session_2026_09_14_content_globals.ts` (todo el schema de la sesión de recursos-electrónicos/quiénes-somos/investigación/formación/horarios — se generó a posteriori porque no se había estado corriendo `migrate:create` en cada paso; a partir de ahora generar la migración en el mismo momento en que se toca el schema, no al final) + `migrations/20260928_114829_login_campus.ts` (collection `loginCampus_service`) + `migrations/20260929_102432_actualizar_colectivos_campus.ts` (enum `colectivo` de `loginCampus_service`: de ALUMN/PDI/PAS/EXT a los 5 tipos reales ADULT/ALUMN/ANONI/INVIT/PROFE — el `up` remapea filas existentes con `UPDATE ... CASE`, no un cast directo, porque un cast directo revienta con valores que ya no están en el enum nuevo) + `migrations/20260929_110457_layout_enlaces_externos.ts` (tabla nueva para `layout.enlaces_externos[]`) + `migrations/20261007_164512_solicitud_compra_global.ts` (tabla nueva del global `solicitud_compra`)
+- Migraciones existentes: `migrations/20260731_114550_baseline.ts` (base) + `migrations/20260915_162539_session_2026_09_14_content_globals.ts` (todo el schema de la sesión de recursos-electrónicos/quiénes-somos/investigación/formación/horarios — se generó a posteriori porque no se había estado corriendo `migrate:create` en cada paso; a partir de ahora generar la migración en el mismo momento en que se toca el schema, no al final) + `migrations/20260928_114829_login_campus.ts` (collection `loginCampus_service`) + `migrations/20260929_102432_actualizar_colectivos_campus.ts` (enum `colectivo` de `loginCampus_service`: de ALUMN/PDI/PAS/EXT a los 5 tipos reales ADULT/ALUMN/ANONI/INVIT/PROFE — el `up` remapea filas existentes con `UPDATE ... CASE`, no un cast directo, porque un cast directo revienta con valores que ya no están en el enum nuevo) + `migrations/20260929_110457_layout_enlaces_externos.ts` (tabla nueva para `layout.enlaces_externos[]`) + `migrations/20261007_164512_solicitud_compra_global.ts` (tabla nueva del global `solicitud_compra`) + `migrations/20261008_151100_contacto_mensaje_texto.ts` (`send_email.message` de jsonb a texto conservando los mensajes: texto plano o árbol Lexical con saltos de línea; añade `rol`; el `down` es lossy) + `migrations/20261015_163900_conocenos_tabs.ts` (`about_us` con pestañas con name, luego convertido a bloques por `20261015_163937_about_us_blocks.ts`, que copia los datos a filas de bloques y elimina las columnas viejas: copia con UPDATE desde `quienes_somos`/`horarios_contacto`, siembra la normativa, `ADD VALUE` de 5 iconos en los enums de `appIcons`, elimina los 3 arrays de imágenes viejos; los globals antiguos siguen en BD hasta la fase 2; el `down` es lossy) + `migrations/20261019_143507_quitar_tipo_header_footer_simple.ts` (quita `header.type` y el valor `2` del enum de `footer.type`; remapea los pies `2` a `0`; el `down` es lossy)
 
-### Collections (25 registradas)
+### Collections (28 registradas)
 
 #### Collections de contenido (15)
 
 | Slug | Fichero | Campos clave | Relación con media |
 |------|---------|--------------|-------------------|
 | `hero` | `collections/Hero.ts` | `background_image` (upload), `title`, `pretitle`, `subtitle`, `button_cta`, `input_placeholder` | `background_image` → media |
-| `header` | `collections/Header.ts` | `logo` (upload), `type` (select: 0/1/2), `phone`, `email`, `navbar[]` con `items[]` | `logo` → media |
+| `header` | `collections/Header.ts` | `logo` (upload), `phone`, `email`, `navbar[]` con `items[]` | `logo` → media |
 | `hero_carrusel` | `collections/HeroCarrusel.ts` | `items[]` con `title`, `description`, `image` | `items[].image` → media |
 | `speakers` | `collections/Speakers.ts` | `title`, `people[]` con `photo`, `name`, `role`, `entity`, `description` (richText), `socials[]` | `people[].photo` → media |
 | `statistics` | `collections/Statistics.ts` | `stats[]` (min:1, max:4) con `icon` (select de appIcons), `value`, `description` | — |
@@ -91,7 +91,7 @@ Payload Admin → Globals → Collections → Pages → RenderBlocks → Compone
 | `users` | `collections/Users.ts` | Auth habilitado, `useAsTitle: 'email'` |
 | `partners` | `collections/Partners.ts` | `partners_item[]` con `name`, `image` (relationship a media), `link` |
 | `login_page` | `collections/Login.ts` | `imageLogin` (upload) → media. Exporta `LOGIN_SLUG` |
-| `media` | `collections/Media.ts` | `read: () => true`. Upload config: `staticDir: 'media'`, sizes: `thumbnail` (400x300), mimeTypes: `image/*`. Campo `alt` (required) |
+| `media` | `collections/Media.ts` | `read: () => true`. Upload config: `staticDir: 'media'`, sizes: `thumbnail` (400x300), mimeTypes: `image/*` + `application/pdf` (2026-10-15, para el PDF de normativa). Campo `alt` (required) |
 
 #### Collections de servicio/API (4, hidden from admin)
 
@@ -100,7 +100,7 @@ Payload Admin → Globals → Collections → Pages → RenderBlocks → Compone
 | `absys_service` | `collections/Absys.service.ts` | `GET /:name` (buscar recurso), `GET /` (búsqueda con paginación `?page`, `?limit`, `?search`) | `NEXT_ABSYS_API` + Basic Auth |
 | `book_cover_service` | `collections/BookCovers.service.ts` | `GET /cover/:isbn` (cascade: Amazon → Google Books → Open Library → null), `GET /` (health check) | Amazon CDN, Google Books API, Open Library API |
 | `author_service` | `collections/Author.service.ts` | `GET /:authorName`, `GET /` | Wikipedia en español (búsqueda estricta con keyword matching) |
-| `loginAbsys_service` | `collections/LoginAbsys.service.ts` | `POST /signin` (crear lector), `POST /login/:credentials` (autenticar), `GET /me` (perfil) | `NEXT_ABSYS_API` + Basic Auth. Auth collection con `tokenExpiration: 1800` |
+| `loginAbsys_service` | `collections/LoginAbsys.service.ts` | `POST /signin` (crear lector; **404 en producción** desde 2026-10-08, era anónimo y daba de alta lectores reales en Absys eligiendo el colectivo, y la pantalla `/login` antigua no puede registrar en producción), `POST /login/:credentials` (autenticar; **404 en producción** desde 2026-10-08: sin comparación de contraseña devolvía la ficha de cualquier lector solo con su email, así que la pantalla `/login` antigua no puede iniciar sesión en producción), `GET /me` (perfil) | `NEXT_ABSYS_API` + Basic Auth. Auth collection con `tokenExpiration: 1800` |
 
 | `loginCampus_service` | `collections/LoginCampus.service.ts` | `POST /login/password/:id` y `POST /api/loginCampus/login/password[/:id]` (global) — **temporales**, solo dev, prueban el descifrado del token | Auth collection de los lectores que entran desde el campus (ver "Login desde el campus"). Campos: `absysId`, `nombre`, `apellidos`, `colectivo`... Migración `20260928_114829_login_campus` |
 
@@ -133,9 +133,9 @@ Pendientes conocidos (marcados con `TODO` en el código): `lepassLegacy` / compa
 
 #### Collection de email (1, hidden)
 
-| Slug | Fichero | Hook |
-|------|---------|------|
-| `sendEmail` | `collections/Email.service.ts` | `afterChange` → envía email a `mansourlol440@gmail.com` con asunto `Nuevo mensaje: ${doc.about}`. Campos: `name`, `email`, `about`, `message` (richText). El mismo fichero exporta los correos transaccionales (PIN, bienvenida, préstamos, sugerencia de libro): todos pasan por `sendBrandedEmail`, que usa la plantilla `emailLayout` (cabecera blanca con el escudo `public/logos/unam-color-logo.png` incrustado por `cid`, filete turquesa, pie con datos de contacto) |
+| Slug | Fichero | Notas |
+|------|---------|-------|
+| `sendEmail` | `collections/Email.service.ts` | **Histórico** de los mensajes de `/contacto` (campos `name`, `email`, `rol`, `about`, `message` como texto), todo `adminOnly`; ya no tiene hook ni se crea por REST. El envío lo hace la server action `app/(frontend)/contacto/actions.ts` → `procesarContacto` (`lib/contacto-envio.ts`) → `sendContactEmail` a `CONTACT_EMAIL_TO` (por defecto `biblioteca@atlanticomedio.es`). El mismo fichero exporta los correos transaccionales (PIN, bienvenida, préstamos, sugerencia de libro): todos pasan por `sendBrandedEmail`, que usa la plantilla `emailLayout` (cabecera blanca con el escudo `public/logos/unam-color-logo.png` incrustado por `cid`, filete turquesa, pie con datos de contacto) |
 
 #### Constantes compartidas (no es collection)
 
@@ -149,13 +149,13 @@ Pendientes conocidos (marcados con `TODO` en el código): `lepassLegacy` / compa
 | `services` | `globals/Services.ts` | Igual que Home | Página completa |
 | `formation` | `globals/Formation.ts` | `hero`, `hero_carrusel`, `buscar_parrafo_1`/`buscar_parrafo_2` (texto), `enlaces_rapidos[]` (label+link, inline), `citar_cta` (rel→cta), `guias_tutoriales` (rel→electronic_resources_access), `actividades_texto`/`actividades_estado` (texto), `layout` (11 block types, sin usar por ahora) | Página completa |
 | `investigation` | `globals/Investigation.ts` | `hero`, `hero_carrusel`, `accesos_rapidos` (rel→features), `tarjetas` (rel→electronic_resources_access), `cta` (rel→cta), `layout` (11 block types, sin usar por ahora) | Página completa |
-| `repository` | `globals/Repositories.ts` | `hero` + `layout` (sin hero_carrusel). **Bug**: labels de `input_block` son "Sobre Nosotros" | Página parcial |
+| `repository` | `globals/Repositories.ts` | `hero` + `layout` (sin hero_carrusel). | Página parcial |
 | `library` | `globals/Library.ts` | Solo `hero` | Mínimo |
 | `contact` | `globals/Contact.ts` | Solo `hero` | Mínimo |
-| `about_us` | `globals/AboutUs.ts` | `quienes_somos[]` (**no usado**, ver `quienes_somos` global), `horarios[]` (**no usado**, ver `horarios_contacto` global), `normativa[]` — cada uno con `images` (upload→media) | Documentos/imágenes |
-| `horarios_contacto` | `globals/HorariosContacto.ts` | `hero` (rel→hero), `edificio_nombre`/`edificio_subtitulo`, `horario` (rel→schedule), `direccion_linea1`/`direccion_linea2`, `telefono`, `email`, `mapa_url`, `mapa_embed_url`, `ayuda_cta` (rel→cta) | Página parcial |
+| `about_us` | `globals/AboutUs.ts` | **Obsoleto** (2026-10-15): oculto en el admin, el contenido vive ahora en la collection `pages` (slugs `conocenos/*`). Conserva sus tablas (pestañas `quienes_somos`/`horarios`/`normativa` con `hero` + `layout`) hasta la fase 2 (DROP) | Obsoleto |
+| `horarios_contacto` | `globals/HorariosContacto.ts` | `hero` (rel→hero), `edificio_nombre`/`edificio_subtitulo`, `horario` (rel→schedule), `direccion_linea1`/`direccion_linea2`, `telefono`, `email`, `mapa_url`, `mapa_embed_url`, `ayuda_cta` (rel→cta) | **Obsoleto** (2026-10-15): oculto en el admin, se edita en `about_us.horarios`. Tabla conservada hasta la fase 2 (DROP) |
 | `electronic_resources` | `globals/ElectronicResources.ts` | `hero` (rel→hero, reutiliza la collection existente), `accesos_destacados` (rel→electronic_resources_access) | Página parcial |
-| `quienes_somos` | `globals/QuienesSomos.ts` | `hero` (rel→hero), `imagen_dirigidos` (upload→media), `ayudas` (rel→features), `dirigidos` (rel→features) — `ayudas`/`dirigidos` reutilizan la collection `features` existente con dos docs distintos | Página parcial |
+| `quienes_somos` | `globals/QuienesSomos.ts` | `hero` (rel→hero), `imagen_dirigidos` (upload→media), `ayudas` (rel→features), `dirigidos` (rel→features) — `ayudas`/`dirigidos` reutilizan la collection `features` existente con dos docs distintos | **Obsoleto** (2026-10-15): oculto en el admin, se edita en `about_us.quienes_somos`. Tabla conservada hasta la fase 2 (DROP) |
 | `solicitud_compra` | `globals/SolicitudCompra.ts` | `hero` (rel→hero). Cabecera de `/adquisiciones/solicitud-compra`; el formulario sigue en `SolicitudCompraForm` | Página parcial |
 | `layout` | `globals/Layout.ts` | `header` (rel→header), `footer` (rel→footer), `enlaces_externos[]` (`key`/`label`/`url`, ver "Enlaces externos") | Template del sitio |
 
@@ -174,6 +174,25 @@ Pendientes conocidos (marcados con `TODO` en el código): `lepassLegacy` / compa
 | `partners_block` | `partners_relation` | `partners` | `<Partners>` |
 | `cta_block` | `cta_relation` | `cta` | `<CTA>` |
 | `faq_block` | `faq_relation` | `faq` | `<FAQ>` |
+
+#### Bloques centralizados (`blocks/`, 2026-10-19)
+
+Ningún global define bloques en línea: todos salen de `blocks/` y se importan desde `@/blocks`.
+
+| Export | Carpeta | Usado por |
+|---|---|---|
+| `layoutBlocks` (los 11 wrappers de relación de la tabla anterior, un fichero por bloque) | `blocks/layout/` | `layout` de Home, Services, Formation, Investigation y Repositories |
+| `pageBlocks` / `conocenosBlocks` (los 9 bloques en línea de Conócenos) | `blocks/conocenos/` | collection `pages` (y `about_us`, obsoleto) |
+
+- **Añadir o cambiar un bloque**: un fichero en la carpeta correspondiente + añadirlo a su `index.ts`; se refleja en todas las páginas que lo importan. Cambiar slugs o nombres de campo SÍ cambia el esquema (necesita migración); cambiar labels o descripciones no.
+- **Miniaturas del selector "Añadir bloque"**: copiar la imagen a `public/admin-blocks/` y añadir `slug: 'fichero.png'` en `BLOCK_IMAGE_FILES` de `blocks/images.ts`; `withBlockImage` pone `imageURL` (`/biblioteca/admin-blocks/<fichero>`) y `imageAltText`. Sin entrada en el mapa no hay `imageURL` y Payload muestra su dibujo por defecto. La miniatura antigua `public/images/blocks/cta_thumbnail.jpeg` ya no se usa (la clave `admin.images.thumbnail` no es válida en `Block`).
+- Al unificar, el label de `input_block` en Repositories pasó de "Sobre Nosotros" (bug) a "Entrada de texto".
+
+#### Selector visual de tipos en el admin (2026-10-19)
+
+Los campos que eligen una variante de diseño usan `components/admin/fields/VisualSelectField.tsx` (`admin.components.Field`, solo cambia cómo se elige: mismos `value`/`options`, sin migración): tarjetas con miniatura + "Vista previa" más grande, con datos reales del formulario cuando los hay. Maquetas en `components/admin/previews/` (CSS inline, sin Tailwind/framer-motion/`next/image`; estilos `unam-vs*` en `custom.scss`). Registrado en `news.style`, `footer.type`, `pages.hero_variant`, `CardsFeaturesBlock.style`, `ImageTextBlock.image_position` y `schedule[].type`. Para añadir otro: maqueta nueva en `previews/`, registrarla en `previews/index.ts` y apuntar con `clientProps.preview` (+ `clientProps.options` si cambian las opciones: hay que mantenerlas sincronizadas con las del campo).
+
+`header.type` y la opción "Simple" (`2`) de `footer.type` se eliminaron el 2026-10-19 por no usarse (migración `20261019_143507_quitar_tipo_header_footer_simple`: remapea los pies en `2` a `0`; el `down` es lossy). Los pies solo tienen `0` (horizontal) y `1` (vertical). El selector tiene un botón "Ver/Ocultar vista previa" (por defecto oculta; preferencia en `localStorage`, clave `unam-admin-vs-preview`).
 
 ### Enlaces externos (2026-09-29)
 
@@ -230,21 +249,51 @@ information). `legal_advice`/`privacy_policie`/`privacy_cookies` siguen siendo t
 
 ### Access Control
 
-| Collection | Regla | Efecto |
-|------------|-------|--------|
-| `hero` | `read: () => true` | Público |
-| `media` | `read: () => true` | Público |
-| `header` | `read: () => true` | Público |
-| `login_page` | `read: () => true` | Público |
-| `sendEmail` | `create: () => true` | Cualquiera puede crear |
-| `absys_service` | `read: () => true` | Público |
-| `book_cover_service` | `read: () => true`, `create: () => true` | Totalmente abierto |
-| `author_service` | `read: () => true` | Público |
-| `loginAbsys_service` | `read: (user) => user !== null` | Solo autenticados |
+Desde 2026-10-08 **toda collection y global tiene `access` explícito** (`lib/access.ts`). Antes, sin `access`, Payload
+usaba `Boolean(user)` y cualquier lector del campus podía por REST crear admins en `users`, editar/borrar contenido,
+subir ficheros y leer los mensajes de contacto. Al registrar una collection o global nuevo hay que declarar su `access`
+(no dejar el default). Las funciones: `isAdmin` (`user.collection === 'users'`), `anyone`, `isAdminOrSelfReader`
+(solo para `loginCampus_service`), y los conjuntos `adminOnly`, `publicReadAdminWrite` y `adminOnlyGlobal`.
+La web lee por Local API, que no pasa por `access`, así que cerrar la lectura REST no afecta a las páginas.
+
+| Collection / global | Regla | Efecto |
+|---------------------|-------|--------|
+| `hero`, `media`, `header`, `login_page`, `absys_service`, `author_service` | `publicReadAdminWrite` | Lectura pública, escritura solo admin |
+| `book_cover_service` | `read` público; create/update/delete admin | Se quitó el `create` abierto |
+| `sendEmail` | `create: () => true` (**temporal**, hasta mover /contacto a server action); read/update/delete admin | Cualquiera puede crear, nadie salvo admin lee |
+| `users`, `loginAbsys_service` | todo `isAdmin`, `unlock: isAdmin`, `admin: () => false` en las de lectores | Solo admin |
+| `loginCampus_service` | read `isAdminOrSelfReader` (el lector solo se lee a sí mismo), resto `isAdmin` | Ver "Login desde el campus" |
+| Resto de collections de contenido | `adminOnly` | Solo admin (la web las lee por Local API) |
+| Los 13 globals | `adminOnlyGlobal` | Solo admin |
+
+- `unlock` hay que declararlo en cada collection `auth`: su default permite a cualquier usuario autenticado resetear el bloqueo de otro.
+- `media`: solo jpeg, png, webp y avif (sin SVG) y `upload.limits.fileSize` de 10 MB en `payload.config.ts`.
+- Tras añadir o cambiar un `access` hay que reiniciar el contenedor (`docker restart biblioteca-frontend`), si no sigue activa la regla anterior.
+- Riesgo aceptado: `payload-locked-documents` conserva el default de Payload (un lector autenticado puede leerlo o crear locks falsos, sin acceso a contenido).
+
+### Capa anti-abuso (`lib/security/`, 2026-10-08)
+
+Lógica pura y testeable (reloj y almacén inyectados) para limitar el abuso de la API y del correo. **Conectada hoy a `/contacto`** (`lib/contacto-envio.ts`); la fase 3 la usará en las sugerencias de libro. No hay Redis: el almacén definitivo será Postgres (fase 4).
+
+| Fichero | Función |
+|---------|---------|
+| `rate-limit.ts` | `checkLimits(store, reglas, now)`: ventana deslizante en **dos niveles**. Primero las reglas de *actor* (`ip`, `user`, `apiKey`): siempre se incrementan (insistir penaliza) con tope `limit+1`; si alguna se viola se rechaza **sin tocar** los contadores compartidos. Después las *compartidas* (`recipient`, `domain`, `global`): `peek` y solo si todas pasan se incrementan (con compensación `decrement` si una carrera las desborda). Una petición rechazada no quema cuota ajena. Límite 0, ventana inválida o clave vacía fallan cerrado |
+| `stores/memory.ts` | `RateLimitStore` en memoria (`getMemoryStore()` singleton en `globalThis`). **Solo dev / una réplica**: producción multi-réplica exige el store Postgres atómico. Cuota de claves por dimensión con cubos de desbordamiento por hash (no expulsa contadores vivos), hook `onPressure` al 80 % |
+| `client-ip.ts` | `getClientIp` lee la IP solo de la cabecera de confianza configurada (`trustedHeader`, `trustedHopFromRight`); sin ella devuelve `unknown`. IPv6 se agrupa por /64 (`ipRateLimitKey`) |
+| `honeypot.ts` | Token de formulario firmado con HMAC (`signFormToken`/`verifyFormToken`, `purpose` dentro de la firma, rotación con varios secretos) y campo trampa `website_url`. Secreto < 32 caracteres o de baja entropía lanza `SecurityConfigError`. Contrato: éxito falso solo para `honeypot` y `too_fast`; `expired`, `invalid_token` y `clock_skew` piden "recarga la página". El token es reutilizable 2 h (replay inherente; lo compensa el rate limit) |
+| `email-policy.ts` | Límites por tipo de correo (`DEFAULT_EMAIL_LIMITS`), `canonicalRecipient` (quita `+tag` y puntos de Gmail), `extractDomain` estricto, agregado `domain:institutional:<kind>` para `*.atlanticomedio.es`, tope global del buzón interno, `buildEmailRules` (autenticados: regla `ip` holgada y `user` estricta, por el NAT del campus) y `dedupeHash` |
+
+Uso actual en `/contacto` (2026-10-08): **exige sesión** (los lectores del campus; nombre, correo y rol salen de `getSession()`, nunca del formulario; sin sesión se muestra `ContactoLoginCard`). Orden en `procesarContacto`: sesión → honeypot (`website_url` + `form_token` firmado, secreto de `lib/security/config.ts`: `FORM_TOKEN_SECRET` o derivado por HMAC de `PAYLOAD_SECRET`) → validación (`lib/contacto.ts`: asunto 3-150 sin saltos, mensaje 10-2000) → límites (`user` 5/h y 20/día; regla `ip` de autenticados holgada y solo si la regla de usuario pasó; buzón interno 300/día **por tipo de correo**) → dedupe 10 min → envío → histórico. Si el SMTP falla se reembolsan los cupos (`refundLimits`). Variables nuevas (ver `env.local.Example`): `CONTACT_EMAIL_TO`, `FORM_TOKEN_SECRET`, `FORM_TOKEN_SECRET_PREVIOUS`, `TRUSTED_IP_HEADER`, `TRUSTED_IP_HOP`.
+
+Contrato para quien lo use (fases 2/3): si el store o `dedupeHash` lanzan, responder 503 **sin enviar**; `SecurityConfigError` es 500 controlado + log; registrar cada descarte silencioso y cada violación con dimensión y tipo; el destinatario de PIN/confirmación sale de la identidad autenticada, nunca del cuerpo de la petición. Requisitos operativos (fuera del repo): nginx debe **sobrescribir** `X-Real-IP`/`X-Forwarded-For` y el puerto 8085 del contenedor no debe estar expuesto, o la IP es falsificable; si la cabecera no coincide con los proxies reales todo el tráfico cae en `unknown`.
+
+### Plugin de importar/exportar (2026-10-15)
+
+`@payloadcms/plugin-import-export` (misma versión que `payload`, 3.86.0) registrado en `payload.config.ts`. Habilitado en `news`, `blogs`, `faq`, `features`, `electronic_resources_access`, `schedule`, `speakers`, `partners`, `pages` y `media` (metadatos); excluidas a propósito las collections con datos de personas (`users`, `loginCampus_service`, `loginAbsys_service`, `sendEmail`). Crea las collections `exports` e `imports` (grupo "Usuarios y accesos", `adminOnly` por `overrideExportCollection`/`overrideImportCollection`: sin override cualquier lector del campus podía crearlas y leerlas) y las tablas internas `payload_jobs`/`payload_jobs_log`. Con `disableJobsQueue: true` exportar e importar son síncronos y no hace falta `jobs.autoRun`; si se quita ese flag hay que configurar la cola. Migración `20261015_172126_importar_exportar`. Pendiente: probar de extremo a extremo (CSV/JSON, importar `pages` con bloques, `media`); `payload_jobs` conserva el access por defecto de Payload (usuario autenticado, sin contenido sensible).
 
 ### Hooks
 
-Solo `sendEmail` tiene hook: `afterChange` que envía email de notificación.
+Ninguna collection tiene hooks de envío de correo: el de `sendEmail` se retiró el 2026-10-08 (el envío vive en las server actions, donde se aplican los límites).
 
 ---
 
@@ -333,6 +382,18 @@ Cada bloque se envuelve en `<section key={id} data-block-type={blockType}>`.
 
 ---
 
+### Collection `pages` y catch-all (2026-10-15)
+
+Páginas compuestas desde el admin sin tocar código. **Principio**: contenido propio de una página = bloque en línea; contenido compartido = collection referenciada desde un bloque (`features`, `schedule`, `cta`, `hero`); ajustes del sitio = global.
+
+- **Collection** `pages` (`collections/Pages.ts`, grupo "Páginas"): `title`, `slug` (único, sin `/` inicial, p. ej. `conocenos/quienes-somos`), `meta_description`, `hero` (rel→hero), `hero_variant` (`simple`|`split`), `layout` (bloques). `versions.drafts` con autosave, `access`: `adminOnly` + `readVersions: isAdmin`. **La Local API ignora `access`: toda lectura debe filtrar `_status: published` fuera de draftMode** (centralizado en `getPage`).
+- **Bloques** (`blocks/conocenos/*`, registro `blocks/index.ts` → `pageBlocks`): `cards_features_block`, `image_text_block`, `schedule_block`, `contact_info_block`, `map_block`, `help_cta_block`, `rules_cards_block`, `notice_block`, `download_block`. Los wrappers de relación del `layout` de Home/Repositories (`RenderBlocks`) conviven sin tocar; si se crean versiones en línea de stats/news/cta/faq usar slugs distintos (`*_inline_block`).
+- **Ruta**: `app/(frontend)/[...slug]/page.tsx` (`force-dynamic`, `generateMetadata`, `notFound`), render con `components/blocks/PageHero.tsx` + `RenderPageBlocks.tsx` (reutiliza `components/conocenos/*Section.tsx`). Una ruta estática siempre gana al catch-all: `lib/pages.ts` define `RESERVED_SEGMENTS` (admin, api, auth, login, biblioteca, libros, perfil, prestamos, reservas, contacto, servicios, formacion, investigacion, repositorios, recursos, adquisiciones, _next, media, graphql...) y `LOCKED_SLUGS` (las 3 de Conócenos, de solo lectura). `lib/__tests__/pages.test.ts` comprueba que cada carpeta nueva bajo `app/` está reservada: **al añadir una ruta estática, añadirla a `RESERVED_SEGMENTS`**.
+- **Vista previa**: `app/(auth)/auth/preview` (solo `users`, activa `draftMode`, redirige con `safeNextPath`/`redirectResponse`) y `/auth/preview/exit`. Live preview con `@payloadcms/live-preview-react` 3.86.0 (versión exacta, igual que `payload` instalado) vía `RefreshRouteOnSave` en `components/blocks/LivePreviewListener.tsx`. Admin y lector comparten cookie `payload-token`: previsualizar cierra la sesión de lector en ese navegador.
+- **Migración** `migrations/20261015_170639_pages_collection.ts`: esquema + copia de `about_us` a 3 páginas por Local API (idempotente por slug; salta si `about_us` ya no está en la config). Seeds: `seeds/pages.seed.ts` (sustituye a `aboutUs.seed.ts`).
+- **Riesgo**: cambiar el slug rompe enlaces escritos a mano (navbar, `HomeQuickLinks`, `AuthErrorCard`, `InvestigationContent`); fase 2: tipo de enlace "página" en `collections/fields/enlace.ts`.
+- **Fase 2 pendiente**: DROP de `about_us`, `quienes_somos`, `horarios_contacto`; versiones en línea de stats/news/cta/faq; mover `blocks/conocenos/` a `blocks/`; migrar `servicios`, etc. a `pages`; `not-found.tsx` propio.
+
 ## Estructura de páginas
 
 ### Layout principal (`app/(frontend)/layout.tsx`)
@@ -352,9 +413,9 @@ Cada bloque se envuelve en `<section key={id} data-block-type={blockType}>`.
 | `/investigacion` | `investigation` | No (se quitó `RenderBlocks`, sin usar) | Hero + accesos rápidos + tarjetas + CTA editables desde Payload; interactividad con framer-motion vía `InvestigationContent` (client component) |
 | `/biblioteca` | `library` | No | Hero + BooksList |
 | `/contacto` | `contact` | No | Hero + SimpleForm + info contacto |
-| `/conocenos/quienes-somos` | `quienes_somos` | No | Hero (title/subtitle/imagen) + tarjetas "ayudas"/"dirigidos" editables desde Payload (reutilizan `features`) |
-| `/conocenos/normativa-...` | `about_us` | No | Images de Payload, arrays hardcodeados |
-| `/conocenos/horarios-...` | `horarios_contacto` | No | Hero + tabla de horarios + contacto/dirección/mapa + CTA de ayuda, todo editable desde Payload |
+| `/conocenos/quienes-somos` | `pages` (catch-all) | No | Hero + tarjetas "ayudas"/"dirigidos" + imagen, todo desde Payload, sin fallbacks |
+| `/conocenos/normativa-...` | `pages` (catch-all) | No | Hero, tarjetas, responsabilidad y botón de PDF desde Payload, sin fallbacks |
+| `/conocenos/horarios-...` | `pages` (catch-all) | No | Hero + horario + contacto/dirección/mapa + CTA, títulos y botones desde Payload, sin fallbacks |
 | `/recursos/recursos-electronicos` | `electronic_resources` | No | Hero (title/subtitle/imagen) + accesos destacados editables desde Payload; pestañas de bases de datos/ebooks/multimedia siguen hardcodeadas |
 
 ### Páginas que NO usan Payload (API externa Absys)
@@ -436,14 +497,14 @@ Expuesto de solo lectura en `/perfil` (fila "Rol", con las mismas etiquetas que 
 | `app/(auth)/auth/login/route.ts` | Entrada única al login: con sesión vuelve a `next`; sin ella, al campus. Sin `NEXT_CAMPUS_LOGIN_URL`: en dev → `/auth/simular-campus`, en prod → `/auth/error` |
 | `app/(auth)/auth/logout/route.ts` | `POST`, revoca la sesión y vuelve a `/` |
 | `app/(auth)/auth/error/page.tsx` | Un único mensaje genérico (2026-09-30, antes distinguía `?motivo=invalido\|caducado\|absys\|config` en la URL — se quitó para no exponer el motivo interno en el enlace). El motivo real de cada caso sigue quedando en los logs del servidor (`payload.logger.warn`/`error` en `auth/campus/route.ts` y `auth/login/route.ts`) |
-| `app/(auth)/auth/simular-campus/` | **Solo dev** (404 cuando `devToolsEnabled` es false, ver `lib/env.ts`: `NODE_ENV !== production` o `FEATURE_DEV_TOOLS=true`): formulario con un email que genera un token real y vuelve al callback. Es la forma de probar el flujo hasta que Daniel tenga lista la redirección |
+| `app/(auth)/auth/simular-campus/` | **Solo dev** (404 cuando `devToolsEnabled` es false, ver `lib/env.ts`: `NODE_ENV !== production`, sin override por variable de entorno): formulario con un email que genera un token real y vuelve al callback. Es la forma de probar el flujo hasta que Daniel tenga lista la redirección |
 | `app/(frontend)/(cuenta)/perfil/page.tsx` + `perfil/actions.ts` + `components/cuenta/PerfilForm.tsx` | Privada: datos del lector en Absys, con nombre/apellidos editables (`absys.updateLector`, vía `operation=modify`); dirección/colectivo/email no se pueden editar desde aquí (decisión del usuario, 2026-09-29). Muestra también el rol (`session.colectivo`, solo lectura). Si Absys está caído muestra los guardados en Payload |
 
 Variables (ver `env.local.Example`): `NEXT_CAMPUS_SECRET_KEY`, `NEXT_CAMPUS_TIMEZONE`, `NEXT_CAMPUS_TOKEN_MAX_AGE`, `NEXT_CAMPUS_TOKEN_PARAM` (`token`), `NEXT_CAMPUS_LOGIN_URL`, `NEXT_CAMPUS_RETURN_PARAM` (`return`). La URL de login del campus y el nombre de sus parámetros están **pendientes de confirmar con Daniel**; por eso son configurables.
 
 Gotchas:
 - **`SameSite=Lax`, no `Strict`**: la cookie se crea en una redirección que empieza en otro sitio (el campus); con `Strict` el navegador no la manda en ese mismo viaje y el usuario entra en bucle login → campus → login
-- **`Card` de shadcn no se puede renderizar en un Server Component**: `lib/utils.ts` lleva `'use client'` (tiene el hook `useBookCover`), así que `cn()` es una referencia de cliente y revienta en el servidor con `Attempted to call cn() from the server`. Envolver el Card en un componente `"use client"` (como `components/auth/*`, `components/cuenta/PrestamosTabla`)
+- **`lib/utils.ts` ya no lleva `'use client'`** (2026-10-19): `cn()` se usa desde los componentes shadcn en Server Components; el hook `useBookCover` vive aparte en `lib/useBookCover.ts` (`'use client'`) y `utils` lo reexporta. No volver a meter hooks ni `'use client'` en `lib/utils.ts`, o `Card`/`Button` revientan en el servidor con `Attempted to call cn() from the server`
 - `loginCampus_service`: cada lector solo puede leerse a sí mismo por la API; solo admins (`users`) crean/editan/borran
 - Payload usa una única cookie `payload-token` para todas las collections con auth: iniciar sesión como lector en el mismo navegador cierra la sesión del admin y viceversa
 
@@ -518,7 +579,6 @@ tipo(alcance opcional): resumen en imperativo, máx 50 caracteres
 
 ## Bugs conocidos
 
-- `globals/Repositories.ts` líneas 71-72: labels de `input_block` dicen "Sobre Nosotros" en vez de "Entrada de texto"
 - `app/fonts/Monserrat/`: typo en el nombre del directorio (falta una 't'), pero las referencias en `styles.css` apuntan a esa ruta así que funciona
 - Página `/servicios` importa `RenderBlocks` pero no lo usa — tiene JSX hardcodeado (`/investigacion` y `/formacion` ya no importan `RenderBlocks`, ver `MEMORY.md` para el porqué)
 

@@ -1,5 +1,8 @@
-import SimpleForm from "@/components/SimpleForm";
-import { SimpleFormProps } from "@/types/form.type";
+import ContactoForm from "@/components/ContactoForm";
+import ContactoLoginCard from "@/components/ContactoLoginCard";
+import { getSession } from "@/lib/auth/session";
+import { CONTACTO_PURPOSE } from "@/lib/contacto-envio";
+import { getFormTokenSecrets, signFormToken } from "@/lib/security";
 import { Clock, Mail, MapPin, Phone } from "lucide-react";
 import Hero from "@/components/Hero";
 import { getClient } from "@/lib/payload";
@@ -8,28 +11,8 @@ export const dynamic = 'force-dynamic';
 
 export default async function Contact() {
 
-    const formEntries: SimpleFormProps[] = [
-        {
-            label: 'name',
-            htmlFor: 'Nombre',
-            isRequired: true
-        },
-        {
-            label: 'email',
-            htmlFor: 'Email',
-            isRequired: true
-        },
-        {
-            label: 'about',
-            htmlFor: 'Asunto',
-            isRequired: true
-        },
-        {
-            label: 'message',
-            htmlFor: 'Mensaje',
-            isTextArea: true,
-        },
-    ]
+    const session = await getSession()
+    const formToken = session ? signFormToken(getFormTokenSecrets()[0], Date.now(), CONTACTO_PURPOSE) : null
 
     const payload = await getClient()
     const homepage = await payload.findGlobal({
@@ -100,7 +83,7 @@ export default async function Contact() {
                                     </div>
                                     <div>
                                         <div className="font-semibold text-foreground">Email</div>
-                                        <a href="'mailto:investigacion@atlanticomedio.es?subject=Mensaje Jornadas de Investigación" className="text-muted-foreground text-sm hover:text-accent">investigacion@atlanticomedio.es</a>
+                                        <a href="mailto:investigacion@atlanticomedio.es?subject=Mensaje Jornadas de Investigación" className="text-muted-foreground text-sm hover:text-accent">investigacion@atlanticomedio.es</a>
                                     </div>
                                 </li>
                                 <li className="flex gap-4">
@@ -116,7 +99,14 @@ export default async function Contact() {
                         </div>
                     </div>
 
-                    <SimpleForm title="Envíanos un mensaje" formEntries={formEntries} endpoint="/api/sendEmail" />
+                    {session && formToken ? (
+                        <ContactoForm
+                            formToken={formToken}
+                            solicitante={{ nombre: [session.nombre, session.apellidos].filter(Boolean).join(" ") || session.email, email: session.email }}
+                        />
+                    ) : (
+                        <ContactoLoginCard telefono="+34 828 019 019" email="biblioteca@atlanticomedio.es" />
+                    )}
 
                 </div>
             </section>

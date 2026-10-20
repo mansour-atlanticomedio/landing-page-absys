@@ -1,5 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
-import { iconMap } from "@/lib/utils";
+import { iconMap } from "@/lib/icons";
 
 interface FeatureProps {
     icon: string,

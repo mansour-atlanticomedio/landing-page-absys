@@ -4,7 +4,7 @@ import logo_white from "@/public/logos/logo_white.png";
 import Image from "next/image";
 import Link from "next/link";
 import { PayloadImage } from "@/types/common.type";
-import { iconMap, iconsSocialMediaMap } from "@/lib/utils";
+import { iconMap, iconsSocialMediaMap } from "@/lib/icons";
 
 interface ResolvedLink {
   href?: string,

@@ -10,7 +10,6 @@ import Image from "next/image";
 import { Button } from "../ui/button";
 
 interface HeaderProps {
-    type: string,
     phone?: string,
     email?: string,
     navbar: navMenuLinks[],
@@ -75,7 +74,7 @@ function NavAnchor({ href, external, newTab, className, children }: NavAnchorPro
     );
 }
 
-export default function Header({ type, phone, email, navbar, account }: HeaderProps) {
+export default function Header({ phone, email, navbar, account }: HeaderProps) {
     const pathname = usePathname();
 
     const navbarMenu = navbar ?? [];

@@ -1,32 +1,24 @@
 import { CollectionConfig } from "payload";
+import { publicReadAdminWrite } from "@/lib/access";
 import { enlaceFields } from "./fields/enlace";
 
 export const Header: CollectionConfig = {
     slug: 'header',
+    admin: {
+        group: 'Navegación y pie',
+        description: 'Cabecera del sitio: logo, teléfono, correo y menú de navegación.'
+    },
     labels: {
         singular: "Encabezamiento",
         plural: "Encabezamiento",
     },
-    access: {
-        read: () => true,
-    },
+    access: publicReadAdminWrite,
     fields: [
         {
             name: 'logo',
             label: 'Logo de la aplicación',
             type: 'upload',
             relationTo: 'media',
-        },
-        {
-            name: 'type',
-            label: 'Tipo de encabezamiento',
-            type: 'select',
-            defaultValue: '0',
-            options:  [
-                { label: 'Estilo Clásico', value: '0' },
-                { label: 'Estilo Moderno', value: '1' },
-                { label: 'Estilo Minimalista', value: '2' },
-            ],
         },
         {
             type: 'row',

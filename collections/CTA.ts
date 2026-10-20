@@ -1,8 +1,12 @@
 import type { CollectionConfig } from "payload";
+import { adminOnly } from "@/lib/access";
 
 export const CTA: CollectionConfig = {
     slug: 'cta',
+    access: adminOnly,
     admin: {
+        group: 'Bloques de contenido',
+        description: 'Llamadas a la acción: título, subtítulo y botón con enlace.',
         useAsTitle: 'title'
     },
     labels: {

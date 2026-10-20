@@ -1,4 +1,5 @@
-import type { Access, CollectionConfig, Endpoint, PayloadHandler } from "payload";
+import type { CollectionConfig, Endpoint, PayloadHandler } from "payload";
+import { isAdmin, isAdminOrSelfReader } from "@/lib/access";
 import { decryptCampusToken } from "@/lib/integrations/campus/token";
 
 export const LOGIN_CAMPUS_SLUG = "loginCampus_service";
@@ -49,14 +50,6 @@ export const decryptTestEndpoints: Endpoint[] = [
   { path: "/loginCampus/login/password/:id", method: "post", handler: handleDecryptTest },
 ];
 
-const isAdmin: Access = ({ req: { user } }) => user?.collection === "users";
-
-// Un lector solo puede leer su propio documento; los admins, todos
-const isAdminOrSelf: Access = ({ req: { user } }) => {
-  if (!user) return false;
-  if (user.collection === "users") return true;
-  return { id: { equals: user.id } };
-};
 
 export const LoginCampusService: CollectionConfig = {
   slug: LOGIN_CAMPUS_SLUG,
@@ -70,13 +63,18 @@ export const LoginCampusService: CollectionConfig = {
     },
   },
   admin: {
+        group: 'Usuarios y accesos',
+        description: 'Lectores que han entrado desde el campus. Se crean solos al iniciar sesión.',
     useAsTitle: "email",
   },
   access: {
-    read: isAdminOrSelf,
+    read: isAdminOrSelfReader,
     create: isAdmin,
     update: isAdmin,
     delete: isAdmin,
+    unlock: isAdmin,
+    // Un lector no debe entrar al panel de administración
+    admin: () => false,
   },
   fields: [
     { name: "absysId", label: "Número de lector (Absys)", type: "text", index: true },

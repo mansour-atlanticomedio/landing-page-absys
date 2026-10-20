@@ -1,4 +1,5 @@
 import type { CollectionConfig, PayloadHandler } from "payload";
+import { publicReadAdminWrite } from "@/lib/access";
 import { absys } from "@/lib/integrations/absys";
 
 const jsonOk = (message: unknown) =>
@@ -44,8 +45,12 @@ export const handleResourceByName: PayloadHandler = async (req) => {
 
 export const AbsysService: CollectionConfig = {
   slug: "absys_service",
-  admin: { hidden: true },
-  access: { read: () => true },
+  admin: {
+    group: "Servicios internos",
+    description: "Servicio técnico de consulta del catálogo.",
+    hidden: true,
+  },
+  access: publicReadAdminWrite,
   fields: [
     { name: "isbn", label: "ISBN", type: "text" },
     { name: "title", label: "Título", type: "text" },

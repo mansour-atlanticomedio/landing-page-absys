@@ -1,4 +1,5 @@
 import type { CollectionConfig, PayloadHandler } from "payload";
+import { publicReadAdminWrite } from "@/lib/access";
 
 const WIKIPEDIA_SEARCH_API = "https://es.wikipedia.org/w/api.php";
 const WIKIPEDIA_SUMMARY_API = "https://es.wikipedia.org/api/rest_v1/page/summary/";
@@ -131,8 +132,12 @@ export const handleGetAuthorInfo: PayloadHandler = async (req) => {
 
 export const AuthorService: CollectionConfig = {
   slug: "author_service",
-  admin: { hidden: true },
-  access: { read: () => true },
+  admin: {
+    group: "Servicios internos",
+    description: "Servicio técnico de información de autores.",
+    hidden: true,
+  },
+  access: publicReadAdminWrite,
   fields: [
     { name: "authorName", label: "Nombre del Autor", type: "text" },
   ],

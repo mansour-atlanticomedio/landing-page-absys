@@ -1,8 +1,15 @@
 import type { CollectionConfig } from "payload";
 import { appIcons } from './Icons.ts'
+import { adminOnly } from "@/lib/access";
 
 export const Features : CollectionConfig = {
     slug: 'features',
+    admin: {
+        group: 'Bloques de contenido',
+        description: 'Conjuntos de tarjetas con icono, título y descripción.',
+        useAsTitle: 'title'
+    },
+    access: adminOnly,
     labels: {
         singular: 'Característica',
         plural: 'Características'

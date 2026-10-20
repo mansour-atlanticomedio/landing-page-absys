@@ -1,7 +1,14 @@
 import type { CollectionConfig } from "payload";
+import { adminOnly } from "@/lib/access";
 
 export const FAQ : CollectionConfig = {
     slug: 'faq',
+    admin: {
+        group: 'Bloques de contenido',
+        description: 'Listados de preguntas frecuentes con sus respuestas.',
+        useAsTitle: 'title'
+    },
+    access: adminOnly,
     labels: {
         singular: "Preguntas Frecuentes",
         plural: "Preguntas Frecuentes"
@@ -20,6 +27,15 @@ export const FAQ : CollectionConfig = {
                 plural: "Preguntas"
             },
             type: 'array',
+            admin: {
+                components: {
+                    RowLabel: {
+                        path: '/components/admin/ItemRowLabel',
+                        clientProps: { field: 'question', singular: 'Pregunta' },
+                    },
+                },
+            },
+
             fields: [
                 {
                     name: 'question',

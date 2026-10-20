@@ -1,17 +1,14 @@
 // seeds/electronicResources.seed.ts
 import { getPayload } from 'payload'
 import config from '@payload-config'
-import path from 'path'
+import { findOrCreateMedia } from './lib/media'
+import { upsertDoc } from './lib/upsert'
 
 const payload = await getPayload({ config })
 
-const heroImage = await payload.create({
-  collection: 'media',
-  data: { alt: 'Recursos electrónicos' },
-  filePath: path.resolve(process.cwd(), 'seeds/assets/campus.jpg'),
-})
+const heroImage = await findOrCreateMedia(payload, { file: 'campus.jpg', alt: 'Recursos electrónicos' })
 
-const heroDoc = await payload.create({
+const heroDoc = await upsertDoc(payload, {
   collection: 'hero',
   data: {
     background_image: heroImage.id,
@@ -21,7 +18,7 @@ const heroDoc = await payload.create({
   },
 })
 
-const accesosDoc = await payload.create({
+const accesosDoc = await upsertDoc(payload, {
   collection: 'electronic_resources_access',
   data: {
     title: 'Accesos Directos Destacados',
