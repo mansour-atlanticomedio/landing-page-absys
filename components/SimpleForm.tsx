@@ -67,7 +67,7 @@ export default function SimpleForm({ title, formEntries, endpoint, files, fileHa
     };
 
     return (
-        <div className=" max-w-xl bg-card border border-border rounded-md p-8 shadow-(--shadow-card)">
+        <div className="w-full max-w-xl bg-card border border-border rounded-md p-5 sm:p-8 shadow-(--shadow-card)">
             <h3 className="font-display text-xl font-semibold mb-6">{title || ''}</h3>
             <form onSubmit={handleSubmit} className="space-y-5">
                 {

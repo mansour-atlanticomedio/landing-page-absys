@@ -22,7 +22,7 @@ export default function SpeakerModal( { photo, name, role, entity, socials, chil
           whileTap="tap"
           transition={{ type: "spring", stiffness: 300, damping: 20 }}
         >
-          <div className="relative w-64 h-72 bg-[#f0f4f8] rounded-4xl overflow-hidden mb-6 shadow-sm group-hover:shadow-md transition-shadow">
+          <div className="relative w-56 h-64 sm:w-64 sm:h-72 bg-[#f0f4f8] rounded-4xl overflow-hidden mb-6 shadow-sm group-hover:shadow-md transition-shadow">
             <Image
               src={photo.url}
               alt={name}
@@ -56,7 +56,7 @@ export default function SpeakerModal( { photo, name, role, entity, socials, chil
 
             <DialogContent asChild>
               <motion.div
-                className="fixed top-1/2 left-1/2 bg-white p-8 rounded-2xl shadow-2xl z-50 w-[95vw] max-w-4xl overflow-hidden"
+                className="fixed top-1/2 left-1/2 bg-white p-5 sm:p-8 rounded-2xl shadow-2xl z-50 w-[95vw] max-w-4xl max-h-[90vh] overflow-y-auto"
                 variants={modalVariants}
                 initial="closed"
                 animate="open"
@@ -66,16 +66,16 @@ export default function SpeakerModal( { photo, name, role, entity, socials, chil
                 <DialogTitle>
 
                   <div className="flex justify-between items-start mb-6">
-                    <h2 className="text-accent text-3xl font-bold leading-tight">{name}</h2>
+                    <h2 className="text-accent text-2xl sm:text-3xl font-bold leading-tight">{name}</h2>
                     <DialogClose className="p-2 hover:bg-gray-100 rounded-full transition-colors">
                       <X size={24} />
                     </DialogClose>
                   </div>
                 </DialogTitle>
 
-                <div className="flex gap-10 max-[700px]:flex-col">
+                <div className="flex gap-6 sm:gap-10 max-[700px]:flex-col max-[700px]:items-center">
                   <div className="shrink-0">
-                    <div className="w-64 h-80 rounded-4xl overflow-hidden shadow-inner">
+                    <div className="w-56 h-72 sm:w-64 sm:h-80 rounded-4xl overflow-hidden shadow-inner">
                       <img className="w-full h-full object-cover object-top" src={photo.url} alt={name} />
                     </div>
                     <div className="flex gap-5 mt-6 justify-center">

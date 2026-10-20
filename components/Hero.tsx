@@ -33,7 +33,7 @@ export default function Hero({ pretitle, title, subtitle, image, buttonText, inp
       )}
 
       <div className="absolute inset-0 hero-overlay -z-10" />
-      <div className="relative z-10 max-w-4xl px-6 py-20">
+      <div className="relative z-10 max-w-4xl px-4 sm:px-6 py-14 md:py-20">
         {pretitle && pretitle !== '' && (
           <p className="text-md md:text-lg text-primary-foreground/90 mb-4">
             {pretitle}

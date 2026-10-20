@@ -18,7 +18,7 @@ export default function Features({ title, feature : features }: FeatureBoxProps 
         <section className="bg-secondary my-10">
             <div className="max-w-7xl mx-auto px-6">
                 <h2 className="section-title">{title}</h2>
-                <div className="flex justify-center items-center gap-6 mt-12">
+                <div className="flex flex-col md:flex-row justify-center items-stretch md:items-center gap-6 mt-12">
                     {features.map(({ icon, title, description }, index) => {
                         const IconComponent = iconMap[icon]
                         return (

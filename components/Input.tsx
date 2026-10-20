@@ -124,7 +124,7 @@ export default function InputComponent({ title, placeholder }: InputProps) {
         style={{ maxHeight: showAdvanced ? `${panelHeight}px` : "0px" }}
       >
         <div ref={panelRef} className="pt-4">
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-5 p-5 bg-secondary/50 border border-border rounded-xl">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-4 gap-y-5 p-5 bg-secondary/50 border border-border rounded-xl">
             {advancedFields.map(({ name, label, placeholder }) => (
               <div key={name} className="space-y-1.5">
                 <Label htmlFor={name} className="text-xs text-muted-foreground">

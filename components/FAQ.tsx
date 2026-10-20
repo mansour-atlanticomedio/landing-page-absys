@@ -15,7 +15,7 @@ interface FaqBoxProps {
 export default function FAQ({title, faqs} : FaqBoxProps) {
 
     return (
-        <section className="p-16 flex flex-col gap-10" >
+        <section className="px-4 py-10 sm:p-16 flex flex-col gap-10" >
 
             <h2 className="section-title text-start after:ml-0" > {title} </h2>
 

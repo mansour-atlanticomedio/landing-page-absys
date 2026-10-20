@@ -62,7 +62,7 @@ export default function HeroCarrousel({ title, items, autoPlayInterval = 5000 }:
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center bg-linear-to-br from-primary/40 via-primary/10 to-accent/30">
-              <span className="text-8xl font-bold text-primary/20">
+              <span className="text-6xl md:text-8xl font-bold text-primary/20">
                 {current.title?.charAt(0) || 'N'}
               </span>
             </div>

@@ -1,9 +1,7 @@
-import Hero from "@/components/Hero";
-import Image from "next/image";
-import { RenderBlocks } from "@/components/RenderBlocks";
+import { PageHero } from "@/components/blocks/PageHero";
 import { getClient } from "@/lib/payload";
 import { getSession } from "@/lib/auth/session";
-import { Bookmark, BookOpen, Headphones, LibraryBig, RefreshCw, Search, BookPlus, User } from "lucide-react";
+import { Bookmark, BookOpen, Headphones, RefreshCw, Search, BookPlus, User } from "lucide-react";
 import Link from "next/link";
 
 export const dynamic = 'force-dynamic';
@@ -20,163 +18,119 @@ export default async function Servicios() {
   }) as any
 
   const heroData = homepage?.hero
-  const pageBlocks = homepage?.layout
 
-  const pretitle = heroData?.pretitle || "";
-  const title = heroData?.title || "";
-  const subtitle = heroData?.subtitle || "";
-  const buttonText = heroData?.button_cta || "";
-  const inputPlaceHolder = heroData?.input_placeholder || "";
+  const hero = {
+    title: heroData?.title || "Servicios bibliotecarios",
+    subtitle: heroData?.subtitle || "La Biblioteca ofrece servicios destinados a facilitar el acceso, la consulta y la utilización de los recursos de información disponibles en la Universidad. Aquí encontrarás información sobre la consulta de fondos, el préstamo, las renovaciones, las reservas y la atención de dudas.",
+    background_image: heroData?.background_image && typeof heroData.background_image === 'object'
+      ? heroData.background_image
+      : { id: 0, url: '/images/app/campus.jpg', alt: '' },
+  }
 
-  const imageUrl = heroData?.background_image && typeof heroData.background_image === 'object'
-    ? heroData.background_image.url
-    : '/images/app/campus.jpg';
-
-  // return (
-  //   <>
-  //     <Hero
-  //       pretitle={pretitle}
-  //       title={title}
-  //       subtitle={subtitle}
-  //       image={imageUrl}
-  //       buttonText={buttonText}
-  //       inputPlaceHolder={inputPlaceHolder}
-  //     />
-
-  //     <RenderBlocks blocks={pageBlocks} />
-  //   </>
-  // )
+  const servicios = [
+    {
+      icon: Search,
+      title: "Consulta de fondos",
+      text: "Consulta el catálogo para localizar los libros y recursos disponibles y comprobar su ubicación y disponibilidad.",
+      action: { label: "Ir al catálogo", href: "/recursos/catalogo" },
+    },
+    {
+      icon: BookOpen,
+      title: "Préstamo",
+      text: "Los miembros autorizados de la comunidad universitaria podrán solicitar en préstamo los materiales disponibles, de acuerdo con las condiciones establecidas por la Biblioteca.",
+      badge: "Próximamente",
+    },
+    {
+      icon: RefreshCw,
+      title: "Renovaciones",
+      text: "Los préstamos podrán renovarse siempre que se cumplan las condiciones del servicio y el material no haya sido solicitado por otra persona.",
+    },
+    {
+      icon: Bookmark,
+      title: "Reservas",
+      text: "Cuando esta función se encuentre habilitada, podrás reservar determinados materiales desde el catálogo o solicitar información a la Biblioteca.",
+      badge: "Próximamente",
+    },
+    {
+      icon: Headphones,
+      title: "Atención de consultas",
+      text: "La Biblioteca puede ayudarte a localizar recursos, utilizar el catálogo, acceder a las plataformas disponibles y resolver dudas relacionadas con sus servicios.",
+      action: { label: "Contactar", href: "/conocenos/horarios-ubicacion-y-contacto" },
+      wide: true,
+    },
+  ]
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* <SiteHeader active="SERVICIOS" /> */}
+    <div className="min-h-screen bg-background">
+      <PageHero variant="split" hero={hero} />
 
-      <section className="mx-auto max-w-6xl px-6 py-14">
-        <div className="grid grid-cols-[1fr_320px] gap-10">
-          <div>
-            <h1 className="text-4xl font-extrabold text-slate-800">Servicios bibliotecarios</h1>
-            <p className="mt-3 text-slate-600">
-              La Biblioteca ofrece servicios destinados a facilitar el acceso, la consulta y la
-              utilización de los recursos de información disponibles en la Universidad. En esta
-              página encontrarás información sobre la consulta de fondos, el préstamo, las
-              renovaciones, las reservas y la atención de dudas.
-            </p>
-          </div>
-          <div className="relative h-40 rounded-lg overflow-hidden">
-            <Image src={imageUrl} alt="" fill className="object-cover" />
-          </div>
-        </div>
-
-        <div className="mt-10 grid grid-cols-[1fr_320px] gap-6">
-          <div className="grid grid-cols-2 gap-6">
-            <div className="border rounded-lg p-6">
-              <div className="bg-sky-100 text-sky-700 rounded-md h-10 w-10 flex items-center justify-center mb-4">
-                <Search className="h-5 w-5" />
+      <section className="mx-auto max-w-6xl px-4 py-10 sm:px-6 sm:py-14">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_320px]">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 sm:gap-6">
+            {servicios.map(({ icon: Icon, title, text, action, badge, wide }) => (
+              <div
+                key={title}
+                className={`relative flex flex-col rounded-lg border border-border bg-card p-5 sm:p-6 ${wide ? "sm:col-span-2" : ""}`}
+              >
+                {badge && (
+                  <span className="absolute right-4 top-4 rounded-full bg-muted px-3 py-1 text-xs text-muted-foreground sm:right-6 sm:top-6">
+                    {badge}
+                  </span>
+                )}
+                <div className="mb-4 flex h-10 w-10 items-center justify-center rounded-md bg-accent/15 text-accent">
+                  <Icon className="h-5 w-5" />
+                </div>
+                <h2 className="mb-2 font-display font-bold text-primary">{title}</h2>
+                <p className="text-sm text-muted-foreground">{text}</p>
+                {action && (
+                  <Link
+                    href={action.href}
+                    className="inline-flex items-center justify-center rounded-lg font-medium text-sm transition-colors mt-4 h-10 self-start bg-primary px-4 text-primary-foreground hover:bg-primary/90"
+                  >
+                    {action.label}
+                  </Link>
+                )}
               </div>
-              <h2 className="font-bold text-slate-800 mb-2">Consulta de fondos</h2>
-              <p className="text-sm text-slate-600 mb-4">
-                Consulta el catálogo para localizar los libros y recursos disponibles y comprobar
-                su ubicación y disponibilidad.
-              </p>
-              <Link href={'/recursos/catalogo'}  >
-                <button className="bg-slate-800 text-white text-sm font-medium rounded-md px-4 py-2 cursor-pointer">
-                  Ir al Catálogo
-                </button>
-              </Link>
-            </div>
-
-            <div className="border rounded-lg p-6">
-              <div className="bg-sky-100 text-sky-700 rounded-md h-10 w-10 flex items-center justify-center mb-4">
-                <BookOpen className="h-5 w-5" />
-              </div>
-              <h2 className="font-bold text-slate-800 mb-2">Préstamo</h2>
-              <p className="text-sm text-slate-600 mb-4">
-                Los miembros autorizados de la comunidad universitaria podrán solicitar en
-                préstamo los materiales disponibles, de acuerdo con las condiciones establecidas
-                por la Biblioteca.
-              </p>
-              <a href="#" className="text-sm text-teal-700 font-medium">
-                Ver condiciones de préstamo (Próximamente) →
-              </a>
-            </div>
-
-            <div className="border rounded-lg p-6">
-              <div className="bg-sky-100 text-sky-700 rounded-md h-10 w-10 flex items-center justify-center mb-4">
-                <RefreshCw className="h-5 w-5" />
-              </div>
-              <h2 className="font-bold text-slate-800 mb-2">Renovaciones</h2>
-              <p className="text-sm text-slate-600">
-                Los préstamos podrán renovarse siempre que se cumplan las condiciones del
-                servicio y el material no haya sido solicitado por otra persona.
-              </p>
-            </div>
-
-            <div className="border rounded-lg p-6 relative">
-              <span className="absolute top-6 right-6 bg-slate-100 text-slate-600 text-xs rounded-full px-3 py-1">
-                Próximamente
-              </span>
-              <div className="bg-sky-100 text-sky-700 rounded-md h-10 w-10 flex items-center justify-center mb-4">
-                <Bookmark className="h-5 w-5" />
-              </div>
-              <h2 className="font-bold text-slate-800 mb-2">Reservas</h2>
-              <p className="text-sm text-slate-600">
-                Cuando esta función se encuentre habilitada, podrás reservar determinados
-                materiales desde el catálogo o solicitar información a la Biblioteca.
-              </p>
-            </div>
-
-            <div className="border rounded-lg p-6 col-span-2">
-              <div className="bg-sky-100 text-sky-700 rounded-md h-10 w-10 flex items-center justify-center mb-4">
-                <Headphones className="h-5 w-5" />
-              </div>
-              <h2 className="font-bold text-slate-800 mb-2">Atención de consultas</h2>
-              <p className="text-sm text-slate-600 mb-4">
-                La Biblioteca puede ayudarte a localizar recursos, utilizar el catálogo, acceder
-                a las plataformas disponibles y resolver dudas relacionadas con sus servicios.
-              </p>
-              <button className="bg-slate-800 text-white text-sm font-medium rounded-md px-4 py-2">
-                <a href="/biblioteca/conocenos/horarios-ubicacion-y-contacto">Contactar</a>
-              </button>
-            </div>
+            ))}
           </div>
 
-          <div className="space-y-6">
-            <div className="bg-slate-800 text-white rounded-lg p-6">
-              <h3 className="flex items-center gap-2 font-bold mb-2">
-                <User className="h-4 w-4" /> Mi Cuenta
+          <aside className="space-y-4 sm:space-y-6">
+            <div className="rounded-lg bg-primary p-5 text-primary-foreground sm:p-6">
+              <h3 className="mb-2 flex items-center gap-2 font-display font-bold">
+                <User className="h-4 w-4" /> Mi cuenta
               </h3>
-              <p className="text-sm text-slate-300 mb-4">
-                Accede a tu perfil para gestionar tus préstamos y renovaciones.
+              <p className="mb-4 text-sm text-primary-foreground/80">
+                {session
+                  ? "Consulta tu perfil, tus préstamos y tus reservas."
+                  : "Accede a tu perfil para gestionar tus préstamos y renovaciones."}
               </p>
-              <Link href={'/login'} >
-                <button className="w-full bg-teal-700 rounded-md py-2.5 font-medium cursor-pointer">
-                  Iniciar Sesión
-                </button>
+              <Link
+                href={session ? "/perfil" : "/login"}
+                className="inline-flex items-center justify-center rounded-lg font-medium text-sm transition-colors h-11 w-full bg-accent text-primary-foreground hover:bg-accent/90"
+              >
+                {session ? "Ir a mi perfil" : "Iniciar sesión"}
               </Link>
             </div>
-            <div className="border rounded-lg p-6">
-              <h3 className="flex items-center gap-2 font-bold text-slate-800 mb-2">
+            <div className="rounded-lg border border-border bg-card p-5 sm:p-6">
+              <h3 className="mb-2 flex items-center gap-2 font-display font-bold text-primary">
                 <BookPlus className="h-4 w-4" /> Solicitud de compra
               </h3>
-              <p className="text-sm text-slate-600 mb-4">
+              <p className="mb-4 text-sm text-muted-foreground">
                 Propón la adquisición de libros u obras que necesites para tu docencia, estudio o investigación.
               </p>
-              <Link href={sugerirLibroHref} >
-                <button className="w-full border-2 border-teal-700 text-teal-700 rounded-md py-2.5 font-medium cursor-pointer">
-                  Sugerir libro
-                </button>
+              <Link
+                href={sugerirLibroHref}
+                className="inline-flex items-center justify-center rounded-lg font-medium text-sm transition-colors h-11 w-full border-2 border-accent text-accent hover:bg-accent/10"
+              >
+                Sugerir libro
               </Link>
-              {
-                !session && (
-                  <p className="w-full text-xs text-center text-gray-400 mt-2" >Identifícate con tu cuenta para acceder</p>
-                )
-              }
+              {!session && (
+                <p className="mt-2 text-center text-xs text-muted-foreground">Identifícate con tu cuenta para acceder</p>
+              )}
             </div>
-          </div>
+          </aside>
         </div>
       </section>
-
-      {/* <SiteFooter /> */}
     </div>
   )
 }

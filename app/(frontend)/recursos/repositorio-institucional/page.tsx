@@ -26,7 +26,7 @@ const recentUploads = [
 export default function RepositorioInstitucionalPage() {
   return (
     <div className="min-h-screen">
-      <section className="relative h-[350px] flex items-center justify-center overflow-hidden">
+      <section className="relative min-h-[350px] py-10 flex items-center justify-center overflow-hidden">
         <Image
           src="/repositorio-bg.jpg"
           alt="Repositorio Institucional"
@@ -36,7 +36,7 @@ export default function RepositorioInstitucionalPage() {
         />
         <div className="relative z-10 text-center text-white max-w-4xl px-4">
           <motion.h1
-            className="text-5xl font-bold mb-4"
+            className="text-3xl md:text-5xl font-bold mb-4"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -52,7 +52,7 @@ export default function RepositorioInstitucionalPage() {
             Accede a la producción académica y científica de nuestra universidad
           </motion.p>
           <motion.div
-            className="flex gap-4 max-w-xl mx-auto"
+            className="flex flex-col sm:flex-row gap-4 max-w-xl mx-auto"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}

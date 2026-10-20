@@ -78,23 +78,23 @@ export default function CatalogoPage() {
       {/* <SiteHeader active="RECURSOS" /> */}
 
       <section className="mx-auto max-w-3xl px-6 py-16 text-center">
-        <h1 className="text-4xl font-extrabold text-slate-800">Catálogo de la Biblioteca</h1>
+        <h1 className="text-3xl md:text-4xl font-extrabold text-slate-800">Catálogo de la Biblioteca</h1>
         <p className="mt-3 text-slate-600">
           Encuentra libros, revistas, artículos y más recursos disponibles en nuestra red.
         </p>
 
-        <div className="mt-8 flex gap-2">
-          <div className="flex-1 flex items-center gap-2 border rounded-md px-4">
+        <div className="mt-8 flex flex-col sm:flex-row gap-2">
+          <div className="flex-1 flex items-center gap-2 border rounded-md px-4 py-2">
             <Search className="h-4 w-4 text-slate-400" />
             <input
             value={searchQuery}
             onChange={(e) => handleInputChange(e)}
             onKeyDown={(e) => e.key === "Enter" && handleSearch()}
               placeholder="Título, autor, materia o ISBN..."
-              className="flex-1 py-3 outline-none text-sm"
+              className="flex-1 py-3 outline-none text-md"
             />
           </div>
-          <button onClick={() => handleSearch()} className="bg-accent text-white font-medium px-6 rounded-md hover:bg-slate-700 active:scale-[.92] cursor-pointer">Buscar</button>
+          <button onClick={() => handleSearch()} className="bg-accent text-white font-medium px-6 py-2 rounded-md hover:bg-slate-700 active:scale-[.92] cursor-pointer">Buscar</button>
         </div>
       </section>
 
@@ -102,7 +102,7 @@ export default function CatalogoPage() {
         <h2 className="text-2xl font-bold text-slate-800 text-center mb-10">
           Cómo utilizar el catálogo
         </h2>
-        <div className="grid grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {PASOS.map((p) => (
             <div key={p.title} className="border rounded-lg p-6">
               <div className="bg-sky-100 text-sky-700 rounded-md h-10 w-10 flex items-center justify-center mb-4">
