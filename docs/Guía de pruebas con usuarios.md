@@ -1,13 +1,13 @@
 # Guía de pruebas
 
-No hace falta saber programar. Anota **todo lo que te confunda o falle**, aunque parezca una tontería.
+Anota **todo lo que te confunda o falle**, aunque parezca una tontería.
 
 ## Cómo anotar un problema
 - Qué intentabas hacer
 - Qué esperabas y qué pasó (captura si puedes)
 - Si pudiste continuar o te quedaste bloqueado
 
-Prueba también desde el móvil.
+Prueba desde otros dispositivos (movil, ordenador, tablet).
 
 ---
 
