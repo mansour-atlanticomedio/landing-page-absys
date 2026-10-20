@@ -84,17 +84,17 @@ export default function CatalogoPage() {
         </p>
 
         <div className="mt-8 flex flex-col sm:flex-row gap-2">
-          <div className="flex-1 flex items-center gap-2 border rounded-md px-4">
+          <div className="flex-1 flex items-center gap-2 border rounded-md px-4 py-2">
             <Search className="h-4 w-4 text-slate-400" />
             <input
             value={searchQuery}
             onChange={(e) => handleInputChange(e)}
             onKeyDown={(e) => e.key === "Enter" && handleSearch()}
               placeholder="Título, autor, materia o ISBN..."
-              className="flex-1 py-3 outline-none text-sm"
+              className="flex-1 py-3 outline-none text-md"
             />
           </div>
-          <button onClick={() => handleSearch()} className="bg-accent text-white font-medium px-6 rounded-md hover:bg-slate-700 active:scale-[.92] cursor-pointer">Buscar</button>
+          <button onClick={() => handleSearch()} className="bg-accent text-white font-medium px-6 py-2 rounded-md hover:bg-slate-700 active:scale-[.92] cursor-pointer">Buscar</button>
         </div>
       </section>
 

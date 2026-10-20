@@ -124,7 +124,7 @@ export default function Header({ phone, email, navbar, account }: HeaderProps) {
     return (
         <section>
             {(phone || email) && <div id="top-arrow" className="bg-topbar text-primary-foreground text-sm">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 py-2 flex flex-col sm:flex-row sm:flex-wrap items-center justify-center gap-x-10 gap-y-1">
+                <div className="max-w-7xl mx-auto sm:px-4 text-xs sm:px-6 py-2 flex sm:flex-row sm:flex-wrap items-center justify-center gap-x-10 gap-y-1">
                     {phone && <a href={`tel:${phone}`} className="flex min-h-8 items-center gap-2 break-all hover:opacity-80">
                         <Phone className="w-4 h-4" /> {phone}
                     </a>}
@@ -138,7 +138,7 @@ export default function Header({ phone, email, navbar, account }: HeaderProps) {
                     <a href="/biblioteca" className="flex min-w-0 items-center gap-3">
                         <div className="w-full flex items-center" >
                             <Image
-                                src={logo} alt="logo atlantico medio header" width={130} className="h-auto w-20 sm:w-[130px] shrink-0"
+                                src={logo} alt="logo atlantico medio header" className="h-auto w-20 sm:w-[200px] shrink-0"
                             />
                             <Separator.Root
                                 className="SeparatorRoot"
@@ -148,7 +148,7 @@ export default function Header({ phone, email, navbar, account }: HeaderProps) {
                             />
                             <div>
                                 <h2 className="hidden sm:block text-xl lg:text-2xl font-bold" > Universidad Atlantico Medio </h2>
-                                <h2 className="text-lg sm:text-xl font-light" > Biblioteca </h2>
+                                <h2 className="text-lg hidden sm:block sm:text-xl font-light" > Biblioteca </h2>
                             </div>
                         </div>
                     </a>
