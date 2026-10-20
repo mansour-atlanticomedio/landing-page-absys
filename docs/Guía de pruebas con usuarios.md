@@ -31,6 +31,13 @@ Al terminar: ¿qué fue lo más confuso? ¿qué esperabas encontrar y no estaba?
 ## Parte B. Tareas del panel de administración
 Usa una ventana de incógnito. Trabaja solo con contenido de prueba (títulos que empiecen por "PRUEBA") y no edites las tres páginas reales de Conócenos.
 
+**Cómo entrar al panel**
+1. Abre `https://www.atlanticomedio.es/biblioteca/admin` (en tu equipo de desarrollo: `http://localhost:8085/biblioteca/admin`).
+2. Escribe el correo y la contraseña del usuario de prueba que te han dado y pulsa **Iniciar sesión**.
+3. Verás la pantalla de bienvenida con accesos directos y el menú lateral.
+
+El panel es independiente del inicio de sesión del campus. Si entras en el panel y en la web con el mismo navegador, una sesión cierra la otra: por eso se usa una ventana de incógnito.
+
 1. **Orientarse**: entra al panel y di para qué sirve cada grupo del menú.
 2. **Crear una página** de prueba (ruta `prueba/nombre`) con un bloque "Imagen con texto", un "Aviso" y una "Descarga de documento" con un PDF.
 3. **Reordenar y contraer bloques**.
