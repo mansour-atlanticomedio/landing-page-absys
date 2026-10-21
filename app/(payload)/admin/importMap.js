@@ -43,9 +43,12 @@ import { default as default_3e5245264c92c0c78140c7491e16dc6b } from '../../../co
 import { default as default_14e4ba367eb891a120f429402c6e9ecc } from '../../../components/admin/ViewerBanner'
 import { default as default_7be396d0766c6c490887ef074dd0ced4 } from '../../../components/admin/AdminIcon'
 import { default as default_27eed1898e8caadb2fd2266b54bb4509 } from '../../../components/admin/AdminLogo'
+import { default as default_29fa5c324cecba6cafb11381cbfac962 } from '../../../components/admin/AnalyticsNavLink'
 import { default as default_8fa9c485a5aae932ba1d96a513f72049 } from '../../../components/admin/NavHelp'
+import { default as default_b20f9384398d91465b37847747a0bbba } from '../../../components/admin/AnalyticsWidget'
 import { default as default_76ec03dd917ecfb7a53441d4e825edcb } from '../../../components/admin/DashboardWelcome'
 import { ImportExportProvider as ImportExportProvider_cdf7e044479f899a31f804427d568b36 } from '@payloadcms/plugin-import-export/rsc'
+import { default as default_e3b35b44f6b14d102431def2313ebb66 } from '../../../components/admin/AnalyticsView'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 
 /** @type import('payload').ImportMap */
@@ -95,8 +98,11 @@ export const importMap = {
   "/components/admin/ViewerBanner#default": default_14e4ba367eb891a120f429402c6e9ecc,
   "/components/admin/AdminIcon#default": default_7be396d0766c6c490887ef074dd0ced4,
   "/components/admin/AdminLogo#default": default_27eed1898e8caadb2fd2266b54bb4509,
+  "/components/admin/AnalyticsNavLink#default": default_29fa5c324cecba6cafb11381cbfac962,
   "/components/admin/NavHelp#default": default_8fa9c485a5aae932ba1d96a513f72049,
+  "/components/admin/AnalyticsWidget#default": default_b20f9384398d91465b37847747a0bbba,
   "/components/admin/DashboardWelcome#default": default_76ec03dd917ecfb7a53441d4e825edcb,
   "@payloadcms/plugin-import-export/rsc#ImportExportProvider": ImportExportProvider_cdf7e044479f899a31f804427d568b36,
+  "/components/admin/AnalyticsView#default": default_e3b35b44f6b14d102431def2313ebb66,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1
 }

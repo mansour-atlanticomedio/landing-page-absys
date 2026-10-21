@@ -294,6 +294,18 @@ La web lee por Local API, que no pasa por `access`, así que cerrar la lectura R
 - Migración `20261021_100000_permisos_usuarios` (12 columnas booleanas nulas, sin backfill). Los cambios de permisos aplican en la siguiente petición.
 - Sin verificar en navegador: casillas, `admin.condition`, banner y que Payload oculte secciones/botones según `read`/`update`; migración en BD nueva.
 
+### Analítica propia (2026-10-21)
+
+Estadísticas de visitas y "conectados ahora" guardadas en la propia BD, sin cookies ni servicios externos. Rama `feat/analiticas-panel`, migración `20261021_102455_analiticas`.
+
+- **Privacidad**: no se guarda IP, user-agent, cookies ni localStorage. El visitante es un HMAC-SHA256 de IP+UA con sal diaria (día Europe/Madrid, secreto derivado de `PAYLOAD_SECRET`), truncado a 32 hex: no se puede seguir a nadie entre días, así que "visitantes" en rangos largos es la suma de visitantes distintos por día. No registra con DNT:1/Sec-GPC, bots, rutas `/admin` `/api` `/_next` `/auth`, vista previa (draft) ni usuarios del panel. Retención 395 días (`ANALYTICS_RETENTION_DAYS`), poda perezosa.
+- **Collections ocultas** (`collections/Analytics.ts`, grupo "Servicios internos", `adminOnly`): `analytics_events` (`path`, `referrer` hostname, `visitor`, `device`, `browser`, `is_reader`, `is_entry`; la procedencia solo cuenta las entradas) y `analytics_presence` (`visitor` único, `path`, `last_seen`; conectado = latido en los últimos 2 min).
+- **Endpoints**: `POST /api/analytics/track` (siempre 204, rate limit 60/min por IP; sin `TRUSTED_IP_HEADER` todo cae en "unknown" y el límite sube a 1200/min) y `GET /api/analytics/summary` (solo admin). **En producción hay que fijar `TRUSTED_IP_HEADER`**, si no los visitantes se infracuentan.
+- **Cliente**: `components/AnalyticsTracker.tsx` en `app/(frontend)/layout.tsx` (`view` por cambio de ruta con `sendBeacon`, `ping` cada 30 s con la pestaña visible; no se monta en draft).
+- **Panel**: tarjeta `AnalyticsWidget` en `beforeDashboard`, vista `/admin/analiticas` (`AnalyticsView`, rango `?rango=1|7|30|90`, gráficos SVG propios sin dependencias) y enlace `AnalyticsNavLink` en el menú. Solo admin; lógica pura en `lib/analytics/`.
+- **Demo**: `docker exec biblioteca-frontend npx tsx scripts/seed-analytics-demo.ts` (60 días de datos `demo*`; `--clean` los borra).
+- Sin verificar en navegador: aspecto de la vista y el widget, el tracker real, `is_reader` con un lector real. Pendiente: decidir si editor/lector ven la vista cuando se fusionen los roles, y si la política de privacidad necesita aviso.
+
 ### Capa anti-abuso (`lib/security/`, 2026-10-08)
 
 Lógica pura y testeable (reloj y almacén inyectados) para limitar el abuso de la API y del correo. **Conectada hoy a `/contacto`** (`lib/contacto-envio.ts`); la fase 3 la usará en las sugerencias de libro. No hay Redis: el almacén definitivo será Postgres (fase 4).

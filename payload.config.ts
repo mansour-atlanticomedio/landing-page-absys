@@ -52,6 +52,7 @@ import { BookCoverService } from "./collections/BookCovers.service.ts";
 import { AuthorService } from "./collections/Author.service.ts";
 import { LoginAbsysService } from "./collections/LoginAbsys.service.ts";
 import { decryptTestEndpoints, LoginCampusService } from "./collections/LoginCampus.service.ts";
+import { AnalyticsEvents, AnalyticsPresence, analyticsEndpoints } from "./collections/Analytics.ts";
 import { Login } from "./collections/Login.ts";
 import { adminOnly } from "./lib/access.ts";
 
@@ -74,9 +75,16 @@ export default buildConfig({
         Logo: '/components/admin/AdminLogo',
         Icon: '/components/admin/AdminIcon',
       },
-      beforeDashboard: ['/components/admin/DashboardWelcome'],
+      beforeDashboard: ['/components/admin/AnalyticsWidget', '/components/admin/DashboardWelcome'],
       header: ['/components/admin/ViewerBanner'],
-      afterNavLinks: ['/components/admin/NavHelp'],
+      afterNavLinks: ['/components/admin/AnalyticsNavLink', '/components/admin/NavHelp'],
+      views: {
+        analiticas: {
+          Component: '/components/admin/AnalyticsView',
+          path: '/analiticas',
+          exact: true,
+        },
+      },
     },
     livePreview: {
       collections: ['pages'],
@@ -117,7 +125,9 @@ export default buildConfig({
     ElectronicResourcesAccess,
     Schedule,
     LoginCampusService,
-    Pages
+    Pages,
+    AnalyticsEvents,
+    AnalyticsPresence
   ],
   globals: [
     Home,
@@ -134,7 +144,7 @@ export default buildConfig({
     HorariosContacto,
     SolicitudCompra
   ],
-  endpoints: [...decryptTestEndpoints],
+  endpoints: [...decryptTestEndpoints, ...analyticsEndpoints],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || "",
   typescript: {

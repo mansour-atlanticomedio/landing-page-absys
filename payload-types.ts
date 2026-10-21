@@ -96,6 +96,8 @@ export interface Config {
     schedule: Schedule;
     loginCampus_service: LoginCampusService;
     pages: Page;
+    analytics_events: AnalyticsEvent;
+    analytics_presence: AnalyticsPresence;
     exports: Export;
     imports: Import;
     'payload-kv': PayloadKv;
@@ -133,6 +135,8 @@ export interface Config {
     schedule: ScheduleSelect<false> | ScheduleSelect<true>;
     loginCampus_service: LoginCampusServiceSelect<false> | LoginCampusServiceSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
+    analytics_events: AnalyticsEventsSelect<false> | AnalyticsEventsSelect<true>;
+    analytics_presence: AnalyticsPresenceSelect<false> | AnalyticsPresenceSelect<true>;
     exports: ExportsSelect<false> | ExportsSelect<true>;
     imports: ImportsSelect<false> | ImportsSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
@@ -1290,6 +1294,38 @@ export interface DownloadBlock {
   blockType: 'download_block';
 }
 /**
+ * Visitas anónimas a la web. No guarda IP, user-agent ni datos personales.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics_events".
+ */
+export interface AnalyticsEvent {
+  id: number;
+  path: string;
+  referrer?: string | null;
+  visitor: string;
+  device?: ('desktop' | 'mobile' | 'tablet' | 'other') | null;
+  browser?: ('chrome' | 'safari' | 'firefox' | 'edge' | 'other') | null;
+  is_reader?: boolean | null;
+  is_entry?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Visitantes activos en los últimos minutos (hash diario, sin datos personales).
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics_presence".
+ */
+export interface AnalyticsPresence {
+  id: number;
+  visitor: string;
+  path?: string | null;
+  last_seen: string;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "exports".
  */
@@ -1586,6 +1622,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'pages';
         value: number | Page;
+      } | null)
+    | ({
+        relationTo: 'analytics_events';
+        value: number | AnalyticsEvent;
+      } | null)
+    | ({
+        relationTo: 'analytics_presence';
+        value: number | AnalyticsPresence;
       } | null);
   globalSlug?: string | null;
   user:
@@ -2319,6 +2363,32 @@ export interface DownloadBlockSelect<T extends boolean = true> {
   file?: T;
   id?: T;
   blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics_events_select".
+ */
+export interface AnalyticsEventsSelect<T extends boolean = true> {
+  path?: T;
+  referrer?: T;
+  visitor?: T;
+  device?: T;
+  browser?: T;
+  is_reader?: T;
+  is_entry?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "analytics_presence_select".
+ */
+export interface AnalyticsPresenceSelect<T extends boolean = true> {
+  visitor?: T;
+  path?: T;
+  last_seen?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -3759,6 +3829,8 @@ export interface TaskCreateCollectionExport {
       | 'schedule'
       | 'loginCampus_service'
       | 'pages'
+      | 'analytics_events'
+      | 'analytics_presence'
       | 'exports'
       | 'imports';
     drafts?: ('yes' | 'no') | null;

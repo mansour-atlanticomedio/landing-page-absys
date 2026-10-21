@@ -14,6 +14,7 @@ import * as migration_20261015_172126_importar_exportar from './20261015_172126_
 import * as migration_20261019_143507_quitar_tipo_header_footer_simple from './20261019_143507_quitar_tipo_header_footer_simple';
 import * as migration_20261020_101500_roles_usuarios from './20261020_101500_roles_usuarios';
 import * as migration_20261021_100000_permisos_usuarios from './20261021_100000_permisos_usuarios';
+import * as migration_20261021_102455_analiticas from './20261021_102455_analiticas';
 
 export const migrations = [
   {
@@ -95,5 +96,10 @@ export const migrations = [
     up: migration_20261021_100000_permisos_usuarios.up,
     down: migration_20261021_100000_permisos_usuarios.down,
     name: '20261021_100000_permisos_usuarios',
+  },
+  {
+    up: migration_20261021_102455_analiticas.up,
+    down: migration_20261021_102455_analiticas.down,
+    name: '20261021_102455_analiticas'
   },
 ];

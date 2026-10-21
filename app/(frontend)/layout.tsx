@@ -1,9 +1,11 @@
 import React from 'react'
+import { draftMode } from 'next/headers'
 import { Toaster } from 'sonner'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import { getClient } from '@/lib/payload'
 import { resolveNavbar, resolveFooterLinks } from '@/lib/links'
+import AnalyticsTracker from '@/components/AnalyticsTracker'
 import { getSession } from '@/lib/auth/session'
 import '../styles.css'
 
@@ -30,6 +32,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
   const headerData = rawHeader && { ...rawHeader, navbar: resolveNavbar(rawHeader.navbar, enlaces) }
   const footerData = rawFooter && { ...rawFooter, ...resolveFooterLinks(rawFooter, enlaces) }
 
+  const { isEnabled: isPreview } = await draftMode()
   const session = await getSession()
   const account = session ? { email: session.email, nombre: session.nombre } : null
 
@@ -37,6 +40,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
     <html lang="en">
       <body className="min-h-screen flex flex-col bg-background">
         <Toaster />
+        {!isPreview && <AnalyticsTracker />}
         {headerData && <Header {...headerData} account={account} />}
         <main>{children}</main>
         {footerData && <Footer {...footerData} />}

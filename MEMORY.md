@@ -801,3 +801,7 @@ todos los casos).
 ## 2026-10-21 – permisos por usuario (fase 2 de roles)
 - `users.permissions`: casillas Ver / Crear y editar / Eliminar por sección del menú; el rol es plantilla (cambiar rol la reaplica; sin casillas guardadas se usa la plantilla). Fábricas `sectionAccess/sectionAccessPublic/sectionGlobal` y mapa en `lib/permissions.ts`. Migración `20261021_100000_permisos_usuarios`.
 - Verificado por REST con usuarios temporales (borrados) y 305 tests. Sin verificar en navegador. Decisión: granularidad por sección, no por colección.
+
+## 2026-10-21 – analítica propia y dashboard en el panel
+- Decisión del usuario: analítica propia en BD (sin Google/Plausible). `analytics_events` + `analytics_presence`, tracker cliente, endpoints track/summary, widget en el inicio y vista `/admin/analiticas`. No se usó el Modular Dashboard experimental de Payload (sustituye todo el inicio).
+- Verificado por curl/SQL con datos falsos (borrados) y 327 tests. Sin verificar en navegador. Pendiente: `TRUSTED_IP_HEADER` en producción, revisión con el delegado de protección de datos y permisos de editor/lector sobre la vista.
