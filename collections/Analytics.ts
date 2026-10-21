@@ -33,9 +33,18 @@ const ownHosts = (req: Parameters<PayloadHandler>[0]): string[] => {
 
 // Registra una visita o un latido. Responde siempre 204 y no guarda IP ni user-agent: solo un hash que rota cada día
 export const handleTrack: PayloadHandler = async (req) => {
+  const res = await trackInner(req)
+  const skipped = res.headers.get('X-Analytics-Skipped')
+  if (process.env.NODE_ENV !== 'production') {
+    console.log(`analytics.track ${skipped ? `descartada: ${skipped}` : 'registrada'} dnt=${req.headers.get('dnt')} gpc=${req.headers.get('sec-gpc')} ua=${(req.headers.get('user-agent') ?? '').slice(0, 60)}`)
+  }
+  return res
+}
+
+const trackInner: PayloadHandler = async (req) => {
   try {
     const headers = req.headers
-    if (headers.get('dnt') === '1' || headers.get('sec-gpc') === '1') return noContent('dnt-o-gpc')
+    if (process.env.ANALYTICS_IGNORE_DNT !== 'true' && (headers.get('dnt') === '1' || headers.get('sec-gpc') === '1')) return noContent('dnt-o-gpc')
 
     const userAgent = headers.get('user-agent') ?? ''
     if (isBot(userAgent)) return noContent('bot')
