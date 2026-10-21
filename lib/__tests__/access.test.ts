@@ -3,9 +3,9 @@ import {
   adminOnly,
   adminOnlyGlobal,
   anyone,
-  contentAccess,
-  contentAccessPublic,
-  contentGlobal,
+  sectionAccess,
+  sectionAccessPublic,
+  sectionGlobal,
   isAdmin,
   isAdminField,
   isAdminOrSelfReader,
@@ -68,23 +68,43 @@ describe('roles del panel', () => {
     expect([admin, editor, viewer, sinRol, lector, null].map((u) => isEditor(as(u)))).toEqual([true, true, false, false, false, false])
     expect([admin, editor, viewer, sinRol, lector, null].map((u) => isPanelUser(as(u)))).toEqual([true, true, true, false, false, false])
   })
-  it('contentAccess: viewer lee pero no escribe', () => {
-    expect(contentAccess.read(as(viewer))).toBe(true)
-    expect(contentAccess.create(as(viewer))).toBe(false)
-    expect(contentAccess.update(as(viewer))).toBe(false)
-    expect(contentAccess.delete(as(viewer))).toBe(false)
-    expect(contentAccess.update(as(editor))).toBe(true)
-    expect(contentAccess.read(as(sinRol))).toBe(false)
-    expect(contentAccess.read(as(lector))).toBe(false)
+  it('sectionAccess: viewer lee pero no escribe', () => {
+    const c = sectionAccess('paginas')
+    expect(c.read(as(viewer))).toBe(true)
+    expect(c.create(as(viewer))).toBe(false)
+    expect(c.update(as(viewer))).toBe(false)
+    expect(c.delete(as(viewer))).toBe(false)
+    expect(c.update(as(editor))).toBe(true)
+    expect(c.delete(as(editor))).toBe(true)
+    expect(c.read(as(sinRol))).toBe(false)
+    expect(c.read(as(lector))).toBe(false)
+    expect(c.read(as(null))).toBe(false)
   })
-  it('contentAccessPublic y contentGlobal', () => {
-    expect(contentAccessPublic.read(as(null))).toBe(true)
-    expect(contentAccessPublic.create(as(editor))).toBe(true)
-    expect(contentAccessPublic.create(as(viewer))).toBe(false)
-    expect(contentGlobal.read(as(viewer))).toBe(true)
-    expect(contentGlobal.update(as(viewer))).toBe(false)
-    expect(contentGlobal.update(as(editor))).toBe(true)
-    expect(contentGlobal.read(as(lector))).toBe(false)
+  it('sectionAccessPublic y sectionGlobal', () => {
+    expect(sectionAccessPublic('medios').read(as(null))).toBe(true)
+    expect(sectionAccessPublic('medios').create(as(editor))).toBe(true)
+    expect(sectionAccessPublic('medios').create(as(viewer))).toBe(false)
+    expect(sectionAccessPublic('medios').create(as(null))).toBe(false)
+    expect(sectionGlobal('bloques').read(as(viewer))).toBe(true)
+    expect(sectionGlobal('bloques').update(as(viewer))).toBe(false)
+    expect(sectionGlobal('bloques').update(as(editor))).toBe(true)
+    expect(sectionGlobal('bloques').read(as(lector))).toBe(false)
+  })
+  it('interruptores del usuario mandan sobre la plantilla', () => {
+    const ed = { ...editor, permissions: { medios: { read: true, write: false, delete: false } } }
+    expect(sectionAccess('medios').create(as(ed))).toBe(false)
+    expect(sectionAccess('medios').read(as(ed))).toBe(true)
+    expect(sectionAccess('bloques').create(as(ed))).toBe(true)
+    const vw = { ...viewer, permissions: { paginas: { read: true, write: true, delete: false } } }
+    expect(sectionAccess('paginas').update(as(vw))).toBe(true)
+    expect(sectionAccess('paginas').delete(as(vw))).toBe(false)
+    expect(sectionAccess('bloques').update(as(vw))).toBe(false)
+    const soloDelete = { ...editor, permissions: { news: 1, bloques: { read: false, write: false, delete: true } } }
+    expect(sectionAccess('bloques').read(as(soloDelete))).toBe(true)
+    const admin2 = { ...admin, permissions: { medios: { read: false, write: false, delete: false } } }
+    expect(sectionAccess('medios').delete(as(admin2))).toBe(true)
+    const lectorConPerm = { ...lector, role: 'admin', permissions: {} }
+    expect(sectionAccess('medios').read(as(lectorConPerm))).toBe(false)
   })
   it('adminOnly cierra todo a editor y viewer', () => {
     for (const u of [editor, viewer, sinRol]) {

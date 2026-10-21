@@ -1,5 +1,5 @@
 import type { GlobalConfig } from "payload";
-import { contentGlobal } from "@/lib/access";
+import { sectionGlobal } from "@/lib/access";
 
 export const ElectronicResources: GlobalConfig = {
     slug: 'electronic_resources',
@@ -7,7 +7,7 @@ export const ElectronicResources: GlobalConfig = {
         group: 'Páginas',
         description: 'Página de recursos electrónicos: cabecera y accesos destacados.'
     },
-    access: contentGlobal,
+    access: sectionGlobal('paginas'),
     label: 'Recursos Electrónicos',
     fields: [
         {

@@ -1,4 +1,5 @@
 import type { Access, FieldAccess } from 'payload'
+import { resolvePermissions, type PermissionFlag, type SectionKey } from '@/lib/permissions'
 
 export const ROLES = ['admin', 'editor', 'viewer'] as const
 export type Role = (typeof ROLES)[number]
@@ -56,23 +57,28 @@ export const adminOnlyGlobal = {
   update: isAdmin,
 }
 
-// Contenido: lo ve todo el panel, lo escriben admins y editores
-export const contentAccess = {
-  read: isPanelUser,
-  create: isEditor,
-  update: isEditor,
-  delete: isEditor,
+const can = (section: SectionKey, flag: PermissionFlag): Access => ({ req: { user } }) => {
+  const role = roleOf(user)
+  if (!role) return false
+  if (role === 'admin') return true
+  return resolvePermissions(user as any)[section][flag]
 }
 
-// Contenido que además se sirve público (media, hero, header...)
-export const contentAccessPublic = {
+// Contenido de una sección del panel: los permisos salen de los interruptores del usuario (o de la plantilla de su rol)
+export const sectionAccess = (section: SectionKey) => ({
+  read: can(section, 'read'),
+  create: can(section, 'write'),
+  update: can(section, 'write'),
+  delete: can(section, 'delete'),
+})
+
+// Igual, pero la lectura es pública (media, hero, header...)
+export const sectionAccessPublic = (section: SectionKey) => ({
+  ...sectionAccess(section),
   read: anyone,
-  create: isEditor,
-  update: isEditor,
-  delete: isEditor,
-}
+})
 
-export const contentGlobal = {
-  read: isPanelUser,
-  update: isEditor,
-}
+export const sectionGlobal = (section: SectionKey) => ({
+  read: can(section, 'read'),
+  update: can(section, 'write'),
+})

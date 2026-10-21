@@ -258,6 +258,31 @@ export interface User {
    * Administrador: todo. Editor: edita el contenido. Lector: solo consulta.
    */
   role: 'admin' | 'editor' | 'viewer';
+  /**
+   * Qué puede hacer este usuario en cada sección. Al cambiar el rol se restablecen a la plantilla del nuevo rol. "Crear y editar" y "Eliminar" implican "Ver". Servicios internos y Usuarios y accesos son siempre solo para administradores.
+   */
+  permissions?: {
+    paginas?: {
+      read?: boolean | null;
+      write?: boolean | null;
+      delete?: boolean | null;
+    };
+    bloques?: {
+      read?: boolean | null;
+      write?: boolean | null;
+      delete?: boolean | null;
+    };
+    navegacion?: {
+      read?: boolean | null;
+      write?: boolean | null;
+      delete?: boolean | null;
+    };
+    medios?: {
+      read?: boolean | null;
+      write?: boolean | null;
+      delete?: boolean | null;
+    };
+  };
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -1628,6 +1653,38 @@ export interface PayloadMigration {
  */
 export interface UsersSelect<T extends boolean = true> {
   role?: T;
+  permissions?:
+    | T
+    | {
+        paginas?:
+          | T
+          | {
+              read?: T;
+              write?: T;
+              delete?: T;
+            };
+        bloques?:
+          | T
+          | {
+              read?: T;
+              write?: T;
+              delete?: T;
+            };
+        navegacion?:
+          | T
+          | {
+              read?: T;
+              write?: T;
+              delete?: T;
+            };
+        medios?:
+          | T
+          | {
+              read?: T;
+              write?: T;
+              delete?: T;
+            };
+      };
   updatedAt?: T;
   createdAt?: T;
   email?: T;

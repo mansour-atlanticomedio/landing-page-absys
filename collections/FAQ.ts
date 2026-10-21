@@ -1,5 +1,5 @@
 import type { CollectionConfig } from "payload";
-import { contentAccess } from "@/lib/access";
+import { sectionAccess } from "@/lib/access";
 
 export const FAQ : CollectionConfig = {
     slug: 'faq',
@@ -8,7 +8,7 @@ export const FAQ : CollectionConfig = {
         description: 'Listados de preguntas frecuentes con sus respuestas.',
         useAsTitle: 'title'
     },
-    access: contentAccess,
+    access: sectionAccess('bloques'),
     labels: {
         singular: "Preguntas Frecuentes",
         plural: "Preguntas Frecuentes"

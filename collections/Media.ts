@@ -1,5 +1,5 @@
 import type { CollectionConfig } from 'payload'
-import { contentAccessPublic } from '@/lib/access'
+import { sectionAccessPublic } from '@/lib/access'
 
 export const Media: CollectionConfig = {
   slug: 'media',
@@ -14,7 +14,7 @@ export const Media: CollectionConfig = {
     singular: 'Imagen',
     plural: 'Galeria de Imagenes'
   },
-  access: contentAccessPublic,
+  access: sectionAccessPublic('medios'),
   fields: [
     {
       name: 'alt',

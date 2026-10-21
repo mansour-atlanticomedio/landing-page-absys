@@ -1,5 +1,5 @@
 import { CollectionConfig } from "payload";
-import { contentAccessPublic } from "@/lib/access";
+import { sectionAccessPublic } from "@/lib/access";
 
 export const Login: CollectionConfig = {
     slug: 'login_page',
@@ -11,7 +11,7 @@ export const Login: CollectionConfig = {
         plural: 'Inicio de Sesion',
         singular: 'Inicio de Sesion'
     },
-    access: contentAccessPublic,
+    access: sectionAccessPublic('paginas'),
     fields: [
         {
             name: 'imageLogin',

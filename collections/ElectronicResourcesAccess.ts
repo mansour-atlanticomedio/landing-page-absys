@@ -1,6 +1,6 @@
 import type { CollectionConfig } from "payload";
 import { appIcons } from './Icons.ts'
-import { contentAccess } from "@/lib/access";
+import { sectionAccess } from "@/lib/access";
 
 export const ElectronicResourcesAccess: CollectionConfig = {
     slug: 'electronic_resources_access',
@@ -9,7 +9,7 @@ export const ElectronicResourcesAccess: CollectionConfig = {
         description: 'Conjuntos de accesos directos con icono, texto y enlace.',
         useAsTitle: 'title'
     },
-    access: contentAccess,
+    access: sectionAccess('bloques'),
     labels: {
         singular: 'Acceso Destacado',
         plural: 'Accesos Destacados'

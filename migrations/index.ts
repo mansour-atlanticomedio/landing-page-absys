@@ -13,6 +13,7 @@ import * as migration_20261015_170639_pages_collection from './20261015_170639_p
 import * as migration_20261015_172126_importar_exportar from './20261015_172126_importar_exportar';
 import * as migration_20261019_143507_quitar_tipo_header_footer_simple from './20261019_143507_quitar_tipo_header_footer_simple';
 import * as migration_20261020_101500_roles_usuarios from './20261020_101500_roles_usuarios';
+import * as migration_20261021_100000_permisos_usuarios from './20261021_100000_permisos_usuarios';
 
 export const migrations = [
   {
@@ -88,6 +89,11 @@ export const migrations = [
   {
     up: migration_20261020_101500_roles_usuarios.up,
     down: migration_20261020_101500_roles_usuarios.down,
-    name: '20261020_101500_roles_usuarios'
+    name: '20261020_101500_roles_usuarios',
+  },
+  {
+    up: migration_20261021_100000_permisos_usuarios.up,
+    down: migration_20261021_100000_permisos_usuarios.down,
+    name: '20261021_100000_permisos_usuarios',
   },
 ];

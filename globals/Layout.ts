@@ -1,6 +1,6 @@
 import { GlobalConfig } from "payload";
 import { ENLACES_EXTERNOS_KEYS } from "@/lib/links";
-import { contentGlobal } from "@/lib/access";
+import { sectionGlobal } from "@/lib/access";
 
 export const Layout : GlobalConfig = {
     slug: 'layout',
@@ -8,7 +8,7 @@ export const Layout : GlobalConfig = {
         group: 'Navegación y pie',
         description: 'Elige la cabecera y el pie del sitio y gestiona el registro de enlaces externos.'
     },
-    access: contentGlobal,
+    access: sectionGlobal('navegacion'),
     label: 'Plantilla',
     fields: [
         {

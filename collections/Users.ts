@@ -1,4 +1,4 @@
-import { APIError, type CollectionConfig } from 'payload'
+import { APIError, type CollectionConfig, type Field } from 'payload'
 import { isAdmin, isAdminField, isAdminOrSelfUser } from '@/lib/access'
 import {
   ROLE_OPTIONS,
@@ -6,6 +6,53 @@ import {
   lastAdminDemoteError,
   resolveRoleOnCreate,
 } from '@/lib/users-roles'
+import {
+  PERMISSION_FLAGS,
+  PERMISSION_FLAG_LABELS,
+  SECTIONS,
+  hasStoredPermissions,
+  normalizePermissions,
+  resolvePermissions,
+  templateForRole,
+} from '@/lib/permissions'
+
+const permissionsField: Field = {
+  name: 'permissions',
+  label: 'Permisos por sección',
+  type: 'group',
+  saveToJWT: true,
+  access: { create: isAdminField, update: isAdminField },
+  admin: {
+    description:
+      'Qué puede hacer este usuario en cada sección. Al cambiar el rol se restablecen a la plantilla del nuevo rol. "Crear y editar" y "Eliminar" implican "Ver". Servicios internos y Usuarios y accesos son siempre solo para administradores.',
+    condition: (data) => data?.role !== 'admin',
+  },
+  hooks: {
+    // Sin interruptores guardados (usuarios anteriores a esta función) se muestran los de la plantilla del rol
+    afterRead: [
+      ({ value, data, siblingData }) => {
+        const role = (data ?? siblingData)?.role
+        if (hasStoredPermissions(value)) return value
+        return role && role !== 'admin' ? templateForRole(role) : value
+      },
+    ],
+  },
+  fields: SECTIONS.map(({ key, label }) => ({
+    name: key,
+    label,
+    type: 'group' as const,
+    fields: [
+      {
+        type: 'row' as const,
+        fields: PERMISSION_FLAGS.map((flag) => ({
+          name: flag,
+          label: PERMISSION_FLAG_LABELS[flag],
+          type: 'checkbox' as const,
+        })),
+      },
+    ],
+  })),
+}
 
 const countOtherAdmins = async (req: any, excludeId?: number | string) => {
   const { totalDocs } = await req.payload.count({
@@ -41,11 +88,19 @@ export const Users: CollectionConfig = {
       async ({ data, operation, req }) => {
         if (operation !== 'create') return data
         const { totalDocs } = await req.payload.count({ collection: 'users', overrideAccess: true, req })
-        return { ...data, role: resolveRoleOnCreate(totalDocs, data?.role) }
+        const role = resolveRoleOnCreate(totalDocs, data?.role)
+        return { ...data, role, permissions: templateForRole(role) }
+      },
+      ({ data, originalDoc, operation }) => {
+        if (operation !== 'update' || !data?.role || data.role === originalDoc?.role) return data
+        return { ...data, permissions: templateForRole(data.role) }
       },
     ],
     beforeChange: [
       async ({ data, originalDoc, operation, req }) => {
+        if (data?.permissions && hasStoredPermissions(data.permissions)) {
+          data.permissions = normalizePermissions(resolvePermissions({ role: 'viewer', permissions: data.permissions }) as any)
+        }
         if (operation !== 'update' || !originalDoc) return data
         const nextRole = data?.role ?? originalDoc.role
         const error = lastAdminDemoteError({
@@ -87,5 +142,6 @@ export const Users: CollectionConfig = {
         description: 'Administrador: todo. Editor: edita el contenido. Lector: solo consulta.',
       },
     },
+    permissionsField,
   ],
 }

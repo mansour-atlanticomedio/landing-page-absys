@@ -733,3 +733,7 @@ todos los casos).
 - `users.role` (admin | editor | viewer, defecto viewer); `lib/access.ts` con `isEditor`/`isPanelUser`, `contentAccess`, `contentAccessPublic`, `contentGlobal`; banner de solo lectura (`ViewerBanner`). Migración `20261020_101500_roles_usuarios` (existentes → admin). Primer usuario = admin; no se degrada ni borra al último admin.
 - Verificado por REST con 3 usuarios temporales (borrados) y 294 tests. Sin verificar: banner y botón Guardar en navegador, create-first-user, migración en BD nueva.
 - Decisión: roles fijos, sin permisos sueltos por usuario (fase 2 si hace falta). Aplicar en producción: copia de la BD antes de `payload migrate`.
+
+## 2026-10-21 – permisos por usuario (fase 2 de roles)
+- `users.permissions`: casillas Ver / Crear y editar / Eliminar por sección del menú; el rol es plantilla (cambiar rol la reaplica; sin casillas guardadas se usa la plantilla). Fábricas `sectionAccess/sectionAccessPublic/sectionGlobal` y mapa en `lib/permissions.ts`. Migración `20261021_100000_permisos_usuarios`.
+- Verificado por REST con usuarios temporales (borrados) y 305 tests. Sin verificar en navegador. Decisión: granularidad por sección, no por colección.

@@ -1,6 +1,6 @@
 import type { GlobalConfig } from "payload";
 import { layoutBlocks } from "@/blocks";
-import { contentGlobal } from "@/lib/access";
+import { sectionGlobal } from "@/lib/access";
 
 export const Home: GlobalConfig = {
   slug: 'home',
@@ -19,7 +19,7 @@ export const Home: GlobalConfig = {
             },
         }
     },
-  access: contentGlobal,
+  access: sectionGlobal('paginas'),
   label: "Inicio",
   fields: [
     {

@@ -1,6 +1,6 @@
 import type { GlobalConfig } from "payload";
 import { layoutBlocks } from "@/blocks";
-import { contentGlobal } from "@/lib/access";
+import { sectionGlobal } from "@/lib/access";
 
 export const Repositories: GlobalConfig = {
     slug: 'repository',
@@ -8,7 +8,7 @@ export const Repositories: GlobalConfig = {
         group: 'Páginas',
         description: 'Página de repositorios: cabecera y bloques de contenido.'
     },
-    access: contentGlobal,
+    access: sectionGlobal('paginas'),
     label: 'Repositorios',
     fields: [
         {

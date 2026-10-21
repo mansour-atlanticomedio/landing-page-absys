@@ -1,5 +1,5 @@
 import { APIError, ValidationError, type CollectionConfig } from 'payload'
-import { contentAccess, isPanelUser } from '@/lib/access'
+import { sectionAccess } from '@/lib/access'
 import { pageBlocks } from '@/blocks'
 import { BASE_PATH } from '@/lib/auth/redirects'
 import {
@@ -27,7 +27,7 @@ export const Pages: CollectionConfig = {
             url: ({ data }) => previewUrl((data as any)?.slug),
         },
     },
-    access: { ...contentAccess, readVersions: isPanelUser },
+    access: { ...sectionAccess('paginas'), readVersions: sectionAccess('paginas').read },
     hooks: {
         beforeChange: [
             ({ data, originalDoc, req }) => {
