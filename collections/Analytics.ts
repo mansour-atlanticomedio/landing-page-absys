@@ -15,7 +15,11 @@ import {
 } from '@/lib/analytics/config'
 import { getTodaySummary, pruneAnalytics } from '@/lib/analytics/queries'
 
-const noContent = () => new Response(null, { status: 204, headers: { 'Cache-Control': 'no-store' } })
+const noContent = (reason?: string) => {
+  const headers: Record<string, string> = { 'Cache-Control': 'no-store' }
+  if (reason && process.env.NODE_ENV !== 'production') headers['X-Analytics-Skipped'] = reason
+  return new Response(null, { status: 204, headers })
+}
 
 const ownHosts = (req: Parameters<PayloadHandler>[0]): string[] => {
   const hosts = [req.headers.get('host'), req.headers.get('x-forwarded-host')]
@@ -31,14 +35,14 @@ const ownHosts = (req: Parameters<PayloadHandler>[0]): string[] => {
 export const handleTrack: PayloadHandler = async (req) => {
   try {
     const headers = req.headers
-    if (headers.get('dnt') === '1' || headers.get('sec-gpc') === '1') return noContent()
+    if (headers.get('dnt') === '1' || headers.get('sec-gpc') === '1') return noContent('dnt-o-gpc')
 
     const userAgent = headers.get('user-agent') ?? ''
-    if (isBot(userAgent)) return noContent()
+    if (isBot(userAgent)) return noContent('bot')
 
     // El personal del panel (collection users) y la vista previa no cuentan
-    if ((req.user as any)?.collection === 'users') return noContent()
-    if ((headers.get('cookie') ?? '').includes('__prerender_bypass')) return noContent()
+    if ((req.user as any)?.collection === 'users') return noContent('usuario-del-panel')
+    if ((headers.get('cookie') ?? '').includes('__prerender_bypass')) return noContent('vista-previa')
 
     const ip = getClientIp(headers, getTrustedIpOptions())
     const limit = ip === UNKNOWN_IP ? TRACK_RATE_LIMIT_UNKNOWN_IP_PER_MIN : TRACK_RATE_LIMIT_PER_MIN
@@ -47,10 +51,10 @@ export const handleTrack: PayloadHandler = async (req) => {
       [{ dimension: 'ip', key: ipRateLimitKey(ip), limit, windowMs: 60_000 }],
       Date.now(),
     )
-    if (!limits.allowed) return noContent()
+    if (!limits.allowed) return noContent('rate-limit')
 
     const body = parseTrackBody(await (req as any).json?.().catch(() => null))
-    if (!body || isIgnoredPath(body.path)) return noContent()
+    if (!body || isIgnoredPath(body.path)) return noContent('cuerpo-o-ruta-ignorada')
 
     const visitor = visitorHash(analyticsSecret(), ip, userAgent, dayKey(new Date()))
     const db = (req.payload.db as any).drizzle
