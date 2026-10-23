@@ -252,7 +252,7 @@ information). `legal_advice`/`privacy_policie`/`privacy_cookies` siguen siendo t
 Desde 2026-10-08 **toda collection y global tiene `access` explícito** (`lib/access.ts`). Antes, sin `access`, Payload
 usaba `Boolean(user)` y cualquier lector del campus podía por REST crear admins en `users`, editar/borrar contenido,
 subir ficheros y leer los mensajes de contacto. Al registrar una collection o global nuevo hay que declarar su `access`
-(no dejar el default). Las funciones: `isAdmin` (`user.collection === 'users'`), `anyone`, `isAdminOrSelfReader`
+(no dejar el default). Las funciones: `isAdmin` (collection `users` con `role: admin`, ver "Roles del panel"), `anyone`, `isAdminOrSelfReader`
 (solo para `loginCampus_service`), y los conjuntos `adminOnly`, `publicReadAdminWrite` y `adminOnlyGlobal`.
 La web lee por Local API, que no pasa por `access`, así que cerrar la lectura REST no afecta a las páginas.
 
@@ -270,6 +270,29 @@ La web lee por Local API, que no pasa por `access`, así que cerrar la lectura R
 - `media`: solo jpeg, png, webp y avif (sin SVG) y `upload.limits.fileSize` de 10 MB en `payload.config.ts`.
 - Tras añadir o cambiar un `access` hay que reiniciar el contenedor (`docker restart biblioteca-frontend`), si no sigue activa la regla anterior.
 - Riesgo aceptado: `payload-locked-documents` conserva el default de Payload (un lector autenticado puede leerlo o crear locks falsos, sin acceso a contenido).
+
+#### Roles del panel (2026-10-20)
+
+`users` tiene el campo `role` (`admin` | `editor` | `viewer`, por defecto `viewer`, en el JWT). Migración `20261020_101500_roles_usuarios` (los usuarios existentes pasan a `admin`). Un `role` ausente o desconocido no da ningún permiso.
+
+| Rol | Contenido (collections, pages, media, globals) | Usuarios | Sensible (`sendEmail`, lectores, `exports`/`imports`) |
+|---|---|---|---|
+| `admin` | todo | todo, incluido cambiar roles y `unlock` | sí |
+| `editor` | leer, crear, editar, borrar | solo su ficha (el `role` no lo cambia) | no |
+| `viewer` | solo leer; el panel muestra el aviso `ViewerBanner` | solo su ficha | no |
+
+- Funciones en `lib/access.ts`: `isAdmin` (users + role admin), `isEditor` (admin o editor), `isPanelUser` (users con rol válido), `isAdminField`, `isAdminOrSelfUser`. Desde la fase 2 (2026-10-21) los conjuntos `contentAccess*` se sustituyeron por fábricas por sección: `sectionAccess(sec)`, `sectionAccessPublic(sec)` (lectura pública: `media`, `hero`, `header`, `login_page`) y `sectionGlobal(sec)`. Al crear una collection o global de contenido usar la de su sección (y añadirlo al mapa de `lib/permissions.ts`), no `adminOnly`.
+- `absys_service`, `author_service` y `book_cover_service` siguen en `publicReadAdminWrite` (escritura solo admin): son servicios, no contenido editable.
+- Reglas de `lib/users-roles.ts`: el primer usuario de una BD vacía queda `admin`; no se puede degradar ni borrar al último admin (`APIError` público).
+- Banner: `components/admin/ViewerBanner.tsx` registrado en `admin.components.header`; solo se muestra a `viewer`.
+- Sin verificar en navegador: el banner, que Payload oculte "Guardar" con `update:false`, create-first-user en BD vacía y la migración sobre una BD nueva.
+
+**Permisos por usuario (fase 2, 2026-10-21).** `users.permissions` (group con `saveToJWT`): por sección del menú (Páginas, Bloques de contenido, Navegación y pie, Medios) tres casillas: `read` (Ver), `write` (Crear y editar), `delete` (Eliminar). "Servicios internos" y "Usuarios y accesos" son siempre solo admin. Solo un admin las cambia; el admin ignora las casillas.
+- El rol es una plantilla (`lib/permissions.ts`: `templateForRole`, `resolvePermissions`, `normalizePermissions`, `writableSections`, mapa slug → sección): al crear un usuario o cambiar su rol se rellenan con la plantilla (editor: todo; viewer: solo ver). `write`/`delete` fuerzan `read`. Si un usuario no tiene casillas guardadas, `afterRead` y los access caen a la plantilla de su rol (los usuarios anteriores a la fase 2 no necesitan migración de datos).
+- Mapa: Páginas = `pages`, `login_page` y los globals de página (`home`, `services`, `formation`, `investigation`, `repository`, `library`, `contact`, `about_us`, `horarios_contacto`, `electronic_resources`, `quienes_somos`, `solicitud_compra`); Bloques = `hero`, `hero_carrusel`, `speakers`, `statistics`, `about`, `features`, `timeline`, `input`, `cta`, `faq`, `news`, `blogs`, `electronic_resources_access`, `schedule`, `partners`; Navegación y pie = `header`, `footer`, global `layout`; Medios = `media`.
+- `ViewerBanner`: sin escritura en ninguna sección muestra el aviso de solo lectura; con algunas, "Edición limitada. Solo puedes editar: …".
+- Migración `20261021_100000_permisos_usuarios` (12 columnas booleanas nulas, sin backfill). Los cambios de permisos aplican en la siguiente petición.
+- Sin verificar en navegador: casillas, `admin.condition`, banner y que Payload oculte secciones/botones según `read`/`update`; migración en BD nueva.
 
 ### Capa anti-abuso (`lib/security/`, 2026-10-08)
 

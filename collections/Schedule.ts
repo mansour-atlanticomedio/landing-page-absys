@@ -1,5 +1,5 @@
 import type { CollectionConfig } from "payload";
-import { adminOnly } from "@/lib/access";
+import { sectionAccess } from "@/lib/access";
 
 export const Schedule: CollectionConfig = {
     slug: 'schedule',
@@ -8,7 +8,7 @@ export const Schedule: CollectionConfig = {
         description: 'Horarios de apertura por días y franjas.',
         useAsTitle: 'title'
     },
-    access: adminOnly,
+    access: sectionAccess('bloques'),
     labels: {
         singular: 'Horario',
         plural: 'Horarios',

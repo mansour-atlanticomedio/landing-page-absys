@@ -12,6 +12,8 @@ import * as migration_20261015_163937_about_us_blocks from './20261015_163937_ab
 import * as migration_20261015_170639_pages_collection from './20261015_170639_pages_collection';
 import * as migration_20261015_172126_importar_exportar from './20261015_172126_importar_exportar';
 import * as migration_20261019_143507_quitar_tipo_header_footer_simple from './20261019_143507_quitar_tipo_header_footer_simple';
+import * as migration_20261020_101500_roles_usuarios from './20261020_101500_roles_usuarios';
+import * as migration_20261021_100000_permisos_usuarios from './20261021_100000_permisos_usuarios';
 
 export const migrations = [
   {
@@ -82,6 +84,16 @@ export const migrations = [
   {
     up: migration_20261019_143507_quitar_tipo_header_footer_simple.up,
     down: migration_20261019_143507_quitar_tipo_header_footer_simple.down,
-    name: '20261019_143507_quitar_tipo_header_footer_simple'
+    name: '20261019_143507_quitar_tipo_header_footer_simple',
+  },
+  {
+    up: migration_20261020_101500_roles_usuarios.up,
+    down: migration_20261020_101500_roles_usuarios.down,
+    name: '20261020_101500_roles_usuarios',
+  },
+  {
+    up: migration_20261021_100000_permisos_usuarios.up,
+    down: migration_20261021_100000_permisos_usuarios.down,
+    name: '20261021_100000_permisos_usuarios',
   },
 ];

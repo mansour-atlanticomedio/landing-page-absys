@@ -40,6 +40,7 @@ import { ExportSaveButton as ExportSaveButton_cdf7e044479f899a31f804427d568b36 }
 import { ImportPreview as ImportPreview_cdf7e044479f899a31f804427d568b36 } from '@payloadcms/plugin-import-export/rsc'
 import { ImportSaveButton as ImportSaveButton_cdf7e044479f899a31f804427d568b36 } from '@payloadcms/plugin-import-export/rsc'
 import { default as default_3e5245264c92c0c78140c7491e16dc6b } from '../../../components/admin/PageEditTips'
+import { default as default_14e4ba367eb891a120f429402c6e9ecc } from '../../../components/admin/ViewerBanner'
 import { default as default_7be396d0766c6c490887ef074dd0ced4 } from '../../../components/admin/AdminIcon'
 import { default as default_27eed1898e8caadb2fd2266b54bb4509 } from '../../../components/admin/AdminLogo'
 import { default as default_8fa9c485a5aae932ba1d96a513f72049 } from '../../../components/admin/NavHelp'
@@ -91,6 +92,7 @@ export const importMap = {
   "@payloadcms/plugin-import-export/rsc#ImportPreview": ImportPreview_cdf7e044479f899a31f804427d568b36,
   "@payloadcms/plugin-import-export/rsc#ImportSaveButton": ImportSaveButton_cdf7e044479f899a31f804427d568b36,
   "/components/admin/PageEditTips#default": default_3e5245264c92c0c78140c7491e16dc6b,
+  "/components/admin/ViewerBanner#default": default_14e4ba367eb891a120f429402c6e9ecc,
   "/components/admin/AdminIcon#default": default_7be396d0766c6c490887ef074dd0ced4,
   "/components/admin/AdminLogo#default": default_27eed1898e8caadb2fd2266b54bb4509,
   "/components/admin/NavHelp#default": default_8fa9c485a5aae932ba1d96a513f72049,
