@@ -14,7 +14,7 @@ export default function CuentaNav() {
 
   return (
     <nav aria-label="Mi cuenta" className="border-b border-border">
-      <ul className="flex gap-8">
+      <ul className="flex gap-5 sm:gap-8 overflow-x-auto whitespace-nowrap">
         {SECCIONES.map(({ href, label }) => {
           const activa = pathname === href || pathname.startsWith(`${href}/`);
           return (

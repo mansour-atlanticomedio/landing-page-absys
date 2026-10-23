@@ -65,7 +65,7 @@ export default function Partners ({ partners_item } : PartnersBoxProps) {
                                     <a
                                         key={index}
                                         href={p.link || "#"}
-                                        className="shrink-0 relative flex h-44 w-85 items-center justify-center overflow-hidden rounded-lg border border-border bg-card text-center transition hover:border-primary hover:shadow-md"
+                                        className="shrink-0 relative flex h-44 w-full max-w-85 sm:w-85 items-center justify-center overflow-hidden rounded-lg border border-border bg-card text-center transition hover:border-primary hover:shadow-md"
                                     >
                                         {imageUrl ? (
                                             <img

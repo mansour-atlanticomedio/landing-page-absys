@@ -198,14 +198,14 @@ export const LoginPage: React.FC<LoginPageProps> = ({ className = "" }) => {
   }
 
   return (
-    <div className={`h-screen w-screen bg-slate-50 flex justify-center items-center ${className}`}>
+    <div className={`min-h-screen w-full bg-slate-50 flex justify-center items-center ${className}`}>
       <div className="flex-3 h-full relative hidden md:block bg-gradient-to-br from-teal-600 to-slate-900">
         {imageUrl && (
           <Image src={imageUrl} fill alt={imageAlt} className="object-cover" />
         )}
       </div>
 
-      <div className="flex-2 flex flex-col justify-center items-center h-full px-6">
+      <div className="flex-2 flex flex-col justify-center items-center h-full px-6 py-8">
         <div className="text-center">
           <div className="inline-flex items-center justify-center text-teal-400 min-h-[100px]">
             {headerLogo ? (
@@ -343,7 +343,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ className = "" }) => {
                 <Button
                   asChild
                   variant="outline"
-                  className="w-full h-[41px] rounded-none border-[#8C8C8C] bg-white px-3 text-[15px] font-semibold text-[#5E5E5E] hover:bg-[#F3F3F3] hover:text-[#5E5E5E] transition-colors"
+                  className="w-full h-11 rounded-none border-[#8C8C8C] bg-white px-3 text-[15px] font-semibold text-[#5E5E5E] hover:bg-[#F3F3F3] hover:text-[#5E5E5E] transition-colors"
                   style={{ fontFamily: '"Segoe UI", "Segoe UI Web", Tahoma, Arial, sans-serif' }}
                 >
                   <a

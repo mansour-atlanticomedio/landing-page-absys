@@ -59,7 +59,7 @@ export default function FormationContent({
         transition={{ duration: 0.4, ease: "easeInOut" }}
       >
         <div>
-          <h1 className="text-4xl font-extrabold text-slate-800">{title}</h1>
+          <h1 className="text-3xl md:text-4xl font-extrabold text-slate-800">{title}</h1>
           <div className="w-10 h-1 bg-teal-700 my-4" />
           <p className="text-slate-600 mb-4">{subtitle}</p>
           <p className="text-slate-600">
@@ -67,7 +67,7 @@ export default function FormationContent({
             actividades formativas dirigidas a la comunidad universitaria.
           </p>
         </div>
-        <div className="relative h-72 rounded-lg overflow-hidden">
+        <div className="relative h-56 sm:h-72 rounded-lg overflow-hidden">
           <Image src={imageUrl} alt="" fill className="object-cover" />
         </div>
       </motion.section>

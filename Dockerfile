@@ -34,6 +34,7 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/app ./app
+COPY --from=builder /app/blocks ./blocks
 COPY --from=builder /app/collections ./collections
 COPY --from=builder /app/globals ./globals
 COPY --from=builder /app/migrations ./migrations

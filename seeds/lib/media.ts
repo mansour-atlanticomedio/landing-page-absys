@@ -1,3 +1,4 @@
+import fs from 'fs'
 import path from 'path'
 
 type MediaOptions = {
@@ -6,6 +7,7 @@ type MediaOptions = {
   req?: any
 }
 
+const MEDIA_DIR = path.resolve(process.cwd(), 'media')
 const ASSETS_DIR = path.resolve(process.cwd(), 'seeds/assets')
 
 // Acepta un nombre dentro de seeds/assets o una ruta (relativa o absoluta)
@@ -26,7 +28,7 @@ export async function findOrCreateMedia(payload: any, { file, alt, req }: MediaO
     pagination: false,
     ...reqArg,
   })
-  if (exact.docs[0]) return exact.docs[0]
+  if (exact.docs[0]) return restoreMissingFile(payload, exact.docs[0], filePath, reqArg)
 
   // Payload añade un sufijo -N cuando el nombre ya existe
   const suffixed = await payload.find({
@@ -41,12 +43,25 @@ export async function findOrCreateMedia(payload: any, { file, alt, req }: MediaO
   const match = suffixed.docs
     .filter((d: any) => pattern.test(d.filename ?? ''))
     .sort((a: any, b: any) => Number(a.filename.match(pattern)[1]) - Number(b.filename.match(pattern)[1]))[0]
-  if (match) return match
+  if (match) return restoreMissingFile(payload, match, filePath, reqArg)
 
   return payload.create({
     collection: 'media',
     data: { alt },
     filePath,
+    ...reqArg,
+  })
+}
+
+// Si la fila existe pero el fichero se perdió (volumen borrado, imagen reconstruida), se vuelve a subir conservando el id
+async function restoreMissingFile(payload: any, doc: any, filePath: string, reqArg: object): Promise<any> {
+  if (!doc.filename || fs.existsSync(path.join(MEDIA_DIR, doc.filename)) || !fs.existsSync(filePath)) return doc
+  return payload.update({
+    collection: 'media',
+    id: doc.id,
+    data: { alt: doc.alt },
+    filePath,
+    overwriteExistingFiles: true,
     ...reqArg,
   })
 }

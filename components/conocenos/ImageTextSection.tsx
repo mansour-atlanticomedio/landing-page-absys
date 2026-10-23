@@ -9,7 +9,7 @@ export function ImageTextSection({ block }: { block: any }) {
     <section className="mx-auto max-w-6xl px-6 py-14">
       <div className={`grid grid-cols-1 gap-12 items-center ${image ? "md:grid-cols-2" : ""}`}>
         {image && (
-          <div className={`relative h-80 rounded-lg overflow-hidden ${right ? "md:order-2" : ""}`}>
+          <div className={`relative h-60 sm:h-80 rounded-lg overflow-hidden ${right ? "md:order-2" : ""}`}>
             <Image src={image} alt={block.image?.alt || ""} fill className="object-cover" />
           </div>
         )}

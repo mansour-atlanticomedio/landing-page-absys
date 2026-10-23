@@ -54,10 +54,10 @@ export default function InvestigationContent({
         transition={{ duration: 0.4, ease: "easeInOut" }}
       >
         <div>
-          <h1 className="text-4xl font-extrabold text-slate-800">{title}</h1>
+          <h1 className="text-3xl md:text-4xl font-extrabold text-slate-800">{title}</h1>
           <p className="mt-4 text-slate-600">{subtitle}</p>
         </div>
-        <div className="relative h-72 rounded-lg overflow-hidden">
+        <div className="relative h-56 sm:h-72 rounded-lg overflow-hidden">
           <Image src={imageUrl} alt="" fill className="object-cover" />
         </div>
       </motion.section>

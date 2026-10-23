@@ -94,7 +94,7 @@ function FooterHorizontal({ logoUrl, logoAlt, social_medias, seccion_info, polic
 
   return (
     <footer className="bg-primary text-primary-foreground bottom-0" >
-      <div className="max-w-7xl my-36 mx-14 grid md:grid-cols-3 gap-10">
+      <div className="max-w-7xl my-16 md:my-36 mx-6 sm:mx-14 grid sm:grid-cols-2 md:grid-cols-3 gap-10">
         <div>
           <a href="/biblioteca/">
             {logoUrl && logoUrl !== '' && (
@@ -110,7 +110,7 @@ function FooterHorizontal({ logoUrl, logoAlt, social_medias, seccion_info, polic
           <p className="text-sm text-primary-foreground/80 leading-relaxed mt-2">
             Puedes encontrarnos en:
           </p>
-          <div className="flex gap-3 mt-5">
+          <div className="flex flex-wrap gap-3 mt-5">
             {social_medias.map(({ icon, href, external, newTab }, i) => {
               const IconComponent = iconsSocialMediaMap[icon] ?? LinkIcon
 
@@ -151,22 +151,22 @@ function FooterHorizontal({ logoUrl, logoAlt, social_medias, seccion_info, polic
       </div>
 
 
-      <div className="bg-topbar text-center text-sm py-5 flex justify-around relative">
+      <div className="bg-topbar text-center text-sm py-5 px-6 pr-16 flex flex-col items-center gap-2 md:flex-row md:justify-around relative">
         <p>
           Todos los derechos reservados.
         </p>
-        <div className="policies mb-4 flex gap-4">
+        <div className="policies flex flex-wrap justify-center gap-x-4 gap-y-1 md:mb-4">
           {
             policies.map(({ label, link }, i) => (
               <div key={i} className="flex">
-                <a className="hover:underline mr-2" href={link}>{label}</a>
+                <a className="hover:underline mr-2 py-2" href={link}>{label}</a>
                 {i < policies.length - 1 && "-"}
               </div>
             ))
           }
         </div>
-        <a href="#top-arrow">
-          <CircleArrowUp className="absolute right-10" />
+        <a href="#top-arrow" aria-label="Volver arriba" className="absolute right-4 top-1/2 -translate-y-1/2 md:right-10">
+          <CircleArrowUp />
         </a>
       </div>
     </footer>
@@ -177,7 +177,7 @@ function FooterVertical({ title, logoUrl, logoAlt, social_medias, seccion_info, 
 
   return (
     <footer className="flex flex-col items-center justify-center bg-primary text-primary-foreground bottom-0" >
-      <div className="flex flex-col items-center justify-center max-w-7xl my-20 gap-8 text-center">
+      <div className="flex flex-col items-center justify-center max-w-7xl my-12 md:my-20 px-6 gap-8 text-center">
         {title &&
           <h2 className="text-white text-3xl font-bold">
             {title}
@@ -249,7 +249,7 @@ function FooterVertical({ title, logoUrl, logoAlt, social_medias, seccion_info, 
           })}
         </div>
       </div>
-      <div className="policies mb-4 flex gap-4">
+      <div className="policies mb-4 flex flex-wrap justify-center gap-x-4 gap-y-1 px-6">
         {
           policies.map(({ label, link }, i) => (
             <div key={i} className="flex">

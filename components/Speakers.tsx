@@ -10,8 +10,8 @@ interface SpeakersBoxProps {
 export default function Speakers({ title, people }: SpeakersBoxProps) {
 
   return (
-    <div className="min-h-screen bg-white font-sans mx-10 md:p-8 flex flex-col justify-center items-center">
-      <div className="flex flex-col items-center mb-16">
+    <div className="md:min-h-screen bg-white font-sans mx-4 sm:mx-10 md:p-8 flex flex-col justify-center items-center">
+      <div className="flex flex-col items-center mb-10 md:mb-16">
         <div className="flex items-center gap-3">
           <h2 className="section-title">{title}</h2>
         </div>

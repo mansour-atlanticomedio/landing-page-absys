@@ -51,7 +51,7 @@ export function CardsFeaturesSection({ block }: { block: any }) {
       <div className="mx-auto max-w-6xl px-6 py-14">
         {image ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-            <div className="relative h-80 rounded-lg overflow-hidden">
+            <div className="relative h-60 sm:h-80 rounded-lg overflow-hidden">
               <Image src={image} alt={block.image?.alt || ""} fill className="object-cover" />
             </div>
             <div>
