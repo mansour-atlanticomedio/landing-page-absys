@@ -792,3 +792,10 @@ todos los casos).
 
 ## 2026-10-19 – fix cn() desde el servidor
 - `lib/utils.ts` tenía `'use client'` por el hook `useBookCover`; `Card` en Server Components (`features_block` en Home) reventaba. Hook movido a `lib/useBookCover.ts`, `utils` sin directiva y reexporta. Home responde 200, `tsc` limpio.
+
+## 2026-10-26 — Limpieza: /contacto, /libros, lectores del campus y CLAUDE.md
+
+- `/contacto` eliminada (page, actions, `ContactoForm`, `ContactoLoginCard`) y redirigida con 308 a `/conocenos/horarios-ubicacion-y-contacto` desde `next.config.ts`; enlaces internos actualizados (catálogo, reservas, préstamos, `InvestigationContent`, `pages.seed`). `lib/contacto*.ts`, `lib/security/*` y `sendContactEmail` quedan como código sin usar (con sus tests) porque la solicitud de compra no los usa.
+- `/libros` devuelve 404 en producción (`layout.tsx` + `lib/libros-visibility.ts`, con test); en dev sigue.
+- `loginCampus_service`: fuera `dni`, `numeroCarnet`, `maxPrestamos`, `diasPrestamo`; dentro `fechaRegistro` y `ultimaSesion` (solo lectura). Migración `20261026_100000_lectores_campus` aplicada en dev.
+- CLAUDE.md corregido por discrepancia con el código: `EXTERNAL_ID_FIELD` es `lemail`, recuento de collections (27 + 2 del plugin), `footer` y `pages` añadidas a las tablas. Nginx fuera: producción usa Apache como proxy inverso; `docker-compose.prod.yml` publica 8085 solo en `127.0.0.1`. Pendiente por confirmar: si hay otro proxy delante de Apache (`TRUSTED_IP_HOP`=2) y el valor real del `.env` de producción.
