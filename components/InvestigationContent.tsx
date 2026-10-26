@@ -134,7 +134,7 @@ export default function InvestigationContent({
               <HeartHandshake className="h-4 w-4" /> {cta.title}
             </h3>
             <p className="text-sm text-slate-600 mb-4">{cta.subtitle}</p>
-            <Link href={cta.button_link || "/contacto"}>
+            <Link href={cta.button_link || "/conocenos/horarios-ubicacion-y-contacto"}>
               <button className="bg-teal-700 text-white rounded-md px-5 py-2.5 text-sm font-medium flex items-center gap-2 cursor-pointer transition-colors hover:bg-teal-800">
                 <Mail className="h-4 w-4" /> {cta.button_cta}
               </button>

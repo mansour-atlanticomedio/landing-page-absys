@@ -78,10 +78,8 @@ export const LoginCampusService: CollectionConfig = {
   },
   fields: [
     { name: "absysId", label: "Número de lector (Absys)", type: "text", index: true },
-    { name: "dni", label: "DNI", type: "text", unique: true, index: true },
     { name: "nombre", label: "Nombre", type: "text" },
     { name: "apellidos", label: "Apellidos", type: "text" },
-    { name: "numeroCarnet", label: "Número de carnet", type: "text", unique: true, index: true },
     {
       name: "colectivo",
       label: "Colectivo",
@@ -98,9 +96,20 @@ export const LoginCampusService: CollectionConfig = {
         { label: "Básico", value: "ANONI" },
       ],
     },
-    { name: "maxPrestamos", label: "Máximo de préstamos", type: "number" },
-    { name: "diasPrestamo", label: "Días de préstamo", type: "number" },
     { name: "isOfflineData", label: "Datos sin conexión", type: "checkbox", defaultValue: false },
+    {
+      name: "fechaRegistro",
+      label: "Fecha de registro",
+      type: "date",
+      defaultValue: () => new Date().toISOString(),
+      admin: { readOnly: true, date: { pickerAppearance: "dayAndTime" } },
+    },
+    {
+      name: "ultimaSesion",
+      label: "Fecha de última sesión",
+      type: "date",
+      admin: { readOnly: true, date: { pickerAppearance: "dayAndTime" } },
+    },
   ],
   endpoints: [
     { path: "/login/password", method: "post", handler: handleDecryptTest },
