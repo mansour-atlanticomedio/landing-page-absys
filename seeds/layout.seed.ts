@@ -101,7 +101,7 @@ const footerData = {
             "information": [
                 {
                     "icon": null,
-                    "label": "Carretera de Quílmes, 37 · 35017 Tafira Baja · Las Palmas de Gran Canaria",
+                    "label": "Carretera de Quilmes, 37 · 35017 Tafira Baja · Las Palmas de Gran Canaria",
                     "url": "https://www.atlanticomedio.es/biblioteca"
                 },
                 {
