@@ -1,3 +1,4 @@
+import { randomBytes } from "crypto";
 import type { CollectionConfig, Endpoint, PayloadHandler } from "payload";
 import { isAdmin, isAdminOrSelfReader } from "@/lib/access";
 import { decryptCampusToken } from "@/lib/integrations/campus/token";
@@ -75,6 +76,15 @@ export const LoginCampusService: CollectionConfig = {
     unlock: isAdmin,
     // Un lector no debe entrar al panel de administración
     admin: () => false,
+  },
+  hooks: {
+    // El acceso es sin contraseña (lo valida el campus); al importar lectores nuevos se genera una aleatoria que nadie conoce
+    beforeValidate: [
+      ({ data, operation }) => {
+        if (operation !== "create" || !data || data.password) return data;
+        return { ...data, password: randomBytes(32).toString("hex") };
+      },
+    ],
   },
   fields: [
     { name: "absysId", label: "Número de lector (Absys)", type: "text", index: true },

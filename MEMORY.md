@@ -799,3 +799,7 @@ todos los casos).
 - `/libros` devuelve 404 en producción (`layout.tsx` + `lib/libros-visibility.ts`, con test); en dev sigue.
 - `loginCampus_service`: fuera `dni`, `numeroCarnet`, `maxPrestamos`, `diasPrestamo`; dentro `fechaRegistro` y `ultimaSesion` (solo lectura). Migración `20261026_100000_lectores_campus` aplicada en dev.
 - CLAUDE.md corregido por discrepancia con el código: `EXTERNAL_ID_FIELD` es `lemail`, recuento de collections (27 + 2 del plugin), `footer` y `pages` añadidas a las tablas. Nginx fuera: producción usa Apache como proxy inverso; `docker-compose.prod.yml` publica 8085 solo en `127.0.0.1`. Pendiente por confirmar: si hay otro proxy delante de Apache (`TRUSTED_IP_HOP`=2) y el valor real del `.env` de producción.
+
+## 2026-10-27 – importar/exportar lectores del campus y bug de la cola
+- Añadido `loginCampus_service` al plugin (export + import). Descubierto que `disableJobsQueue` nunca estuvo en el código (CLAUDE.md lo daba por hecho): exportar/importar no generaban fichero. Corregido por collection con `export/import: { disableJobsQueue: true }`.
+- Hook `beforeValidate` en `loginCampus_service` genera contraseña aleatoria al crear sin ella (necesario para importar lectores nuevos). Verificado por Local API en dev (export CSV sin valores sensibles, update y alta). Sin verificar desde la UI del panel.
