@@ -28,7 +28,7 @@ Biblioteca de la Universidad Atlántico Medio. Landing page con CMS headless.
   - `--border`: `0 0% 80%` (#CCC)
   - `--ring`: `187 53% 49%` (mismo que accent)
   - `--topbar`: `187 53% 49%` (mismo que accent)
-- **Fuentes**: Montserrat (`font-display`, headings), Open Sans (`font-sans`, body)
+- **Fuentes**: Montserrat en todo el sitio (`font-display` y `font-sans`), cargada con `next/font/local` desde `lib/fonts.ts` (variable `public/fonts/Montserrat/Montserrat-VariableFont_wght.ttf`, normal e itálica, pesos 100–900; variable CSS `--font-montserrat` puesta en `<html>` de los layouts `(frontend)` y `(auth)`). Antes `font-sans` era Open Sans y el `@font-face` de `styles.css` apuntaba a ficheros inexistentes (`/fonts/Monserrat/*.woff2`), por lo que Montserrat nunca se cargaba; se eliminó. El login mantiene a propósito Segoe UI (estilo Microsoft). El panel de admin carga Montserrat aparte desde `custom.scss`
 - **Radius base**: 0.5rem (8px), derivados: `--radius-md` (6px), `--radius-sm` (4px)
 - **Hero overlay**: `linear-gradient(135deg, hsl(211 28% 25% / 0.78), hsl(187 53% 35% / 0.55))`
 
