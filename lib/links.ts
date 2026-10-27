@@ -19,6 +19,9 @@ export const ENLACES_EXTERNOS_KEYS = [
   { key: "tiktok", label: "TikTok" },
 ] as const;
 
+// Dirección por defecto del repositorio institucional: seeds y fallback de la página la toman de aquí
+export const DSPACE_URL_POR_DEFECTO = "http://172.26.0.200:4000/dspace";
+
 export type EnlaceExternoKey = (typeof ENLACES_EXTERNOS_KEYS)[number]["key"];
 
 // Busca un enlace externo editable desde Payload (global `layout`, campo `enlaces_externos`) por su

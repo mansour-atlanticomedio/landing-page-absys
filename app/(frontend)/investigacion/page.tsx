@@ -1,10 +1,10 @@
 import { getClient } from "@/lib/payload";
 import InvestigationContent from "@/components/InvestigationContent";
-import { resolveEnlaceExterno } from "@/lib/links";
+import { DSPACE_URL_POR_DEFECTO, resolveEnlaceExterno } from "@/lib/links";
 
 export const dynamic = 'force-dynamic';
 
-const DSPACE_FALLBACK = "http://172.26.0.200:4000/dspace";
+const DSPACE_FALLBACK = DSPACE_URL_POR_DEFECTO;
 
 const ACCESOS_RAPIDOS_FALLBACK = [
   { icon: "Search", title: "Buscar información" },
