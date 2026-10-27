@@ -142,12 +142,12 @@ function NewsCard({ new: { tag, link, title, description, image }, style }: { ne
         return (
             <a href={link}>
                 <article className="group overflow-hidden rounded-lg border border-border bg-card transition hover:shadow-lg">
-                    <div className="h-44 bg-linear-to-br sm:h-52 from-primary/30 via-primary/10 to-accent/20" >
+                    <div className="h-44 overflow-hidden bg-linear-to-br sm:h-52 from-primary/30 via-primary/10 to-accent/20" >
                         {imageUrl && (
                             <img
                                 src={imageUrl}
                                 alt={title || "Noticia"}
-                                className="h-full w-full object-cover"
+                                className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                             />
                         )}
                     </div>
@@ -166,13 +166,13 @@ function NewsCard({ new: { tag, link, title, description, image }, style }: { ne
     if (style === 1) {
         return (
             <a href={link}>
-                <article className="rounded-lg border border-border bg-card p-4 transition hover:border-primary hover:shadow-md sm:p-6">
+                <article className="group rounded-lg border border-border bg-card p-4 transition hover:border-primary hover:shadow-md sm:p-6">
                     <div className="mb-4 h-44 rounded-lg sm:h-52 bg-linear-to-br from-accent/30 to-primary/20 overflow-hidden">
                         {imageUrl && (
                             <img
                                 src={imageUrl}
                                 alt={title || "Noticia"}
-                                className="h-full w-full object-cover"
+                                className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                             />
                         )}
                     </div>
@@ -192,7 +192,7 @@ function NewsCard({ new: { tag, link, title, description, image }, style }: { ne
                             <img
                                 src={imageUrl}
                                 alt={title || "Noticia"}
-                                className="h-full w-full object-cover"
+                                className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                             />
                         )}
                     </div>
@@ -209,14 +209,14 @@ function NewsCard({ new: { tag, link, title, description, image }, style }: { ne
     if (style === 3) {
         return (
             <a href={link} >
-                <article className="group relative h-64 sm:h-80 bg-slate-900 rounded-xl overflow-hidden transition-transform duration-300 hover:scale-[1.02]">
+                <article className="group relative h-64 sm:h-80 bg-slate-900 rounded-xl overflow-hidden">
                     {/* Capa de "Imagen" de fondo */}
-                    <div className="absolute inset-0 bg-linear-to-t from-black via-black/40 to-transparent opacity-80">
+                    <div className="absolute inset-0 overflow-hidden bg-linear-to-t from-black via-black/40 to-transparent opacity-80">
                         {imageUrl && (
                             <img
                                 src={imageUrl}
                                 alt={title || "Noticia"}
-                                className="h-full w-full object-cover"
+                                className="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                             />
                         )}
                     </div>
