@@ -329,6 +329,33 @@ export interface Hero {
  */
 export interface Header {
   id: number;
+  /**
+   * Destino al hacer clic en el logo de la cabecera. Si no eliges ninguno, lleva a la página de inicio.
+   */
+  logo_link?: {
+    tipo?: ('interno' | 'ancla' | 'registro' | 'externo') | null;
+    to?: string | null;
+    ancla?: ('home-noticias' | 'investigacion-apoyo') | null;
+    enlace_key?:
+      | (
+          | 'opac'
+          | 'dspace'
+          | 'campus'
+          | 'facebook'
+          | 'twitter'
+          | 'instagram'
+          | 'linkedin'
+          | 'youtube'
+          | 'tiktok'
+          | 'soporte_recursos'
+        )
+      | null;
+    url?: string | null;
+    /**
+     * Por defecto se abre en pestaña nueva solo si es externo
+     */
+    nueva_pestana?: boolean | null;
+  };
   logo?: (number | null) | Media;
   phone?: string | null;
   email?: string | null;
@@ -339,7 +366,18 @@ export interface Header {
         to?: string | null;
         ancla?: ('home-noticias' | 'investigacion-apoyo') | null;
         enlace_key?:
-          | ('opac' | 'dspace' | 'campus' | 'facebook' | 'twitter' | 'instagram' | 'linkedin' | 'youtube' | 'tiktok')
+          | (
+              | 'opac'
+              | 'dspace'
+              | 'campus'
+              | 'facebook'
+              | 'twitter'
+              | 'instagram'
+              | 'linkedin'
+              | 'youtube'
+              | 'tiktok'
+              | 'soporte_recursos'
+            )
           | null;
         url?: string | null;
         /**
@@ -363,6 +401,7 @@ export interface Header {
                     | 'linkedin'
                     | 'youtube'
                     | 'tiktok'
+                    | 'soporte_recursos'
                   )
                 | null;
               url?: string | null;
@@ -753,7 +792,18 @@ export interface Footer {
         to?: string | null;
         ancla?: ('home-noticias' | 'investigacion-apoyo') | null;
         enlace_key?:
-          | ('opac' | 'dspace' | 'campus' | 'facebook' | 'twitter' | 'instagram' | 'linkedin' | 'youtube' | 'tiktok')
+          | (
+              | 'opac'
+              | 'dspace'
+              | 'campus'
+              | 'facebook'
+              | 'twitter'
+              | 'instagram'
+              | 'linkedin'
+              | 'youtube'
+              | 'tiktok'
+              | 'soporte_recursos'
+            )
           | null;
         link?: string | null;
         /**
@@ -810,6 +860,7 @@ export interface Footer {
                     | 'linkedin'
                     | 'youtube'
                     | 'tiktok'
+                    | 'soporte_recursos'
                   )
                 | null;
               url?: string | null;
@@ -1691,6 +1742,16 @@ export interface HeroSelect<T extends boolean = true> {
  * via the `definition` "header_select".
  */
 export interface HeaderSelect<T extends boolean = true> {
+  logo_link?:
+    | T
+    | {
+        tipo?: T;
+        to?: T;
+        ancla?: T;
+        enlace_key?: T;
+        url?: T;
+        nueva_pestana?: T;
+      };
   logo?: T;
   phone?: T;
   email?: T;
@@ -2503,7 +2564,17 @@ export interface Layout {
         /**
          * Identificador que usa el código para buscarlo (ver lib/links.ts)
          */
-        key: 'opac' | 'dspace' | 'campus' | 'facebook' | 'twitter' | 'instagram' | 'linkedin' | 'youtube' | 'tiktok';
+        key:
+          | 'opac'
+          | 'dspace'
+          | 'campus'
+          | 'facebook'
+          | 'twitter'
+          | 'instagram'
+          | 'linkedin'
+          | 'youtube'
+          | 'tiktok'
+          | 'soporte_recursos';
         label: string;
         url: string;
         id?: string | null;
@@ -2967,6 +3038,86 @@ export interface ElectronicResource {
   id: number;
   hero?: (number | null) | Hero;
   accesos_destacados?: (number | null) | ElectronicResourcesAccess;
+  /**
+   * Encabezado que aparece encima de las tarjetas de accesos directos.
+   */
+  accesos_titulo?: string | null;
+  /**
+   * Bloque que explica cómo entrar a los recursos desde fuera del campus.
+   */
+  acceso_remoto?: {
+    titulo?: string | null;
+    descripcion?: string | null;
+    /**
+     * Frases cortas que se muestran con un check verde.
+     */
+    puntos?:
+      | {
+          texto: string;
+          id?: string | null;
+        }[]
+      | null;
+    portal_titulo?: string | null;
+    portal_descripcion?: string | null;
+    portal_boton_texto?: string | null;
+    /**
+     * Ruta de la web (por ejemplo /login) o dirección completa que empiece por http.
+     */
+    portal_boton_enlace?: string | null;
+  };
+  /**
+   * Botón al final de la página. Si no tiene texto, no se muestra.
+   */
+  problema_acceso?: {
+    texto?: string | null;
+    tipo?: ('interno' | 'ancla' | 'registro' | 'externo') | null;
+    to?: string | null;
+    ancla?: ('home-noticias' | 'investigacion-apoyo') | null;
+    enlace_key?:
+      | (
+          | 'opac'
+          | 'dspace'
+          | 'campus'
+          | 'facebook'
+          | 'twitter'
+          | 'instagram'
+          | 'linkedin'
+          | 'youtube'
+          | 'tiktok'
+          | 'soporte_recursos'
+        )
+      | null;
+    url?: string | null;
+    /**
+     * Por defecto se abre en pestaña nueva solo si es externo
+     */
+    nueva_pestana?: boolean | null;
+  };
+  /**
+   * Encabezado de la sección con pestañas (por ejemplo "Recursos por tipo").
+   */
+  categorias_titulo?: string | null;
+  /**
+   * Cada categoría es una pestaña. Si no hay ninguna con recursos, la sección no aparece.
+   */
+  categorias?:
+    | {
+        nombre: string;
+        recursos?:
+          | {
+              nombre: string;
+              descripcion?: string | null;
+              acceso?: ('subscription' | 'open') | null;
+              /**
+               * Opcional. Si se rellena, el nombre del recurso se convierte en enlace.
+               */
+              enlace?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -3603,6 +3754,50 @@ export interface AboutUsSelect<T extends boolean = true> {
 export interface ElectronicResourcesSelect<T extends boolean = true> {
   hero?: T;
   accesos_destacados?: T;
+  accesos_titulo?: T;
+  acceso_remoto?:
+    | T
+    | {
+        titulo?: T;
+        descripcion?: T;
+        puntos?:
+          | T
+          | {
+              texto?: T;
+              id?: T;
+            };
+        portal_titulo?: T;
+        portal_descripcion?: T;
+        portal_boton_texto?: T;
+        portal_boton_enlace?: T;
+      };
+  problema_acceso?:
+    | T
+    | {
+        texto?: T;
+        tipo?: T;
+        to?: T;
+        ancla?: T;
+        enlace_key?: T;
+        url?: T;
+        nueva_pestana?: T;
+      };
+  categorias_titulo?: T;
+  categorias?:
+    | T
+    | {
+        nombre?: T;
+        recursos?:
+          | T
+          | {
+              nombre?: T;
+              descripcion?: T;
+              acceso?: T;
+              enlace?: T;
+              id?: T;
+            };
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

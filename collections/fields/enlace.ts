@@ -3,7 +3,7 @@ import { ANCLAS, ENLACES_EXTERNOS_KEYS } from "@/lib/links";
 
 interface EnlaceFieldsOptions {
     externalName?: "url" | "link";
-    defaultTipo?: "interno" | "externo";
+    defaultTipo?: "interno" | "externo" | "registro";
     description?: string;
 }
 

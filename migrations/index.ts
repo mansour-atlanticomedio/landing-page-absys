@@ -13,6 +13,7 @@ import * as migration_20261015_170639_pages_collection from './20261015_170639_p
 import * as migration_20261015_172126_importar_exportar from './20261015_172126_importar_exportar';
 import * as migration_20261019_143507_quitar_tipo_header_footer_simple from './20261019_143507_quitar_tipo_header_footer_simple';
 import * as migration_20261027_141832_logo_cabecera from './20261027_141832_logo_cabecera';
+import * as migration_20261027_144150_recursos_electronicos from './20261027_144150_recursos_electronicos';
 
 export const migrations = [
   {
@@ -88,6 +89,11 @@ export const migrations = [
   {
     up: migration_20261027_141832_logo_cabecera.up,
     down: migration_20261027_141832_logo_cabecera.down,
-    name: '20261027_141832_logo_cabecera'
+    name: '20261027_141832_logo_cabecera',
+  },
+  {
+    up: migration_20261027_144150_recursos_electronicos.up,
+    down: migration_20261027_144150_recursos_electronicos.down,
+    name: '20261027_144150_recursos_electronicos'
   },
 ];

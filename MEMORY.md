@@ -812,3 +812,7 @@ todos los casos).
 
 ## 2026-10-27 – destino configurable del logo de la cabecera
 - `header.logo_link` (grupo con `enlaceFields`: página interna, ancla, registro de enlaces o URL externa, más pestaña nueva) antes del campo `logo`. `layout.tsx` lo resuelve con `resolveEnlace` y pasa `logoLink` al Header, que lo pinta con `NavAnchor`; sin destino lleva a `/`. Migración `20261027_141832_logo_cabecera` (columnas nuevas, no destructiva; el `down` las borra). Seed de layout lo rellena con `/`. Verificado en dev: interno → `/biblioteca`; externo → `target=_blank`.
+
+## 2026-10-27 – recursos electrónicos editable desde el global
+- Textos de `/recursos/recursos-electronicos` movidos a `electronic_resources` (`accesos_titulo`, `acceso_remoto`, `problema_acceso`, `categorias_titulo`, `categorias[]`); sin fallbacks de texto ni imagen en la página. El enlace del botón de problema usa `enlaceFields` (tipo `registro`, key nueva `soporte_recursos`; `defaultTipo` de `enlaceFields` admite ahora `registro`). Migración `20261027_144150_recursos_electronicos` (regenerada tras el cambio de requisito; los `ADD VALUE` llevan `IF NOT EXISTS` por el push de dev).
+- Verificado: tsc, 287 tests, seed x2 sin duplicados, curl 200 con textos/pestañas/botón; sin categorías o sin la key del registro la sección/botón desaparecen. Ojo: borrar `electronic_resources_categorias` en BD arrastra los recursos por cascada (se resembró). No verificado: aspecto en navegador.

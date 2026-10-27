@@ -17,6 +17,7 @@ export const ENLACES_EXTERNOS_KEYS = [
   { key: "linkedin", label: "LinkedIn" },
   { key: "youtube", label: "YouTube" },
   { key: "tiktok", label: "TikTok" },
+  { key: "soporte_recursos", label: "Soporte de acceso a recursos electrónicos" },
 ] as const;
 
 export type EnlaceExternoKey = (typeof ENLACES_EXTERNOS_KEYS)[number]["key"];

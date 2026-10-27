@@ -150,6 +150,7 @@ try {
         { key: 'facebook', label: 'Facebook', url: 'https://www.atlanticomedio.es/biblioteca' },
         { key: 'twitter', label: 'Twitter / X', url: 'https://www.atlanticomedio.es/biblioteca' },
         { key: 'youtube', label: 'YouTube', url: 'https://www.atlanticomedio.es/biblioteca' },
+        { key: 'soporte_recursos', label: 'Soporte de acceso a recursos electrónicos', url: 'https://www.atlanticomedio.es/biblioteca/conocenos/horarios-ubicacion-y-contacto' },
     ]
     const enlacesNuevos = enlacesSeed.filter((e) => !enlacesActuales.some((a) => a.key === e.key))
 
