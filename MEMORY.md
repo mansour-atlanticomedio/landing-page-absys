@@ -816,3 +816,6 @@ todos los casos).
 ## 2026-10-27 – recursos electrónicos editable desde el global
 - Textos de `/recursos/recursos-electronicos` movidos a `electronic_resources` (`accesos_titulo`, `acceso_remoto`, `problema_acceso`, `categorias_titulo`, `categorias[]`); sin fallbacks de texto ni imagen en la página. El enlace del botón de problema usa `enlaceFields` (tipo `registro`, key nueva `soporte_recursos`; `defaultTipo` de `enlaceFields` admite ahora `registro`). Migración `20261027_144150_recursos_electronicos` (regenerada tras el cambio de requisito; los `ADD VALUE` llevan `IF NOT EXISTS` por el push de dev).
 - Verificado: tsc, 287 tests, seed x2 sin duplicados, curl 200 con textos/pestañas/botón; sin categorías o sin la key del registro la sección/botón desaparecen. Ojo: borrar `electronic_resources_categorias` en BD arrastra los recursos por cascada (se resembró). No verificado: aspecto en navegador.
+
+## 2026-10-27 – recursos electrónicos en 3 pestañas del panel
+- El global `electronic_resources` se organiza con `tabs` sin `name` (Cabecera y accesos / Acceso remoto / Recursos por tipo): no cambia el esquema ni requiere migración (los campos siguen en la misma tabla). De paso, "Seccion Principal" pasa a "Sección principal".
