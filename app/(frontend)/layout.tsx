@@ -3,8 +3,10 @@ import { Toaster } from 'sonner'
 import Header from '@/components/layout/Header'
 import Footer from '@/components/layout/Footer'
 import { getClient } from '@/lib/payload'
-import { resolveNavbar, resolveFooterLinks } from '@/lib/links'
+import { resolveNavbar, resolveFooterLinks, resolveEnlace } from '@/lib/links'
 import { getSession } from '@/lib/auth/session'
+import BackToTop from "@/components/BackToTop";
+
 import '../styles.css'
 
 export const dynamic = 'force-dynamic'
@@ -27,7 +29,11 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
   const rawFooter = layoutPage?.footer
 
   // Los enlaces (interno/ancla/registro/externo) se resuelven aquí para que los componentes solo pinten
-  const headerData = rawHeader && { ...rawHeader, navbar: resolveNavbar(rawHeader.navbar, enlaces) }
+  const headerData = rawHeader && {
+    ...rawHeader,
+    navbar: resolveNavbar(rawHeader.navbar, enlaces),
+    logoLink: resolveEnlace(rawHeader.logo_link, enlaces),
+  }
   const footerData = rawFooter && { ...rawFooter, ...resolveFooterLinks(rawFooter, enlaces) }
 
   const session = await getSession()
@@ -40,6 +46,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
         {headerData && <Header {...headerData} account={account} />}
         <main>{children}</main>
         {footerData && <Footer {...footerData} />}
+        <BackToTop />
       </body>
     </html>
   )

@@ -7,9 +7,11 @@ import { findOrCreateMedia } from './lib/media'
 const payload = await getPayload({ config })
 
 const logo = await findOrCreateMedia(payload, { file: 'unam-color-full.png', alt: 'imagen fondo' })
+const logoFooter = await findOrCreateMedia(payload, { file: 'logo_white.png', alt: 'imagen fondo' })
 
 const headerData = {
     "logo": logo.id,
+    "logo_link": { "tipo": "interno" as const, "to": "/" },
     "phone": "+34 123 456 789",
     "email": "biblioteca@atlanticomedio.es",
     "navbar": [
@@ -77,7 +79,7 @@ type SocialIcon = NonNullable<Footer['social_medias']>[number]['icon']
 
 const footerData = {
     "type": '1' as Footer['type'],
-    "logo": logo.id,
+    "logo": logoFooter.id,
     "social_medias": [
         {
             "icon": "FaFacebook" as SocialIcon,

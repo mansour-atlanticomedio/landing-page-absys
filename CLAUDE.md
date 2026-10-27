@@ -69,7 +69,7 @@ Payload Admin → Globals → Collections → Pages → RenderBlocks → Compone
 | Slug | Fichero | Campos clave | Relación con media |
 |------|---------|--------------|-------------------|
 | `hero` | `collections/Hero.ts` | `background_image` (upload), `title`, `pretitle`, `subtitle`, `button_cta`, `input_placeholder` | `background_image` → media |
-| `header` | `collections/Header.ts` | `logo` (upload), `phone`, `email`, `navbar[]` con `items[]` | `logo` → media |
+| `header` | `collections/Header.ts` | `logo_link` (grupo de enlace: destino al pulsar el logo, por defecto `/`), `logo` (upload), `phone`, `email`, `navbar[]` con `items[]` | `logo` → media |
 | `hero_carrusel` | `collections/HeroCarrusel.ts` | `items[]` con `title`, `description`, `image` | `items[].image` → media |
 | `speakers` | `collections/Speakers.ts` | `title`, `people[]` con `photo`, `name`, `role`, `entity`, `description` (richText), `socials[]` | `people[].photo` → media |
 | `statistics` | `collections/Statistics.ts` | `stats[]` (min:1, max:4) con `icon` (select de appIcons), `value`, `description` | — |

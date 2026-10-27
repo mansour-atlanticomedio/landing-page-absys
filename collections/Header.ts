@@ -15,6 +15,13 @@ export const Header: CollectionConfig = {
     access: publicReadAdminWrite,
     fields: [
         {
+            name: 'logo_link',
+            label: 'A dónde lleva el logo',
+            type: 'group',
+            admin: { description: 'Destino al hacer clic en el logo de la cabecera. Si no eliges ninguno, lleva a la página de inicio.' },
+            fields: enlaceFields({ defaultTipo: 'interno' }),
+        },
+        {
             name: 'logo',
             label: 'Logo de la aplicación',
             type: 'upload',
