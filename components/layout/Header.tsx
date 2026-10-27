@@ -138,17 +138,17 @@ export default function Header({ phone, email, navbar, account }: HeaderProps) {
                     <a href="/biblioteca" className="flex min-w-0 items-center gap-3">
                         <div className="w-full flex items-center" >
                             <Image
-                                src={logo} alt="logo atlantico medio header" className="h-auto w-20 sm:w-[200px] shrink-0"
+                                src={logo} alt="logo atlantico medio header" className="h-auto w-20 sm:w-[140px] shrink-0"
                             />
                             <Separator.Root
-                                className="SeparatorRoot"
+                                className="SeparatorRoot rounded w-1 h-10"
                                 decorative
                                 orientation="vertical"
-                                style={{ margin: "0 10px", backgroundColor: "var(--color-accent)", width: "2px" }}
+                                style={{ margin: "0 10px", backgroundColor: "var(--color-accent)" }}
                             />
-                            <div>
-                                <h2 className="hidden sm:block text-xl lg:text-2xl font-bold" > Universidad Atlantico Medio </h2>
-                                <h2 className="text-lg hidden sm:block sm:text-xl font-light" > Biblioteca </h2>
+                            <div className="flex flex-col gap-0 text-accent" >
+                                <span className="text-lg hidden sm:block sm:text-xl font-bold leading-none">Biblioteca</span>
+                                <span className="text-lg hidden sm:block sm:text-xl font-bold leading-none">Universitaria</span>
                             </div>
                         </div>
                     </a>
