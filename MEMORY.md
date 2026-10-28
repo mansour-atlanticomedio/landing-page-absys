@@ -833,3 +833,6 @@ todos los casos).
 
 ## 2026-10-28 – imagen de respaldo del hero sin basePath
 - El aviso `The requested resource isn't a valid image for /images/app/campus.jpg` venía de las 5 páginas con imagen de respaldo (`'/images/app/campus.jpg'`): next/image no antepone el basePath a las rutas de `public/`, así que el optimizador pedía `/images/...` y daba 404 (la imagen salía rota cuando el hero no traía imagen). Ahora `lib/images.ts` exporta `HERO_FALLBACK_IMAGE` con el basePath y lo usan home, biblioteca, solicitud de compra, repositorios y servicios.
+
+## 2026-10-28 – imagen de la página de login
+- La pantalla de login no mostraba imagen porque no existía ningún documento en `login_page` (no había seed): `imageUrl` quedaba nulo y solo se veía el degradado. Nuevo `seeds/login.seed.ts` (registrado en `seeds/index.ts` tras layout) con `campus.jpg`, repetible. Además: `sizes="60vw"` y `priority` en la imagen (aviso "fill but missing sizes") y el logo de respaldo apuntaba a `/seeds/assets/...`, que no es público ni lleva basePath; ahora usa `${BASE_PATH}/logos/unam-color-logo.png`.

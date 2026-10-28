@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { BASE_PATH } from "@/lib/auth/redirects";
 import {
   Card,
   CardContent,
@@ -201,7 +202,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ className = "" }) => {
     <div className={`min-h-screen w-full bg-slate-50 flex justify-center items-center ${className}`}>
       <div className="flex-3 h-full relative hidden md:block bg-gradient-to-br from-teal-600 to-slate-900">
         {imageUrl && (
-          <Image src={imageUrl} fill alt={imageAlt} className="object-cover" />
+          <Image src={imageUrl} fill sizes="60vw" priority alt={imageAlt} className="object-cover" />
         )}
       </div>
 
@@ -217,7 +218,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ className = "" }) => {
               />
             ) : (
               <Image
-                src="/seeds/assets/unam-color-full.png"
+                src={`${BASE_PATH}/logos/unam-color-logo.png`}
                 width={180}
                 height={60}
                 alt="Image Logo"
