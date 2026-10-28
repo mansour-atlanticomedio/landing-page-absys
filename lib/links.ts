@@ -17,6 +17,7 @@ export const ENLACES_EXTERNOS_KEYS = [
   { key: "linkedin", label: "LinkedIn" },
   { key: "youtube", label: "YouTube" },
   { key: "tiktok", label: "TikTok" },
+  { key: "soporte_recursos", label: "Soporte de acceso a recursos electrónicos" },
 ] as const;
 
 // Dirección por defecto del repositorio institucional: seeds y fallback de la página la toman de aquí

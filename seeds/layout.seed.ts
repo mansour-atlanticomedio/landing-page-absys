@@ -8,9 +8,11 @@ import { DSPACE_URL_POR_DEFECTO } from '@/lib/links'
 const payload = await getPayload({ config })
 
 const logo = await findOrCreateMedia(payload, { file: 'unam-color-full.png', alt: 'imagen fondo' })
+const logoFooter = await findOrCreateMedia(payload, { file: 'logo_white.png', alt: 'imagen fondo' })
 
 const headerData = {
     "logo": logo.id,
+    "logo_link": { "tipo": "interno" as const, "to": "/" },
     "phone": "+34 123 456 789",
     "email": "biblioteca@atlanticomedio.es",
     "navbar": [
@@ -78,7 +80,7 @@ type SocialIcon = NonNullable<Footer['social_medias']>[number]['icon']
 
 const footerData = {
     "type": '1' as Footer['type'],
-    "logo": logo.id,
+    "logo": logoFooter.id,
     "social_medias": [
         {
             "icon": "FaFacebook" as SocialIcon,
@@ -149,6 +151,7 @@ try {
         { key: 'facebook', label: 'Facebook', url: 'https://www.atlanticomedio.es/biblioteca' },
         { key: 'twitter', label: 'Twitter / X', url: 'https://www.atlanticomedio.es/biblioteca' },
         { key: 'youtube', label: 'YouTube', url: 'https://www.atlanticomedio.es/biblioteca' },
+        { key: 'soporte_recursos', label: 'Soporte de acceso a recursos electrónicos', url: 'https://www.atlanticomedio.es/biblioteca/conocenos/horarios-ubicacion-y-contacto' },
     ]
     const enlacesNuevos = enlacesSeed.filter((e) => !enlacesActuales.some((a) => a.key === e.key))
 

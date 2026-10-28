@@ -14,6 +14,7 @@ interface HeaderProps {
     phone?: string,
     email?: string,
     navbar: navMenuLinks[],
+    logoLink?: { href?: string, external: boolean, newTab: boolean },
     account?: { email: string, nombre?: string } | null
 }
 
@@ -77,7 +78,7 @@ function NavAnchor({ href, external, newTab, className, onNavigate, children }: 
     );
 }
 
-export default function Header({ phone, email, navbar, account }: HeaderProps) {
+export default function Header({ phone, email, navbar, logoLink, account }: HeaderProps) {
     const pathname = usePathname();
 
     const navbarMenu = navbar ?? [];
@@ -135,8 +136,8 @@ export default function Header({ phone, email, navbar, account }: HeaderProps) {
             </div>}
             <header className="bg-background border-b border-border sticky top-0 z-40">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-3 sm:gap-6">
-                    <a href="/biblioteca" className="flex min-w-0 my-4 items-center gap-3">
-                        <div className="w-full flex items-center gap-4" >
+                    <NavAnchor href={logoLink?.href ?? "/"} external={logoLink?.external ?? false} newTab={logoLink?.newTab ?? false} className="flex min-w-0 items-center gap-3">
+                        <div className="w-full flex items-center" >
                             <Image
                                 src={logo} alt="logo atlantico medio header" className="h-auto w-[130px] sm:w-[160px] shrink-0 "
                             />
@@ -151,7 +152,7 @@ export default function Header({ phone, email, navbar, account }: HeaderProps) {
                                 <span className="text-lg hidden sm:block sm:text-md font-bold leading-none">Universitaria</span>
                             </div>
                         </div>
-                    </a>
+                    </NavAnchor>
 
                     <div className="flex items-center gap-2">
                     <div className="hidden lg:block">
@@ -315,9 +316,9 @@ export default function Header({ phone, email, navbar, account }: HeaderProps) {
                 )}
             </header>
             <div className="hidden lg:flex border-t border-border bg-primary text-primary-foreground items-center justify-center">
-                <div className="w-10/12 flex flex-wrap items-center justify-center">
+                <div className="w-8/12 flex flex-wrap items-center justify-center px-6">
                     {navbarMenu.map((section, index) => {
-                        const triggerClasses = "flex h-12 items-center gap-1 xl:px-14 text-sm font-bold tracking-wide transition cursor-pointer group-hover:bg-primary-foreground/10 group-focus-within:bg-primary-foreground/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset";
+                        const triggerClasses = "flex h-12 items-center gap-1 px-5 xl:px-14 text-sm font-bold tracking-wide transition cursor-pointer group-hover:bg-primary-foreground/10 group-focus-within:bg-primary-foreground/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset";
                         const content = (
                             <>
                                 {section.name}

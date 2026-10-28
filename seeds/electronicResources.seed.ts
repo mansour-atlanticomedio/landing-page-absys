@@ -44,7 +44,7 @@ const accesosDoc = await upsertDoc(payload, {
         title: 'Scopus',
         description:
           'La mayor base de datos de citas y resúmenes de literatura científica revisada por pares. Herramienta esencial para el seguimiento y evaluación de la investigación académica.',
-        cta: 'Acceder a literatura',
+        cta: 'Acceder a base de datos',
         link: 'https://www.scopus.com/pages/home#basic',
       },
     ],
@@ -57,6 +57,54 @@ try {
     data: {
       hero: heroDoc.id,
       accesos_destacados: accesosDoc.id,
+      accesos_titulo: 'Accesos directos destacados',
+      acceso_remoto: {
+        titulo: 'Identificación y acceso remoto',
+        descripcion:
+          'Para acceder a los recursos electrónicos desde fuera del campus universitario, es necesario validar sus credenciales institucionales. El sistema le solicitará su usuario y contraseña corporativa.',
+        puntos: [
+          { texto: 'Utilice su correo electrónico institucional completo.' },
+          { texto: 'La conexión a través de VPN no es requerida para la mayoría de las plataformas mediante acceso federado.' },
+        ],
+        portal_titulo: 'Portal de autenticación',
+        portal_descripcion: 'Inicie sesión para habilitar el acceso integral a todos los recursos.',
+        portal_boton_texto: 'Iniciar sesión institucional',
+        portal_boton_enlace: '/login',
+      },
+      problema_acceso: {
+        texto: 'Comunicar un problema de acceso',
+        tipo: 'registro',
+        enlace_key: 'soporte_recursos',
+      },
+      categorias_titulo: 'Recursos por tipo',
+      categorias: [
+        {
+          nombre: 'Bases de datos',
+          recursos: [
+            { nombre: 'Scopus', descripcion: 'Resúmenes y citas de literatura científica', acceso: 'subscription' },
+            { nombre: 'Web of Science', descripcion: 'Plataforma de investigación multidisciplinaria', acceso: 'subscription' },
+            { nombre: 'JSTOR', descripcion: 'Colección de revistas académicas', acceso: 'subscription' },
+            { nombre: 'SciELO', descripcion: 'Biblioteca científica electrónica', acceso: 'open' },
+            { nombre: 'Redalyc', descripcion: 'Red de revistas científicas', acceso: 'open' },
+            { nombre: 'DOAJ', descripcion: 'Revistas de acceso abierto', acceso: 'open' },
+          ],
+        },
+        {
+          nombre: 'Libros electrónicos',
+          recursos: [
+            { nombre: 'EBSCO eBooks', descripcion: 'Colección multidisciplinaria de libros digitales', acceso: 'subscription' },
+            { nombre: 'SpringerLink', descripcion: 'Libros y capítulos de ciencia y tecnología', acceso: 'subscription' },
+            { nombre: 'Project Gutenberg', descripcion: 'Libros de dominio público', acceso: 'open' },
+          ],
+        },
+        {
+          nombre: 'Recursos multimedia',
+          recursos: [
+            { nombre: 'Kanopy', descripcion: 'Streaming de películas y documentales', acceso: 'subscription' },
+            { nombre: 'Naxos Music Library', descripcion: 'Música clásica en streaming', acceso: 'subscription' },
+          ],
+        },
+      ],
     },
   })
 } catch (err: any) {

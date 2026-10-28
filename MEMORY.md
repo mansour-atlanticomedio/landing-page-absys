@@ -809,6 +809,16 @@ todos los casos).
 
 ## 2026-10-27 – una sola dirección para el repositorio (DSpace)
 - `DSPACE_URL_POR_DEFECTO` en `lib/links.ts` es el único sitio donde está la dirección por defecto. `layout.seed.ts` la siembra en `layout.enlaces_externos` (key `dspace`), `investigation.seed.ts` lee la del registro y la usa en la tarjeta, y la página de investigación la usa como fallback. Antes había dos IPs distintas (172.23.2.44 en el seed de investigación, 172.26.0.200 en el resto); queda 172.26.0.200. Verificado ejecutando ambos seeds en dev.
+
+## 2026-10-27 – destino configurable del logo de la cabecera
+- `header.logo_link` (grupo con `enlaceFields`: página interna, ancla, registro de enlaces o URL externa, más pestaña nueva) antes del campo `logo`. `layout.tsx` lo resuelve con `resolveEnlace` y pasa `logoLink` al Header, que lo pinta con `NavAnchor`; sin destino lleva a `/`. Migración `20261027_141832_logo_cabecera` (columnas nuevas, no destructiva; el `down` las borra). Seed de layout lo rellena con `/`. Verificado en dev: interno → `/biblioteca`; externo → `target=_blank`.
+
+## 2026-10-27 – recursos electrónicos editable desde el global
+- Textos de `/recursos/recursos-electronicos` movidos a `electronic_resources` (`accesos_titulo`, `acceso_remoto`, `problema_acceso`, `categorias_titulo`, `categorias[]`); sin fallbacks de texto ni imagen en la página. El enlace del botón de problema usa `enlaceFields` (tipo `registro`, key nueva `soporte_recursos`; `defaultTipo` de `enlaceFields` admite ahora `registro`). Migración `20261027_144150_recursos_electronicos` (regenerada tras el cambio de requisito; los `ADD VALUE` llevan `IF NOT EXISTS` por el push de dev).
+- Verificado: tsc, 287 tests, seed x2 sin duplicados, curl 200 con textos/pestañas/botón; sin categorías o sin la key del registro la sección/botón desaparecen. Ojo: borrar `electronic_resources_categorias` en BD arrastra los recursos por cascada (se resembró). No verificado: aspecto en navegador.
+
+## 2026-10-27 – recursos electrónicos en 3 pestañas del panel
+- El global `electronic_resources` se organiza con `tabs` sin `name` (Cabecera y accesos / Acceso remoto / Recursos por tipo): no cambia el esquema ni requiere migración (los campos siguen en la misma tabla). De paso, "Seccion Principal" pasa a "Sección principal".
 ## 2026-10-20 – roles del panel (admin / editor / lector)
 - `users.role` (admin | editor | viewer, defecto viewer); `lib/access.ts` con `isEditor`/`isPanelUser`, `contentAccess`, `contentAccessPublic`, `contentGlobal`; banner de solo lectura (`ViewerBanner`). Migración `20261020_101500_roles_usuarios` (existentes → admin). Primer usuario = admin; no se degrada ni borra al último admin.
 - Verificado por REST con 3 usuarios temporales (borrados) y 294 tests. Sin verificar: banner y botón Guardar en navegador, create-first-user, migración en BD nueva.
