@@ -827,3 +827,6 @@ todos los casos).
 ## 2026-10-21 – permisos por usuario (fase 2 de roles)
 - `users.permissions`: casillas Ver / Crear y editar / Eliminar por sección del menú; el rol es plantilla (cambiar rol la reaplica; sin casillas guardadas se usa la plantilla). Fábricas `sectionAccess/sectionAccessPublic/sectionGlobal` y mapa en `lib/permissions.ts`. Migración `20261021_100000_permisos_usuarios`.
 - Verificado por REST con usuarios temporales (borrados) y 305 tests. Sin verificar en navegador. Decisión: granularidad por sección, no por colección.
+
+## 2026-10-28 – arreglos tras fusionar las ramas en main
+- `globals/ElectronicResources.ts` usaba `sectionGlobal('paginas')` sin importarlo (los roles y la reescritura de recursos se fusionaron mal): `ReferenceError: sectionGlobal is not defined` al arrancar. `collections/Media.ts` conservaba `publicReadAdminWrite` en vez de `sectionAccessPublic('medios')` (lo detectó el test del catálogo de permisos) y `migrations/index.ts` quedó con sintaxis rota y las migraciones fuera de orden: se reescribió ordenado por nombre (19 migraciones = 19 ficheros). `tsc` limpio y 307 tests en verde.

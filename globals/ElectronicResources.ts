@@ -1,5 +1,5 @@
 import type { GlobalConfig } from "payload";
-import { adminOnlyGlobal } from "@/lib/access";
+import { sectionGlobal } from "@/lib/access";
 import { enlaceFields } from "@/collections/fields/enlace";
 
 export const ElectronicResources: GlobalConfig = {

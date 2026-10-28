@@ -135,7 +135,7 @@ export default function Header({ phone, email, navbar, logoLink, account }: Head
                 </div>
             </div>}
             <header className="bg-background border-b border-border sticky top-0 z-40">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex items-center justify-between gap-3 sm:gap-6">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 py-3 sm:py-6 flex items-center justify-between gap-3 sm:gap-6">
                     <NavAnchor href={logoLink?.href ?? "/"} external={logoLink?.external ?? false} newTab={logoLink?.newTab ?? false} className="flex min-w-0 items-center gap-3">
                         <div className="w-full flex items-center" >
                             <Image
