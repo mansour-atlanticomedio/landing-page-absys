@@ -12,7 +12,7 @@ export const Footer: CollectionConfig = {
     access: adminOnly,
     labels: {
         singular: 'Pie de pagina',
-        plural: 'pie de pagina'
+        plural: 'Pie de pagina'
     },
     fields: [
         {

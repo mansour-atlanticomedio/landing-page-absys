@@ -124,7 +124,7 @@ export default function Header({ phone, email, navbar, account }: HeaderProps) {
     return (
         <section>
             {(phone || email) && <div id="top-arrow" className="bg-topbar text-primary-foreground text-sm">
-                <div className="max-w-7xl mx-auto sm:px-4 text-xs sm:px-6 py-2 flex sm:flex-row sm:flex-wrap items-center justify-center gap-x-10 gap-y-1">
+                <div className="max-w-7xl mx-auto sm:px-4 text-xs sm:px-6 py-2 flex sm:flex-row sm:flex-wrap items-center justify-center gap-x-4 sm:gap-x-10 gap-y-1">
                     {phone && <a href={`tel:${phone}`} className="flex min-h-8 items-center gap-2 break-all hover:opacity-80">
                         <Phone className="w-4 h-4" /> {phone}
                     </a>}
@@ -315,9 +315,9 @@ export default function Header({ phone, email, navbar, account }: HeaderProps) {
                 )}
             </header>
             <div className="hidden lg:flex border-t border-border bg-primary text-primary-foreground items-center justify-center">
-                <div className="max-w-7xl flex flex-wrap items-center justify-center px-6">
+                <div className="w-10/12 flex flex-wrap items-center justify-center">
                     {navbarMenu.map((section, index) => {
-                        const triggerClasses = "flex h-12 items-center gap-1 px-5 xl:px-10 text-sm font-bold tracking-wide transition cursor-pointer group-hover:bg-primary-foreground/10 group-focus-within:bg-primary-foreground/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset";
+                        const triggerClasses = "flex h-12 items-center gap-1 xl:px-14 text-sm font-bold tracking-wide transition cursor-pointer group-hover:bg-primary-foreground/10 group-focus-within:bg-primary-foreground/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset";
                         const content = (
                             <>
                                 {section.name}

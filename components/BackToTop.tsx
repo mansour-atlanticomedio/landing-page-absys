@@ -28,7 +28,7 @@ export default function BackToTop() {
           <Button
             size="icon"
             onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-            className="h-11 w-11 rounded-full bg-accent text-accent-foreground shadow-lg hover:bg-accent/90"
+            className="h-11 w-11 rounded-full bg-accent text-accent-foreground shadow-lg hover:bg-accent/90 cursor-pointer"
             aria-label="Volver arriba"
           >
             <ArrowUp className="h-5 w-5" />
