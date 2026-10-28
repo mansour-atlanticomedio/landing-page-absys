@@ -3016,7 +3016,7 @@ export interface AboutUs {
   createdAt?: string | null;
 }
 /**
- * Página de recursos electrónicos: cabecera y accesos destacados.
+ * Página de recursos electrónicos: cabecera, acceso remoto y recursos por tipo.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "electronic_resources".

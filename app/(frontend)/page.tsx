@@ -7,7 +7,7 @@ export const dynamic = 'force-dynamic';
 import '../styles.css'
 import HeroCarrousel from "@/components/heroCarrusel";
 import HomeQuickLinks from "@/components/HomeQuickLinks";
-import BackToTop from "@/components/BackToTop";
+
 
 export default async function Home() {
   const payload = await getClient()
@@ -56,7 +56,6 @@ export default async function Home() {
 
       <RenderBlocks blocks={pageBlocks} />
 
-      <BackToTop />
     </>
 
   )
