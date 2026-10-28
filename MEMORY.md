@@ -830,3 +830,6 @@ todos los casos).
 
 ## 2026-10-28 – arreglos tras fusionar las ramas en main
 - `globals/ElectronicResources.ts` usaba `sectionGlobal('paginas')` sin importarlo (los roles y la reescritura de recursos se fusionaron mal): `ReferenceError: sectionGlobal is not defined` al arrancar. `collections/Media.ts` conservaba `publicReadAdminWrite` en vez de `sectionAccessPublic('medios')` (lo detectó el test del catálogo de permisos) y `migrations/index.ts` quedó con sintaxis rota y las migraciones fuera de orden: se reescribió ordenado por nombre (19 migraciones = 19 ficheros). `tsc` limpio y 307 tests en verde.
+
+## 2026-10-28 – imagen de respaldo del hero sin basePath
+- El aviso `The requested resource isn't a valid image for /images/app/campus.jpg` venía de las 5 páginas con imagen de respaldo (`'/images/app/campus.jpg'`): next/image no antepone el basePath a las rutas de `public/`, así que el optimizador pedía `/images/...` y daba 404 (la imagen salía rota cuando el hero no traía imagen). Ahora `lib/images.ts` exporta `HERO_FALLBACK_IMAGE` con el basePath y lo usan home, biblioteca, solicitud de compra, repositorios y servicios.
