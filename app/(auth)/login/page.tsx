@@ -199,14 +199,14 @@ export const LoginPage: React.FC<LoginPageProps> = ({ className = "" }) => {
   }
 
   return (
-    <div className={`min-h-screen w-full bg-slate-50 flex justify-center items-center ${className}`}>
-      <div className="flex-3 h-full relative hidden md:block bg-gradient-to-br from-teal-600 to-slate-900">
+    <div className={`min-h-screen w-full bg-slate-50 flex items-stretch ${className}`}>
+      <div className="flex-3 relative hidden md:block min-h-screen bg-gradient-to-br from-teal-600 to-slate-900">
         {imageUrl && (
           <Image src={imageUrl} fill sizes="60vw" priority alt={imageAlt} className="object-cover" />
         )}
       </div>
 
-      <div className="flex-2 flex flex-col justify-center items-center h-full px-6 py-8">
+      <div className="flex-2 flex flex-col justify-center items-center min-h-screen px-6 py-8">
         <div className="text-center">
           <div className="inline-flex items-center justify-center text-teal-400 min-h-[100px]">
             {headerLogo ? (
@@ -214,6 +214,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ className = "" }) => {
                 src={headerLogo.url}
                 width={180}
                 height={60}
+                className="h-auto w-[180px]"
                 alt={headerLogo.alt}
               />
             ) : (
@@ -221,6 +222,7 @@ export const LoginPage: React.FC<LoginPageProps> = ({ className = "" }) => {
                 src={`${BASE_PATH}/logos/unam-color-logo.png`}
                 width={180}
                 height={60}
+                className="h-auto w-[180px]"
                 alt="Image Logo"
               />
             )}

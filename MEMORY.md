@@ -836,3 +836,4 @@ todos los casos).
 
 ## 2026-10-28 – imagen de la página de login
 - La pantalla de login no mostraba imagen porque no existía ningún documento en `login_page` (no había seed): `imageUrl` quedaba nulo y solo se veía el degradado. Nuevo `seeds/login.seed.ts` (registrado en `seeds/index.ts` tras layout) con `campus.jpg`, repetible. Además: `sizes="60vw"` y `priority` en la imagen (aviso "fill but missing sizes") y el logo de respaldo apuntaba a `/seeds/assets/...`, que no es público ni lleva basePath; ahora usa `${BASE_PATH}/logos/unam-color-logo.png`.
+- Login: la imagen no se veía porque el panel izquierdo usaba `h-full` dentro de un contenedor solo con `min-h-screen` (altura 0: aviso "fill and a height value of 0"). Ahora el contenedor usa `items-stretch` y los dos paneles `min-h-screen`; los logos llevan `h-auto w-[180px]` (aviso de width/height modificados).
