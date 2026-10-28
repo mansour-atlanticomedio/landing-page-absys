@@ -1,5 +1,5 @@
 import type { GlobalConfig } from "payload";
-import { adminOnlyGlobal } from "@/lib/access";
+import { sectionGlobal } from "@/lib/access";
 
 export const QuienesSomos: GlobalConfig = {
     slug: 'quienes_somos',
@@ -8,7 +8,7 @@ export const QuienesSomos: GlobalConfig = {
         hidden: true,
         description: 'Obsoleto: ahora se edita en Conócenos'
     },
-    access: adminOnlyGlobal,
+    access: sectionGlobal('paginas'),
     label: 'Quiénes Somos',
     fields: [
         {

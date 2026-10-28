@@ -21,7 +21,7 @@ services:
         NEXT_PUBLIC_SERVER_URL: https://www.atlanticomedio.es/biblioteca
         NEXT_PUBLIC_CAMPUS_URI: https://aplicaciones.unam.es
     ports:
-      - "8085:3000"
+      - "127.0.0.1:8085:3000"
     env_file:
       - .env.prod
     depends_on:

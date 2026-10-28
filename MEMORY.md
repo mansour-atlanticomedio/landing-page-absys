@@ -806,3 +806,14 @@ todos los casos).
 
 ## 2026-10-27 – Montserrat en toda la web
 - `lib/fonts.ts` (`next/font/local`, fuente variable) aplicada en `<html>` de los layouts frontend y auth; `--font-sans` y `--font-display` apuntan a ella. Eliminados los `@font-face` rotos de `styles.css` (apuntaban a `/fonts/Monserrat/*.woff2`, que no existen: Montserrat nunca se cargaba) y el `font-family` fijo de `body` con Open Sans. Comprobado: los .ttf se sirven con 200 y el HTML lleva la variable. Sin verificar visualmente.
+
+## 2026-10-27 – una sola dirección para el repositorio (DSpace)
+- `DSPACE_URL_POR_DEFECTO` en `lib/links.ts` es el único sitio donde está la dirección por defecto. `layout.seed.ts` la siembra en `layout.enlaces_externos` (key `dspace`), `investigation.seed.ts` lee la del registro y la usa en la tarjeta, y la página de investigación la usa como fallback. Antes había dos IPs distintas (172.23.2.44 en el seed de investigación, 172.26.0.200 en el resto); queda 172.26.0.200. Verificado ejecutando ambos seeds en dev.
+## 2026-10-20 – roles del panel (admin / editor / lector)
+- `users.role` (admin | editor | viewer, defecto viewer); `lib/access.ts` con `isEditor`/`isPanelUser`, `contentAccess`, `contentAccessPublic`, `contentGlobal`; banner de solo lectura (`ViewerBanner`). Migración `20261020_101500_roles_usuarios` (existentes → admin). Primer usuario = admin; no se degrada ni borra al último admin.
+- Verificado por REST con 3 usuarios temporales (borrados) y 294 tests. Sin verificar: banner y botón Guardar en navegador, create-first-user, migración en BD nueva.
+- Decisión: roles fijos, sin permisos sueltos por usuario (fase 2 si hace falta). Aplicar en producción: copia de la BD antes de `payload migrate`.
+
+## 2026-10-21 – permisos por usuario (fase 2 de roles)
+- `users.permissions`: casillas Ver / Crear y editar / Eliminar por sección del menú; el rol es plantilla (cambiar rol la reaplica; sin casillas guardadas se usa la plantilla). Fábricas `sectionAccess/sectionAccessPublic/sectionGlobal` y mapa en `lib/permissions.ts`. Migración `20261021_100000_permisos_usuarios`.
+- Verificado por REST con usuarios temporales (borrados) y 305 tests. Sin verificar en navegador. Decisión: granularidad por sección, no por colección.

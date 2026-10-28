@@ -1,5 +1,5 @@
 import type { CollectionConfig } from "payload"
-import { publicReadAdminWrite } from "@/lib/access";
+import { sectionAccessPublic } from "@/lib/access";
 
 export const Hero: CollectionConfig = {
     slug: 'hero',
@@ -8,7 +8,7 @@ export const Hero: CollectionConfig = {
         description: 'Cabeceras con imagen de fondo, título y botón que se reutilizan en las páginas.',
         useAsTitle: 'title'
     },
-    access: publicReadAdminWrite,
+    access: sectionAccessPublic('bloques'),
     labels: {
         singular: 'Seccion Principal',
         plural: 'Seccion Principal'

@@ -41,7 +41,7 @@ export default async function PrestamosPage() {
 
       <p className="text-xs text-muted-foreground">
         Para renovar un préstamo o resolver cualquier incidencia, dirígete al mostrador de préstamo o{" "}
-        <a href="/biblioteca/contacto" className="text-accent underline-offset-4 hover:underline">
+        <a href="/biblioteca/conocenos/horarios-ubicacion-y-contacto" className="text-accent underline-offset-4 hover:underline">
           contacta con la biblioteca
         </a>
         .

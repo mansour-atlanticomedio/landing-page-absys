@@ -1,5 +1,5 @@
 import type { CollectionConfig } from "payload";
-import { adminOnly } from "@/lib/access";
+import { sectionAccess } from "@/lib/access";
 
 export const About : CollectionConfig = {
     slug: 'about',
@@ -8,7 +8,7 @@ export const About : CollectionConfig = {
         description: 'Bloques de texto informativo con título y artículo.',
         useAsTitle: 'title'
     },
-    access: adminOnly,
+    access: sectionAccess('bloques'),
     labels: {
         singular: {
             es: 'Información',
