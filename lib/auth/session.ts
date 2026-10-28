@@ -59,6 +59,7 @@ export const createCampusSession = async (email: string, lector: Lector | null, 
   const datosCampus = {
     ...(lector ? { absysId: lector.id, nombre: lector.nombre, apellidos: lector.apellidos } : {}),
     ...(rol ? { colectivo: rol } : {}),
+    ultimaSesion: new Date().toISOString(),
   };
 
   const existing = await findRawUser(payload, req, { email: { equals: email } });
@@ -70,7 +71,8 @@ export const createCampusSession = async (email: string, lector: Lector | null, 
       overrideAccess: true,
       req,
     });
-  } else if (Object.keys(datosCampus).length > 0) {
+  } else {
+    // fechaRegistro solo se rellena al crear (defaultValue del campo); aquí solo se refresca la última sesión
     await payload.update({
       collection: LOGIN_CAMPUS_SLUG as never,
       id: existing.id,

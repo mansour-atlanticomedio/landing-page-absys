@@ -8,6 +8,7 @@ import { getSession } from '@/lib/auth/session'
 import BackToTop from "@/components/BackToTop";
 
 import '../styles.css'
+import { montserrat } from '@/lib/fonts'
 
 export const dynamic = 'force-dynamic'
 
@@ -40,7 +41,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
   const account = session ? { email: session.email, nombre: session.nombre } : null
 
   return (
-    <html lang="en">
+    <html lang="es" className={montserrat.variable}>
       <body className="min-h-screen flex flex-col bg-background">
         <Toaster />
         {headerData && <Header {...headerData} account={account} />}

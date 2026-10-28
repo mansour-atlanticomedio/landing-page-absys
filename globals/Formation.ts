@@ -1,6 +1,6 @@
 import { GlobalConfig } from "payload";
 import { layoutBlocks } from "@/blocks";
-import { adminOnlyGlobal } from "@/lib/access";
+import { sectionGlobal } from "@/lib/access";
 
 export const Formation : GlobalConfig = {
     slug: "formation",
@@ -8,7 +8,7 @@ export const Formation : GlobalConfig = {
         group: 'Páginas',
         description: 'Página de formación: cabecera, textos, enlaces y guías.'
     },
-    access: adminOnlyGlobal,
+    access: sectionGlobal('paginas'),
     label: "Formación",
     fields: [
     {

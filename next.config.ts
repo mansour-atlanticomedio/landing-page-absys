@@ -3,6 +3,15 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   basePath: '/biblioteca',
+  async redirects() {
+    return [
+      {
+        source: '/contacto',
+        destination: '/conocenos/horarios-ubicacion-y-contacto',
+        permanent: true,
+      },
+    ];
+  },
   allowedDevOrigins: ['192.168.0.236', 'localhost', '172.23.2.44'],
   images: {
     remotePatterns: [

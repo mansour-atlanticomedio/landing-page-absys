@@ -249,12 +249,12 @@ function FooterVertical({ title, logoUrl, logoAlt, social_medias, seccion_info, 
           })}
         </div>
       </div>
-      <div className="policies mb-4 flex flex-wrap justify-center gap-x-4 gap-y-1 px-6">
+      <div className="policies mb-4 flex flex-wrap items-center justify-center gap-x-4 gap-y-1 px-6">
         {
           policies.map(({ label, link }, i) => (
-            <div key={i} className="flex">
-              <a className="hover:underline mr-2" href={link}>{label}</a>
-              {i < policies.length - 1 && "-"}
+            <div key={i} className="flex items-center gap-1">
+              <a className="hover:underline mr-2 text-xs" href={link}>{label}</a>
+              {i < policies.length - 1 && <span>&#9679;</span>}
             </div>
           ))
         }

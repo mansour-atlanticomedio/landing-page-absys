@@ -14,6 +14,9 @@ import * as migration_20261015_172126_importar_exportar from './20261015_172126_
 import * as migration_20261019_143507_quitar_tipo_header_footer_simple from './20261019_143507_quitar_tipo_header_footer_simple';
 import * as migration_20261027_141832_logo_cabecera from './20261027_141832_logo_cabecera';
 import * as migration_20261027_144150_recursos_electronicos from './20261027_144150_recursos_electronicos';
+import * as migration_20261026_100000_lectores_campus from './20261026_100000_lectores_campus';
+import * as migration_20261020_101500_roles_usuarios from './20261020_101500_roles_usuarios';
+import * as migration_20261021_100000_permisos_usuarios from './20261021_100000_permisos_usuarios';
 
 export const migrations = [
   {
@@ -95,5 +98,18 @@ export const migrations = [
     up: migration_20261027_144150_recursos_electronicos.up,
     down: migration_20261027_144150_recursos_electronicos.down,
     name: '20261027_144150_recursos_electronicos'
+    up: migration_20261020_101500_roles_usuarios.up,
+    down: migration_20261020_101500_roles_usuarios.down,
+    name: '20261020_101500_roles_usuarios',
+  },
+  {
+    up: migration_20261021_100000_permisos_usuarios.up,
+    down: migration_20261021_100000_permisos_usuarios.down,
+    name: '20261021_100000_permisos_usuarios',
+  },
+  {
+    up: migration_20261026_100000_lectores_campus.up,
+    down: migration_20261026_100000_lectores_campus.down,
+    name: '20261026_100000_lectores_campus',
   },
 ];

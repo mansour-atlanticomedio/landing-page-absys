@@ -1,6 +1,6 @@
 import { GlobalConfig } from "payload";
 import { layoutBlocks } from "@/blocks";
-import { adminOnlyGlobal } from "@/lib/access";
+import { sectionGlobal } from "@/lib/access";
 
 export const Investigation : GlobalConfig = {
     slug: 'investigation',
@@ -8,7 +8,7 @@ export const Investigation : GlobalConfig = {
         group: 'Páginas',
         description: 'Página de investigación: cabecera, accesos rápidos y tarjetas.'
     },
-    access: adminOnlyGlobal,
+    access: sectionGlobal('paginas'),
     label: "Investigación",
     fields: [
     {

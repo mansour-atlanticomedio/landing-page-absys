@@ -1,5 +1,5 @@
 import type { GlobalConfig } from "payload";
-import { adminOnlyGlobal } from "@/lib/access";
+import { sectionGlobal } from "@/lib/access";
 
 export const HorariosContacto: GlobalConfig = {
     slug: 'horarios_contacto',
@@ -8,7 +8,7 @@ export const HorariosContacto: GlobalConfig = {
         hidden: true,
         description: 'Obsoleto: ahora se edita en Conócenos'
     },
-    access: adminOnlyGlobal,
+    access: sectionGlobal('paginas'),
     label: 'Horarios, Ubicación y Contacto',
     fields: [
         {

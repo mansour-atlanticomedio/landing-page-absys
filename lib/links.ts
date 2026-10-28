@@ -20,6 +20,9 @@ export const ENLACES_EXTERNOS_KEYS = [
   { key: "soporte_recursos", label: "Soporte de acceso a recursos electrónicos" },
 ] as const;
 
+// Dirección por defecto del repositorio institucional: seeds y fallback de la página la toman de aquí
+export const DSPACE_URL_POR_DEFECTO = "https://68.219.244.181/repositorio-institucional/home";
+
 export type EnlaceExternoKey = (typeof ENLACES_EXTERNOS_KEYS)[number]["key"];
 
 // Busca un enlace externo editable desde Payload (global `layout`, campo `enlaces_externos`) por su

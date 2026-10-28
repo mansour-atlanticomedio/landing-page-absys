@@ -8,7 +8,7 @@ export const ElectronicResources: GlobalConfig = {
         group: 'Páginas',
         description: 'Página de recursos electrónicos: cabecera, acceso remoto y recursos por tipo.'
     },
-    access: adminOnlyGlobal,
+    access: sectionGlobal('paginas'),
     label: 'Recursos Electrónicos',
     fields: [
         {

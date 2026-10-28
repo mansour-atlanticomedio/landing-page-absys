@@ -3,8 +3,13 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 import { findOrCreateMedia } from './lib/media'
 import { upsertDoc } from './lib/upsert'
+import { DSPACE_URL_POR_DEFECTO, resolveEnlaceExterno } from '@/lib/links'
 
 const payload = await getPayload({ config })
+
+// El repositorio sale del registro de enlaces externos (global layout, lo siembra layout.seed.ts), no de una IP escrita aquí
+const layoutGlobal: any = await payload.findGlobal({ slug: 'layout', depth: 0 })
+const dspaceUrl = resolveEnlaceExterno(layoutGlobal?.enlaces_externos, 'dspace', DSPACE_URL_POR_DEFECTO)
 
 const heroImage = await findOrCreateMedia(payload, { file: 'campus.jpg', alt: 'Apoyo a la investigación' })
 
@@ -57,7 +62,7 @@ const tarjetasDoc = await upsertDoc(payload, {
         description:
           'Encuentra información sobre repositorios, versiones de los documentos, licencias, derechos de autor y posibilidades de difusión en acceso abierto.',
         cta: 'Acceder al Repositorio institucional',
-        link: 'http://172.23.2.44:4000/dspace',
+        link: dspaceUrl,
       },
       {
         icon: 'Fingerprint',

@@ -16,17 +16,41 @@ interface HeroCarrouselProps {
   autoPlayInterval?: number
 }
 
+const SLIDE_EASE = [0.65, 0, 0.35, 1] as const
+
+// Entra y sale a la vez (sin esperar), así nunca queda un hueco entre un slide y el siguiente
+const slideVariants = {
+  enter: (dir: number) => ({ x: dir > 0 ? '100%' : '-100%' }),
+  center: { x: 0 },
+  exit: (dir: number) => ({ x: dir > 0 ? '-35%' : '35%' }),
+}
+
 export default function HeroCarrousel({ title, items, autoPlayInterval = 5000 }: HeroCarrouselProps) {
-  const [currentIndex, setCurrentIndex] = useState(0)
+  const [[currentIndex, direction], setSlide] = useState<[number, number]>([0, 1])
   const [isPaused, setIsPaused] = useState(false)
 
+  const goTo = useCallback((index: number, dir: number) => {
+    setSlide(([prev]) => (index === prev ? [prev, 1] : [index, dir]))
+  }, [])
+
   const nextSlide = useCallback(() => {
-    setCurrentIndex(prev => (prev === items.length - 1 ? 0 : prev + 1))
+    setSlide(([prev]) => [prev === items.length - 1 ? 0 : prev + 1, 1])
   }, [items.length])
 
-  const prevSlide = () => {
-    setCurrentIndex(prev => (prev === 0 ? items.length - 1 : prev - 1))
-  }
+  const prevSlide = useCallback(() => {
+    setSlide(([prev]) => [prev === 0 ? items.length - 1 : prev - 1, -1])
+  }, [items.length])
+
+  // Las imágenes se precargan para que al entrar un slide nunca aparezca el hueco mientras descarga
+  useEffect(() => {
+    items.forEach(item => {
+      const url = typeof item.image === 'object' ? item.image?.url : item.image
+      if (url) {
+        const img = new window.Image()
+        img.src = url
+      }
+    })
+  }, [items])
 
   useEffect(() => {
     if (items.length <= 1 || isPaused) return
@@ -41,24 +65,34 @@ export default function HeroCarrousel({ title, items, autoPlayInterval = 5000 }:
 
   return (
     <section
-      className="relative min-h-105 md:min-h-130 flex items-end overflow-hidden bg-background"
+      className="relative min-h-105 md:min-h-130 flex items-end overflow-hidden bg-primary"
       onMouseEnter={() => setIsPaused(true)}
       onMouseLeave={() => setIsPaused(false)}
     >
-      <AnimatePresence mode="wait">
+      <AnimatePresence initial={false} custom={direction}>
         <motion.div
           key={currentIndex}
-          initial={{ opacity: 0, scale: 1.05 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 1.02 }}
-          transition={{ duration: 0.6, ease: 'easeInOut' }}
-          className="absolute inset-0"
+          custom={direction}
+          variants={slideVariants}
+          initial="enter"
+          animate="center"
+          exit="exit"
+          transition={{ duration: 1, ease: SLIDE_EASE }}
+          drag={items.length > 1 ? 'x' : false}
+          dragConstraints={{ left: 0, right: 0 }}
+          dragElastic={0.15}
+          onDragEnd={(_, info) => {
+            if (info.offset.x < -80) nextSlide()
+            else if (info.offset.x > 80) prevSlide()
+          }}
+          className="absolute inset-0 will-change-transform"
         >
           {imageUrl ? (
             <img
               src={imageUrl}
               alt={current.title+" hero carousel"}
               className="h-full w-full object-cover"
+              draggable={false}
             />
           ) : (
             <div className="flex h-full w-full items-center justify-center bg-linear-to-br from-primary/40 via-primary/10 to-accent/30">
@@ -101,10 +135,9 @@ export default function HeroCarrousel({ title, items, autoPlayInterval = 5000 }:
         <AnimatePresence mode="wait">
           <motion.div
             key={currentIndex}
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -30 }}
-            transition={{ duration: 0.4, ease: 'easeInOut' }}
+            initial={{ opacity: 0, x: direction > 0 ? 60 : -60 }}
+            animate={{ opacity: 1, x: 0, transition: { duration: 0.8, delay: 0.35, ease: SLIDE_EASE } }}
+            exit={{ opacity: 0, x: direction > 0 ? -40 : 40, transition: { duration: 0.35, ease: 'easeIn' } }}
             className="max-w-3xl"
           >
             <h1 className="mt-4 text-3xl font-bold leading-tight text-white md:text-5xl">
@@ -121,7 +154,7 @@ export default function HeroCarrousel({ title, items, autoPlayInterval = 5000 }:
             {items.map((_, i) => (
               <button
                 key={i}
-                onClick={() => setCurrentIndex(i)}
+                onClick={() => goTo(i, i > currentIndex ? 1 : -1)}
                 className={`h-2 rounded-full transition-all ${
                   i === currentIndex ? 'w-8 bg-white' : 'w-2 bg-white/40'
                 }`}

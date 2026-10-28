@@ -1,5 +1,5 @@
 import type { CollectionConfig } from "payload";
-import { adminOnly } from "@/lib/access";
+import { sectionAccess } from "@/lib/access";
 
 export const PartnersCollection : CollectionConfig = {
     slug: 'partners',
@@ -7,7 +7,7 @@ export const PartnersCollection : CollectionConfig = {
         group: 'Bloques de contenido',
         description: 'Logotipos de entidades colaboradoras y patrocinadores.'
     },
-    access: adminOnly,
+    access: sectionAccess('bloques'),
     labels: {
         singular: 'Patrocinador',
         plural: 'Patrocinadores',
