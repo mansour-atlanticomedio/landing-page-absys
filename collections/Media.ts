@@ -1,5 +1,5 @@
 import type { CollectionConfig } from 'payload'
-import { publicReadAdminWrite } from '@/lib/access'
+import { sectionAccessPublic } from '@/lib/access'
 import { blockDeleteIfMediaInUse } from '@/lib/media-usage'
 
 export const Media: CollectionConfig = {
@@ -15,7 +15,7 @@ export const Media: CollectionConfig = {
     singular: 'Imagen',
     plural: 'Galeria de Imagenes'
   },
-  access: publicReadAdminWrite,
+  access: sectionAccessPublic('medios'),
   hooks: {
     beforeDelete: [blockDeleteIfMediaInUse],
   },
