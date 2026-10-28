@@ -1017,14 +1017,12 @@ export interface Schedule {
 export interface LoginCampusService {
   id: number;
   absysId?: string | null;
-  dni?: string | null;
   nombre?: string | null;
   apellidos?: string | null;
-  numeroCarnet?: string | null;
   colectivo: 'ALUMN' | 'PROFE' | 'ADULT' | 'INVIT' | 'ANONI';
-  maxPrestamos?: number | null;
-  diasPrestamo?: number | null;
   isOfflineData?: boolean | null;
+  fechaRegistro?: string | null;
+  ultimaSesion?: string | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -2150,14 +2148,12 @@ export interface ScheduleSelect<T extends boolean = true> {
  */
 export interface LoginCampusServiceSelect<T extends boolean = true> {
   absysId?: T;
-  dni?: T;
   nombre?: T;
   apellidos?: T;
-  numeroCarnet?: T;
   colectivo?: T;
-  maxPrestamos?: T;
-  diasPrestamo?: T;
   isOfflineData?: T;
+  fechaRegistro?: T;
+  ultimaSesion?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;

@@ -3,6 +3,7 @@ import { getPayload } from 'payload'
 import config from '@payload-config'
 import type { Footer, Media } from '@/payload-types'
 import { findOrCreateMedia } from './lib/media'
+import { DSPACE_URL_POR_DEFECTO } from '@/lib/links'
 
 const payload = await getPayload({ config })
 
@@ -101,7 +102,7 @@ const footerData = {
             "information": [
                 {
                     "icon": null,
-                    "label": "Carretera de Quílmes, 37 · 35017 Tafira Baja · Las Palmas de Gran Canaria",
+                    "label": "Carretera de Quilmes, 37 · 35017 Tafira Baja · Las Palmas de Gran Canaria",
                     "url": "https://www.atlanticomedio.es/biblioteca"
                 },
                 {
@@ -144,7 +145,7 @@ try {
     const layoutActual: any = await payload.findGlobal({ slug: 'layout', depth: 0 })
     const enlacesActuales: any[] = layoutActual.enlaces_externos ?? []
     const enlacesSeed = [
-        { key: 'dspace', label: 'Repositorio institucional', url: 'http://172.26.0.200:4000/dspace' },
+        { key: 'dspace', label: 'Repositorio institucional', url: DSPACE_URL_POR_DEFECTO },
         { key: 'facebook', label: 'Facebook', url: 'https://www.atlanticomedio.es/biblioteca' },
         { key: 'twitter', label: 'Twitter / X', url: 'https://www.atlanticomedio.es/biblioteca' },
         { key: 'youtube', label: 'YouTube', url: 'https://www.atlanticomedio.es/biblioteca' },

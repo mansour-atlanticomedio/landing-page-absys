@@ -793,6 +793,22 @@ todos los casos).
 ## 2026-10-19 – fix cn() desde el servidor
 - `lib/utils.ts` tenía `'use client'` por el hook `useBookCover`; `Card` en Server Components (`features_block` en Home) reventaba. Hook movido a `lib/useBookCover.ts`, `utils` sin directiva y reexporta. Home responde 200, `tsc` limpio.
 
+## 2026-10-26 — Limpieza: /contacto, /libros, lectores del campus y CLAUDE.md
+
+- `/contacto` eliminada (page, actions, `ContactoForm`, `ContactoLoginCard`) y redirigida con 308 a `/conocenos/horarios-ubicacion-y-contacto` desde `next.config.ts`; enlaces internos actualizados (catálogo, reservas, préstamos, `InvestigationContent`, `pages.seed`). `lib/contacto*.ts`, `lib/security/*` y `sendContactEmail` quedan como código sin usar (con sus tests) porque la solicitud de compra no los usa.
+- `/libros` devuelve 404 en producción (`layout.tsx` + `lib/libros-visibility.ts`, con test); en dev sigue.
+- `loginCampus_service`: fuera `dni`, `numeroCarnet`, `maxPrestamos`, `diasPrestamo`; dentro `fechaRegistro` y `ultimaSesion` (solo lectura). Migración `20261026_100000_lectores_campus` aplicada en dev.
+- CLAUDE.md corregido por discrepancia con el código: `EXTERNAL_ID_FIELD` es `lemail`, recuento de collections (27 + 2 del plugin), `footer` y `pages` añadidas a las tablas. Nginx fuera: producción usa Apache como proxy inverso; `docker-compose.prod.yml` publica 8085 solo en `127.0.0.1`. Pendiente por confirmar: si hay otro proxy delante de Apache (`TRUSTED_IP_HOP`=2) y el valor real del `.env` de producción.
+
+## 2026-10-27 – importar/exportar lectores del campus y bug de la cola
+- Añadido `loginCampus_service` al plugin (export + import). Descubierto que `disableJobsQueue` nunca estuvo en el código (CLAUDE.md lo daba por hecho): exportar/importar no generaban fichero. Corregido por collection con `export/import: { disableJobsQueue: true }`.
+- Hook `beforeValidate` en `loginCampus_service` genera contraseña aleatoria al crear sin ella (necesario para importar lectores nuevos). Verificado por Local API en dev (export CSV sin valores sensibles, update y alta). Sin verificar desde la UI del panel.
+
+## 2026-10-27 – Montserrat en toda la web
+- `lib/fonts.ts` (`next/font/local`, fuente variable) aplicada en `<html>` de los layouts frontend y auth; `--font-sans` y `--font-display` apuntan a ella. Eliminados los `@font-face` rotos de `styles.css` (apuntaban a `/fonts/Monserrat/*.woff2`, que no existen: Montserrat nunca se cargaba) y el `font-family` fijo de `body` con Open Sans. Comprobado: los .ttf se sirven con 200 y el HTML lleva la variable. Sin verificar visualmente.
+
+## 2026-10-27 – una sola dirección para el repositorio (DSpace)
+- `DSPACE_URL_POR_DEFECTO` en `lib/links.ts` es el único sitio donde está la dirección por defecto. `layout.seed.ts` la siembra en `layout.enlaces_externos` (key `dspace`), `investigation.seed.ts` lee la del registro y la usa en la tarjeta, y la página de investigación la usa como fallback. Antes había dos IPs distintas (172.23.2.44 en el seed de investigación, 172.26.0.200 en el resto); queda 172.26.0.200. Verificado ejecutando ambos seeds en dev.
 ## 2026-10-20 – roles del panel (admin / editor / lector)
 - `users.role` (admin | editor | viewer, defecto viewer); `lib/access.ts` con `isEditor`/`isPanelUser`, `contentAccess`, `contentAccessPublic`, `contentGlobal`; banner de solo lectura (`ViewerBanner`). Migración `20261020_101500_roles_usuarios` (existentes → admin). Primer usuario = admin; no se degrada ni borra al último admin.
 - Verificado por REST con 3 usuarios temporales (borrados) y 294 tests. Sin verificar: banner y botón Guardar en navegador, create-first-user, migración en BD nueva.

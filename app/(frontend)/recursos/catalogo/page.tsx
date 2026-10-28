@@ -127,7 +127,7 @@ export default function CatalogoPage() {
               </p>
             </div>
           </div>
-          <Link href="/contacto">
+          <Link href="/conocenos/horarios-ubicacion-y-contacto">
             <button className="border rounded-md px-5 py-3 font-medium text-teal-700 cursor-pointer transition-colors hover:bg-teal-700 hover:text-white">
               Necesito ayuda para buscar
             </button>

@@ -19,7 +19,7 @@ export default async function ReservasPage() {
       <AvisoCuenta>
         La consulta de reservas en línea estará disponible próximamente. Mientras tanto, puedes consultar o gestionar
         tus reservas en el mostrador de préstamo o{" "}
-        <a href="/biblioteca/contacto" className="text-accent underline-offset-4 hover:underline">
+        <a href="/biblioteca/conocenos/horarios-ubicacion-y-contacto" className="text-accent underline-offset-4 hover:underline">
           contactando con la biblioteca
         </a>
         .

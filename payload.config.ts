@@ -58,6 +58,20 @@ import { adminOnly } from "./lib/access.ts";
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
 
+const importExportSlugs = [
+  'news',
+  'loginCampus_service',
+  'blogs',
+  'faq',
+  'features',
+  'electronic_resources_access',
+  'schedule',
+  'speakers',
+  'partners',
+  'pages',
+  'media',
+] as const
+
 export default buildConfig({
   routes: {
     admin: '/admin'
@@ -150,18 +164,11 @@ export default buildConfig({
   sharp,
   plugins: [
     importExportPlugin({
-      collections: [
-        { slug: 'news' },
-        { slug: 'blogs' },
-        { slug: 'faq' },
-        { slug: 'features' },
-        { slug: 'electronic_resources_access' },
-        { slug: 'schedule' },
-        { slug: 'speakers' },
-        { slug: 'partners' },
-        { slug: 'pages' },
-        { slug: 'media' },
-      ],
+      collections: importExportSlugs.map((slug) => ({
+        slug,
+        export: { disableJobsQueue: true },
+        import: { disableJobsQueue: true },
+      })),
       overrideExportCollection: ({ collection }) => ({
         ...collection,
         labels: { singular: 'Exportación', plural: 'Exportaciones' },
