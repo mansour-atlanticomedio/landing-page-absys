@@ -20,6 +20,8 @@ const stripIds = (value: any, key?: string): any => {
   return value
 }
 
+import { createLocationBlockTables } from './20261029_115856_bloque_horario_contacto_mapa'
+
 export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   await db.execute(sql`
    CREATE TYPE "public"."enum_pages_blocks_cards_features_block_style" AS ENUM('default', 'muted');
@@ -441,6 +443,8 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE INDEX "_pages_v_autosave_idx" ON "_pages_v" USING btree ("autosave");
   ALTER TABLE "payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_pages_fk" FOREIGN KEY ("pages_id") REFERENCES "public"."pages"("id") ON DELETE cascade ON UPDATE no action;
   CREATE INDEX "payload_locked_documents_rels_pages_id_idx" ON "payload_locked_documents_rels" USING btree ("pages_id");`)
+
+  await createLocationBlockTables(db)
 
   const hasAboutUs = payload.config.globals.some((g) => g.slug === 'about_us')
   const hasPages = payload.config.collections.some((c) => c.slug === 'pages')

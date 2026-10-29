@@ -3,6 +3,7 @@ import { ImageTextSection } from "@/components/conocenos/ImageTextSection"
 import { ScheduleSection } from "@/components/conocenos/ScheduleSection"
 import { ContactInfoSection } from "@/components/conocenos/ContactInfoSection"
 import { MapSection } from "@/components/conocenos/MapSection"
+import { LocationSection } from "@/components/conocenos/LocationSection"
 import { HelpCtaSection } from "@/components/conocenos/HelpCtaSection"
 import { RulesCardsSection } from "@/components/conocenos/RulesCardsSection"
 import { NoticeSection } from "@/components/conocenos/NoticeSection"
@@ -27,6 +28,8 @@ export function RenderPageBlocks({ layout }: { layout?: any[] | null }) {
             return <ContactInfoSection key={key} block={block} mapUrl={mapUrl} />
           case "map_block":
             return <MapSection key={key} block={block} />
+          case "location_block":
+            return <LocationSection key={key} block={block} />
           case "help_cta_block":
             return <HelpCtaSection key={key} block={block} />
           case "rules_cards_block":

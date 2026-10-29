@@ -17,6 +17,7 @@ import * as migration_20261021_100000_permisos_usuarios from './20261021_100000_
 import * as migration_20261026_100000_lectores_campus from './20261026_100000_lectores_campus';
 import * as migration_20261027_141832_logo_cabecera from './20261027_141832_logo_cabecera';
 import * as migration_20261027_144150_recursos_electronicos from './20261027_144150_recursos_electronicos';
+import * as migration_20261029_115856_bloque_horario_contacto_mapa from './20261029_115856_bloque_horario_contacto_mapa';
 
 export const migrations = [
   {
@@ -113,5 +114,10 @@ export const migrations = [
     up: migration_20261027_144150_recursos_electronicos.up,
     down: migration_20261027_144150_recursos_electronicos.down,
     name: '20261027_144150_recursos_electronicos',
+  },
+  {
+    up: migration_20261029_115856_bloque_horario_contacto_mapa.up,
+    down: migration_20261029_115856_bloque_horario_contacto_mapa.down,
+    name: '20261029_115856_bloque_horario_contacto_mapa'
   },
 ];

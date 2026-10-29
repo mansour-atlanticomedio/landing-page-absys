@@ -1126,6 +1126,7 @@ export interface Page {
         | RulesCardsBlock
         | NoticeBlock
         | DownloadBlock
+        | LocationBlock
       )[]
     | null;
   updatedAt: string;
@@ -1337,6 +1338,49 @@ export interface DownloadBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'download_block';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LocationBlock".
+ */
+export interface LocationBlock {
+  /**
+   * Ej. "Información general".
+   */
+  title?: string | null;
+  /**
+   * Ej. "Horario de atención".
+   */
+  schedule_title?: string | null;
+  /**
+   * Elige el horario que se mostrará en la tarjeta.
+   */
+  schedule?: (number | null) | Schedule;
+  location_title?: string | null;
+  address_line1?: string | null;
+  address_line2?: string | null;
+  directions_button_label?: string | null;
+  contact_title?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  contact_button_label?: string | null;
+  image?: (number | null) | Media;
+  /**
+   * Se muestra sobre la imagen.
+   */
+  building_name?: string | null;
+  building_subtitle?: string | null;
+  /**
+   * Dirección que se abre al pulsar el botón "Cómo llegar".
+   */
+  map_url?: string | null;
+  /**
+   * URL del iframe que genera Google Maps en Compartir > Insertar un mapa.
+   */
+  map_embed_url?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'location_block';
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2254,6 +2298,7 @@ export interface PagesSelect<T extends boolean = true> {
         rules_cards_block?: T | RulesCardsBlockSelect<T>;
         notice_block?: T | NoticeBlockSelect<T>;
         download_block?: T | DownloadBlockSelect<T>;
+        location_block?: T | LocationBlockSelect<T>;
       };
   updatedAt?: T;
   createdAt?: T;
@@ -2374,6 +2419,30 @@ export interface NoticeBlockSelect<T extends boolean = true> {
 export interface DownloadBlockSelect<T extends boolean = true> {
   button_label?: T;
   file?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "LocationBlock_select".
+ */
+export interface LocationBlockSelect<T extends boolean = true> {
+  title?: T;
+  schedule_title?: T;
+  schedule?: T;
+  location_title?: T;
+  address_line1?: T;
+  address_line2?: T;
+  directions_button_label?: T;
+  contact_title?: T;
+  phone?: T;
+  email?: T;
+  contact_button_label?: T;
+  image?: T;
+  building_name?: T;
+  building_subtitle?: T;
+  map_url?: T;
+  map_embed_url?: T;
   id?: T;
   blockName?: T;
 }

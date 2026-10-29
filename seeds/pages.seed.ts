@@ -142,10 +142,10 @@ try {
     hero: horariosHero.id,
     layout: [
           {
-            blockType: 'contact_info_block',
+            blockType: 'location_block',
             title: 'Información general',
-            building_name: 'Edificio EMU de Usos Múltiples',
-            building_subtitle: '🏛 Campus Universitario',
+            schedule_title: 'Horario de atención',
+            schedule: horario.id,
             location_title: 'Ubicación',
             address_line1: 'Edificio EMU de Usos Múltiples',
             address_line2: 'Carretera de Quilmes, 37',
@@ -154,11 +154,9 @@ try {
             phone: '+34 828 019 019',
             email: 'biblioteca@atlanticomedio.es',
             contact_button_label: 'Contactar con la Biblioteca',
-          },
-          { blockType: 'schedule_block', title: 'Horario de atención', schedule: horario.id },
-          {
-            blockType: 'map_block',
-            title: 'Ubicación',
+            image: horariosImg.id,
+            building_name: 'Edificio EMU de Usos Múltiples',
+            building_subtitle: 'Campus Universitario',
             map_url:
               'https://www.google.com/maps?ll=28.069492,-15.451801&z=16&t=m&hl=es&gl=ES&mapclient=embed&cid=2474455529394761746',
             map_embed_url:

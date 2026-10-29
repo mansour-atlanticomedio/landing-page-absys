@@ -112,8 +112,16 @@ describe("rutas del código", () => {
   it("todas las carpetas de primer nivel de app están reservadas", () => {
     const folders = ["app/(frontend)", "app/(auth)", "app/(payload)"].flatMap((dir) => firstSegments(path.join(ROOT, dir)));
     const missing = folders.filter(
-      (name) => !(RESERVED_SEGMENTS as readonly string[]).includes(name),
+      (name) => name !== "conocenos" && !(RESERVED_SEGMENTS as readonly string[]).includes(name),
     );
     expect(missing).toEqual([]);
+  });
+
+  it("las páginas estáticas de conocenos son páginas bloqueadas de Payload", () => {
+    const subfolders = fs
+      .readdirSync(path.join(ROOT, "app/(frontend)/conocenos"), { withFileTypes: true })
+      .filter((entry) => entry.isDirectory())
+      .map((entry) => `conocenos/${entry.name}`);
+    expect(subfolders.filter((slug) => !isLockedPageSlug(slug))).toEqual([]);
   });
 });
