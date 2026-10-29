@@ -4,14 +4,6 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { BASE_PATH } from "@/lib/auth/redirects";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
@@ -198,273 +190,283 @@ export const LoginPage: React.FC<LoginPageProps> = ({ className = "" }) => {
     }
   }
 
+  const mutedText = "text-[hsl(var(--muted-foreground))]";
+  const helpLink = `${mutedText} hover:text-primary underline underline-offset-4 text-sm py-2 rounded-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2`;
+  const labelClass = "mb-2 block font-display text-sm font-medium text-primary";
+
   return (
-    <div className={`min-h-screen w-full bg-slate-50 flex items-stretch ${className}`}>
-      <div className="flex-3 relative hidden md:block min-h-screen bg-gradient-to-br from-teal-600 to-slate-900">
+    <div className={`min-h-dvh w-full bg-background md:grid md:grid-cols-[3fr_2fr] ${className}`}>
+      <div className="relative hidden md:block min-h-dvh bg-primary">
         {imageUrl && (
-          <Image src={imageUrl} fill sizes="60vw" priority alt={imageAlt} className="object-cover" />
+          <Image src={imageUrl} fill sizes="60vw" priority alt="" className="object-cover" />
         )}
+        <div className="absolute inset-0 bg-[linear-gradient(135deg,hsl(211_28%_25%/0.78),hsl(187_53%_35%/0.55))]" />
       </div>
 
-      <div className="flex-2 flex flex-col justify-center items-center min-h-screen px-6 py-8">
-        <div className="text-center">
-          <div className="inline-flex items-center justify-center text-teal-400 min-h-[100px]">
-            {headerLogo ? (
-              <Image
-                src={headerLogo.url}
-                width={180}
-                height={60}
-                className="h-auto w-[180px]"
-                alt={headerLogo.alt}
-              />
-            ) : (
-              <Image
-                src={`${BASE_PATH}/logos/unam-color-logo.png`}
-                width={180}
-                height={60}
-                className="h-auto w-[180px]"
-                alt="Image Logo"
-              />
-            )}
-          </div>
-        </div>
+      <main className="flex min-h-dvh items-center justify-center bg-background">
+        <div className="flex w-full max-w-sm flex-col items-center px-6 py-10 text-center md:px-10">
+          {headerLogo ? (
+            <Image
+              src={headerLogo.url}
+              width={180}
+              height={60}
+              className="h-auto w-40"
+              alt={headerLogo.alt || "Universidad Atlántico Medio"}
+            />
+          ) : (
+            <Image
+              src={`${BASE_PATH}/logos/unam-color-logo.png`}
+              width={180}
+              height={60}
+              className="h-auto w-40"
+              alt="Universidad Atlántico Medio"
+            />
+          )}
 
-        <Card className="w-full max-w-lg bg-white shadow-xl rounded-xl">
-          <CardHeader>
-            <CardTitle className="text-3xl text-slate-900">
-              {mode === "login" ? "Bienvenido" : "Crear lector"}
-            </CardTitle>
-            {/* <CardDescription>
+          <h1 className="mt-10 font-display text-2xl font-semibold tracking-tight text-primary md:text-3xl">
+            {mode === "login" ? "Bienvenido" : "Crear lector"}
+          </h1>
+          {/* <CardDescription>
               {mode === "login"
                 ? "Inicia sesión en tu biblioteca"
                 : "Introduce tus datos para crear tu carnet de lector."}
             </CardDescription> */}
-          </CardHeader>
-
-          {(error || successMessage) && (
-            <div className="px-6">
-              {error && (
-                <div className="flex items-center gap-2 p-3 text-sm text-red-700 bg-red-50 border border-red-200 rounded-lg">
-                  <AlertCircle className="w-4 h-4 shrink-0" />
-                  <span>{error}</span>
-                </div>
-              )}
-              {successMessage && (
-                <div className="flex items-center gap-2 p-3 text-sm text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg">
-                  <CheckCircle2 className="w-4 h-4 shrink-0" />
-                  <span>{successMessage}</span>
-                </div>
-              )}
-            </div>
+          {mode === "login" && (
+            <p className={`mt-2 text-sm md:text-base ${mutedText}`}>
+              Accede con tu cuenta de la universidad
+            </p>
           )}
 
-          {mode === "login" ? (
-            <form onSubmit={handleLoginSubmit}>
-              <CardContent className="space-y-4 pt-2">
-                {/* <div className="space-y-2">
-                  <Label htmlFor="lenlec" className="text-slate-700 font-medium">
-                    Correo electrónico
-                  </Label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-2 h-4 w-4 text-slate-400" />
-                    <Input
-                      id="lenlec"
-                      name="lenlec"
-                      placeholder="Introduce tu correo electrónico"
-                      value={loginData.lenlec}
-                      onChange={handleLoginChange}
-                      className="pl-9 focus-visible:ring-teal-600"
-                      required
-                    />
-                  </div>
-                </div> */}
-
-                {/* <div className="space-y-2">
-                  <Label htmlFor="lepass-login" className="text-slate-700 font-medium">
-                    Contraseña
-                  </Label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-2 h-4 w-4 text-slate-400" />
-                    <Input
-                      id="lepass-login"
-                      name="lepass"
-                      type={ isPasswordShown ? "text" : "password"}
-                      placeholder="Introduce tu contraseña"
-                      value={loginData.lepass}
-                      onChange={handleLoginChange}
-                      className="pl-9 pr-9 focus-visible:ring-teal-600"
-                      required
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setIsPasswordShown((prev) => !prev)}
-                      aria-label={isPasswordShown ? "Ocultar contraseña" : "Mostrar contraseña"}
-                      aria-pressed={isPasswordShown}
-                      className="absolute right-3 top-2 text-slate-400 hover:text-slate-600 transition-colors"
-                    >
-                      {isPasswordShown ? (
-                        <EyeClosed className="h-4 w-4" />
-                      ) : (
-                        <Eye className="h-4 w-4" />
-                      )}
-                    </button>
-                  </div>
-                </div> */}
-              </CardContent>
-
-              <CardFooter className="flex flex-col gap-3 pt-6 pb-6 border-0">
-                {/* <Button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-4 shadow-md transition-colors"
-                >
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Iniciando sesión...
-                    </>
-                  ) : (
-                    "Acceder"
-                  )}
-                </Button> */}
-                {/* <button
-                  type="button"
-                  onClick={() => switchMode("register")}
-                  className="text-sm text-slate-600 hover:text-teal-700"
-                >
-                  ¿No tienes cuenta?{" "}
-                  <span className="text-teal-700 font-medium hover:underline">
-                    Crea tu carnet de lector
-                  </span>
-                </button> */}
-                {/* <div className="flex w-full items-center gap-3">
-                  <span className="h-px flex-1 bg-slate-200" />
-                  <span className="text-xs uppercase text-slate-400">o</span>
-                  <span className="h-px flex-1 bg-slate-200" />
-                </div> */}
-
-                <Button
-                  asChild
-                  variant="outline"
-                  className="w-full h-11 rounded-none border-[#8C8C8C] bg-white px-3 text-[15px] font-semibold text-[#5E5E5E] hover:bg-[#F3F3F3] hover:text-[#5E5E5E] transition-colors"
-                  style={{ fontFamily: '"Segoe UI", "Segoe UI Web", Tahoma, Arial, sans-serif' }}
-                >
-                  <a
-                    href={CAMPUS_URI}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="gap-3"
+          <div className="mt-8 w-full">
+            {(error || successMessage) && (
+              <div className="mb-4 space-y-3 text-left">
+                {error && (
+                  <div
+                    role="alert"
+                    className="flex items-center gap-2 rounded-md border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive"
                   >
-                    <img src="https://www.microsoft.com/favicon.ico" alt="" width="18" />
-                    Iniciar sesión con Microsoft
-                  </a>
-                </Button>
+                    <AlertCircle className="h-4 w-4 shrink-0" />
+                    <span>{error}</span>
+                  </div>
+                )}
+                {successMessage && (
+                  <div
+                    role="status"
+                    aria-live="polite"
+                    className="flex items-center gap-2 rounded-md border border-accent/30 bg-[hsl(var(--muted))] p-3 text-sm text-primary"
+                  >
+                    <CheckCircle2 className="h-4 w-4 shrink-0 text-accent" />
+                    <span>{successMessage}</span>
+                  </div>
+                )}
+              </div>
+            )}
 
-                <button
-                  type="button"
-                  onClick={() => switchMode("reset")}
-                  className="text-sm text-slate-600 hover:text-teal-700 hover:underline"
-                >
-                  ¿Olvidaste tu contraseña?
-                </button>
-              </CardFooter>
-            </form>
-          ) : (
-            <form onSubmit={handleRegisterSubmit}>
-              <CardContent className="space-y-4 pt-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="lenomb" className="text-slate-700 font-medium">
-                      Nombre *
+            {mode === "login" ? (
+              <form onSubmit={handleLoginSubmit} className="flex flex-col items-center">
+                <div className="w-full space-y-5 text-left">
+                  {/* <div className="space-y-2">
+                    <Label htmlFor="lenlec" className="text-slate-700 font-medium">
+                      Correo electrónico
                     </Label>
                     <div className="relative">
-                      <User className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                      <Mail className="absolute left-3 top-2 h-4 w-4 text-slate-400" />
                       <Input
-                        id="lenomb"
-                        name="lenomb"
-                        placeholder="Juan"
-                        value={registerData.lenomb}
-                        onChange={handleRegisterChange}
+                        id="lenlec"
+                        name="lenlec"
+                        placeholder="Introduce tu correo electrónico"
+                        value={loginData.lenlec}
+                        onChange={handleLoginChange}
                         className="pl-9 focus-visible:ring-teal-600"
                         required
                       />
                     </div>
+                  </div> */}
+
+                  {/* <div className="space-y-2">
+                    <Label htmlFor="lepass-login" className="text-slate-700 font-medium">
+                      Contraseña
+                    </Label>
+                    <div className="relative">
+                      <Lock className="absolute left-3 top-2 h-4 w-4 text-slate-400" />
+                      <Input
+                        id="lepass-login"
+                        name="lepass"
+                        type={ isPasswordShown ? "text" : "password"}
+                        placeholder="Introduce tu contraseña"
+                        value={loginData.lepass}
+                        onChange={handleLoginChange}
+                        className="pl-9 pr-9 focus-visible:ring-teal-600"
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setIsPasswordShown((prev) => !prev)}
+                        aria-label={isPasswordShown ? "Ocultar contraseña" : "Mostrar contraseña"}
+                        aria-pressed={isPasswordShown}
+                        className="absolute right-3 top-2 text-slate-400 hover:text-slate-600 transition-colors"
+                      >
+                        {isPasswordShown ? (
+                          <EyeClosed className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                      </button>
+                    </div>
+                  </div> */}
+                </div>
+
+                <div className="flex w-full flex-col items-center">
+                  {/* <Button
+                    type="submit"
+                    disabled={isLoading}
+                    className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-4 shadow-md transition-colors"
+                  >
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Iniciando sesión...
+                      </>
+                    ) : (
+                      "Acceder"
+                    )}
+                  </Button> */}
+                  {/* <button
+                    type="button"
+                    onClick={() => switchMode("register")}
+                    className="text-sm text-slate-600 hover:text-teal-700"
+                  >
+                    ¿No tienes cuenta?{" "}
+                    <span className="text-teal-700 font-medium hover:underline">
+                      Crea tu carnet de lector
+                    </span>
+                  </button> */}
+                  {/* <div className="flex w-full items-center gap-3">
+                    <span className="h-px flex-1 bg-slate-200" />
+                    <span className="text-xs uppercase text-slate-400">o</span>
+                    <span className="h-px flex-1 bg-slate-200" />
+                  </div> */}
+
+                  <Button
+                    asChild
+                    className="h-12 w-full rounded-md bg-primary font-display text-base font-semibold text-primary-foreground hover:bg-primary/90 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 transition-colors"
+                  >
+                    <a
+                      href={CAMPUS_URI}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="gap-3"
+                    >
+                      <span className="flex h-6 w-6 items-center justify-center rounded-sm bg-white" aria-hidden="true">
+                        <svg viewBox="0 0 21 21" className="h-4 w-4">
+                          <rect x="1" y="1" width="9" height="9" fill="#f25022" />
+                          <rect x="11" y="1" width="9" height="9" fill="#7fba00" />
+                          <rect x="1" y="11" width="9" height="9" fill="#00a4ef" />
+                          <rect x="11" y="11" width="9" height="9" fill="#ffb900" />
+                        </svg>
+                      </span>
+                      Iniciar sesión con Microsoft
+                      <span className="sr-only">(se abre en una pestaña nueva)</span>
+                    </a>
+                  </Button>
+
+                  <button
+                    type="button"
+                    onClick={() => switchMode("reset")}
+                    className={`mt-6 ${helpLink}`}
+                  >
+                    ¿Olvidaste tu contraseña?
+                  </button>
+                </div>
+              </form>
+            ) : (
+              <form onSubmit={handleRegisterSubmit} className="space-y-5 text-left">
+                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                  <div>
+                    <Label htmlFor="lenomb" className={labelClass}>
+                      Nombre *
+                    </Label>
+                    <Input
+                      id="lenomb"
+                      name="lenomb"
+                      autoComplete="given-name"
+                      placeholder="Juan"
+                      value={registerData.lenomb}
+                      onChange={handleRegisterChange}
+                      className="h-12 rounded-md text-base"
+                      required
+                    />
                   </div>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="leapel" className="text-slate-700 font-medium">
+                  <div>
+                    <Label htmlFor="leapel" className={labelClass}>
                       Apellidos *
                     </Label>
                     <Input
                       id="leapel"
                       name="leapel"
+                      autoComplete="family-name"
                       placeholder="Pérez Gómez"
                       value={registerData.leapel}
                       onChange={handleRegisterChange}
-                      className="focus-visible:ring-teal-600"
+                      className="h-12 rounded-md text-base"
                       required
                     />
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="ledi11" className="text-slate-700 font-medium">
+                <div>
+                  <Label htmlFor="ledi11" className={labelClass}>
                     Dirección *
                   </Label>
-                  <div className="relative">
-                    <MapPin className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                  <Input
+                    id="ledi11"
+                    name="ledi11"
+                    autoComplete="street-address"
+                    placeholder="Carretera de Quilmes, 37"
+                    value={registerData.ledi11}
+                    onChange={handleRegisterChange}
+                    className="h-12 rounded-md text-base"
+                    required
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 gap-5 sm:grid-cols-2">
+                  <div>
+                    <Label htmlFor="lemail" className={labelClass}>
+                      Correo Electrónico
+                    </Label>
                     <Input
-                      id="ledi11"
-                      name="ledi11"
-                      placeholder="Carretera de Quilmes, 37"
-                      value={registerData.ledi11}
+                      id="lemail"
+                      name="lemail"
+                      type="email"
+                      autoComplete="email"
+                      placeholder="ejemplo@atlanticomedio.es"
+                      value={registerData.lemail}
                       onChange={handleRegisterChange}
-                      className="pl-9 focus-visible:ring-teal-600"
-                      required
+                      className="h-12 rounded-md text-base"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="letfn1" className={labelClass}>
+                      Teléfono
+                    </Label>
+                    <Input
+                      id="letfn1"
+                      name="letfn1"
+                      type="tel"
+                      autoComplete="tel"
+                      placeholder="+34 600 000 000"
+                      value={registerData.letfn1}
+                      onChange={handleRegisterChange}
+                      className="h-12 rounded-md text-base"
                     />
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="lemail" className="text-slate-700 font-medium">
-                      Correo Electrónico
-                    </Label>
-                    <div className="relative">
-                      <Mail className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
-                      <Input
-                        id="lemail"
-                        name="lemail"
-                        type="email"
-                        placeholder="ejemplo@atlanticomedio.es"
-                        value={registerData.lemail}
-                        onChange={handleRegisterChange}
-                        className="pl-9 focus-visible:ring-teal-600"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label htmlFor="letfn1" className="text-slate-700 font-medium">
-                      Teléfono
-                    </Label>
-                    <div className="relative">
-                      <Phone className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
-                      <Input
-                        id="letfn1"
-                        name="letfn1"
-                        type="tel"
-                        placeholder="+34 600 000 000"
-                        value={registerData.letfn1}
-                        onChange={handleRegisterChange}
-                        className="pl-9 focus-visible:ring-teal-600"
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="lecolp" className="text-slate-700 font-medium">
+                <div>
+                  <Label htmlFor="lecolp" className={labelClass}>
                     Tipo de lector *
                   </Label>
                   <Select
@@ -473,70 +475,68 @@ export const LoginPage: React.FC<LoginPageProps> = ({ className = "" }) => {
                       setRegisterData((prev) => ({ ...prev, lecolp: val }))
                     }
                   >
-                    <SelectTrigger id="lecolp" className="focus:ring-teal-600 w-full">
+                    <SelectTrigger id="lecolp" className="h-12 w-full text-base">
                       <SelectValue placeholder="Selecciona el lector" />
                     </SelectTrigger>
-                    <SelectContent className="bg-white">
+                    <SelectContent className="bg-background">
                       <SelectItem value="ALUMN">Estudiante</SelectItem>
                       <SelectItem value="PDI">PDI (Docente e Investigador)</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
 
-                <div className="space-y-2">
-                  <Label htmlFor="lepass-register" className="text-slate-700 font-medium">
+                <div>
+                  <Label htmlFor="lepass-register" className={labelClass}>
                     Contraseña de Acceso
                   </Label>
-                  <div className="relative">
-                    <Lock className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
-                    <Input
-                      id="lepass-register"
-                      name="lepass"
-                      type="password"
-                      placeholder="Si se deja vacío, se genera automáticamente"
-                      value={registerData.lepass}
-                      onChange={handleRegisterChange}
-                      className="pl-9 focus-visible:ring-teal-600"
-                    />
-                  </div>
+                  <Input
+                    id="lepass-register"
+                    name="lepass"
+                    type="password"
+                    autoComplete="new-password"
+                    placeholder="Si se deja vacío, se genera automáticamente"
+                    value={registerData.lepass}
+                    onChange={handleRegisterChange}
+                    className="h-12 rounded-md text-base"
+                  />
                 </div>
-              </CardContent>
 
-              <CardFooter className="border-0 flex flex-col gap-3 pt-4 pb-6">
-                <Button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full bg-teal-600 hover:bg-teal-700 text-white font-bold py-4 shadow-md transition-colors"
-                >
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Registrando lector...
-                    </>
-                  ) : (
-                    "Dar de alta lector"
-                  )}
-                </Button>
-                <button
-                  type="button"
-                  onClick={() => switchMode("login")}
-                  className="text-sm text-slate-600 hover:text-teal-700"
-                >
-                  ¿Ya tienes cuenta?{" "}
-                  <span className="text-teal-700 font-medium">Inicia sesión</span>
-                </button>
-              </CardFooter>
-            </form>
-          )}
-        </Card>
-        <button
-          type="button"
-          onClick={() => switchMode("reset")}
-          className="text-sm text-slate-400 hover:text-teal-700 mt-6 underline"
-        >
-          Solicitar ayuda al servicio de informática
-        </button>
-      </div>
+                <div className="flex flex-col items-center pt-1">
+                  <Button
+                    type="submit"
+                    disabled={isLoading}
+                    className="h-12 w-full rounded-md bg-primary font-display text-base font-semibold text-primary-foreground hover:bg-primary/90 transition-colors"
+                  >
+                    {isLoading ? (
+                      <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                        Registrando lector...
+                      </>
+                    ) : (
+                      "Dar de alta lector"
+                    )}
+                  </Button>
+                  <button
+                    type="button"
+                    onClick={() => switchMode("login")}
+                    className={`mt-6 ${helpLink}`}
+                  >
+                    ¿Ya tienes cuenta? Inicia sesión
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+
+          <button
+            type="button"
+            onClick={() => switchMode("reset")}
+            className={`mt-2 ${helpLink}`}
+          >
+            Solicitar ayuda al servicio de informática
+          </button>
+        </div>
+      </main>
     </div>
   );
 };
