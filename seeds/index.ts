@@ -9,6 +9,7 @@ import path from 'path'
 
 const SEEDS = [
   'layout.seed.ts',
+  'login.seed.ts',
   'home.seed.ts',
   'pages.seed.ts',
   'electronicResources.seed.ts',

@@ -830,3 +830,14 @@ todos los casos).
 
 ## 2026-10-28 – arreglos tras fusionar las ramas en main
 - `globals/ElectronicResources.ts` usaba `sectionGlobal('paginas')` sin importarlo (los roles y la reescritura de recursos se fusionaron mal): `ReferenceError: sectionGlobal is not defined` al arrancar. `collections/Media.ts` conservaba `publicReadAdminWrite` en vez de `sectionAccessPublic('medios')` (lo detectó el test del catálogo de permisos) y `migrations/index.ts` quedó con sintaxis rota y las migraciones fuera de orden: se reescribió ordenado por nombre (19 migraciones = 19 ficheros). `tsc` limpio y 307 tests en verde.
+
+## 2026-10-28 – imagen de respaldo del hero sin basePath
+- El aviso `The requested resource isn't a valid image for /images/app/campus.jpg` venía de las 5 páginas con imagen de respaldo (`'/images/app/campus.jpg'`): next/image no antepone el basePath a las rutas de `public/`, así que el optimizador pedía `/images/...` y daba 404 (la imagen salía rota cuando el hero no traía imagen). Ahora `lib/images.ts` exporta `HERO_FALLBACK_IMAGE` con el basePath y lo usan home, biblioteca, solicitud de compra, repositorios y servicios.
+
+## 2026-10-28 – imagen de la página de login
+- La pantalla de login no mostraba imagen porque no existía ningún documento en `login_page` (no había seed): `imageUrl` quedaba nulo y solo se veía el degradado. Nuevo `seeds/login.seed.ts` (registrado en `seeds/index.ts` tras layout) con `campus.jpg`, repetible. Además: `sizes="60vw"` y `priority` en la imagen (aviso "fill but missing sizes") y el logo de respaldo apuntaba a `/seeds/assets/...`, que no es público ni lleva basePath; ahora usa `${BASE_PATH}/logos/unam-color-logo.png`.
+- Login: la imagen no se veía porque el panel izquierdo usaba `h-full` dentro de un contenedor solo con `min-h-screen` (altura 0: aviso "fill and a height value of 0"). Ahora el contenedor usa `items-stretch` y los dos paneles `min-h-screen`; los logos llevan `h-auto w-[180px]` (aviso de width/height modificados).
+
+## 2026-10-29 – rediseño minimalista del login
+- `app/(auth)/login/page.tsx` rediseñado (propuesta del agente de diseño, implementada por el de frontend): grid 3fr/2fr con imagen decorativa y columna centrada sin Card, botón de Microsoft como acción principal en `bg-primary` con icono SVG inline, enlaces de ayuda discretos (se mantienen sin función por decisión del usuario), colores solo del sistema de diseño. Lógica y bloques comentados intactos. Añadido el token `--destructive` (`app/styles.css`).
+- Hallazgo sin resolver: `--color-muted` y `--color-muted-foreground` NO están en el `@theme` de `app/styles.css` (solo como variables CSS), así que `bg-muted` / `text-muted-foreground` no generan estilo en Tailwind v4 y se usan en 33 ficheros. En el login se usa `text-[hsl(var(--muted-foreground))]`. Registrarlos en `@theme` cambiaría el aspecto de esas páginas: decisión pendiente.

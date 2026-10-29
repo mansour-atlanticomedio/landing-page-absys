@@ -1,6 +1,7 @@
 import Hero from "@/components/Hero";
 import { RenderBlocks } from "@/components/RenderBlocks";
 import { getClient } from "@/lib/payload";
+import { HERO_FALLBACK_IMAGE } from "@/lib/images";
 
 export const dynamic = 'force-dynamic';
 
@@ -23,7 +24,7 @@ export default async function Repositories() {
 
   const imageUrl = heroData?.background_image && typeof heroData.background_image === 'object'
     ? heroData.background_image.url
-    : '/images/app/campus.jpg';
+    : HERO_FALLBACK_IMAGE;
 
   return (
     <>

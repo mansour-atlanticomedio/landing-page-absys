@@ -1,5 +1,6 @@
 import { PageHero } from "@/components/blocks/PageHero";
 import { getClient } from "@/lib/payload";
+import { HERO_FALLBACK_IMAGE } from "@/lib/images";
 import { getSession } from "@/lib/auth/session";
 import { Bookmark, BookOpen, Headphones, RefreshCw, Search, BookPlus, User } from "lucide-react";
 import Link from "next/link";
@@ -24,7 +25,7 @@ export default async function Servicios() {
     subtitle: heroData?.subtitle || "La Biblioteca ofrece servicios destinados a facilitar el acceso, la consulta y la utilización de los recursos de información disponibles en la Universidad. Aquí encontrarás información sobre la consulta de fondos, el préstamo, las renovaciones, las reservas y la atención de dudas.",
     background_image: heroData?.background_image && typeof heroData.background_image === 'object'
       ? heroData.background_image
-      : { id: 0, url: '/images/app/campus.jpg', alt: '' },
+      : { id: 0, url: HERO_FALLBACK_IMAGE, alt: '' },
   }
 
   const servicios = [

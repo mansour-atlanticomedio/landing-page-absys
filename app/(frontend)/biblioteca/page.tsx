@@ -1,5 +1,6 @@
 import Hero from "@/components/Hero";
 import { getClient } from "@/lib/payload";
+import { HERO_FALLBACK_IMAGE } from "@/lib/images";
 import BooksList from "@/components/BooksList";
 import { Suspense } from "react";
 
@@ -25,7 +26,7 @@ export default async function LibraryPage() {
 
   const imageUrl = heroData?.background_image && typeof heroData.background_image === 'object'
     ? heroData.background_image.url
-    : '/images/app/campus.jpg';
+    : HERO_FALLBACK_IMAGE;
 
   return (
     <section>
