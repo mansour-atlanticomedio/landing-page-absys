@@ -316,7 +316,7 @@ export default function Header({ phone, email, navbar, logoLink, account }: Head
                 )}
             </header>
             <div className="hidden lg:flex border-t border-border bg-primary text-primary-foreground items-center justify-center">
-                <div className="w-8/12 flex flex-wrap items-center justify-center px-6">
+                <div className="w-10/12 flex flex-wrap items-center justify-center px-6">
                     {navbarMenu.map((section, index) => {
                         const triggerClasses = "flex h-12 items-center gap-1 px-5 xl:px-14 text-sm font-bold tracking-wide transition cursor-pointer group-hover:bg-primary-foreground/10 group-focus-within:bg-primary-foreground/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset";
                         const content = (
