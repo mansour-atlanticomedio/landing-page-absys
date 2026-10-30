@@ -303,6 +303,26 @@ La web lee por Local API, que no pasa por `access`, así que cerrar la lectura R
 - Migración `20261021_100000_permisos_usuarios` (12 columnas booleanas nulas, sin backfill). Los cambios de permisos aplican en la siguiente petición.
 - Sin verificar en navegador: casillas, `admin.condition`, banner y que Payload oculte secciones/botones según `read`/`update`; migración en BD nueva.
 
+### Barra lateral y dashboard del admin (2026-10-30)
+
+Solo propiedades de `admin`, orden en `payload.config.ts` y etiquetas: sin cambios de esquema. Payload agrupa por **primera aparición** (colecciones antes que globals), así que el orden de los arrays `collections`/`globals` fija el de la barra; un grupo que solo tiene globals sale después de los que tienen colecciones.
+
+| Grupo | Contenido |
+|---|---|
+| Páginas | `pages`; globals `home`, `services`, `formation`, `investigation`, `electronic_resources`, `library`, `repository` |
+| Contenido | `news`, `electronic_resources_access`, `schedule`, `faq`, `partners`, `hero`, `hero_carrusel`, `features`, `cta` (los cuatro últimos se usan en varias páginas: no ocultar) |
+| Imágenes | `media` |
+| Configuración del sitio | `header`, `footer`, `login_page`, global `layout` |
+| Formularios | global `solicitud_compra` |
+| Usuarios | `users` (etiqueta "Administradores"), `loginCampus_service` |
+| Sistema | `exports`, `imports` (solo admin) |
+| Piezas antiguas | `statistics`, `about`, `timeline`, `input`, `blogs`, `speakers`, global `contact` (solo admin) |
+
+- Ocultar = `admin.hidden: hideFromNonAdmins` (`lib/access.ts`, usa `isAdminUser`). Es cosmético; el control real sigue siendo `access`. Al ocultarse a un editor, sus relaciones en los bloques `layout` siguen funcionando pero no puede abrir/crear esos documentos.
+- Las secciones de permisos (`lib/permissions.ts`) se renombraron para coincidir con el menú (Contenido, Configuración del sitio, Imágenes); los `key` no cambian. `lib/__tests__/permissions.test.ts` valida qué grupos admite cada sección.
+- Los arrays llevan `RowLabel` con `components/admin/ItemRowLabel` (título del ítem en vez de "Untitled"); los `*_relation` de `blocks/layout/` tienen label legible.
+- Dashboard: vista sustituida con `admin.components.views.dashboard` → `components/admin/DashboardWelcome` (ya no `beforeDashboard`); bienvenida, acciones, tarjetas de páginas y "Últimas páginas editadas" (5, respetando el `access` del usuario).
+
 ### Capa anti-abuso (`lib/security/`, 2026-10-08)
 
 Lógica pura y testeable (reloj y almacén inyectados) para limitar el abuso de la API y del correo. **Sin uso en la web desde el 2026-10-26**: solo la usaba `/contacto` (`lib/contacto-envio.ts`), eliminada; se conserva con sus tests como código sin usar; la fase 3 la usará en las sugerencias de libro. No hay Redis: el almacén definitivo será Postgres (fase 4).
