@@ -10,8 +10,8 @@ export const Hero: CollectionConfig = {
     },
     access: sectionAccessPublic('bloques'),
     labels: {
-        singular: 'Seccion Principal',
-        plural: 'Seccion Principal'
+        singular: 'Sección principal',
+        plural: 'Sección principal'
     },
     fields: [
         {

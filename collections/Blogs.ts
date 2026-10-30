@@ -32,6 +32,7 @@ export const BlogsCollection: CollectionConfig = {
                 plural: 'Artículos'
             },
             type: 'array',
+            admin: { components: { RowLabel: { path: '/components/admin/ItemRowLabel', clientProps: { field: 'title', singular: 'Blog' } } } },
             minRows: 1,
             maxRows: 10,
             fields: [

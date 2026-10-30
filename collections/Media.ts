@@ -13,7 +13,7 @@ export const Media: CollectionConfig = {
     },
   labels: {
     singular: 'Imagen',
-    plural: 'Galeria de Imagenes'
+    plural: 'Galería de imágenes'
   },
   access: sectionAccessPublic('medios'),
   hooks: {

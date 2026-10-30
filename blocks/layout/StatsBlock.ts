@@ -6,6 +6,7 @@ export const StatsBlock: Block = {
     fields: [
         {
             name: 'stats_relation',
+            label: 'Estadísticas a mostrar',
             type: 'relationship',
             relationTo: 'statistics',
             hasMany: true,

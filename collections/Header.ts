@@ -32,7 +32,7 @@ export const Header: CollectionConfig = {
             fields: [
                 {
                     name: 'phone',
-                    label: 'Numero de Telefono',
+                    label: 'Número de teléfono',
                     type: 'text'
                 },
                 {
@@ -50,6 +50,7 @@ export const Header: CollectionConfig = {
                 plural: "barra de navegacion"
             },
             type: "array",
+            admin: { components: { RowLabel: { path: '/components/admin/ItemRowLabel', clientProps: { field: 'name', singular: 'Menú' } } } },
             fields: [
                 {
                     name: "name",
@@ -65,6 +66,7 @@ export const Header: CollectionConfig = {
                         plural: 'desplegable'
                     },
                     type: "array",
+                    admin: { components: { RowLabel: { path: '/components/admin/ItemRowLabel', clientProps: { field: 'label', singular: 'Enlace' } } } },
                     fields: [
                         {
                             name: 'label',

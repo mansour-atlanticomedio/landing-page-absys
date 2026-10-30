@@ -28,6 +28,7 @@ export const ElectronicResourcesAccess: CollectionConfig = {
                 plural: 'Accesos'
             },
             type: 'array',
+            admin: { components: { RowLabel: { path: '/components/admin/ItemRowLabel', clientProps: { field: 'title', singular: 'Acceso' } } } },
             minRows: 1,
             maxRows: 6,
             fields: [

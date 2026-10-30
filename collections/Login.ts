@@ -8,8 +8,8 @@ export const Login: CollectionConfig = {
         description: 'Imagen de la pantalla de inicio de sesión.'
     },
     labels: {
-        plural: 'Inicio de Sesion',
-        singular: 'Inicio de Sesion'
+        plural: 'Pantalla de inicio de sesión',
+        singular: 'Pantalla de inicio de sesión'
     },
     access: sectionAccessPublic('paginas'),
     fields: [

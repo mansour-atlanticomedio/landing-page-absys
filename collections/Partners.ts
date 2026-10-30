@@ -21,6 +21,7 @@ export const PartnersCollection : CollectionConfig = {
                 plural: 'patrocinadores',
             },
             type: 'array',
+            admin: { components: { RowLabel: { path: '/components/admin/ItemRowLabel', clientProps: { field: 'name', singular: 'Patrocinador' } } } },
             fields: [
                 {
                     name: 'name',

@@ -30,7 +30,7 @@ export const Home: GlobalConfig = {
           fields: [
     {
       name: 'hero',
-      label: 'Seccion Principal',
+      label: 'Sección principal',
       admin: { description: 'Cabecera con imagen, título y subtítulo de la página.' },
       type: 'relationship',
       relationTo: 'hero',
@@ -38,7 +38,7 @@ export const Home: GlobalConfig = {
     },
     {
       name: 'hero_carrusel',
-      label: 'Seccion de Carrusel Principal',
+      label: 'Carrusel principal',
       type: 'relationship',
       relationTo: 'hero_carrusel',
       hasMany: false,

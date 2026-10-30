@@ -6,6 +6,7 @@ export const FeaturesBlock: Block = {
     fields: [
         {
             name: 'features_relation',
+            label: 'Características a mostrar',
             type: 'relationship',
             relationTo: 'features',
             hasMany: true,

@@ -57,7 +57,7 @@ export const ElectronicResources: GlobalConfig = {
                                     label: 'Puntos con check',
                                     labels: { singular: 'Punto', plural: 'Puntos' },
                                     type: 'array',
-                                    admin: { description: 'Frases cortas que se muestran con un check verde.' },
+                                    admin: { components: { RowLabel: { path: '/components/admin/ItemRowLabel', clientProps: { field: 'texto', singular: 'Punto' } } }, description: 'Frases cortas que se muestran con un check verde.' },
                                     fields: [
                                         { name: 'texto', label: 'Texto', type: 'text', required: true },
                                     ]
@@ -101,7 +101,7 @@ export const ElectronicResources: GlobalConfig = {
                             label: 'Categorías de recursos',
                             labels: { singular: 'Categoría', plural: 'Categorías' },
                             type: 'array',
-                            admin: { description: 'Cada categoría es una pestaña. Si no hay ninguna con recursos, la sección no aparece.' },
+                            admin: { components: { RowLabel: { path: '/components/admin/ItemRowLabel', clientProps: { field: 'nombre', singular: 'Categoría' } } }, description: 'Cada categoría es una pestaña. Si no hay ninguna con recursos, la sección no aparece.' },
                             fields: [
                                 { name: 'nombre', label: 'Nombre', type: 'text', required: true },
                                 {
@@ -109,6 +109,7 @@ export const ElectronicResources: GlobalConfig = {
                                     label: 'Recursos',
                                     labels: { singular: 'Recurso', plural: 'Recursos' },
                                     type: 'array',
+                                    admin: { components: { RowLabel: { path: '/components/admin/ItemRowLabel', clientProps: { field: 'nombre', singular: 'Recurso' } } } },
                                     fields: [
                                         { name: 'nombre', label: 'Nombre', type: 'text', required: true },
                                         { name: 'descripcion', label: 'Descripción', type: 'text' },

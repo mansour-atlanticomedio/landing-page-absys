@@ -28,6 +28,7 @@ export const Features : CollectionConfig = {
                 plural: 'Características'
             },
             type: 'array',
+            admin: { components: { RowLabel: { path: '/components/admin/ItemRowLabel', clientProps: { field: 'title', singular: 'Característica' } } } },
             minRows: 1,
             maxRows: 6,
             fields: [

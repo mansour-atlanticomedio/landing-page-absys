@@ -26,7 +26,7 @@ export const Layout : GlobalConfig = {
                         },
                         {
                             name: 'footer',
-                            label: 'Pie de pagina',
+                            label: 'Pie de página',
                             type: 'relationship',
                             relationTo: 'footer'
                         },
@@ -40,7 +40,7 @@ export const Layout : GlobalConfig = {
                             name: 'enlaces_externos',
                             label: 'Enlaces externos',
                             type: 'array',
-                            admin: {
+                            admin: { components: { RowLabel: { path: '/components/admin/ItemRowLabel', clientProps: { field: 'label', singular: 'Enlace' } } },
                                 description: 'Registro de enlaces a sitios externos (repositorio, catálogo, redes...) editable sin tocar código. Se consultan por "key" desde lib/links.ts',
                             },
                             fields: [

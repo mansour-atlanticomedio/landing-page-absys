@@ -6,6 +6,7 @@ export const FaqBlock: Block = {
     fields: [
         {
             name: 'faq_relation',
+            label: 'Preguntas frecuentes a mostrar',
             type: 'relationship',
             relationTo: 'faq',
             hasMany: true,

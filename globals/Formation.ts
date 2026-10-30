@@ -19,7 +19,7 @@ export const Formation : GlobalConfig = {
           fields: [
     {
       name: 'hero',
-      label: 'Seccion Principal',
+      label: 'Sección principal',
       admin: { description: 'Cabecera con imagen, título y subtítulo de la página.' },
       type: 'relationship',
       relationTo: 'hero',
@@ -27,7 +27,7 @@ export const Formation : GlobalConfig = {
     },
     {
       name: 'hero_carrusel',
-      label: 'Seccion de Carrusel Principal',
+      label: 'Carrusel principal',
       type: 'relationship',
       relationTo: 'hero_carrusel',
       hasMany: false,
@@ -55,6 +55,7 @@ export const Formation : GlobalConfig = {
         plural: 'Enlaces',
       },
       type: 'array',
+      admin: { components: { RowLabel: { path: '/components/admin/ItemRowLabel', clientProps: { field: 'label', singular: 'Enlace' } } } },
       minRows: 0,
       maxRows: 4,
       fields: [

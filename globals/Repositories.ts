@@ -13,7 +13,7 @@ export const Repositories: GlobalConfig = {
     fields: [
         {
             name: 'hero',
-            label: 'Seccion Principal',
+            label: 'Sección principal',
             type: 'relationship',
             relationTo: 'hero',
             hasMany: false

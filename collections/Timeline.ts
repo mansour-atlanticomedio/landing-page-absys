@@ -60,7 +60,7 @@ export const Timeline: CollectionConfig = {
                         },
                         {
                             name: 'description',
-                            label: 'Descripcion',
+                            label: 'Descripción',
                             type: 'richText'
                         },
                     ]

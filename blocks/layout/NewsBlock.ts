@@ -6,6 +6,7 @@ export const NewsBlock: Block = {
     fields: [
         {
             name: 'news_relation',
+            label: 'Noticias a mostrar',
             type: 'relationship',
             relationTo: 'news',
             hasMany: true,

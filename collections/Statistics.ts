@@ -22,6 +22,7 @@ export const Statistics: CollectionConfig = {
                 plural: 'Estadistica',
             },
             type: 'array',
+            admin: { components: { RowLabel: { path: '/components/admin/ItemRowLabel', clientProps: { field: 'description', singular: 'Estadística' } } } },
             label: 'Listado de estadisticas',
             minRows: 1,
             maxRows: 4,
@@ -40,7 +41,7 @@ export const Statistics: CollectionConfig = {
                 },
                 {
                     name: 'description',
-                    label: 'Descripcion',
+                    label: 'Descripción',
                     type: 'text',
                 },
             ]

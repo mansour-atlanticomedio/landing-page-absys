@@ -18,7 +18,7 @@ export const Speakers: CollectionConfig = {
     fields: [
         {
             name: 'title',
-            label: 'Titulo',
+            label: 'Título',
             type: 'text'
         },
         {
@@ -63,13 +63,14 @@ export const Speakers: CollectionConfig = {
                 },
                 {
                     name: 'description',
-                    label: 'Descripcion',
+                    label: 'Descripción',
                     type: 'richText'
                 },
                 {
                     name: 'socials',
                     label: 'Redes Sociales',
                     type: 'array',
+                    admin: { components: { RowLabel: { path: '/components/admin/ItemRowLabel', clientProps: { field: 'url', singular: 'Red social' } } } },
                     fields: [
                         {
                             type: 'row',

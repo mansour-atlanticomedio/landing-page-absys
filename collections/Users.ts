@@ -68,6 +68,7 @@ const countOtherAdmins = async (req: any, excludeId?: number | string) => {
 
 export const Users: CollectionConfig = {
   slug: 'users',
+  labels: { singular: 'Administrador', plural: 'Administradores' },
   admin: {
         group: 'Usuarios',
         description: 'Personas con acceso a este panel de administración.',

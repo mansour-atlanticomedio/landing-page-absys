@@ -9,8 +9,8 @@ export const HeroCarrusel : CollectionConfig = {
     },
     access: sectionAccess('bloques'),
     labels: {
-        singular: 'Seccion de Carrusel Principal',
-        plural: 'Seccion de Carrusel Principal'
+        singular: 'Carrusel principal',
+        plural: 'Carrusel principal'
     },
     fields: [
         {
@@ -21,15 +21,16 @@ export const HeroCarrusel : CollectionConfig = {
                 plural: 'items'
             },
             type: 'array',
+            admin: { components: { RowLabel: { path: '/components/admin/ItemRowLabel', clientProps: { field: 'title', singular: 'Diapositiva' } } } },
             fields: [
                 {
                     name: 'title',
-                    label: 'Titulo',
+                    label: 'Título',
                     type: 'text'
                 },
                 {
                     name: 'description',
-                    label: 'Descripcion',
+                    label: 'Descripción',
                     type: 'text'
                 },
                 {

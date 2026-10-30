@@ -6,6 +6,7 @@ export const BlogsBlock: Block = {
     fields: [
         {
             name: 'blogs_relation',
+            label: 'Blogs a mostrar',
             type: 'relationship',
             relationTo: 'blogs',
             hasMany: true,

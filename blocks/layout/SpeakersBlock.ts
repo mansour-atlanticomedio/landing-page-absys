@@ -6,6 +6,7 @@ export const SpeakersBlock: Block = {
     fields: [
         {
             name: 'speakers_relation',
+            label: 'Ponentes a mostrar',
             type: 'relationship',
             relationTo: 'speakers',
             hasMany: true,
