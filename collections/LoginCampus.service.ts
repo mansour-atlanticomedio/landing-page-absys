@@ -64,7 +64,7 @@ export const LoginCampusService: CollectionConfig = {
     },
   },
   admin: {
-        group: 'Usuarios y accesos',
+        group: 'Usuarios',
         description: 'Lectores que han entrado desde el campus. Se crean solos al iniciar sesión.',
     useAsTitle: "email",
   },

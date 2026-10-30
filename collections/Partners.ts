@@ -4,7 +4,7 @@ import { sectionAccess } from "@/lib/access";
 export const PartnersCollection : CollectionConfig = {
     slug: 'partners',
     admin: {
-        group: 'Bloques de contenido',
+        group: 'Contenido',
         description: 'Logotipos de entidades colaboradoras y patrocinadores.'
     },
     access: sectionAccess('bloques'),

@@ -4,7 +4,7 @@ import { sectionAccess } from "@/lib/access";
 export const HeroCarrusel : CollectionConfig = {
     slug: 'hero_carrusel',
     admin: {
-        group: 'Bloques de contenido',
+        group: 'Contenido',
         description: 'Carruseles de diapositivas con imagen, título y descripción para la parte superior de una página.'
     },
     access: sectionAccess('bloques'),

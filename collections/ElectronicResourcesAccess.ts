@@ -5,7 +5,7 @@ import { sectionAccess } from "@/lib/access";
 export const ElectronicResourcesAccess: CollectionConfig = {
     slug: 'electronic_resources_access',
     admin: {
-        group: 'Bloques de contenido',
+        group: 'Contenido',
         description: 'Conjuntos de accesos directos con icono, texto y enlace.',
         useAsTitle: 'title'
     },

@@ -20,7 +20,14 @@ const files = ['collections', 'globals'].flatMap((dir) =>
     .map((f) => ({ file: `${dir}/${f}`, src: readFileSync(join(root, dir, f), 'utf8') })),
 )
 
-const SIN_SECCION = ['Servicios internos', 'Usuarios y accesos']
+const SIN_SECCION = ['Servicios internos', 'Usuarios', 'Sistema']
+
+const GRUPOS_POR_SECCION: Record<string, string[]> = {
+  paginas: ['Páginas', 'Formularios', 'Configuración del sitio', 'Piezas antiguas'],
+  bloques: ['Contenido', 'Piezas antiguas'],
+  navegacion: ['Configuración del sitio'],
+  medios: ['Imágenes'],
+}
 
 describe('catálogo', () => {
   it('cada sección del mapa existe en el catálogo', () => {
@@ -28,7 +35,6 @@ describe('catálogo', () => {
     expect(SECTIONS.map((s) => s.key)).toEqual([...SECTION_KEYS])
   })
   it('el mapa coincide con admin.group y con la fábrica usada en cada fichero', () => {
-    const labels = Object.fromEntries(SECTIONS.map((s) => [s.label, s.key]))
     const vistos = new Set<string>()
     for (const { file, src } of files) {
       const slug = src.match(/^\s{0,6}slug: ['"](\w+)['"]/m)?.[1]
@@ -40,8 +46,8 @@ describe('catálogo', () => {
         expect(SECTION_BY_SLUG[slug], file).toBeUndefined()
         continue
       }
-      expect(labels[group], `${file}: grupo ${group}`).toBeDefined()
-      expect(SECTION_BY_SLUG[slug], `${file}: ${slug} falta en el mapa`).toBe(labels[group])
+      expect(SECTION_BY_SLUG[slug], `${file}: ${slug} falta en el mapa`).toBeDefined()
+      expect(GRUPOS_POR_SECCION[SECTION_BY_SLUG[slug]], `${file}: grupo ${group}`).toContain(group)
       expect(factory, `${file}: usa la sección del mapa`).toBe(SECTION_BY_SLUG[slug])
       vistos.add(slug)
     }

@@ -5,7 +5,7 @@ import { blockDeleteIfMediaInUse } from '@/lib/media-usage'
 export const Media: CollectionConfig = {
   slug: 'media',
     admin: {
-        group: 'Medios',
+        group: 'Imágenes',
         description: 'Imágenes y documentos PDF del sitio. Sube aquí las fotos, logos y PDFs y descríbelos en el texto alternativo.',
         components: {
             beforeList: ['/components/admin/MediaListHelp'],

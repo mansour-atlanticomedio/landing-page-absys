@@ -4,7 +4,7 @@ import { sectionAccess } from "@/lib/access";
 export const Schedule: CollectionConfig = {
     slug: 'schedule',
     admin: {
-        group: 'Bloques de contenido',
+        group: 'Contenido',
         description: 'Horarios de apertura por días y franjas.',
         useAsTitle: 'title'
     },

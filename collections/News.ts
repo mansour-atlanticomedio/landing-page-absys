@@ -4,7 +4,7 @@ import { sectionAccess } from "@/lib/access";
 export const NewsCollection: CollectionConfig = {
     slug: 'news',
     admin: {
-        group: 'Bloques de contenido',
+        group: 'Contenido',
         description: 'Bloques de noticias con imagen, etiqueta y enlace.',
         components: {
             beforeList: ['/components/admin/NewsListHelp'],

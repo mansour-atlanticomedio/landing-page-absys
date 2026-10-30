@@ -5,7 +5,7 @@ import { sectionAccess } from "@/lib/access";
 export const Features : CollectionConfig = {
     slug: 'features',
     admin: {
-        group: 'Bloques de contenido',
+        group: 'Contenido',
         description: 'Conjuntos de tarjetas con icono, título y descripción.',
         useAsTitle: 'title'
     },

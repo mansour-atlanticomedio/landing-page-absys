@@ -9,9 +9,9 @@ export type Permissions = Record<SectionKey, SectionPermissions>
 
 export const SECTIONS: { key: SectionKey; label: string }[] = [
   { key: 'paginas', label: 'Páginas' },
-  { key: 'bloques', label: 'Bloques de contenido' },
-  { key: 'navegacion', label: 'Navegación y pie' },
-  { key: 'medios', label: 'Medios' },
+  { key: 'bloques', label: 'Contenido' },
+  { key: 'navegacion', label: 'Configuración del sitio' },
+  { key: 'medios', label: 'Imágenes' },
 ]
 
 export const PERMISSION_FLAG_LABELS: Record<PermissionFlag, string> = {

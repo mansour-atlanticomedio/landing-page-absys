@@ -5,7 +5,7 @@ import { enlaceFields } from "./fields/enlace";
 export const Header: CollectionConfig = {
     slug: 'header',
     admin: {
-        group: 'Navegación y pie',
+        group: 'Configuración del sitio',
         description: 'Cabecera del sitio: logo, teléfono, correo y menú de navegación.'
     },
     labels: {

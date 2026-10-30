@@ -18,6 +18,11 @@ export const isEditor: Access = ({ req: { user } }) => {
 // Cualquier usuario del panel con rol válido, incluido el de solo lectura
 export const isPanelUser: Access = ({ req: { user } }) => roleOf(user) !== null
 
+// Único sitio que decide quién ve las secciones de sistema y las piezas antiguas en la barra lateral (solo cosmético: el control real es `access`)
+export const isAdminUser = (user: unknown) => roleOf(user) === 'admin'
+
+export const hideFromNonAdmins = ({ user }: { user?: unknown }) => !isAdminUser(user)
+
 export const isAdminField: FieldAccess = ({ req: { user } }) => roleOf(user) === 'admin'
 
 export const anyone: Access = () => true

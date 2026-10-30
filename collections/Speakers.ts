@@ -1,11 +1,12 @@
 import type { CollectionConfig } from "payload";
 import { iconsSocialMedia } from "./Icons.ts";
-import { sectionAccess } from "@/lib/access";
+import { sectionAccess, hideFromNonAdmins } from "@/lib/access";
 
 export const Speakers: CollectionConfig = {
     slug: 'speakers',
     admin: {
-        group: 'Bloques de contenido',
+        group: 'Piezas antiguas',
+        hidden: hideFromNonAdmins,
         description: 'Personas ponentes con foto, cargo y redes sociales.',
         useAsTitle: 'title'
     },

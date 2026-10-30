@@ -1,11 +1,12 @@
 import type { CollectionConfig } from "payload";
 import { appIcons } from "./Icons.ts";
-import { sectionAccess } from "@/lib/access";
+import { sectionAccess, hideFromNonAdmins } from "@/lib/access";
 
 export const Statistics: CollectionConfig = {
     slug: 'statistics',
     admin: {
-        group: 'Bloques de contenido',
+        group: 'Piezas antiguas',
+        hidden: hideFromNonAdmins,
         description: 'Cifras destacadas con icono y descripción.'
     },
     access: sectionAccess('bloques'),

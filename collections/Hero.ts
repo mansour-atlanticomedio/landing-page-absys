@@ -4,7 +4,7 @@ import { sectionAccessPublic } from "@/lib/access";
 export const Hero: CollectionConfig = {
     slug: 'hero',
     admin: {
-        group: 'Bloques de contenido',
+        group: 'Contenido',
         description: 'Cabeceras con imagen de fondo, título y botón que se reutilizan en las páginas.',
         useAsTitle: 'title'
     },

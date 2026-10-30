@@ -4,7 +4,7 @@ import { sectionAccessPublic } from "@/lib/access";
 export const Login: CollectionConfig = {
     slug: 'login_page',
     admin: {
-        group: 'Páginas',
+        group: 'Configuración del sitio',
         description: 'Imagen de la pantalla de inicio de sesión.'
     },
     labels: {

@@ -24,7 +24,7 @@ const permissionsField: Field = {
   access: { create: isAdminField, update: isAdminField },
   admin: {
     description:
-      'Qué puede hacer este usuario en cada sección. Al cambiar el rol se restablecen a la plantilla del nuevo rol. "Crear y editar" y "Eliminar" implican "Ver". Servicios internos y Usuarios y accesos son siempre solo para administradores.',
+      'Qué puede hacer este usuario en cada sección. Al cambiar el rol se restablecen a la plantilla del nuevo rol. "Crear y editar" y "Eliminar" implican "Ver". Servicios internos, Usuarios y Sistema son siempre solo para administradores.',
     condition: (data) => data?.role !== 'admin',
   },
   hooks: {
@@ -69,7 +69,7 @@ const countOtherAdmins = async (req: any, excludeId?: number | string) => {
 export const Users: CollectionConfig = {
   slug: 'users',
   admin: {
-        group: 'Usuarios y accesos',
+        group: 'Usuarios',
         description: 'Personas con acceso a este panel de administración.',
     useAsTitle: 'email',
     defaultColumns: ['email', 'role', 'updatedAt'],

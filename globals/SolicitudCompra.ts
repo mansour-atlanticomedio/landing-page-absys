@@ -4,7 +4,7 @@ import { sectionGlobal } from "@/lib/access";
 export const SolicitudCompra: GlobalConfig = {
     slug: 'solicitud_compra',
     admin: {
-        group: 'Páginas',
+        group: 'Formularios',
         description: 'Cabecera de la página de solicitud de compra de libros.'
     },
     access: sectionGlobal('paginas'),
