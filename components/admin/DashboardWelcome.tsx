@@ -1,5 +1,6 @@
 import type { AdminViewServerProps } from 'payload'
-import { Banner, Button, Card, Gutter, Pill } from '@payloadcms/ui'
+import Link from 'next/link'
+import { Banner, Button, Card, Gutter } from '@payloadcms/ui'
 
 const accesos = [
   { label: 'Inicio', description: 'Portada, noticias y bloques', href: '/admin/globals/home' },
@@ -8,37 +9,30 @@ const accesos = [
   { label: 'Investigación', description: 'Apoyo a la investigación', href: '/admin/globals/investigation' },
   { label: 'Páginas', description: 'Quiénes somos, horarios, normativa y más', href: '/admin/collections/pages' },
   { label: 'Recursos electrónicos', description: 'Accesos destacados', href: '/admin/globals/electronic_resources' },
-  { label: 'Cabecera y pie', description: 'Menú, enlaces y redes', href: '/admin/globals/layout' },
+  { label: 'Plantilla', description: 'Encabezamiento, pie de página y enlaces externos', href: '/admin/globals/layout' },
 ]
 
-const grupos = [
-  { label: 'Imágenes', description: 'Fotos y logos subidos', slugs: ['media'] },
-  {
-    label: 'Bloques de contenido',
-    description: 'Noticias, preguntas, ponentes y más',
-    slugs: ['speakers', 'statistics', 'about', 'features', 'timeline', 'cta', 'faq', 'news', 'blogs', 'electronic_resources_access', 'schedule', 'partners'],
-  },
-  { label: 'Cabeceras', description: 'Cabeceras y carruseles', slugs: ['hero', 'hero_carrusel'] },
-]
-
-async function contar(payload: AdminViewServerProps['payload'], slug: string) {
+async function ultimasPaginas(args: Pick<AdminViewServerProps, 'payload'> & { user?: unknown }) {
   try {
-    const res = await payload.count({ collection: slug as never, overrideAccess: true })
-    return res.totalDocs
+    const res = await args.payload.find({
+      collection: 'pages',
+      sort: '-updatedAt',
+      limit: 5,
+      depth: 0,
+      pagination: false,
+      user: args.user as never,
+      overrideAccess: false,
+    })
+    return res.docs.map((d) => ({ id: d.id, title: d.title, updatedAt: d.updatedAt }))
   } catch {
-    return 0
+    return []
   }
 }
 
-export default async function DashboardWelcome({ payload }: { payload?: AdminViewServerProps['payload'] }) {
-  const resumen = payload
-    ? await Promise.all(
-        grupos.map(async (g) => {
-          const counts = await Promise.all(g.slugs.map((s) => contar(payload, s)))
-          return { ...g, total: counts.reduce((a, b) => a + b, 0) }
-        }),
-      )
-    : []
+const formatoFecha = new Intl.DateTimeFormat('es-ES', { dateStyle: 'medium', timeStyle: 'short' })
+
+export default async function DashboardWelcome({ payload, user }: AdminViewServerProps) {
+  const recientes = payload ? await ultimasPaginas({ payload, user }) : []
 
   return (
     <Gutter className="unam-welcome">
@@ -70,17 +64,16 @@ export default async function DashboardWelcome({ payload }: { payload?: AdminVie
         ))}
       </ul>
 
-      {resumen.length > 0 ? (
+      {recientes.length > 0 ? (
         <>
-          <h3 className="unam-welcome__subtitle">Resumen de contenido</h3>
+          <h3 className="unam-welcome__subtitle">Últimas páginas editadas</h3>
           <ul className="unam-welcome__summary">
-            {resumen.map((g) => (
-              <li key={g.label} className="unam-welcome__summary-item">
-                <Pill pillStyle="success" size="small">
-                  {g.total}
-                </Pill>
-                <span className="unam-welcome__label">{g.label}</span>
-                <span className="unam-welcome__desc">{g.description}</span>
+            {recientes.map((p) => (
+              <li key={p.id} className="unam-welcome__summary-item">
+                <Link className="unam-welcome__label" href={`/admin/collections/pages/${p.id}`}>
+                  {p.title}
+                </Link>
+                <span className="unam-welcome__desc">{formatoFecha.format(new Date(p.updatedAt))}</span>
               </li>
             ))}
           </ul>

@@ -88,7 +88,9 @@ export default buildConfig({
         Logo: '/components/admin/AdminLogo',
         Icon: '/components/admin/AdminIcon',
       },
-      beforeDashboard: ['/components/admin/DashboardWelcome'],
+      views: {
+        dashboard: { Component: '/components/admin/DashboardWelcome' },
+      },
       header: ['/components/admin/ViewerBanner'],
       afterNavLinks: ['/components/admin/NavHelp'],
     },
