@@ -323,6 +323,10 @@ Solo propiedades de `admin`, orden en `payload.config.ts` y etiquetas: sin cambi
 - Los arrays llevan `RowLabel` con `components/admin/ItemRowLabel` (título del ítem en vez de "Untitled"); los `*_relation` de `blocks/layout/` tienen label legible.
 - Dashboard: vista sustituida con `admin.components.views.dashboard` → `components/admin/DashboardWelcome` (ya no `beforeDashboard`); bienvenida, acciones, tarjetas de páginas y "Últimas páginas editadas" (5, respetando el `access` del usuario).
 
+### Consentimiento de cookies (2026-11-03)
+
+Modal bloqueante en `app/(frontend)/layout.tsx` (`components/cookies/CookieConsent.tsx`, diseño en `figma/modal_cookies/`): vista principal (Configurar / Rechazar todas / Aceptar todas) y vista "Preferencias" con 3 categorías opcionales (`preferencias`, `analiticas`, `marketing`) más las técnicas, siempre activas. Lógica pura en `lib/consent.ts` (con tests): cookie propia `unam_cookie_consent` (JSON versionado, `Path=/biblioteca`, 1 año, `SameSite=Lax`). Reabrible con el enlace "Configurar cookies" del pie (`CookieSettingsLink`, evento `unam:open-cookie-settings`); al guardar se emite `unam:consent-changed` para que quien cargue scripts de terceros espere a ese evento o lea `readConsentFromCookieString`. El enlace a la política sale de `footer.privacy_cookies`. **Las categorías opcionales empiezan desactivadas** (el Figma las traía marcadas; el consentimiento previamente marcado no es válido). Hoy ninguna categoría opcional carga nada: el mapa de Google (iframe en `LocationSection`/`MapSection`) todavía no espera al consentimiento.
+
 ### Capa anti-abuso (`lib/security/`, 2026-10-08)
 
 Lógica pura y testeable (reloj y almacén inyectados) para limitar el abuso de la API y del correo. **Sin uso en la web desde el 2026-10-26**: solo la usaba `/contacto` (`lib/contacto-envio.ts`), eliminada; se conserva con sus tests como código sin usar; la fase 3 la usará en las sugerencias de libro. No hay Redis: el almacén definitivo será Postgres (fase 4).

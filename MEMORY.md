@@ -853,3 +853,7 @@ todos los casos).
 - Los roles ya existían, así que no hubo `isAdmin` provisional: `hideFromNonAdmins` usa el rol real.
 - `migrate:create fase0-check` NO salió vacía: genera `DROP TABLE about_us_blocks_location_block`. No viene de esta tarea (no se tocó ningún name/type/slug): es arrastre del commit 0822937, cuyo snapshot recoge `location_block` en el `about_us` obsoleto. Migración borrada. Pendiente decidir si se limpia ese bloque en `about_us` o se deja hasta el DROP de la fase 2.
 - Limitación de Payload: "Sistema" sale antes de "Piezas antiguas" solo si sus colecciones aparecen antes; las del plugin se añaden al final, así que para admin salen en orden Piezas antiguas → Sistema. Verificado: tsc, 308 tests, admin 200 tras reiniciar. NO verificado en navegador (barra lateral, dashboard, RowLabels).
+
+## 2026-11-03 – modal de consentimiento de cookies
+- Implementado el modal del Figma (principal + configuración) con `Dialog` de shadcn, cookie propia versionada y enlace en el pie para reabrirlo. Desvío del diseño: los interruptores de preferencias y analíticas arrancan en apagado (RGPD/AEPD no admiten casillas premarcadas). Verificado: tsc, 314 tests, páginas 200 con el enlace del pie; NO verificado en navegador (aspecto, foco, móvil).
+- Pendiente: que el mapa de Google no cargue hasta aceptar, y el texto real de la política de cookies (`privacy_cookies` aún apunta a `/biblioteca`). Las categorías analíticas/marketing no activan nada todavía.
