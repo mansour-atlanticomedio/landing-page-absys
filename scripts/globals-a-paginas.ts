@@ -44,7 +44,13 @@ const clean = (doc: Record<string, any>) => {
 const force = process.argv.includes('--force')
 const dry = process.argv.includes('--dry')
 
-const payload = await getPayload({ config })
+process.env.PAYLOAD_MIGRATING = 'true'
+
+const payload = await getPayload({ config }).catch((err) => {
+  console.error('No se pudo iniciar Payload:', err?.message ?? err)
+  console.error('Ejecuta primero `npm run migrate` hasta que termine con "Done." (este script nunca modifica el esquema).')
+  process.exit(1)
+})
 
 for (const source of SOURCES) {
   try {
