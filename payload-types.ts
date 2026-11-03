@@ -688,7 +688,7 @@ export interface FaqSectionBlock {
    */
   faq: number | Faq;
   /**
-   * Útil cuando el listado tiene muchas preguntas.
+   * Si lo marcas en cualquier listado, la página muestra un único buscador (encima del primer listado) que busca en todos los temas de la página.
    */
   show_search?: boolean | null;
   open_first?: boolean | null;

@@ -33,7 +33,7 @@ export function FaqSearchBox() {
   const { query, total, setQuery } = ctx
 
   return (
-    <div className="mx-auto max-w-4xl px-6 pt-8">
+    <div className="mx-auto max-w-6xl px-6 pt-8">
       <div className="relative">
         <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-[hsl(var(--muted-foreground))]" aria-hidden />
         <Input

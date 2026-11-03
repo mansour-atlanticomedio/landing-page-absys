@@ -44,3 +44,7 @@ next-env.d.ts
 # claude code (config local, no compartida)
 CLAUDE.local.md
 .claude/settings.local.json
+
+# ficheros generados por el plugin de importar/exportar
+/exports
+/imports
