@@ -13,7 +13,8 @@
     "migrate:create": "payload migrate:create",
     "seed": "tsx seeds/index.ts",
     "test": "vitest run",
-    "content:globals-a-paginas": "tsx scripts/globals-a-paginas.ts"
+    "content:globals-a-paginas": "tsx scripts/globals-a-paginas.ts",
+    "content:conocenos-desde-about-us": "tsx scripts/conocenos-desde-about-us.ts"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "^3.84.1",
