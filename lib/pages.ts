@@ -9,6 +9,7 @@ export const RESERVED_SEGMENTS = [
   'prestamos',
   'reservas',
   'contacto',
+  'inicio',
   'servicios',
   'formacion',
   'investigacion',
@@ -21,11 +22,17 @@ export const RESERVED_SEGMENTS = [
   'graphql-playground',
 ] as const
 
+export const HOME_SLUG = 'inicio'
+
 export const LOCKED_SLUGS = [
+  HOME_SLUG,
+  'repositorios',
   'conocenos/quienes-somos',
   'conocenos/horarios-ubicacion-y-contacto',
   'conocenos/normativa-y-condiciones-de-uso',
 ] as const
+
+export const pagePath = (slug: string): string => (slug === HOME_SLUG ? '/' : `/${slug}`)
 
 const SLUG_PATTERN = /^[a-z0-9-]+(\/[a-z0-9-]+)*$/
 
@@ -34,6 +41,7 @@ export const normalizePageSlug = (value: unknown): string =>
 
 export const validatePageSlug = (value: unknown): true | string => {
   if (typeof value !== 'string' || value.length === 0) return 'La ruta es obligatoria.'
+  if ((LOCKED_SLUGS as readonly string[]).includes(value)) return true
   if (!SLUG_PATTERN.test(value)) {
     return 'Usa solo minúsculas, números y guiones, separando niveles con "/" (sin "/" al principio ni al final).'
   }

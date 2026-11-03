@@ -1,17 +1,34 @@
 import Hero from "@/components/Hero";
 import { normalizeSubtitle } from '@/lib/rich-text'
 import { RenderBlocks } from "@/components/RenderBlocks";
+import { RenderPageBlocks } from "@/components/blocks/RenderPageBlocks";
+import { PageShell } from "@/components/blocks/PageShell";
 import { getClient } from "@/lib/payload";
 import { HERO_FALLBACK_IMAGE } from "@/lib/images";
+import { HOME_SLUG } from "@/lib/pages";
+import { getPage, resolveIsDraft, type PageSearchParams } from "@/lib/page-data";
 
 export const dynamic = 'force-dynamic';
 
 import '../styles.css'
 import HeroCarrousel from "@/components/heroCarrusel";
-import HomeQuickLinks from "@/components/HomeQuickLinks";
 
+export default async function Home({ searchParams }: { searchParams: PageSearchParams }) {
+  const isDraft = await resolveIsDraft(searchParams)
+  const page = await getPage(HOME_SLUG, isDraft)
 
-export default async function Home() {
+  if (page) {
+    return (
+      <PageShell page={page} slug={HOME_SLUG} isDraft={isDraft}>
+        <RenderPageBlocks layout={page.layout} />
+      </PageShell>
+    )
+  }
+
+  return <LegacyHome />
+}
+
+async function LegacyHome() {
   const payload = await getClient()
   const homepage = await payload.findGlobal({
     slug: 'home' as never,
@@ -54,13 +71,9 @@ export default async function Home() {
         />
       }
 
-      {/* <HomeQuickLinks /> */}
-
       <RenderBlocks blocks={pageBlocks} />
 
     </>
 
   )
 }
-
-

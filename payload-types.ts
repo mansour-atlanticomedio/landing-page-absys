@@ -266,7 +266,7 @@ export interface Page {
    */
   meta_description?: string | null;
   hero?: (number | null) | Hero;
-  hero_variant: 'simple' | 'split';
+  hero_variant: 'simple' | 'split' | 'banner';
   /**
    * Añade, ordena y elimina los bloques de contenido de esta página.
    */
@@ -283,6 +283,18 @@ export interface Page {
         | DownloadBlock
         | LocationBlock
         | FaqSectionBlock
+        | HeroCarouselInlineBlock
+        | StatsInlineBlock
+        | AboutInlineBlock
+        | FeaturesInlineBlock
+        | NewsInlineBlock
+        | BlogsInlineBlock
+        | TimelineInlineBlock
+        | SpeakersInlineBlock
+        | PartnersInlineBlock
+        | CtaInlineBlock
+        | FaqInlineBlock
+        | InputInlineBlock
       )[]
     | null;
   updatedAt: string;
@@ -728,6 +740,323 @@ export interface Faq {
     | null;
   updatedAt: string;
   createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "HeroCarouselInlineBlock".
+ */
+export interface HeroCarouselInlineBlock {
+  items?:
+    | {
+        title?: string | null;
+        description?: string | null;
+        image?: (number | null) | Media;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'hero_carousel_inline_block';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "StatsInlineBlock".
+ */
+export interface StatsInlineBlock {
+  stats?:
+    | {
+        icon:
+          | 'Lightbulb'
+          | 'BookOpen'
+          | 'Microscope'
+          | 'Star'
+          | 'User'
+          | 'Briefcase'
+          | 'Phone'
+          | 'Mail'
+          | 'MapPin'
+          | 'Calendar'
+          | 'Search'
+          | 'Megaphone'
+          | 'Lock'
+          | 'Fingerprint'
+          | 'BarChart3'
+          | 'HeartHandshake'
+          | 'BookOpenCheck'
+          | 'Landmark'
+          | 'Users'
+          | 'FileText'
+          | 'Library'
+          | 'Monitor'
+          | 'AlertTriangle';
+        value?: number | null;
+        description?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'stats_inline_block';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AboutInlineBlock".
+ */
+export interface AboutInlineBlock {
+  title?: string | null;
+  article?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'about_inline_block';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FeaturesInlineBlock".
+ */
+export interface FeaturesInlineBlock {
+  title?: string | null;
+  feature?:
+    | {
+        icon:
+          | 'Lightbulb'
+          | 'BookOpen'
+          | 'Microscope'
+          | 'Star'
+          | 'User'
+          | 'Briefcase'
+          | 'Phone'
+          | 'Mail'
+          | 'MapPin'
+          | 'Calendar'
+          | 'Search'
+          | 'Megaphone'
+          | 'Lock'
+          | 'Fingerprint'
+          | 'BarChart3'
+          | 'HeartHandshake'
+          | 'BookOpenCheck'
+          | 'Landmark'
+          | 'Users'
+          | 'FileText'
+          | 'Library'
+          | 'Monitor'
+          | 'AlertTriangle';
+        title?: string | null;
+        description?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'features_inline_block';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "NewsInlineBlock".
+ */
+export interface NewsInlineBlock {
+  title?: string | null;
+  visible_cards?: number | null;
+  /**
+   * Define cómo se verá la sección de noticias en el frontend.
+   */
+  style?: ('0' | '1' | '2' | '3') | null;
+  newsItems?:
+    | {
+        tag?: string | null;
+        link?: string | null;
+        title: string;
+        description: string;
+        image: number | Media;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'news_inline_block';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BlogsInlineBlock".
+ */
+export interface BlogsInlineBlock {
+  title: string;
+  blogItems?:
+    | {
+        title: string;
+        blog: string;
+        date: string;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'blogs_inline_block';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TimelineInlineBlock".
+ */
+export interface TimelineInlineBlock {
+  title?: string | null;
+  calendar?:
+    | {
+        day?: string | null;
+        title?: string | null;
+        events?:
+          | {
+              title?: string | null;
+              description?: {
+                root: {
+                  type: string;
+                  children: {
+                    type: any;
+                    version: number;
+                    [k: string]: unknown;
+                  }[];
+                  direction: ('ltr' | 'rtl') | null;
+                  format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+                  indent: number;
+                  version: number;
+                };
+                [k: string]: unknown;
+              } | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'timeline_inline_block';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SpeakersInlineBlock".
+ */
+export interface SpeakersInlineBlock {
+  title?: string | null;
+  people?:
+    | {
+        photo: number | Media;
+        name?: string | null;
+        role?: string | null;
+        entity?: string | null;
+        description?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        socials?:
+          | {
+              icon?: ('FaFacebook' | 'FaTwitter' | 'FaInstagram' | 'FaLinkedin' | 'FaYoutube' | 'Globe') | null;
+              url?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'speakers_inline_block';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "PartnersInlineBlock".
+ */
+export interface PartnersInlineBlock {
+  partners_item?:
+    | {
+        name?: string | null;
+        image: number | Media;
+        link?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'partners_inline_block';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CtaInlineBlock".
+ */
+export interface CtaInlineBlock {
+  title?: string | null;
+  subtitle?: string | null;
+  button_cta?: string | null;
+  button_link?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'cta_inline_block';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FaqInlineBlock".
+ */
+export interface FaqInlineBlock {
+  title?: string | null;
+  faqs?:
+    | {
+        question?: string | null;
+        answer?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'faq_inline_block';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "InputInlineBlock".
+ */
+export interface InputInlineBlock {
+  title?: string | null;
+  placeholder?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'input_inline_block';
 }
 /**
  * Bloques de noticias con imagen, etiqueta y enlace.
@@ -1799,6 +2128,18 @@ export interface PagesSelect<T extends boolean = true> {
         download_block?: T | DownloadBlockSelect<T>;
         location_block?: T | LocationBlockSelect<T>;
         faq_section_block?: T | FaqSectionBlockSelect<T>;
+        hero_carousel_inline_block?: T | HeroCarouselInlineBlockSelect<T>;
+        stats_inline_block?: T | StatsInlineBlockSelect<T>;
+        about_inline_block?: T | AboutInlineBlockSelect<T>;
+        features_inline_block?: T | FeaturesInlineBlockSelect<T>;
+        news_inline_block?: T | NewsInlineBlockSelect<T>;
+        blogs_inline_block?: T | BlogsInlineBlockSelect<T>;
+        timeline_inline_block?: T | TimelineInlineBlockSelect<T>;
+        speakers_inline_block?: T | SpeakersInlineBlockSelect<T>;
+        partners_inline_block?: T | PartnersInlineBlockSelect<T>;
+        cta_inline_block?: T | CtaInlineBlockSelect<T>;
+        faq_inline_block?: T | FaqInlineBlockSelect<T>;
+        input_inline_block?: T | InputInlineBlockSelect<T>;
       };
   updatedAt?: T;
   createdAt?: T;
@@ -1954,6 +2295,206 @@ export interface FaqSectionBlockSelect<T extends boolean = true> {
   faq?: T;
   show_search?: T;
   open_first?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "HeroCarouselInlineBlock_select".
+ */
+export interface HeroCarouselInlineBlockSelect<T extends boolean = true> {
+  items?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        image?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "StatsInlineBlock_select".
+ */
+export interface StatsInlineBlockSelect<T extends boolean = true> {
+  stats?:
+    | T
+    | {
+        icon?: T;
+        value?: T;
+        description?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "AboutInlineBlock_select".
+ */
+export interface AboutInlineBlockSelect<T extends boolean = true> {
+  title?: T;
+  article?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FeaturesInlineBlock_select".
+ */
+export interface FeaturesInlineBlockSelect<T extends boolean = true> {
+  title?: T;
+  feature?:
+    | T
+    | {
+        icon?: T;
+        title?: T;
+        description?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "NewsInlineBlock_select".
+ */
+export interface NewsInlineBlockSelect<T extends boolean = true> {
+  title?: T;
+  visible_cards?: T;
+  style?: T;
+  newsItems?:
+    | T
+    | {
+        tag?: T;
+        link?: T;
+        title?: T;
+        description?: T;
+        image?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "BlogsInlineBlock_select".
+ */
+export interface BlogsInlineBlockSelect<T extends boolean = true> {
+  title?: T;
+  blogItems?:
+    | T
+    | {
+        title?: T;
+        blog?: T;
+        date?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TimelineInlineBlock_select".
+ */
+export interface TimelineInlineBlockSelect<T extends boolean = true> {
+  title?: T;
+  calendar?:
+    | T
+    | {
+        day?: T;
+        title?: T;
+        events?:
+          | T
+          | {
+              title?: T;
+              description?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "SpeakersInlineBlock_select".
+ */
+export interface SpeakersInlineBlockSelect<T extends boolean = true> {
+  title?: T;
+  people?:
+    | T
+    | {
+        photo?: T;
+        name?: T;
+        role?: T;
+        entity?: T;
+        description?: T;
+        socials?:
+          | T
+          | {
+              icon?: T;
+              url?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "PartnersInlineBlock_select".
+ */
+export interface PartnersInlineBlockSelect<T extends boolean = true> {
+  partners_item?:
+    | T
+    | {
+        name?: T;
+        image?: T;
+        link?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "CtaInlineBlock_select".
+ */
+export interface CtaInlineBlockSelect<T extends boolean = true> {
+  title?: T;
+  subtitle?: T;
+  button_cta?: T;
+  button_link?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FaqInlineBlock_select".
+ */
+export interface FaqInlineBlockSelect<T extends boolean = true> {
+  title?: T;
+  faqs?:
+    | T
+    | {
+        question?: T;
+        answer?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "InputInlineBlock_select".
+ */
+export interface InputInlineBlockSelect<T extends boolean = true> {
+  title?: T;
+  placeholder?: T;
   id?: T;
   blockName?: T;
 }
@@ -2623,7 +3164,7 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   createdAt?: T;
 }
 /**
- * Página de inicio: cabecera, carrusel y bloques de contenido.
+ * Obsoleto: el inicio ahora se edita en Páginas > Inicio.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "home".
@@ -3088,7 +3629,7 @@ export interface Library {
   createdAt?: string | null;
 }
 /**
- * Página de repositorios: cabecera y bloques de contenido.
+ * Obsoleto: Repositorios ahora se edita en Páginas > Repositorios.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "repository".

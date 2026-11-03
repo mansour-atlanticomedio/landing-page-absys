@@ -1,14 +1,19 @@
 import Image from "next/image"
 import type { PayloadImage } from "@/types/common.type"
+import Hero from "@/components/Hero"
 import HeroSubtitle from "@/components/HeroSubtitle"
+import { HERO_FALLBACK_IMAGE } from "@/lib/images"
 import type { RichValue } from "@/lib/rich-text"
 
 interface PageHeroProps {
-  variant?: "simple" | "split" | null
+  variant?: "simple" | "split" | "banner" | null
   hero?: {
     title?: string | null
     subtitle?: RichValue | null
     background_image?: PayloadImage | null
+    pretitle?: string | null
+    button_cta?: string | null
+    input_placeholder?: string | null
   } | null
   fallbackTitle?: string | null
 }
@@ -16,6 +21,19 @@ interface PageHeroProps {
 export function PageHero({ variant, hero, fallbackTitle }: PageHeroProps) {
   const image = hero?.background_image
   const title = hero?.title || fallbackTitle
+
+  if (variant === "banner") {
+    return (
+      <Hero
+        pretitle={hero?.pretitle ?? undefined}
+        title={hero?.title ?? ""}
+        subtitle={hero?.subtitle}
+        image={image?.url || HERO_FALLBACK_IMAGE}
+        buttonText={hero?.button_cta ?? undefined}
+        inputPlaceHolder={hero?.input_placeholder ?? undefined}
+      />
+    )
+  }
 
   if (variant === "split") {
     return (

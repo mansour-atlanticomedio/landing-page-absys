@@ -1,5 +1,6 @@
 import { PageHero } from "@/components/blocks/PageHero"
 import { LivePreviewListener } from "@/components/blocks/LivePreviewListener"
+import { pagePath } from "@/lib/pages"
 
 export function PageShell({
   page,
@@ -20,7 +21,7 @@ export function PageShell({
   )
 
   if (isDraft) {
-    return <LivePreviewListener exitPath={`/${slug}`}>{content}</LivePreviewListener>
+    return <LivePreviewListener exitPath={pagePath(slug)}>{content}</LivePreviewListener>
   }
 
   return content
