@@ -62,6 +62,11 @@ for (const source of SOURCES) {
 
     const global: any = await payload.findGlobal({ slug: source.global as never, depth: 0, draft: false })
     const layout: any[] = []
+    const hasContent = Boolean(global.hero) || Boolean(global.hero_carrusel) || (global.layout ?? []).length > 0
+    if (!hasContent) {
+      console.log(`${source.slug}: el global "${source.global}" está vacío, no hay nada que copiar (ejecuta antes npm run seed)`)
+      continue
+    }
 
     if (source.carousel && global.hero_carrusel) {
       const carousel: any = await payload.findByID({ collection: 'hero_carrusel', id: idOf(global.hero_carrusel), depth: 0 })
