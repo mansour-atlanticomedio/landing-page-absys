@@ -1,4 +1,5 @@
 // seeds/electronicResources.seed.ts
+import { lexicalFromText } from '@/lib/rich-text'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import { findOrCreateMedia } from './lib/media'
@@ -14,7 +15,7 @@ const heroDoc = await upsertDoc(payload, {
     background_image: heroImage.id,
     title: 'Recursos Electrónicos',
     subtitle:
-      'Acceda a nuestra extensa colección de plataformas digitales, bases de datos especializadas y literatura científica. Un entorno virtual diseñado para impulsar la excelencia académica y facilitar su investigación desde cualquier lugar.',
+      lexicalFromText('Acceda a nuestra extensa colección de plataformas digitales, bases de datos especializadas y literatura científica. Un entorno virtual diseñado para impulsar la excelencia académica y facilitar su investigación desde cualquier lugar.'),
   },
 })
 

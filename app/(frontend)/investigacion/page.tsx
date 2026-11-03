@@ -1,4 +1,5 @@
 import { getClient } from "@/lib/payload";
+import { normalizeSubtitle } from '@/lib/rich-text'
 import InvestigationContent from "@/components/InvestigationContent";
 import { DSPACE_URL_POR_DEFECTO, resolveEnlaceExterno } from "@/lib/links";
 
@@ -66,8 +67,10 @@ export default async function Investigation() {
   const heroData = homepage?.hero
   const title = heroData?.title || "Apoyo a la investigación";
   const subtitle =
-    heroData?.subtitle ||
-    "La Biblioteca reúne recursos y orientaciones para facilitar la búsqueda de información científica, la publicación y difusión de resultados, el acceso abierto y la gestión de la identidad investigadora. Este espacio se ampliará progresivamente con guías, documentos y enlaces adaptados a las necesidades del personal docente e investigador de la Universidad.";
+    normalizeSubtitle(
+    heroData?.subtitle,
+    "La Biblioteca reúne recursos y orientaciones para facilitar la búsqueda de información científica, la publicación y difusión de resultados, el acceso abierto y la gestión de la identidad investigadora. Este espacio se ampliará progresivamente con guías, documentos y enlaces adaptados a las necesidades del personal docente e investigador de la Universidad."
+  );
   const imageUrl = heroData?.background_image?.url || "/img/investigacion-hero.jpg";
 
   const accesosRapidos = homepage?.accesos_rapidos?.feature?.length

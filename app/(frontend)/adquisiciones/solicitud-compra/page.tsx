@@ -1,4 +1,5 @@
 import Hero from "@/components/Hero";
+import { normalizeSubtitle } from '@/lib/rich-text'
 import SolicitudCompraForm from "@/components/SolicitudCompraForm";
 import { getClient } from "@/lib/payload";
 import { HERO_FALLBACK_IMAGE } from "@/lib/images";
@@ -25,7 +26,7 @@ export default async function SolicitudCompra() {
 
   const pretitle = heroData?.pretitle || "Adquisiciones";
   const title = heroData?.title || "Solicitud de compra";
-  const subtitle = heroData?.subtitle || "Propón la adquisición de libros u obras que necesites para tu docencia, estudio o investigación";
+  const subtitle = normalizeSubtitle(heroData?.subtitle, "Propón la adquisición de libros u obras que necesites para tu docencia, estudio o investigación");
 
   const imageUrl = heroData?.background_image && typeof heroData.background_image === 'object'
     ? heroData.background_image.url

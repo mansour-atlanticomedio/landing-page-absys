@@ -35,8 +35,8 @@ export const Hero: CollectionConfig = {
         },
         {
             name: 'subtitle',
-            label: 'Subtitulo',
-            type: 'text',
+            label: 'Subtítulo',
+            type: 'richText',
         },
         {
             name: 'button_cta',

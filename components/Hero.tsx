@@ -3,11 +3,13 @@ import { Button } from "./ui/button";
 
 import InputComponent from "./Input";
 import { PayloadImage } from "@/types/common.type";
+import HeroSubtitle from "./HeroSubtitle";
+import type { RichValue } from "@/lib/rich-text";
 
 interface HeroProps {
   pretitle?: string,
   title: string,
-  subtitle?: string,
+  subtitle?: RichValue | null,
   image?: PayloadImage | string,
   buttonText?: string,
   inputPlaceHolder?: string,
@@ -42,11 +44,7 @@ export default function Hero({ pretitle, title, subtitle, image, buttonText, inp
         <h1 className="font-display text-3xl md:text-5xl font-bold uppercase tracking-wide text-primary-foreground mb-4">
           {title}
         </h1>
-        {subtitle && subtitle !== '' && (
-          <p className="text-lg md:text-xl text-primary-foreground/90">
-            {subtitle}
-          </p>
-        )}
+        <HeroSubtitle value={subtitle} className="text-lg md:text-xl text-primary-foreground/90" />
         {buttonText && inputPlaceHolder !== '' &&
           <Button
             variant="outline"

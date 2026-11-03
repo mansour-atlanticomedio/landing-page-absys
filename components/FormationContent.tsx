@@ -1,5 +1,7 @@
 "use client"
 
+import HeroSubtitle from '@/components/HeroSubtitle'
+import type { RichValue } from '@/lib/rich-text'
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -25,7 +27,7 @@ interface GuiaTutorial {
 
 interface FormationContentProps {
   title: string;
-  subtitle: string;
+  subtitle?: RichValue;
   imageUrl: string;
   buscarParrafo1: string;
   buscarParrafo2: string;
@@ -61,7 +63,7 @@ export default function FormationContent({
         <div>
           <h1 className="text-3xl md:text-4xl font-extrabold text-slate-800">{title}</h1>
           <div className="w-10 h-1 bg-teal-700 my-4" />
-          <p className="text-slate-600 mb-4">{subtitle}</p>
+          <HeroSubtitle value={subtitle} className="text-slate-600 mb-4" />
           <p className="text-slate-600">
             En esta página se incorporarán progresivamente guías, tutoriales, documentos y
             actividades formativas dirigidas a la comunidad universitaria.

@@ -1,4 +1,5 @@
 // seeds/solicitudCompra.seed.ts
+import { lexicalFromText } from '@/lib/rich-text'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import { findOrCreateMedia } from './lib/media'
@@ -16,7 +17,7 @@ try {
       pretitle: 'Adquisiciones',
       title: 'Solicitud de compra',
       subtitle:
-        'Propón la adquisición de libros u obras que necesites para tu docencia, estudio o investigación',
+        lexicalFromText('Propón la adquisición de libros u obras que necesites para tu docencia, estudio o investigación'),
     },
   })
 

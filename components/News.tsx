@@ -151,9 +151,9 @@ function NewsCard({ new: { tag, link, title, description, image }, style }: { ne
                             />
                         )}
                     </div>
-                    <div className="min-h-0 flex-1 overflow-hidden p-4 sm:p-5">
+                    <div className="min-h-0 flex-1 overflow-hidden p-4 sm:p-5 flex justify-center">
                         <span className="text-[11px] font-bold uppercase tracking-widest text-primary">{tag}</span>
-                        <h3 className="mt-2 line-clamp-2 text-lg font-bold leading-snug text-foreground group-hover:text-primary">{title}</h3>
+                        <h3 className="mt-2 line-clamp-2 text-lg text-center font-bold leading-snug text-foreground group-hover:text-primary">{title}</h3>
                         <p className="mt-2 line-clamp-3 text-sm text-muted-foreground">{description}</p>
                     </div>
                 </article>
@@ -226,9 +226,9 @@ function NewsCard({ new: { tag, link, title, description, image }, style }: { ne
                     <div className="absolute h-4/12 inset-0 flex flex-col justify-end px-6 py-2 mt-auto">
 
                         <div className='absolute bg-foreground z-0 opacity-80 w-full h-full inset-0' />
-                        <div className='z-4 w-full h-full flex justify-start items-start' >
+                        <div className='z-4 w-full h-full flex justify-center items-start' >
                             {/* { tag !== null && <span className="text-xs font-medium text-primary-foreground/80">{tag}</span>} */}
-                            <h3 className="mt-4 text-xl font-bold text-white line-clamp-2">{title}</h3>
+                            <h3 className="mt-4 text-xl text-center font-bold text-white line-clamp-2">{title}</h3>
                             {/* <p className="text-sm text-slate-200 opacity-0 transition-all duration-300 group-hover:opacity-100">{description}</p> */}
                         </div>
 

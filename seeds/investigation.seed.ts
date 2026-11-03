@@ -1,4 +1,5 @@
 // seeds/investigation.seed.ts
+import { lexicalFromText } from '@/lib/rich-text'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import { findOrCreateMedia } from './lib/media'
@@ -19,7 +20,7 @@ const heroDoc = await upsertDoc(payload, {
     background_image: heroImage.id,
     title: 'Apoyo a la investigación',
     subtitle:
-      'La Biblioteca reúne recursos y orientaciones para facilitar la búsqueda de información científica, la publicación y difusión de resultados, el acceso abierto y la gestión de la identidad investigadora. Este espacio se ampliará progresivamente con guías, documentos y enlaces adaptados a las necesidades del personal docente e investigador de la Universidad.',
+      lexicalFromText('La Biblioteca reúne recursos y orientaciones para facilitar la búsqueda de información científica, la publicación y difusión de resultados, el acceso abierto y la gestión de la identidad investigadora. Este espacio se ampliará progresivamente con guías, documentos y enlaces adaptados a las necesidades del personal docente e investigador de la Universidad.'),
   },
 })
 

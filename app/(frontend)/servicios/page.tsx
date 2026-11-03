@@ -1,4 +1,5 @@
 import { PageHero } from "@/components/blocks/PageHero";
+import { normalizeSubtitle } from '@/lib/rich-text'
 import { getClient } from "@/lib/payload";
 import { HERO_FALLBACK_IMAGE } from "@/lib/images";
 import { getSession } from "@/lib/auth/session";
@@ -22,7 +23,7 @@ export default async function Servicios() {
 
   const hero = {
     title: heroData?.title || "Servicios bibliotecarios",
-    subtitle: heroData?.subtitle || "La Biblioteca ofrece servicios destinados a facilitar el acceso, la consulta y la utilización de los recursos de información disponibles en la Universidad. Aquí encontrarás información sobre la consulta de fondos, el préstamo, las renovaciones, las reservas y la atención de dudas.",
+    subtitle: normalizeSubtitle(heroData?.subtitle, "La Biblioteca ofrece servicios destinados a facilitar el acceso, la consulta y la utilización de los recursos de información disponibles en la Universidad. Aquí encontrarás información sobre la consulta de fondos, el préstamo, las renovaciones, las reservas y la atención de dudas."),
     background_image: heroData?.background_image && typeof heroData.background_image === 'object'
       ? heroData.background_image
       : { id: 0, url: HERO_FALLBACK_IMAGE, alt: '' },

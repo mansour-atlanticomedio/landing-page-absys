@@ -1,11 +1,13 @@
 import Image from "next/image"
 import type { PayloadImage } from "@/types/common.type"
+import HeroSubtitle from "@/components/HeroSubtitle"
+import type { RichValue } from "@/lib/rich-text"
 
 interface PageHeroProps {
   variant?: "simple" | "split" | null
   hero?: {
     title?: string | null
-    subtitle?: string | null
+    subtitle?: RichValue | null
     background_image?: PayloadImage | null
   } | null
   fallbackTitle?: string | null
@@ -21,7 +23,7 @@ export function PageHero({ variant, hero, fallbackTitle }: PageHeroProps) {
         <div className="mx-auto max-w-6xl px-6 py-10 md:py-16 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
           <div>
             {title && <h1 className="font-display text-3xl md:text-4xl font-extrabold text-slate-800">{title}</h1>}
-            {hero?.subtitle && <p className="mt-4 text-slate-600">{hero.subtitle}</p>}
+            <HeroSubtitle value={hero?.subtitle} className="mt-4 text-slate-600" />
           </div>
           {image?.url && (
             <div className="relative h-56 sm:h-72 rounded-lg overflow-hidden">
@@ -36,7 +38,7 @@ export function PageHero({ variant, hero, fallbackTitle }: PageHeroProps) {
   return (
     <section className="mx-auto max-w-6xl px-6 pt-14 pb-4">
       {title && <h1 className="font-display text-3xl md:text-4xl font-extrabold text-slate-800">{title}</h1>}
-      {hero?.subtitle && <p className="mt-3 text-slate-600 max-w-3xl">{hero.subtitle}</p>}
+      <HeroSubtitle value={hero?.subtitle} className="mt-3 text-slate-600 max-w-3xl" />
     </section>
   )
 }

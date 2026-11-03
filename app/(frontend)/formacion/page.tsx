@@ -1,4 +1,5 @@
 import { getClient } from "@/lib/payload";
+import { normalizeSubtitle } from '@/lib/rich-text'
 import FormationContent from "@/components/FormationContent";
 
 export const dynamic = 'force-dynamic';
@@ -33,8 +34,10 @@ export default async function Formation() {
   const heroData = homepage?.hero
   const title = heroData?.title || "Formación";
   const subtitle =
-    heroData?.subtitle ||
-    "La Biblioteca ofrece recursos de apoyo para desarrollar las competencias necesarias para buscar, evaluar, utilizar y comunicar información académica de manera eficaz, crítica y responsable.";
+    normalizeSubtitle(
+    heroData?.subtitle,
+    "La Biblioteca ofrece recursos de apoyo para desarrollar las competencias necesarias para buscar, evaluar, utilizar y comunicar información académica de manera eficaz, crítica y responsable."
+  );
   const imageUrl = heroData?.background_image?.url || "/img/formacion-hero.jpg";
 
   const buscarParrafo1 =

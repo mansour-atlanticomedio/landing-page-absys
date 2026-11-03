@@ -1,4 +1,5 @@
 // seeds/pages.seed.ts
+import { lexicalFromText } from '@/lib/rich-text'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import { findOrCreateMedia } from './lib/media'
@@ -20,7 +21,7 @@ try {
       background_image: quienesImg.id,
       title: 'Quiénes somos',
       subtitle:
-        'La Biblioteca Universitaria es un servicio de apoyo al aprendizaje, la docencia y la investigación, comprometido con la excelencia académica y el desarrollo integral de nuestra comunidad.',
+        lexicalFromText('La Biblioteca Universitaria es un servicio de apoyo al aprendizaje, la docencia y la investigación, comprometido con la excelencia académica y el desarrollo integral de nuestra comunidad.'),
     },
   })
 
@@ -84,7 +85,7 @@ try {
       background_image: horariosImg.id,
       title: 'Horarios, ubicación y contacto',
       subtitle:
-        'Encuentra toda la información necesaria para visitar nuestras instalaciones o ponerte en contacto con el equipo de la Biblioteca Universitaria.',
+        lexicalFromText('Encuentra toda la información necesaria para visitar nuestras instalaciones o ponerte en contacto con el equipo de la Biblioteca Universitaria.'),
     },
   })
 
@@ -116,7 +117,7 @@ try {
       background_image: normativaImg.id,
       title: 'Normativa y condiciones de uso',
       subtitle:
-        'La Biblioteca Universitaria proporciona espacios, colecciones y servicios para apoyar el aprendizaje, la docencia y la investigación. El uso responsable de estos recursos garantiza un entorno óptimo para toda la comunidad académica.',
+        lexicalFromText('La Biblioteca Universitaria proporciona espacios, colecciones y servicios para apoyar el aprendizaje, la docencia y la investigación. El uso responsable de estos recursos garantiza un entorno óptimo para toda la comunidad académica.'),
     },
   })
 

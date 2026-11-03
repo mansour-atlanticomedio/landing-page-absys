@@ -1,4 +1,5 @@
 import { cache } from "react"
+import { lexicalToPlainText } from "@/lib/rich-text"
 import { draftMode, headers } from "next/headers"
 import type { Metadata } from "next"
 import { getClient } from "@/lib/payload"
@@ -48,7 +49,7 @@ export async function buildPageMetadata(slug: string, searchParams: PageSearchPa
   const isDraft = await resolveIsDraft(searchParams)
   const page = await getPage(slug, isDraft)
   if (!page) return {}
-  const heroSubtitle = typeof page.hero === "object" && page.hero ? page.hero.subtitle : undefined
+  const heroSubtitle = typeof page.hero === "object" && page.hero ? lexicalToPlainText(page.hero.subtitle) : undefined
   return {
     title: `${page.title} – Biblioteca UNAM`,
     description: page.meta_description || heroSubtitle || undefined,

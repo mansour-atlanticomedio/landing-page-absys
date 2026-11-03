@@ -1,4 +1,5 @@
 import Hero from "@/components/Hero";
+import { normalizeSubtitle } from '@/lib/rich-text'
 import { RenderBlocks } from "@/components/RenderBlocks";
 import { getClient } from "@/lib/payload";
 import { HERO_FALLBACK_IMAGE } from "@/lib/images";
@@ -18,7 +19,7 @@ export default async function Repositories() {
 
   const pretitle = heroData?.pretitle || "";
   const title = heroData?.title || "";
-  const subtitle = heroData?.subtitle || "";
+  const subtitle = normalizeSubtitle(heroData?.subtitle);
   const buttonText = heroData?.button_cta || "";
   const inputPlaceHolder = heroData?.input_placeholder || "";
 

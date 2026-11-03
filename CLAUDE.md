@@ -70,7 +70,7 @@ Verificado el 2026-10-26 contra `payload.config.ts`: 27 collections propias. El 
 
 | Slug | Fichero | Campos clave | Relación con media |
 |------|---------|--------------|-------------------|
-| `hero` | `collections/Hero.ts` | `background_image` (upload), `title`, `pretitle`, `subtitle`, `button_cta`, `input_placeholder` | `background_image` → media |
+| `hero` | `collections/Hero.ts` | `background_image` (upload), `title`, `pretitle`, `subtitle` (richText desde 2026-11-03; se pinta con `components/HeroSubtitle.tsx`, que también acepta string, y `normalizeSubtitle`/`lexicalFromText`/`lexicalToPlainText` de `lib/rich-text.ts`; los seeds lo siembran con `lexicalFromText`), `button_cta`, `input_placeholder` | `background_image` → media |
 | `header` | `collections/Header.ts` | `logo_link` (grupo de enlace: destino al pulsar el logo, por defecto `/`), `logo` (upload), `phone`, `email`, `navbar[]` con `items[]` | `logo` → media |
 | `hero_carrusel` | `collections/HeroCarrusel.ts` | `items[]` con `title`, `description`, `image` | `items[].image` → media |
 | `speakers` | `collections/Speakers.ts` | `title`, `people[]` con `photo`, `name`, `role`, `entity`, `description` (richText), `socials[]` | `people[].photo` → media |

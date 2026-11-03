@@ -299,7 +299,21 @@ export interface Hero {
   background_image: number | Media;
   pretitle?: string | null;
   title: string;
-  subtitle?: string | null;
+  subtitle?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   button_cta?: string | null;
   input_placeholder?: string | null;
   updatedAt: string;

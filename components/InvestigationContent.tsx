@@ -1,5 +1,7 @@
 "use client"
 
+import HeroSubtitle from '@/components/HeroSubtitle'
+import type { RichValue } from '@/lib/rich-text'
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -28,7 +30,7 @@ interface CTAData {
 
 interface InvestigationContentProps {
   title: string;
-  subtitle: string;
+  subtitle?: RichValue;
   imageUrl: string;
   accesosRapidos: AccesoRapido[];
   tarjetas: Tarjeta[];
@@ -55,7 +57,7 @@ export default function InvestigationContent({
       >
         <div>
           <h1 className="text-3xl md:text-4xl font-extrabold text-slate-800">{title}</h1>
-          <p className="mt-4 text-slate-600">{subtitle}</p>
+          <HeroSubtitle value={subtitle} className="mt-4 text-slate-600" />
         </div>
         <div className="relative h-56 sm:h-72 rounded-lg overflow-hidden">
           <Image src={imageUrl} alt="" fill className="object-cover" />

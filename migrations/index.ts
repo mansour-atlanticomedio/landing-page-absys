@@ -20,6 +20,7 @@ import * as migration_20261027_144150_recursos_electronicos from './20261027_144
 import * as migration_20261029_115856_bloque_horario_contacto_mapa from './20261029_115856_bloque_horario_contacto_mapa';
 import * as migration_20261103_160918_textos_cookies from './20261103_160918_textos_cookies';
 import * as migration_20261103_164007_cookies_enlace_politica from './20261103_164007_cookies_enlace_politica';
+import * as migration_20261103_175519_hero_subtitulo_richtext from './20261103_175519_hero_subtitulo_richtext';
 
 export const migrations = [
   {
@@ -130,6 +131,11 @@ export const migrations = [
   {
     up: migration_20261103_164007_cookies_enlace_politica.up,
     down: migration_20261103_164007_cookies_enlace_politica.down,
-    name: '20261103_164007_cookies_enlace_politica'
+    name: '20261103_164007_cookies_enlace_politica',
+  },
+  {
+    up: migration_20261103_175519_hero_subtitulo_richtext.up,
+    down: migration_20261103_175519_hero_subtitulo_richtext.down,
+    name: '20261103_175519_hero_subtitulo_richtext'
   },
 ];

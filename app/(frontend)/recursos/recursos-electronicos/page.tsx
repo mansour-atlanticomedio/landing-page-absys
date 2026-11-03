@@ -1,4 +1,5 @@
 import Link from "next/link"
+import HeroSubtitle from '@/components/HeroSubtitle'
 import Image from "next/image"
 import { BookText, CheckCircle2, KeyRound, TriangleAlert } from "lucide-react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -37,7 +38,7 @@ export default async function RecursosElectronicosPage() {
       <section className="mx-auto max-w-6xl px-6 py-10 md:py-14 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
         <div>
           {hero?.title && <h1 className="text-3xl md:text-4xl font-extrabold text-slate-800">{hero.title}</h1>}
-          {hero?.subtitle && <p className="mt-4 text-slate-600">{hero.subtitle}</p>}
+          <HeroSubtitle value={hero?.subtitle} className="mt-4 text-slate-600" />
         </div>
         {heroImageURL && (
           <div className="relative h-56 sm:h-72 rounded-lg overflow-hidden">
