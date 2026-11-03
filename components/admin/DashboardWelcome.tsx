@@ -1,7 +1,7 @@
 import type { AdminViewServerProps } from 'payload'
 import Link from 'next/link'
 import { getTranslation } from '@payloadcms/translations'
-import { Banner, Button, Card, Gutter, Pill } from '@payloadcms/ui'
+import { Button, Gutter } from '@payloadcms/ui'
 
 const accesos = [
   { label: 'Inicio', description: 'Portada, noticias y bloques', href: '/admin/globals/home', slug: 'home', type: 'globals' },
@@ -14,20 +14,11 @@ const accesos = [
   { label: 'Textos de cookies', description: 'Aviso de cookies y preferencias', href: '/admin/globals/cookies', slug: 'cookies', type: 'globals' },
 ] as const
 
-const resumenSlugs = [
-  { slug: 'pages', label: 'Páginas' },
-  { slug: 'media', label: 'Imágenes' },
-  { slug: 'news', label: 'Noticias' },
-  { slug: 'faq', label: 'Listados de FAQ' },
-  { slug: 'loginCampus_service', label: 'Lectores del campus' },
-] as const
-
 type Entity = {
   type: 'collections' | 'globals'
   slug: string
   label: string
   description?: string
-  canRead: boolean
   canCreate: boolean
   count: number | null
 }
@@ -69,7 +60,6 @@ export default async function DashboardWelcome({ payload, user, i18n, initPageRe
       group: t(config.admin?.group, 'Otros'),
       label: type === 'collections' ? t(config.labels?.plural, config.slug) : t(config.label, config.slug),
       description: typeof config.admin?.description === 'string' ? config.admin.description : undefined,
-      canRead: true,
       canCreate: type === 'collections' && Boolean((permissions?.collections as any)?.[config.slug]?.create),
       count: type === 'collections' ? await count(config.slug) : null,
     })),
@@ -85,20 +75,6 @@ export default async function DashboardWelcome({ payload, user, i18n, initPageRe
   const canRead = (type: 'collections' | 'globals', slug: string) => Boolean((permissions as any)?.[type]?.[slug]?.read) && (visible as any)?.[type]?.includes(slug)
   const canCreate = (slug: string) => Boolean((permissions?.collections as any)?.[slug]?.create)
 
-  const resumen = await Promise.all(
-    resumenSlugs
-      .filter(({ slug }) => canRead('collections', slug))
-      .map(async ({ slug, label }) => ({
-        slug,
-        label,
-        total: await count(slug),
-        extra:
-          slug === 'pages'
-            ? `${(await count('pages', { _status: { equals: 'draft' } })) ?? 0} borradores`
-            : undefined,
-      })),
-  )
-
   const recientes = canRead('collections', 'pages')
     ? await payload
         .find({ collection: 'pages', sort: '-updatedAt', limit: 5, depth: 0, pagination: false, user: user as never, overrideAccess: false })
@@ -106,17 +82,29 @@ export default async function DashboardWelcome({ payload, user, i18n, initPageRe
         .catch(() => [])
     : []
 
-  const isAdmin = (user as any)?.role === 'admin'
+  const adminGroups = ['Usuarios', 'Sistema', 'Piezas antiguas', 'Servicios internos']
   const paginas = accesos.filter((a) => canRead(a.type, a.slug))
+  const mainGroups = groups.filter((g) => g.label !== 'Páginas' && !adminGroups.includes(g.label))
+  const advancedGroups = groups.filter((g) => adminGroups.includes(g.label))
+
+  const chips = (g: Group) => (
+    <div key={g.label} className="unam-dash__row">
+      <span className="unam-dash__row-title">{g.label}</span>
+      <div className="unam-dash__chips">
+        {g.entities.map((e) => (
+          <Link key={`${e.type}-${e.slug}`} href={`/admin/${e.type}/${e.slug}`} className="unam-dash__chip" title={e.description}>
+            {e.label}
+            {e.count !== null && <span className="unam-dash__count">{e.count}</span>}
+          </Link>
+        ))}
+      </div>
+    </div>
+  )
 
   return (
-    <Gutter className="unam-welcome">
+    <Gutter className="unam-welcome unam-dash">
       <h2 className="unam-welcome__title">Bienvenido al panel de la Biblioteca</h2>
-      <p className="unam-welcome__text">Aquí tienes todo lo que puedes ver y editar. Los cambios se publican al pulsar Guardar.</p>
-
-      <Banner type="info">
-        ¿Primera vez aquí? Empieza por una página de la lista, edita el texto o la imagen y pulsa Guardar.
-      </Banner>
+      <p className="unam-welcome__text">Elige qué quieres editar. Los cambios se publican al pulsar Guardar.</p>
 
       <div className="unam-welcome__actions">
         {canCreate('media') && (
@@ -132,28 +120,17 @@ export default async function DashboardWelcome({ payload, user, i18n, initPageRe
         <Button el="anchor" url="/biblioteca" newTab buttonStyle="secondary" size="medium">
           Ver la web
         </Button>
-        {isAdmin && canRead('collections', 'exports') && (
-          <Button el="link" to="/admin/collections/exports/create" buttonStyle="secondary" size="medium">
-            Exportar contenido
-          </Button>
-        )}
-        {isAdmin && canRead('collections', 'imports') && (
-          <Button el="link" to="/admin/collections/imports/create" buttonStyle="secondary" size="medium">
-            Importar contenido
-          </Button>
-        )}
       </div>
 
-      {resumen.length > 0 && (
+      {paginas.length > 0 && (
         <>
-          <h3 className="unam-welcome__subtitle">Resumen de contenido</h3>
-          <ul className="unam-welcome__summary">
-            {resumen.map((r) => (
-              <li key={r.slug} className="unam-welcome__summary-item">
-                <Link href={`/admin/collections/${r.slug}`} className="unam-welcome__stat">
-                  <span className="unam-welcome__stat-number">{r.total ?? '–'}</span>
-                  <span className="unam-welcome__label">{r.label}</span>
-                  {r.extra && <span className="unam-welcome__desc">{r.extra}</span>}
+          <h3 className="unam-dash__heading">Páginas</h3>
+          <ul className="unam-dash__cards">
+            {paginas.map((a) => (
+              <li key={a.href}>
+                <Link href={a.href} className="unam-dash__card" aria-label={`Editar ${a.label}: ${a.description}`}>
+                  <span className="unam-welcome__label">{a.label}</span>
+                  <span className="unam-welcome__desc">{a.description}</span>
                 </Link>
               </li>
             ))}
@@ -161,27 +138,17 @@ export default async function DashboardWelcome({ payload, user, i18n, initPageRe
         </>
       )}
 
-      {paginas.length > 0 && (
-        <>
-          <h3 className="unam-welcome__subtitle">Páginas de la web</h3>
-          <ul className="unam-welcome__grid">
-            {paginas.map((a) => (
-              <li key={a.href}>
-                <Card title={a.label} titleAs="h4" href={a.href} buttonAriaLabel={`Editar ${a.label}: ${a.description}`} />
-                <span className="unam-welcome__desc">{a.description}</span>
-              </li>
-            ))}
-          </ul>
-        </>
+      {mainGroups.length > 0 && (
+        <div className="unam-dash__rows">{mainGroups.map(chips)}</div>
       )}
 
       {recientes.length > 0 && (
         <>
-          <h3 className="unam-welcome__subtitle">Últimas páginas editadas</h3>
-          <ul className="unam-welcome__summary">
-            {recientes.map((p) => (
-              <li key={p.id} className="unam-welcome__summary-item">
-                <Link className="unam-welcome__label" href={`/admin/collections/pages/${p.id}`}>
+          <h3 className="unam-dash__heading">Editado recientemente</h3>
+          <ul className="unam-dash__recent">
+            {recientes.slice(0, 3).map((p) => (
+              <li key={p.id}>
+                <Link href={`/admin/collections/pages/${p.id}`} className="unam-welcome__label">
                   {p.title}
                 </Link>
                 <span className="unam-welcome__desc">
@@ -194,37 +161,12 @@ export default async function DashboardWelcome({ payload, user, i18n, initPageRe
         </>
       )}
 
-      {groups.length > 0 && <h3 className="unam-welcome__subtitle">Todo el contenido</h3>}
-      {groups.map((g) => (
-        <section key={g.label} className="unam-welcome__group">
-          <h4 className="unam-welcome__group-title">{g.label}</h4>
-          <ul className="unam-welcome__list">
-            {g.entities.map((e) => (
-              <li key={`${e.type}-${e.slug}`} className="unam-welcome__row">
-                <Link href={`/admin/${e.type}/${e.slug}`} className="unam-welcome__row-main">
-                  <span className="unam-welcome__label">{e.label}</span>
-                  {e.description && <span className="unam-welcome__desc">{e.description}</span>}
-                </Link>
-                {e.count !== null && (
-                  <Pill pillStyle="light-gray" size="small">
-                    {e.count}
-                  </Pill>
-                )}
-                {e.type === 'globals' && (
-                  <Pill pillStyle="light" size="small">
-                    Página única
-                  </Pill>
-                )}
-                {e.canCreate && (
-                  <Link href={`/admin/collections/${e.slug}/create`} className="unam-welcome__add" aria-label={`Crear en ${e.label}`}>
-                    + Crear
-                  </Link>
-                )}
-              </li>
-            ))}
-          </ul>
-        </section>
-      ))}
+      {(user as any)?.role === 'admin' && advancedGroups.length > 0 && (
+        <details className="unam-dash__advanced">
+          <summary>Administración</summary>
+          {advancedGroups.map(chips)}
+        </details>
+      )}
     </Gutter>
   )
 }

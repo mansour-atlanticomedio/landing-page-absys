@@ -890,3 +890,6 @@ todos los casos).
 
 ## 2026-11-03 – dashboard del admin completo otra vez
 - El dashboard personalizado de la Fase 0 había dejado fuera lo que enseñaba el de Payload (todas las collections y globals con contadores). `DashboardWelcome` ahora lista todo agrupado como la barra lateral, con contadores y "+ Crear", más el resumen de contenido, acciones rápidas (incluido exportar/importar para admin) y últimas páginas; respeta permisos y `hidden`. Verificado con 2 usuarios temporales (admin y editor, ya borrados) pidiendo `/admin` con sesión: el admin ve exportar/importar y lectores, el editor no. Sin verificar el aspecto en navegador (estilos nuevos en `custom.scss`).
+
+## 2026-11-03 – dashboard más compacto y sencillo
+- El panel completo resultó demasiado denso para usuarios no técnicos. Ahora: acciones rápidas, tarjetas de páginas, una fila por grupo con enlaces tipo "chip" (con contador) y 3 editados recientemente; Usuarios, Piezas antiguas y Sistema quedan en un desplegable "Administración" solo para admin. Se quitaron el resumen con cifras, el banner de ayuda, el "+ Crear" por fila y los botones de exportar/importar (se llega por Administración > Sistema). Verificado con admin y editor temporales (borrados); sin ver el aspecto en navegador.
