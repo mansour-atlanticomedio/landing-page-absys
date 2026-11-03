@@ -107,7 +107,7 @@ try {
       title: '¿Necesitas ayuda adicional?',
       subtitle: 'Consulta nuestras preguntas frecuentes o solicita una cita con un bibliotecario.',
       button_cta: 'Ver FAQs',
-      button_link: '/conocenos/horarios-ubicacion-y-contacto',
+      button_link: '/preguntas-frecuentes',
     },
   })
 

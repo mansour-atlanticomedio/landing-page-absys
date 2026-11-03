@@ -12,6 +12,7 @@ const SEEDS = [
   'login.seed.ts',
   'home.seed.ts',
   'pages.seed.ts',
+  'faq.seed.ts',
   'electronicResources.seed.ts',
   'investigation.seed.ts',
   'formation.seed.ts',

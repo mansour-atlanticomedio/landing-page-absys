@@ -282,6 +282,7 @@ export interface Page {
         | NoticeBlock
         | DownloadBlock
         | LocationBlock
+        | FaqSectionBlock
       )[]
     | null;
   updatedAt: string;
@@ -678,6 +679,57 @@ export interface LocationBlock {
   blockType: 'location_block';
 }
 /**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FaqSectionBlock".
+ */
+export interface FaqSectionBlock {
+  /**
+   * Elige el listado de preguntas (por ejemplo "Préstamos"). Se edita en Contenido > Preguntas frecuentes.
+   */
+  faq: number | Faq;
+  /**
+   * Útil cuando el listado tiene muchas preguntas.
+   */
+  show_search?: boolean | null;
+  open_first?: boolean | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'faq_section_block';
+}
+/**
+ * Listados de preguntas frecuentes con sus respuestas.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "faq".
+ */
+export interface Faq {
+  id: number;
+  title?: string | null;
+  faqs?:
+    | {
+        question?: string | null;
+        answer?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
  * Bloques de noticias con imagen, etiqueta y enlace.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -743,39 +795,6 @@ export interface ElectronicResourcesAccess {
         description?: string | null;
         cta?: string | null;
         link?: string | null;
-        id?: string | null;
-      }[]
-    | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
- * Listados de preguntas frecuentes con sus respuestas.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "faq".
- */
-export interface Faq {
-  id: number;
-  title?: string | null;
-  faqs?:
-    | {
-        question?: string | null;
-        answer?: {
-          root: {
-            type: string;
-            children: {
-              type: any;
-              version: number;
-              [k: string]: unknown;
-            }[];
-            direction: ('ltr' | 'rtl') | null;
-            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
-            indent: number;
-            version: number;
-          };
-          [k: string]: unknown;
-        } | null;
         id?: string | null;
       }[]
     | null;
@@ -1779,6 +1798,7 @@ export interface PagesSelect<T extends boolean = true> {
         notice_block?: T | NoticeBlockSelect<T>;
         download_block?: T | DownloadBlockSelect<T>;
         location_block?: T | LocationBlockSelect<T>;
+        faq_section_block?: T | FaqSectionBlockSelect<T>;
       };
   updatedAt?: T;
   createdAt?: T;
@@ -1923,6 +1943,17 @@ export interface LocationBlockSelect<T extends boolean = true> {
   building_subtitle?: T;
   map_url?: T;
   map_embed_url?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FaqSectionBlock_select".
+ */
+export interface FaqSectionBlockSelect<T extends boolean = true> {
+  faq?: T;
+  show_search?: T;
+  open_first?: T;
   id?: T;
   blockName?: T;
 }

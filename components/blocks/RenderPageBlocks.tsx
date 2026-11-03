@@ -8,6 +8,7 @@ import { HelpCtaSection } from "@/components/conocenos/HelpCtaSection"
 import { RulesCardsSection } from "@/components/conocenos/RulesCardsSection"
 import { NoticeSection } from "@/components/conocenos/NoticeSection"
 import { DownloadSection } from "@/components/conocenos/DownloadSection"
+import { FaqSection } from "@/components/conocenos/FaqSection"
 
 export function RenderPageBlocks({ layout }: { layout?: any[] | null }) {
   const blocks = (layout || []).filter(Boolean)
@@ -38,6 +39,8 @@ export function RenderPageBlocks({ layout }: { layout?: any[] | null }) {
             return <NoticeSection key={key} block={block} />
           case "download_block":
             return <DownloadSection key={key} block={block} />
+          case "faq_section_block":
+            return <FaqSection key={key} block={block} />
           default:
             return null
         }

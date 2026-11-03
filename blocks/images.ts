@@ -8,6 +8,7 @@ export const BLOCK_IMAGE_FILES: Record<string, string> = {
     cta_block: 'cta_block.png',
     blogs_block: 'blogs_block.png',
     faq_block: 'faq_block.png',
+    faq_section_block: 'faq_block.png',
     features_block: 'features_block.png',
     cards_features_block: 'features_block-1.png',
     input_block: 'input_block.png',
