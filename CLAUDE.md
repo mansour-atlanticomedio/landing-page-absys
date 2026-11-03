@@ -150,7 +150,7 @@ Pendientes conocidos (marcados con `TODO` en el código): `lepassLegacy` / compa
 
 - **`collections/Icons.ts`**: exporta `appIcons` (Lightbulb, BookOpen, Microscope, Star, User, Briefcase, Phone, Mail, MapPin, Calendar) y `iconsSocialMedia` (FaFacebook, FaTwitter, FaInstagram, FaLinkedin, FaYoutube, Globe)
 
-### Globals (13)
+### Globals (14)
 
 | Slug | Fichero | Campos | Categoría |
 |------|---------|--------|-----------|
@@ -167,6 +167,7 @@ Pendientes conocidos (marcados con `TODO` en el código): `lepassLegacy` / compa
 | `quienes_somos` | `globals/QuienesSomos.ts` | `hero` (rel→hero), `imagen_dirigidos` (upload→media), `ayudas` (rel→features), `dirigidos` (rel→features) — `ayudas`/`dirigidos` reutilizan la collection `features` existente con dos docs distintos | **Obsoleto** (2026-10-15): oculto en el admin, se edita en `about_us.quienes_somos`. Tabla conservada hasta la fase 2 (DROP) |
 | `solicitud_compra` | `globals/SolicitudCompra.ts` | `hero` (rel→hero). Cabecera de `/adquisiciones/solicitud-compra`; el formulario sigue en `SolicitudCompraForm` | Página parcial |
 | `layout` | `globals/Layout.ts` | `header` (rel→header), `footer` (rel→footer), `enlaces_externos[]` (`key`/`label`/`url`, ver "Enlaces externos") | Template del sitio |
+| `cookies` | `globals/CookieTexts.ts` | Textos del modal de cookies en 3 pestañas: `banner`, `preferences`, `messages`, más `policy_link` (enlace a la política, `enlaceFields`). Defaults en `lib/cookie-texts.ts`; ver "Consentimiento de cookies". Seed: `seeds/cookies.seed.ts` | Configuración del sitio |
 
 #### Block types del `layout` (11, usados en Home/Services/Formation/Investigation/Repositories)
 
@@ -401,6 +402,9 @@ Cada bloque se envuelve en `<section key={id} data-block-type={blockType}>`.
 | `Timeline` | `components/Timeline.tsx` | `TimeLineBoxProps`: `title`, `calendar[]` (day, title, events[] con description) | **Sí** |
 | `Partners` | `components/Partners.tsx` | `PartnersBoxProps`: `title?`, `partners_item[]` (name, image, link) | No |
 | `FAQ` | `components/FAQ.tsx` | `FaqBoxProps`: `title`, `faqs[]` (question, answer/Lexical) | **Sí** |
+| `FaqSection` | `components/conocenos/FaqSection.tsx` | Bloque `faq_section_block` de `pages`: `block.faq` (doc de `faq`), `show_search`, `open_first`. Acordeón shadcn + JSON-LD `FAQPage` (client) | **Sí** |
+| `HeroSubtitle` | `components/HeroSubtitle.tsx` | `value` (string o Lexical), `className`. Pinta el subtítulo del hero; lo usan `Hero`, `PageHero`, `FormationContent`, `InvestigationContent` y recursos electrónicos | **Sí** |
+| `CookieConsent` / `CookieSettingsLink` | `components/cookies/` | Modal de cookies (props `policy`, `texts`) montado en `app/(frontend)/layout.tsx` y enlace "Configurar cookies" del pie | No |
 
 ### Componentes que reciben datos de Payload directamente (no via RenderBlocks)
 
@@ -479,6 +483,7 @@ Páginas compuestas desde el admin sin tocar código. **Principio**: contenido p
 | `/conocenos/quienes-somos` | `pages` (catch-all) | No | Hero + tarjetas "ayudas"/"dirigidos" + imagen, todo desde Payload, sin fallbacks |
 | `/conocenos/normativa-...` | `pages` (catch-all) | No | Hero, tarjetas, responsabilidad y botón de PDF desde Payload, sin fallbacks |
 | `/conocenos/horarios-...` | `pages` (catch-all) | No | Hero + horario + contacto/dirección/mapa + CTA, títulos y botones desde Payload, sin fallbacks |
+| `/preguntas-frecuentes` | `pages` (catch-all, sin fichero propio) | No | Página creada por `seeds/faq.seed.ts` con varios `faq_section_block` (uno por tema, documentos de `faq`). Sin enlace en menú ni pie todavía (solo el CTA "Ver FAQs" de Horarios) |
 | `/recursos/recursos-electronicos` | `electronic_resources` | No | Hero (title/subtitle/imagen) + accesos destacados editables desde Payload; pestañas de bases de datos/ebooks/multimedia siguen hardcodeadas. 2026-10-27: sin textos en el código; título de accesos, bloque de acceso remoto, botón de problema (enlace del registro `soporte_recursos`, oculto si no resuelve) y pestañas por categorías (`categorias`, oculta si vacía) vienen del global |
 
 ### Páginas que NO usan Payload (API externa Absys)
