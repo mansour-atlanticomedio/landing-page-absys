@@ -6,6 +6,7 @@ import { getClient } from '@/lib/payload'
 import { resolveNavbar, resolveFooterLinks, resolveEnlace } from '@/lib/links'
 import { getSession } from '@/lib/auth/session'
 import BackToTop from "@/components/BackToTop";
+import CookieConsent from '@/components/cookies/CookieConsent'
 
 import '../styles.css'
 import { montserrat } from '@/lib/fonts'
@@ -48,6 +49,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
         <main>{children}</main>
         {footerData && <Footer {...footerData} />}
         <BackToTop />
+        <CookieConsent policyHref={footerData?.privacy_cookies} />
       </body>
     </html>
   )

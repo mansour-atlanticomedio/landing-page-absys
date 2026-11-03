@@ -63,6 +63,8 @@ interface FooterTypeProps {
   policies: PolicyProps[]
 }
 
+import CookieSettingsLink from '@/components/cookies/CookieSettingsLink'
+
 export default function Footer({ type, logo, social_medias, seccion_info, legal_advice, privacy_policie, privacy_cookies }: FooterProps) {
 
   const socialMedias = social_medias ?? []
@@ -164,6 +166,10 @@ function FooterHorizontal({ logoUrl, logoAlt, social_medias, seccion_info, polic
               </div>
             ))
           }
+          <div className="flex">
+            <span className="mr-2 py-2">-</span>
+            <CookieSettingsLink className="hover:underline mr-2 py-2" />
+          </div>
         </div>
         <a href="#top-arrow" aria-label="Volver arriba" className="absolute right-4 top-1/2 -translate-y-1/2 md:right-10">
           <CircleArrowUp />
@@ -258,6 +264,10 @@ function FooterVertical({ title, logoUrl, logoAlt, social_medias, seccion_info, 
             </div>
           ))
         }
+        <div className="flex items-center gap-1">
+          <span>&#9679;</span>
+          <CookieSettingsLink className="hover:underline mr-2 text-xs" />
+        </div>
       </div>
     </footer>
   )
