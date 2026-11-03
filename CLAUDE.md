@@ -81,7 +81,7 @@ Verificado el 2026-10-26 contra `payload.config.ts`: 27 collections propias. El 
 | `input` | `collections/Input.ts` | `title`, `placeholder` | — |
 | `cta` | `collections/CTA.ts` | `title`, `subtitle`, `button_cta`, `button_link` | — |
 | `faq` | `collections/FAQ.ts` | `title`, `faqs[]` con `question`, `answer` (richText) | — |
-| `news` | `collections/News.ts` | `title`, `visible_cards`, `style` (select: 0-3), `newsItems[]` (min:1, max:6) con `tag`, `link`, `title`, `description`, `image` | `newsItems[].image` → media |
+| `news` (Piezas antiguas desde 2026-11-03) | `collections/News.ts` | `title`, `visible_cards`, `style` (select: 0-3), `newsItems[]` (min:1, max:6) con `tag`, `link`, `title`, `description`, `image` | `newsItems[].image` → media |
 | `blogs` | `collections/Blogs.ts` | `title`, `blogItems[]` (min:1, max:10) con `title`, `blog`, `date` | — |
 | `electronic_resources_access` | `collections/ElectronicResourcesAccess.ts` | `title`, `accesos[]` (min:1, max:6) con `icon` (select de appIcons), `title`, `description`, `cta`, `link` | — |
 | `schedule` | `collections/Schedule.ts` | `title`, `schedule[]` (min:1, max:7) con `day`, `hours`, `type` (select: regular/closed/extended/holiday) | — |
@@ -98,7 +98,7 @@ Verificado el 2026-10-26 contra `payload.config.ts`: 27 collections propias. El 
 | Slug | Fichero | Notas |
 |------|---------|-------|
 | `users` | `collections/Users.ts` | Auth habilitado, `useAsTitle: 'email'` |
-| `partners` | `collections/Partners.ts` | `partners_item[]` con `name`, `image` (relationship a media), `link` |
+| `partners` (Piezas antiguas desde 2026-11-03) | `collections/Partners.ts` | `partners_item[]` con `name`, `image` (relationship a media), `link` |
 | `login_page` | `collections/Login.ts` | `imageLogin` (upload) → media. Exporta `LOGIN_SLUG` |
 | `media` | `collections/Media.ts` | `read: () => true`. Upload config: `staticDir: 'media'`, sizes: `thumbnail` (400x300), mimeTypes: `image/*` + `application/pdf` (2026-10-15, para el PDF de normativa). Campo `alt` (required) |
 
@@ -154,11 +154,11 @@ Pendientes conocidos (marcados con `TODO` en el código): `lepassLegacy` / compa
 
 | Slug | Fichero | Campos | Categoría |
 |------|---------|--------|-----------|
-| `home` | `globals/Home.ts` | `hero` (rel→hero), `hero_carrusel` (rel→hero_carrusel), `layout` (11 block types) | Página completa |
+| `home` | `globals/Home.ts` | **Obsoleto** (2026-11-03, rama `refactor/fase1-paginas-con-bloques`): el inicio vive en `pages` (slug `inicio`). Solo admin (Piezas antiguas); `app/(frontend)/page.tsx` lo usa como respaldo si no existe la página | Obsoleto |
 | `services` | `globals/Services.ts` | Igual que Home | Página completa |
 | `formation` | `globals/Formation.ts` | `hero`, `hero_carrusel`, `buscar_parrafo_1`/`buscar_parrafo_2` (texto), `enlaces_rapidos[]` (label+link, inline), `citar_cta` (rel→cta), `guias_tutoriales` (rel→electronic_resources_access), `actividades_texto`/`actividades_estado` (texto), `layout` (11 block types, sin usar por ahora) | Página completa |
 | `investigation` | `globals/Investigation.ts` | `hero`, `hero_carrusel`, `accesos_rapidos` (rel→features), `tarjetas` (rel→electronic_resources_access), `cta` (rel→cta), `layout` (11 block types, sin usar por ahora) | Página completa |
-| `repository` | `globals/Repositories.ts` | `hero` + `layout` (sin hero_carrusel). | Página parcial |
+| `repository` | `globals/Repositories.ts` | **Obsoleto** (igual que `home`): vive en `pages` (slug `repositorios`) | Obsoleto |
 | `library` | `globals/Library.ts` | Solo `hero` | Mínimo |
 | `contact` | `globals/Contact.ts` | Solo `hero` | Mínimo |
 | `about_us` | `globals/AboutUs.ts` | **Obsoleto** (2026-10-15): oculto en el admin, el contenido vive ahora en la collection `pages` (slugs `conocenos/*`). Conserva sus tablas (pestañas `quienes_somos`/`horarios`/`normativa` con `hero` + `layout`) hasta la fase 2 (DROP) | Obsoleto |
@@ -460,7 +460,8 @@ Páginas compuestas desde el admin sin tocar código. **Principio**: contenido p
 - **Vista previa**: `app/(auth)/auth/preview` (solo `users`, activa `draftMode`, redirige con `safeNextPath`/`redirectResponse`) y `/auth/preview/exit`. Live preview con `@payloadcms/live-preview-react` 3.86.0 (versión exacta, igual que `payload` instalado) vía `RefreshRouteOnSave` en `components/blocks/LivePreviewListener.tsx`. Admin y lector comparten cookie `payload-token`: previsualizar cierra la sesión de lector en ese navegador.
 - **Migración** `migrations/20261015_170639_pages_collection.ts`: esquema + copia de `about_us` a 3 páginas por Local API (idempotente por slug; salta si `about_us` ya no está en la config). Seeds: `seeds/pages.seed.ts` (sustituye a `aboutUs.seed.ts`).
 - **Riesgo**: cambiar el slug rompe enlaces escritos a mano (navbar, `HomeQuickLinks`, `AuthErrorCard`, `InvestigationContent`); fase 2: tipo de enlace "página" en `collections/fields/enlace.ts`.
-- **Fase 2 pendiente**: DROP de `about_us`, `quienes_somos`, `horarios_contacto`; versiones en línea de stats/news/cta/faq; mover `blocks/conocenos/` a `blocks/`; migrar `servicios`, etc. a `pages`; `not-found.tsx` propio.
+- **Fase 1 (2026-11-03, rama `refactor/fase1-paginas-con-bloques`)**: Inicio y Repositorios pasan de globals a `pages`. (1) **Bloques en línea** (`blocks/inline/index.ts`): 12 bloques `*_inline_block` (`hero_carousel`, `stats`, `about`, `features`, `news`, `blogs`, `timeline`, `speakers`, `partners`, `cta`, `faq`, `input`) que **reutilizan los campos de su collection** con `cloneFields` (`lib/clone-fields.ts`): cambiar los campos de la collection cambia también el bloque (y su esquema, con migración). Se pintan en `RenderPageBlocks` con los mismos componentes de siempre. (2) `hero_variant` nueva `banner` (cabecera de imagen a toda anchura, componente `Hero`). (3) `LOCKED_SLUGS` incluye `inicio` y `repositorios` (un slug bloqueado se salta la lista de reservados; `inicio` es `HOME_SLUG`, se sirve en `/` y `/inicio` da 404; `pagePath()` traduce slug→ruta, también en la vista previa). (4) **Datos**: `npm run content:globals-a-paginas` (`scripts/globals-a-paginas.ts`, idempotente, `--dry` simula, `--force` rehace) copia el contenido de los globals a `pages` sin borrar nada; **hay que ejecutarlo en producción después de `payload migrate`**, y mientras no exista la página las rutas usan el global antiguo. Verificado en dev: el texto de `/` y `/repositorios` es idéntico antes y después. (5) `news` y `partners` (que solo alimentaban esos wrappers) pasan a Piezas antiguas; el dashboard enlaza Inicio/Repositorios a su documento de `pages`. Migración `paginas_bloques_en_linea` (solo tablas de bloque y valor `banner`).
+- **Fase 2 pendiente**: DROP de `about_us`, `quienes_somos`, `horarios_contacto`, `home`, `repository` (y quitar los respaldos de las rutas); migrar `servicios`, `formacion`, `investigacion`, `recursos-electronicos` y `biblioteca` a `pages`; quitar las collections que solo alimentaban wrappers; tipo de enlace "página"; mover `blocks/conocenos/` a `blocks/`; migrar `servicios`, etc. a `pages`; `not-found.tsx` propio.
 
 ## Estructura de páginas
 
@@ -474,8 +475,8 @@ Páginas compuestas desde el admin sin tocar código. **Principio**: contenido p
 
 | Ruta | Global slug | RenderBlocks activo | Notas |
 |------|-------------|---------------------|-------|
-| `/` | `home` | **Sí** | Hero + HeroCarrousel + RenderBlocks |
-| `/repositorios` | `repository` | **Sí** | Hero + RenderBlocks |
+| `/` | `pages` (slug `inicio`, bloqueada) | **Sí** (`RenderPageBlocks`) | Cabecera `banner` + bloques en línea. Respaldo al global `home` si la página no existe. `/inicio` da 404 |
+| `/repositorios` | `pages` (slug `repositorios`, bloqueada) | **Sí** (`RenderPageBlocks`) | Igual que `/`; respaldo al global `repository` |
 | `/servicios` | `services` | No (comentado) | JSX hardcodeado |
 | `/formacion` | `formation` | No (se quitó `RenderBlocks`, sin usar) | Hero + secciones "Buscar y evaluar", "Citar correctamente", "Guías y tutoriales" y sidebar editables desde Payload; interactividad con framer-motion vía `FormationContent` (client component) |
 | `/investigacion` | `investigation` | No (se quitó `RenderBlocks`, sin usar) | Hero + accesos rápidos + tarjetas + CTA editables desde Payload; interactividad con framer-motion vía `InvestigationContent` (client component) |

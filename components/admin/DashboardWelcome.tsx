@@ -3,8 +3,11 @@ import Link from 'next/link'
 import { getTranslation } from '@payloadcms/translations'
 import { Button, Gutter } from '@payloadcms/ui'
 
-const accesos = [
-  { label: 'Inicio', description: 'Portada, noticias y bloques', href: '/admin/globals/home', slug: 'home', type: 'globals' },
+type Acceso = { label: string; description: string; href: string; slug: string; type: 'globals' | 'collections'; pageSlug?: string }
+
+const accesos: Acceso[] = [
+  { label: 'Inicio', description: 'Portada, noticias y bloques', href: '/admin/globals/home', slug: 'home', type: 'globals', pageSlug: 'inicio' },
+  { label: 'Repositorios', description: 'Repositorio institucional y recursos', href: '/admin/globals/repository', slug: 'repository', type: 'globals', pageSlug: 'repositorios' },
   { label: 'Servicios', description: 'Servicios de la biblioteca', href: '/admin/globals/services', slug: 'services', type: 'globals' },
   { label: 'Formación', description: 'Guías y actividades', href: '/admin/globals/formation', slug: 'formation', type: 'globals' },
   { label: 'Investigación', description: 'Apoyo a la investigación', href: '/admin/globals/investigation', slug: 'investigation', type: 'globals' },
@@ -12,7 +15,7 @@ const accesos = [
   { label: 'Recursos electrónicos', description: 'Accesos destacados y categorías', href: '/admin/globals/electronic_resources', slug: 'electronic_resources', type: 'globals' },
   { label: 'Plantilla', description: 'Encabezamiento, pie de página y enlaces externos', href: '/admin/globals/layout', slug: 'layout', type: 'globals' },
   { label: 'Textos de cookies', description: 'Aviso de cookies y preferencias', href: '/admin/globals/cookies', slug: 'cookies', type: 'globals' },
-] as const
+]
 
 type Entity = {
   type: 'collections' | 'globals'
@@ -83,7 +86,18 @@ export default async function DashboardWelcome({ payload, user, i18n, initPageRe
     : []
 
   const adminGroups = ['Usuarios', 'Sistema', 'Piezas antiguas', 'Servicios internos']
-  const paginas = accesos.filter((a) => canRead(a.type, a.slug))
+  const pageIds = canRead('collections', 'pages')
+    ? await payload
+        .find({ collection: 'pages', where: { slug: { in: accesos.flatMap((a) => (a.pageSlug ? [a.pageSlug] : [])) } }, limit: 10, depth: 0, pagination: false, user: user as never, overrideAccess: false })
+        .then((r) => new Map(r.docs.map((d) => [d.slug as string, d.id])))
+        .catch(() => new Map<string, number | string>())
+    : new Map<string, number | string>()
+  const paginas = accesos
+    .map((a) => {
+      const pageId = a.pageSlug ? pageIds.get(a.pageSlug) : undefined
+      return pageId !== undefined ? { ...a, href: `/admin/collections/pages/${pageId}`, slug: 'pages', type: 'collections' as const } : a
+    })
+    .filter((a) => canRead(a.type, a.slug))
   const mainGroups = groups.filter((g) => g.label !== 'Páginas' && !adminGroups.includes(g.label))
   const advancedGroups = groups.filter((g) => adminGroups.includes(g.label))
 

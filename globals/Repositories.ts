@@ -1,12 +1,13 @@
 import type { GlobalConfig } from "payload";
 import { layoutBlocks } from "@/blocks";
-import { sectionGlobal } from "@/lib/access";
+import { sectionGlobal, hideFromNonAdmins } from "@/lib/access";
 
 export const Repositories: GlobalConfig = {
     slug: 'repository',
     admin: {
-        group: 'Páginas',
-        description: 'Página de repositorios: cabecera y bloques de contenido.'
+        group: 'Piezas antiguas',
+        hidden: hideFromNonAdmins,
+        description: 'Obsoleto: Repositorios ahora se edita en Páginas > Repositorios.'
     },
     access: sectionGlobal('paginas'),
     label: 'Repositorios',

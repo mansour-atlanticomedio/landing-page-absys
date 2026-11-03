@@ -1,10 +1,11 @@
 import type { CollectionConfig } from "payload";
-import { sectionAccess } from "@/lib/access";
+import { sectionAccess, hideFromNonAdmins } from "@/lib/access";
 
 export const PartnersCollection : CollectionConfig = {
     slug: 'partners',
     admin: {
-        group: 'Contenido',
+        group: 'Piezas antiguas',
+        hidden: hideFromNonAdmins,
         description: 'Logotipos de entidades colaboradoras y patrocinadores.'
     },
     access: sectionAccess('bloques'),

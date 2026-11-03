@@ -1,18 +1,19 @@
 import type { GlobalConfig } from "payload";
 import { layoutBlocks } from "@/blocks";
-import { sectionGlobal } from "@/lib/access";
+import { sectionGlobal, hideFromNonAdmins } from "@/lib/access";
 
 export const Home: GlobalConfig = {
   slug: 'home',
     admin: {
-        group: 'Páginas',
-        description: 'Página de inicio: cabecera, carrusel y bloques de contenido.',
+        group: 'Piezas antiguas',
+        hidden: hideFromNonAdmins,
+        description: 'Obsoleto: el inicio ahora se edita en Páginas > Inicio.',
         components: {
             elements: {
                 Description: {
                     path: '/components/admin/PageEditTips',
                     clientProps: {
-                        description: 'Página de inicio: cabecera, carrusel y bloques de contenido.',
+                        description: 'Obsoleto: el inicio ahora se edita en Páginas > Inicio.',
                         tips: 'Esta es la portada de la web. Cada pestaña edita una zona; guarda antes de salir y comprueba el resultado en la web.',
                     },
                 },
