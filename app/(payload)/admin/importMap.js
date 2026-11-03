@@ -44,6 +44,7 @@ import { default as default_14e4ba367eb891a120f429402c6e9ecc } from '../../../co
 import { default as default_7be396d0766c6c490887ef074dd0ced4 } from '../../../components/admin/AdminIcon'
 import { default as default_27eed1898e8caadb2fd2266b54bb4509 } from '../../../components/admin/AdminLogo'
 import { default as default_8fa9c485a5aae932ba1d96a513f72049 } from '../../../components/admin/NavHelp'
+import { default as default_7bdb23b7417153770f86cb6ba553e528 } from '../../../components/admin/ApiBasePathFix'
 import { ImportExportProvider as ImportExportProvider_cdf7e044479f899a31f804427d568b36 } from '@payloadcms/plugin-import-export/rsc'
 import { default as default_76ec03dd917ecfb7a53441d4e825edcb } from '../../../components/admin/DashboardWelcome'
 import { CollectionCards as CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
@@ -96,6 +97,7 @@ export const importMap = {
   "/components/admin/AdminIcon#default": default_7be396d0766c6c490887ef074dd0ced4,
   "/components/admin/AdminLogo#default": default_27eed1898e8caadb2fd2266b54bb4509,
   "/components/admin/NavHelp#default": default_8fa9c485a5aae932ba1d96a513f72049,
+  "/components/admin/ApiBasePathFix#default": default_7bdb23b7417153770f86cb6ba553e528,
   "@payloadcms/plugin-import-export/rsc#ImportExportProvider": ImportExportProvider_cdf7e044479f899a31f804427d568b36,
   "/components/admin/DashboardWelcome#default": default_76ec03dd917ecfb7a53441d4e825edcb,
   "@payloadcms/next/rsc#CollectionCards": CollectionCards_f9c02e79a4aed9a3924487c0cd4cafb1

@@ -884,3 +884,6 @@ todos los casos).
 
 ## 2026-11-03 – buscador general de FAQ
 - El buscador por tema se sustituye por uno único para toda la página (contexto `FaqSearchProvider` + `FaqSearchBox`); se activa marcando `show_search` en cualquier bloque FAQ (solo cambia el label, sin migración). Los temas sin coincidencias se ocultan y el contador y el mensaje de "sin resultados" son globales. Verificado: tsc, 320 tests, la página sale con un solo buscador; sin probar escribiendo en navegador. Otros ajustes de estilo en `FaqSection.tsx` (ancho, subtítulo) los hizo el usuario aparte y se han respetado.
+
+## 2026-11-03 – vista previa de importar/exportar vacía
+- Causa: `ExportPreview` e `ImportPreview` del plugin hacen `fetch(`${routes.api}/...`)` sin basePath → 404 en `/api/...` y `if (!res.ok) return` lo traga sin mostrar error. Comprobado: `/biblioteca/api/exports/export-preview` responde 400 (existe) y `/api/exports/export-preview` 404. Parche: `ApiBasePathFix` (provider del admin) antepone el basePath a esas dos rutas. Verificado: tsc, admin 200 y la ruta correcta responde; NO verificado en navegador que la tabla de vista previa ya se muestre.

@@ -100,6 +100,7 @@ export default buildConfig({
       views: {
         dashboard: { Component: '/components/admin/DashboardWelcome' },
       },
+      providers: ['/components/admin/ApiBasePathFix'],
       header: ['/components/admin/ViewerBanner'],
       afterNavLinks: ['/components/admin/NavHelp'],
     },
