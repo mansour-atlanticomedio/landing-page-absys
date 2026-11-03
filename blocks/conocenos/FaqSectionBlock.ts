@@ -16,10 +16,13 @@ export const FaqSectionBlock: Block = {
         },
         {
             name: 'show_search',
-            label: 'Mostrar buscador',
+            label: 'Mostrar buscador general',
             type: 'checkbox',
             defaultValue: false,
-            admin: { description: 'Útil cuando el listado tiene muchas preguntas.' },
+            admin: {
+                description:
+                    'Si lo marcas en cualquier listado, la página muestra un único buscador (encima del primer listado) que busca en todos los temas de la página.',
+            },
         },
         {
             name: 'open_first',

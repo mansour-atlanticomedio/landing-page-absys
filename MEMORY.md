@@ -881,3 +881,6 @@ todos los casos).
 
 ## 2026-11-03 – más collections en importar/exportar
 - Añadidas `hero`, `hero_carrusel`, `cta`, `about`, `timeline`, `statistics`, `header` y `footer`. Verificado export CSV y JSON de las 8 por Local API en dev (sin migración: `collection_slug` es varchar). Los globals `cookies` y `services` NO se pudieron añadir: `importExportPlugin` solo acepta `CollectionSlug` (comprobado en `dist/types.d.ts`). Pendiente de decidir si se hace una solución propia para globals.
+
+## 2026-11-03 – buscador general de FAQ
+- El buscador por tema se sustituye por uno único para toda la página (contexto `FaqSearchProvider` + `FaqSearchBox`); se activa marcando `show_search` en cualquier bloque FAQ (solo cambia el label, sin migración). Los temas sin coincidencias se ocultan y el contador y el mensaje de "sin resultados" son globales. Verificado: tsc, 320 tests, la página sale con un solo buscador; sin probar escribiendo en navegador. Otros ajustes de estilo en `FaqSection.tsx` (ancho, subtítulo) los hizo el usuario aparte y se han respetado.

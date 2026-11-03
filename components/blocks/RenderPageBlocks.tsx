@@ -1,3 +1,4 @@
+import { Fragment } from "react"
 import { CardsFeaturesSection } from "@/components/conocenos/CardsFeaturesSection"
 import { ImageTextSection } from "@/components/conocenos/ImageTextSection"
 import { ScheduleSection } from "@/components/conocenos/ScheduleSection"
@@ -9,12 +10,17 @@ import { RulesCardsSection } from "@/components/conocenos/RulesCardsSection"
 import { NoticeSection } from "@/components/conocenos/NoticeSection"
 import { DownloadSection } from "@/components/conocenos/DownloadSection"
 import { FaqSection } from "@/components/conocenos/FaqSection"
+import { FaqSearchBox, FaqSearchProvider } from "@/components/conocenos/FaqSearch"
 
 export function RenderPageBlocks({ layout }: { layout?: any[] | null }) {
   const blocks = (layout || []).filter(Boolean)
   const mapUrl: string | undefined = blocks.find((b) => b.blockType === "map_block" && b.map_url)?.map_url
 
-  return (
+  const faqBlocks = blocks.filter((b) => b.blockType === "faq_section_block" && b.faq && typeof b.faq === "object")
+  const hasFaqSearch = faqBlocks.some((b) => b.show_search)
+  const firstFaqId = faqBlocks[0]?.id
+
+  const content = (
     <>
       {blocks.map((block, index) => {
         const key = block.id ?? index
@@ -40,11 +46,19 @@ export function RenderPageBlocks({ layout }: { layout?: any[] | null }) {
           case "download_block":
             return <DownloadSection key={key} block={block} />
           case "faq_section_block":
-            return <FaqSection key={key} block={block} />
+            return (
+              <Fragment key={key}>
+                {hasFaqSearch && block.id === firstFaqId && <FaqSearchBox />}
+                <FaqSection block={block} />
+              </Fragment>
+            )
           default:
             return null
         }
       })}
     </>
   )
+
+  if (!hasFaqSearch) return content
+  return <FaqSearchProvider docs={faqBlocks.map((b) => (b.faq.faqs ?? []).filter((f: any) => f?.question))}>{content}</FaqSearchProvider>
 }
