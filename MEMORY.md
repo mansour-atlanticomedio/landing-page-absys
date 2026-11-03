@@ -867,3 +867,6 @@ todos los casos).
 
 ## 2026-11-03 – seed de los textos de cookies
 - `seeds/cookies.seed.ts` (registrado en `seeds/index.ts`) siembra `DEFAULT_COOKIE_TEXTS` en el global `cookies`. No pisa textos ya guardados desde el admin salvo con `SEED_COOKIES_RESET=1`. Verificado en dev: con datos existentes se salta; con reset deja 1 fila con los textos por defecto.
+
+## 2026-11-03 – destino del enlace a la política de cookies
+- Grupo `policy_link` (mismo `enlaceFields` que navbar/footer) en el global `cookies`; el modal lo usa en el aviso y en las preferencias, con `Link` si es ruta interna (respeta el basePath) y `<a>` si es externa. Sin destino cae a `footer.privacy_cookies`. Migración `20261103_164002_cookies_enlace_politica` (solo columnas y enums nuevos; sin arrastre esta vez). Verificado: tsc, 317 tests, home y admin 200 en dev; la migración no se ha aplicado en BD nueva.

@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import Link from 'next/link'
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion'
 import { toast } from 'sonner'
 import { Check, ChartColumn, Cookie, Megaphone, Settings2, ShieldCheck, SlidersHorizontal, X } from 'lucide-react'
@@ -20,9 +21,10 @@ import {
   type OptionalCategory,
 } from '@/lib/consent'
 import { BASE_PATH } from '@/lib/auth/redirects'
+import type { EnlaceResuelto } from '@/lib/links'
 import { DEFAULT_COOKIE_TEXTS, formatActiveCount, type CookieTexts } from '@/lib/cookie-texts'
 
-type Props = { policyHref?: string; texts?: CookieTexts }
+type Props = { policy?: EnlaceResuelto; texts?: CookieTexts }
 
 const CATEGORIES: { key: OptionalCategory; icon: typeof Cookie }[] = [
   { key: 'preferencias', icon: SlidersHorizontal },
@@ -130,7 +132,7 @@ function AutoHeight({ children, reduced }: { children: React.ReactNode; reduced:
   )
 }
 
-export default function CookieConsent({ policyHref, texts = DEFAULT_COOKIE_TEXTS }: Props) {
+export default function CookieConsent({ policy, texts = DEFAULT_COOKIE_TEXTS }: Props) {
   const { banner, preferences, messages } = texts
   const [ready, setReady] = useState(false)
   const [record, setRecord] = useState<ConsentRecord | null>(null)
@@ -195,13 +197,21 @@ export default function CookieConsent({ policyHref, texts = DEFAULT_COOKIE_TEXTS
   const slide = reduced ? 0 : 24
   const stagger = (i: number) => ({ initial: { opacity: 0, y: reduced ? 0 : 10 }, animate: { opacity: 1, y: 0 }, transition: { delay: reduced ? 0 : 0.05 * i, duration: 0.25 } })
 
-  const policyLink = (linkLabel: string) => policyHref ? (
-    <a href={policyHref} className="font-semibold text-accent underline underline-offset-2 transition-colors hover:text-accent/80">
-      {linkLabel}
-    </a>
-  ) : (
-    linkLabel
-  )
+  const policyClass = 'font-semibold text-accent underline underline-offset-2 transition-colors hover:text-accent/80'
+  const policyLink = (linkLabel: string) => {
+    if (!policy?.href) return linkLabel
+    if (policy.external)
+      return (
+        <a href={policy.href} className={policyClass} {...(policy.newTab ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>
+          {linkLabel}
+        </a>
+      )
+    return (
+      <Link href={policy.href} className={policyClass} {...(policy.newTab ? { target: '_blank' } : {})}>
+        {linkLabel}
+      </Link>
+    )
+  }
 
   const btn = 'h-10 px-5 transition-transform duration-150 hover:scale-[1.03] active:scale-[0.97]'
 

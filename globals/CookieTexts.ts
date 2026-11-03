@@ -1,6 +1,7 @@
 import type { Field, GlobalConfig } from 'payload'
 import { sectionGlobal } from '@/lib/access'
 import { DEFAULT_COOKIE_TEXTS, type CookieTexts } from '@/lib/cookie-texts'
+import { enlaceFields } from '@/collections/fields/enlace'
 
 const text = <G extends keyof CookieTexts>(
   group: G,
@@ -46,12 +47,22 @@ export const CookieTextsGlobal: GlobalConfig = {
                   description: 'Termina justo antes del enlace a la política de cookies (el punto final se añade solo).',
                 }),
                 text('banner', 'link_label', 'Texto del enlace a la política', {
-                  description: 'El enlace sale del campo "Política de cookies" del pie de página.',
+                  description: 'A dónde lleva se elige abajo, en "Destino del enlace a la política".',
                 }),
                 text('banner', 'button_configure', 'Botón: configurar'),
                 text('banner', 'button_reject_all', 'Botón: rechazar todas'),
                 text('banner', 'button_accept_all', 'Botón: aceptar todas'),
               ],
+            },
+            {
+              name: 'policy_link',
+              label: 'Destino del enlace a la política',
+              type: 'group',
+              admin: {
+                description:
+                  'Se usa en el aviso inicial y en las preferencias. Si no eliges ninguno, se usa el campo "Política de cookies" del pie de página.',
+              },
+              fields: enlaceFields({ defaultTipo: 'interno' }),
             },
           ],
         },

@@ -19,6 +19,7 @@ import * as migration_20261027_141832_logo_cabecera from './20261027_141832_logo
 import * as migration_20261027_144150_recursos_electronicos from './20261027_144150_recursos_electronicos';
 import * as migration_20261029_115856_bloque_horario_contacto_mapa from './20261029_115856_bloque_horario_contacto_mapa';
 import * as migration_20261103_160918_textos_cookies from './20261103_160918_textos_cookies';
+import * as migration_20261103_164007_cookies_enlace_politica from './20261103_164007_cookies_enlace_politica';
 
 export const migrations = [
   {
@@ -124,6 +125,11 @@ export const migrations = [
   {
     up: migration_20261103_160918_textos_cookies.up,
     down: migration_20261103_160918_textos_cookies.down,
-    name: '20261103_160918_textos_cookies'
+    name: '20261103_160918_textos_cookies',
+  },
+  {
+    up: migration_20261103_164007_cookies_enlace_politica.up,
+    down: migration_20261103_164007_cookies_enlace_politica.down,
+    name: '20261103_164007_cookies_enlace_politica'
   },
 ];

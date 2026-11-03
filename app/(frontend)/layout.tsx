@@ -27,9 +27,8 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
     depth: 2,
   })) as any
 
-  const cookieTexts = resolveCookieTexts(
-    await payload.findGlobal({ slug: 'cookies' as never, draft: false, depth: 0 }).catch(() => null),
-  )
+  const cookiesGlobal = (await payload.findGlobal({ slug: 'cookies' as never, draft: false, depth: 0 }).catch(() => null)) as any
+  const cookieTexts = resolveCookieTexts(cookiesGlobal)
 
   const enlaces = layoutPage?.enlaces_externos
   const rawHeader = layoutPage?.header
@@ -43,6 +42,13 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
   }
   const footerData = rawFooter && { ...rawFooter, ...resolveFooterLinks(rawFooter, enlaces) }
 
+  const cookiePolicy = resolveEnlace(cookiesGlobal?.policy_link, enlaces)
+  if (!cookiePolicy.href && footerData?.privacy_cookies) {
+    const fallback = footerData.privacy_cookies as string
+    const external = /^https?:\/\//i.test(fallback)
+    Object.assign(cookiePolicy, { href: fallback, external, newTab: external })
+  }
+
   const session = await getSession()
   const account = session ? { email: session.email, nombre: session.nombre } : null
 
@@ -54,7 +60,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
         <main>{children}</main>
         {footerData && <Footer {...footerData} />}
         <BackToTop />
-        <CookieConsent policyHref={footerData?.privacy_cookies} texts={cookieTexts} />
+        <CookieConsent policy={cookiePolicy} texts={cookieTexts} />
       </body>
     </html>
   )

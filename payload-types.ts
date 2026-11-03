@@ -3189,12 +3189,39 @@ export interface Cooky {
      */
     text: string;
     /**
-     * El enlace sale del campo "Política de cookies" del pie de página.
+     * A dónde lleva se elige abajo, en "Destino del enlace a la política".
      */
     link_label: string;
     button_configure: string;
     button_reject_all: string;
     button_accept_all: string;
+  };
+  /**
+   * Se usa en el aviso inicial y en las preferencias. Si no eliges ninguno, se usa el campo "Política de cookies" del pie de página.
+   */
+  policy_link?: {
+    tipo?: ('interno' | 'ancla' | 'registro' | 'externo') | null;
+    to?: string | null;
+    ancla?: ('home-noticias' | 'investigacion-apoyo') | null;
+    enlace_key?:
+      | (
+          | 'opac'
+          | 'dspace'
+          | 'campus'
+          | 'facebook'
+          | 'twitter'
+          | 'instagram'
+          | 'linkedin'
+          | 'youtube'
+          | 'tiktok'
+          | 'soporte_recursos'
+        )
+      | null;
+    url?: string | null;
+    /**
+     * Por defecto se abre en pestaña nueva solo si es externo
+     */
+    nueva_pestana?: boolean | null;
   };
   preferences: {
     title: string;
@@ -3941,6 +3968,16 @@ export interface CookiesSelect<T extends boolean = true> {
         button_configure?: T;
         button_reject_all?: T;
         button_accept_all?: T;
+      };
+  policy_link?:
+    | T
+    | {
+        tipo?: T;
+        to?: T;
+        ancla?: T;
+        enlace_key?: T;
+        url?: T;
+        nueva_pestana?: T;
       };
   preferences?:
     | T
