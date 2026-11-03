@@ -56,6 +56,7 @@ export const SECTION_BY_SLUG: Record<string, SectionKey> = {
   header: 'navegacion',
   footer: 'navegacion',
   layout: 'navegacion',
+  cookies: 'navegacion',
 
   media: 'medios',
 }

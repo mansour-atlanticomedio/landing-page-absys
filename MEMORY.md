@@ -860,3 +860,7 @@ todos los casos).
 
 ## 2026-11-03 – animaciones del modal de cookies
 - `CookieConsent` con framer-motion: entrada con muelle, contenido escalonado, deslizamiento entre vista principal y preferencias con altura animada, interruptores con muelle y check, tarjetas que se tiñen al activarse, contador de opcionales activas, migas al aceptar/guardar, salida suave y toast de confirmación (sonner). Respeta `prefers-reduced-motion` (sin movimiento ni migas). Microcopy nuevo: "Las galletas, mejor con leche… y con tu permiso." Verificado: tsc, 314 tests, home 200; sin ver en navegador.
+
+## 2026-11-03 – textos de cookies editables desde Payload
+- Global `cookies` (no colección: es un único documento de ajustes) con todos los textos del modal y del panel de preferencias; el modal y el panel salen de la misma fuente, así que se cambia una vez. Defaults centralizados en `lib/cookie-texts.ts` (con tests). Migración `20261103_160918_textos_cookies`.
+- Gotcha: `migrate:create` preguntó por teclado si `cookies` era tabla nueva o renombrada de `about_us_blocks_location_block` (el mismo arrastre de siempre): respondido "crear" con una pty, y se quitó a mano el `DROP TABLE about_us_blocks_location_block` del `up` y su `CREATE` del `down`. La tabla huérfana sigue en las BD que ya aplicaron `20261029`; inofensiva. Verificado: tsc, 317 tests, home y `/admin/globals/cookies` 200 en dev. NO verificado: aplicar la migración en una BD nueva (no pude leer el `.env` para apuntar a una BD temporal) ni el aspecto en navegador.

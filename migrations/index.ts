@@ -18,6 +18,7 @@ import * as migration_20261026_100000_lectores_campus from './20261026_100000_le
 import * as migration_20261027_141832_logo_cabecera from './20261027_141832_logo_cabecera';
 import * as migration_20261027_144150_recursos_electronicos from './20261027_144150_recursos_electronicos';
 import * as migration_20261029_115856_bloque_horario_contacto_mapa from './20261029_115856_bloque_horario_contacto_mapa';
+import * as migration_20261103_160918_textos_cookies from './20261103_160918_textos_cookies';
 
 export const migrations = [
   {
@@ -118,6 +119,11 @@ export const migrations = [
   {
     up: migration_20261029_115856_bloque_horario_contacto_mapa.up,
     down: migration_20261029_115856_bloque_horario_contacto_mapa.down,
-    name: '20261029_115856_bloque_horario_contacto_mapa'
+    name: '20261029_115856_bloque_horario_contacto_mapa',
+  },
+  {
+    up: migration_20261103_160918_textos_cookies.up,
+    down: migration_20261103_160918_textos_cookies.down,
+    name: '20261103_160918_textos_cookies'
   },
 ];

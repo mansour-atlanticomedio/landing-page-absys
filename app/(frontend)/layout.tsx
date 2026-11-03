@@ -5,6 +5,7 @@ import Footer from '@/components/layout/Footer'
 import { getClient } from '@/lib/payload'
 import { resolveNavbar, resolveFooterLinks, resolveEnlace } from '@/lib/links'
 import { getSession } from '@/lib/auth/session'
+import { resolveCookieTexts } from '@/lib/cookie-texts'
 import BackToTop from "@/components/BackToTop";
 import CookieConsent from '@/components/cookies/CookieConsent'
 
@@ -25,6 +26,10 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
     draft: false,
     depth: 2,
   })) as any
+
+  const cookieTexts = resolveCookieTexts(
+    await payload.findGlobal({ slug: 'cookies' as never, draft: false, depth: 0 }).catch(() => null),
+  )
 
   const enlaces = layoutPage?.enlaces_externos
   const rawHeader = layoutPage?.header
@@ -49,7 +54,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
         <main>{children}</main>
         {footerData && <Footer {...footerData} />}
         <BackToTop />
-        <CookieConsent policyHref={footerData?.privacy_cookies} />
+        <CookieConsent policyHref={footerData?.privacy_cookies} texts={cookieTexts} />
       </body>
     </html>
   )

@@ -155,6 +155,7 @@ export interface Config {
     repository: Repository;
     solicitud_compra: SolicitudCompra;
     layout: Layout;
+    cookies: Cooky;
     contact: Contact;
     about_us: AboutUs;
     quienes_somos: QuienesSomo;
@@ -170,6 +171,7 @@ export interface Config {
     repository: RepositorySelect<false> | RepositorySelect<true>;
     solicitud_compra: SolicitudCompraSelect<false> | SolicitudCompraSelect<true>;
     layout: LayoutSelect<false> | LayoutSelect<true>;
+    cookies: CookiesSelect<false> | CookiesSelect<true>;
     contact: ContactSelect<false> | ContactSelect<true>;
     about_us: AboutUsSelect<false> | AboutUsSelect<true>;
     quienes_somos: QuienesSomosSelect<false> | QuienesSomosSelect<true>;
@@ -3172,6 +3174,64 @@ export interface Layout {
   createdAt?: string | null;
 }
 /**
+ * Textos del aviso de cookies y de su ventana de preferencias. Si dejas un campo vacío se usa el texto por defecto.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "cookies".
+ */
+export interface Cooky {
+  id: number;
+  banner: {
+    title: string;
+    tagline: string;
+    /**
+     * Termina justo antes del enlace a la política de cookies (el punto final se añade solo).
+     */
+    text: string;
+    /**
+     * El enlace sale del campo "Política de cookies" del pie de página.
+     */
+    link_label: string;
+    button_configure: string;
+    button_reject_all: string;
+    button_accept_all: string;
+  };
+  preferences: {
+    title: string;
+    subtitle: string;
+    /**
+     * Termina justo antes del enlace a la política de cookies (el punto final se añade solo).
+     */
+    text: string;
+    link_label: string;
+    close_label: string;
+    technical_title: string;
+    technical_text: string;
+    technical_badge: string;
+    preferencias_title: string;
+    preferencias_text: string;
+    analiticas_title: string;
+    analiticas_text: string;
+    marketing_title: string;
+    marketing_text: string;
+    counter_none: string;
+    /**
+     * Usa {n} donde debe ir el número de categorías activas.
+     */
+    counter_some: string;
+    button_reject_optional: string;
+    button_accept_all: string;
+    button_save: string;
+  };
+  messages: {
+    accepted: string;
+    saved: string;
+    rejected: string;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
  * Página de contacto: cabecera.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -3861,6 +3921,56 @@ export interface LayoutSelect<T extends boolean = true> {
         label?: T;
         url?: T;
         id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "cookies_select".
+ */
+export interface CookiesSelect<T extends boolean = true> {
+  banner?:
+    | T
+    | {
+        title?: T;
+        tagline?: T;
+        text?: T;
+        link_label?: T;
+        button_configure?: T;
+        button_reject_all?: T;
+        button_accept_all?: T;
+      };
+  preferences?:
+    | T
+    | {
+        title?: T;
+        subtitle?: T;
+        text?: T;
+        link_label?: T;
+        close_label?: T;
+        technical_title?: T;
+        technical_text?: T;
+        technical_badge?: T;
+        preferencias_title?: T;
+        preferencias_text?: T;
+        analiticas_title?: T;
+        analiticas_text?: T;
+        marketing_title?: T;
+        marketing_text?: T;
+        counter_none?: T;
+        counter_some?: T;
+        button_reject_optional?: T;
+        button_accept_all?: T;
+        button_save?: T;
+      };
+  messages?:
+    | T
+    | {
+        accepted?: T;
+        saved?: T;
+        rejected?: T;
       };
   updatedAt?: T;
   createdAt?: T;

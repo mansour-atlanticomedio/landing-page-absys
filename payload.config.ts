@@ -23,6 +23,7 @@ import { ElectronicResources } from "./globals/ElectronicResources.ts";
 import { SolicitudCompra } from "./globals/SolicitudCompra.ts";
 import { QuienesSomos } from "./globals/QuienesSomos.ts";
 import { HorariosContacto } from "./globals/HorariosContacto.ts";
+import { CookieTextsGlobal } from "./globals/CookieTexts.ts";
 
 import { Users } from "./collections/Users.ts";
 import { Media } from "./collections/Media.ts";
@@ -145,6 +146,7 @@ export default buildConfig({
     Repositories,
     SolicitudCompra,
     Layout,
+    CookieTextsGlobal,
     Contact,
     AboutUs,
     QuienesSomos,

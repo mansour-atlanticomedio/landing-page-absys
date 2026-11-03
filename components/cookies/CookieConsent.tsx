@@ -20,31 +20,14 @@ import {
   type OptionalCategory,
 } from '@/lib/consent'
 import { BASE_PATH } from '@/lib/auth/redirects'
+import { DEFAULT_COOKIE_TEXTS, formatActiveCount, type CookieTexts } from '@/lib/cookie-texts'
 
-type Props = { policyHref?: string }
+type Props = { policyHref?: string; texts?: CookieTexts }
 
-const CATEGORIES: { key: OptionalCategory; title: string; description: string; icon: typeof Cookie }[] = [
-  {
-    key: 'preferencias',
-    title: 'Cookies de preferencias o personalización',
-    description:
-      'Permiten recordar información para que accedas al servicio con determinadas características personalizadas (como el idioma, tamaño de letra, configuración regional o visualización adaptada).',
-    icon: SlidersHorizontal,
-  },
-  {
-    key: 'analiticas',
-    title: 'Cookies analíticas o de medición',
-    description:
-      'Nos ayudan a comprender cómo interactúan los usuarios con la web mediante la recopilación y comunicación anónima de estadísticas de uso, permitiendo medir y mejorar la calidad del servicio bibliotecario.',
-    icon: ChartColumn,
-  },
-  {
-    key: 'marketing',
-    title: 'Cookies de publicidad o marketing',
-    description:
-      'Se utilizan para gestionar espacios publicitarios e informativos de forma eficaz, creando perfiles de navegación y adaptando contenido a tus intereses en la web.',
-    icon: Megaphone,
-  },
+const CATEGORIES: { key: OptionalCategory; icon: typeof Cookie }[] = [
+  { key: 'preferencias', icon: SlidersHorizontal },
+  { key: 'analiticas', icon: ChartColumn },
+  { key: 'marketing', icon: Megaphone },
 ]
 
 function Switch({ checked, onChange, label }: { checked: boolean; onChange: (v: boolean) => void; label: string }) {
@@ -147,7 +130,8 @@ function AutoHeight({ children, reduced }: { children: React.ReactNode; reduced:
   )
 }
 
-export default function CookieConsent({ policyHref }: Props) {
+export default function CookieConsent({ policyHref, texts = DEFAULT_COOKIE_TEXTS }: Props) {
+  const { banner, preferences, messages } = texts
   const [ready, setReady] = useState(false)
   const [record, setRecord] = useState<ConsentRecord | null>(null)
   const [open, setOpen] = useState(false)
@@ -211,12 +195,12 @@ export default function CookieConsent({ policyHref }: Props) {
   const slide = reduced ? 0 : 24
   const stagger = (i: number) => ({ initial: { opacity: 0, y: reduced ? 0 : 10 }, animate: { opacity: 1, y: 0 }, transition: { delay: reduced ? 0 : 0.05 * i, duration: 0.25 } })
 
-  const policyLink = policyHref ? (
+  const policyLink = (linkLabel: string) => policyHref ? (
     <a href={policyHref} className="font-semibold text-accent underline underline-offset-2 transition-colors hover:text-accent/80">
-      Política de cookies
+      {linkLabel}
     </a>
   ) : (
-    'Política de cookies'
+    linkLabel
   )
 
   const btn = 'h-10 px-5 transition-transform duration-150 hover:scale-[1.03] active:scale-[0.97]'
@@ -261,18 +245,13 @@ export default function CookieConsent({ policyHref }: Props) {
                       <Cookie className="size-6 text-accent" aria-hidden />
                     </motion.span>
                     <div>
-                      <DialogTitle className="font-display text-xl font-bold leading-tight">Política de Cookies</DialogTitle>
-                      <p className="text-sm text-[hsl(var(--muted-foreground))]">Las galletas, mejor con leche… y con tu permiso.</p>
+                      <DialogTitle className="font-display text-xl font-bold leading-tight">{banner.title}</DialogTitle>
                     </div>
                   </motion.div>
                   <motion.div {...stagger(1)}>
                     <DialogDescription className="text-sm leading-relaxed text-foreground">
-                      Este sitio web de la Universidad del Atlántico Medio utiliza cookies propias y de terceros, que almacenan y
-                      recuperan información cuando navegas. Las cookies pueden tener finalidades diversas, por ejemplo, reconocerte
-                      como usuario, obtener información sobre tus hábitos de navegación, respetando tu privacidad, o personalizar la
-                      forma en que se muestra el contenido. Puedes elegir las cookies que deseas o aceptarlas todas o rechazarlas
-                      todas. Este banner se mantendrá activo hasta que elijas una de las tres opciones. Para obtener información más
-                      detallada, puedes acceder a nuestra {policyLink}.
+                      {banner.text}{' '}
+                      {policyLink(banner.link_label)}.
                     </DialogDescription>
                   </motion.div>
                   <motion.div
@@ -280,23 +259,23 @@ export default function CookieConsent({ policyHref }: Props) {
                     className="flex flex-col items-stretch justify-end gap-3 border-t border-border pt-4 sm:flex-row sm:items-center"
                   >
                     <Button type="button" variant="outline" className={btn} onClick={goConfig}>
-                      Configurar cookies
+                      {banner.button_configure}
                     </Button>
                     <Button
                       type="button"
                       variant="outline"
                       className={cn(btn, 'border-foreground/40')}
-                      onClick={() => save(REJECT_ALL, 'Entendido: sin cookies opcionales.')}
+                      onClick={() => save(REJECT_ALL, messages.rejected)}
                     >
-                      Rechazar todas
+                      {banner.button_reject_all}
                     </Button>
                     <span className="relative">
                       <Button
                         type="button"
                         className={cn(btn, 'w-full bg-accent px-6 font-bold text-white hover:bg-accent/90')}
-                        onClick={() => save(ACCEPT_ALL, '¡Genial! Cookies aceptadas.', true)}
+                        onClick={() => save(ACCEPT_ALL, messages.accepted, true)}
                       >
-                        Aceptar todas
+                        {banner.button_accept_all}
                       </Button>
                       <Crumbs burst={burst} />
                     </span>
@@ -323,15 +302,15 @@ export default function CookieConsent({ policyHref }: Props) {
                         <Settings2 className="size-6 text-accent" aria-hidden />
                       </motion.span>
                       <div>
-                        <DialogTitle className="font-display text-xl font-bold leading-tight">Preferencias de Cookies</DialogTitle>
-                        <p className="text-sm text-[hsl(var(--muted-foreground))]">Universidad del Atlántico Medio</p>
+                        <DialogTitle className="font-display text-xl font-bold leading-tight">{preferences.title}</DialogTitle>
+                        <p className="text-sm text-[hsl(var(--muted-foreground))]">{preferences.subtitle}</p>
                       </div>
                     </div>
                     <Button
                       type="button"
                       variant="ghost"
                       size="icon"
-                      aria-label="Cerrar configuración"
+                      aria-label={preferences.close_label}
                       className="transition-transform duration-200 hover:rotate-90"
                       onClick={closeConfig}
                     >
@@ -339,28 +318,28 @@ export default function CookieConsent({ policyHref }: Props) {
                     </Button>
                   </div>
                   <DialogDescription className="text-sm leading-relaxed text-foreground">
-                    Gestiona tus preferencias de consentimiento para las diferentes categorías de cookies que utilizamos en nuestro
-                    portal. Puedes habilitar o deshabilitar cada categoría según tus preferencias, excepto las estrictamente
-                    necesarias. Para más detalles, consulta nuestra {policyLink}.
+                    {preferences.text}{' '}
+                    {policyLink(preferences.link_label)}.
                   </DialogDescription>
                   <div className="flex max-h-[min(380px,45dvh)] flex-col gap-3 overflow-y-auto pr-1">
                     <motion.div {...stagger(0)} className="flex flex-col gap-1 rounded-xl border border-border bg-[hsl(var(--muted))] p-4">
                       <div className="flex flex-wrap items-center justify-between gap-2">
                         <div className="flex items-center gap-2 text-primary">
                           <ShieldCheck className="size-5 text-primary" aria-hidden />
-                          <h3 className="font-display text-base font-bold">Cookies técnicas o estrictamente necesarias</h3>
+                          <h3 className="font-display text-base font-bold">{preferences.technical_title}</h3>
                         </div>
                         <span className="rounded bg-primary/10 px-2 py-1 text-xs font-semibold uppercase tracking-wider text-primary">
-                          Siempre activas
+                          {preferences.technical_badge}
                         </span>
                       </div>
                       <p className="text-sm text-[hsl(var(--muted-foreground))]">
-                        Son aquellas indispensables para el funcionamiento correcto de la web, la seguridad, la navegación básica y la
-                        gestión de sesiones. No se pueden desactivar en nuestros sistemas.
+                        {preferences.technical_text}
                       </p>
                     </motion.div>
-                    {CATEGORIES.map(({ key, title, description, icon: Icon }, i) => {
+                    {CATEGORIES.map(({ key, icon: Icon }, i) => {
                       const on = draft[key]
+                      const title = preferences[`${key}_title`]
+                      const description = preferences[`${key}_text`]
                       return (
                         <motion.div
                           key={key}
@@ -392,7 +371,7 @@ export default function CookieConsent({ policyHref }: Props) {
                   </div>
                   <p aria-live="polite" className="text-center text-xs font-medium text-[hsl(var(--muted-foreground))]">
                     <motion.span key={activeCount} initial={reduced ? false : { opacity: 0, y: -6 }} animate={{ opacity: 1, y: 0 }} className="inline-block">
-                      {activeCount === 0 ? 'Solo las técnicas, nada más.' : `${activeCount} de 3 opcionales activas`}
+                      {activeCount === 0 ? preferences.counter_none : formatActiveCount(preferences.counter_some, activeCount)}
                     </motion.span>
                   </p>
                   <div className="flex flex-col items-stretch justify-between gap-3 border-t border-border pt-4 sm:flex-row sm:items-center">
@@ -400,21 +379,21 @@ export default function CookieConsent({ policyHref }: Props) {
                       type="button"
                       variant="outline"
                       className={cn(btn, 'border-foreground/40')}
-                      onClick={() => save(REJECT_ALL, 'Entendido: sin cookies opcionales.')}
+                      onClick={() => save(REJECT_ALL, messages.rejected)}
                     >
-                      Rechazar opcionales
+                      {preferences.button_reject_optional}
                     </Button>
                     <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-                      <Button type="button" variant="outline" className={btn} onClick={() => save(ACCEPT_ALL, '¡Genial! Cookies aceptadas.')}>
-                        Aceptar todas
+                      <Button type="button" variant="outline" className={btn} onClick={() => save(ACCEPT_ALL, messages.accepted)}>
+                        {preferences.button_accept_all}
                       </Button>
                       <span className="relative">
                         <Button
                           type="button"
                           className={cn(btn, 'w-full bg-accent px-6 font-bold text-white hover:bg-accent/90')}
-                          onClick={() => save(draft, '¡Listo! Preferencias guardadas.', true)}
+                          onClick={() => save(draft, messages.saved, true)}
                         >
-                          Guardar preferencias
+                          {preferences.button_save}
                         </Button>
                         <Crumbs burst={burst} />
                       </span>
