@@ -71,6 +71,14 @@ const importExportSlugs = [
   'partners',
   'pages',
   'media',
+  'hero',
+  'hero_carrusel',
+  'cta',
+  'about',
+  'timeline',
+  'statistics',
+  'header',
+  'footer',
 ] as const
 
 export default buildConfig({

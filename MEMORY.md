@@ -878,3 +878,6 @@ todos los casos).
 ## 2026-11-03 – FAQ: página `/preguntas-frecuentes` + bloque reutilizable
 - Decisión: componente y página a la vez. Nuevo `faq_section_block` en `pageBlocks` (relación a `faq`), `FaqSection` con buscador opcional y datos estructurados, seed `faq.seed.ts` con 4 temas y la página. Migración `bloque_faq_paginas` (solo tablas de bloque nuevas, sin arrastre). Contenido de ejemplo genérico sin cifras concretas: que lo revisen los bibliotecarios.
 - Importar/exportar: `faq` ya estaba habilitada. Probado por Local API en dev: export CSV y JSON y reimportación JSON (`update` por `id`): cambia la pregunta y conserva la respuesta Lexical. Sin probar desde la UI del panel. Gotcha: el dev server dio un `Module not found` transitorio al crear `FaqSection`; reiniciar el contenedor lo arregló.
+
+## 2026-11-03 – más collections en importar/exportar
+- Añadidas `hero`, `hero_carrusel`, `cta`, `about`, `timeline`, `statistics`, `header` y `footer`. Verificado export CSV y JSON de las 8 por Local API en dev (sin migración: `collection_slug` es varchar). Los globals `cookies` y `services` NO se pudieron añadir: `importExportPlugin` solo acepta `CollectionSlug` (comprobado en `dist/types.d.ts`). Pendiente de decidir si se hace una solución propia para globals.
