@@ -3,8 +3,9 @@ import { conocenosBlocks } from './conocenos'
 import { layoutBlocks } from './layout'
 import { LocationBlock } from './conocenos/LocationBlock'
 import { FaqSectionBlock } from './conocenos/FaqSectionBlock'
+import { inlineBlocks } from './inline'
 import { withBlockImage } from './images'
 
 export { conocenosBlocks, layoutBlocks }
 
-export const pageBlocks: Block[] = [...conocenosBlocks, LocationBlock, FaqSectionBlock].map(withBlockImage)
+export const pageBlocks: Block[] = [...conocenosBlocks, LocationBlock, FaqSectionBlock, ...inlineBlocks].map(withBlockImage)

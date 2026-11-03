@@ -1,4 +1,31 @@
 import { Fragment } from "react"
+import Stadistics from "@/components/Stadistics"
+import About from "@/components/About"
+import Features from "@/components/Features"
+import News from "@/components/News"
+import Blogs from "@/components/Blogs"
+import CTA from "@/components/CTA"
+import Speakers from "@/components/Speakers"
+import Timeline from "@/components/Timeline"
+import Partners from "@/components/Partners"
+import FAQ from "@/components/FAQ"
+import InputComponent from "@/components/Input"
+import HeroCarrousel from "@/components/heroCarrusel"
+
+const inlineComponents: Record<string, React.ElementType> = {
+  hero_carousel_inline_block: ({ items }: any) => <HeroCarrousel title="" items={items ?? []} />,
+  stats_inline_block: Stadistics,
+  about_inline_block: About,
+  features_inline_block: Features,
+  news_inline_block: News,
+  blogs_inline_block: Blogs,
+  timeline_inline_block: Timeline,
+  speakers_inline_block: Speakers,
+  partners_inline_block: Partners,
+  cta_inline_block: CTA,
+  faq_inline_block: ({ title, faqs }: any) => <FAQ title={title} faqs={faqs ?? []} />,
+  input_inline_block: InputComponent,
+}
 import { CardsFeaturesSection } from "@/components/conocenos/CardsFeaturesSection"
 import { ImageTextSection } from "@/components/conocenos/ImageTextSection"
 import { ScheduleSection } from "@/components/conocenos/ScheduleSection"
@@ -52,8 +79,15 @@ export function RenderPageBlocks({ layout }: { layout?: any[] | null }) {
                 <FaqSection block={block} />
               </Fragment>
             )
-          default:
-            return null
+          default: {
+            const Inline = inlineComponents[block.blockType]
+            if (!Inline) return null
+            return (
+              <section key={key} data-block-type={block.blockType}>
+                <Inline {...block} />
+              </section>
+            )
+          }
         }
       })}
     </>
