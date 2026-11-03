@@ -857,3 +857,6 @@ todos los casos).
 ## 2026-11-03 – modal de consentimiento de cookies
 - Implementado el modal del Figma (principal + configuración) con `Dialog` de shadcn, cookie propia versionada y enlace en el pie para reabrirlo. Desvío del diseño: los interruptores de preferencias y analíticas arrancan en apagado (RGPD/AEPD no admiten casillas premarcadas). Verificado: tsc, 314 tests, páginas 200 con el enlace del pie; NO verificado en navegador (aspecto, foco, móvil).
 - Pendiente: que el mapa de Google no cargue hasta aceptar, y el texto real de la política de cookies (`privacy_cookies` aún apunta a `/biblioteca`). Las categorías analíticas/marketing no activan nada todavía.
+
+## 2026-11-03 – animaciones del modal de cookies
+- `CookieConsent` con framer-motion: entrada con muelle, contenido escalonado, deslizamiento entre vista principal y preferencias con altura animada, interruptores con muelle y check, tarjetas que se tiñen al activarse, contador de opcionales activas, migas al aceptar/guardar, salida suave y toast de confirmación (sonner). Respeta `prefers-reduced-motion` (sin movimiento ni migas). Microcopy nuevo: "Las galletas, mejor con leche… y con tu permiso." Verificado: tsc, 314 tests, home 200; sin ver en navegador.
