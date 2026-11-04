@@ -3,12 +3,57 @@ import { normalizeSubtitle } from '@/lib/rich-text'
 import { getClient } from "@/lib/payload";
 import { HERO_FALLBACK_IMAGE } from "@/lib/images";
 import { getSession } from "@/lib/auth/session";
+import { LivePreviewListener } from "@/components/blocks/LivePreviewListener";
+import { getPage, resolveIsDraft, type PageSearchParams } from "@/lib/page-data";
+import { serviceIcon } from "@/lib/service-icons";
+import { SERVICIOS_SUBTITULO_FALLBACK } from "@/lib/page-fallbacks";
+import type { LucideIcon } from "lucide-react";
 import { Bookmark, BookOpen, Headphones, RefreshCw, Search, BookPlus, User } from "lucide-react";
 import Link from "next/link";
 
 export const dynamic = 'force-dynamic';
 
-export default async function Servicios() {
+type ServicioItem = {
+  icon: LucideIcon
+  title: string
+  text: string
+  action?: { label: string; href: string }
+  badge?: string
+  wide?: boolean
+}
+
+const SLUG = 'servicios'
+
+export default async function Servicios({ searchParams }: { searchParams: PageSearchParams }) {
+  const isDraft = await resolveIsDraft(searchParams)
+  const page = await getPage(SLUG, isDraft)
+  if (!page) return <LegacyServicios />
+
+  const session = await getSession()
+  const sugerirLibroHref = session ? '/adquisiciones/solicitud-compra' : '/login'
+  const heroData = typeof page.hero === 'object' && page.hero ? page.hero : null
+  const hero = {
+    title: heroData?.title || "Servicios bibliotecarios",
+    subtitle: normalizeSubtitle(heroData?.subtitle, SERVICIOS_SUBTITULO_FALLBACK),
+    background_image: heroData?.background_image && typeof heroData.background_image === 'object'
+      ? heroData.background_image
+      : { id: 0, url: HERO_FALLBACK_IMAGE, alt: '' },
+  }
+  const block = (page.layout ?? []).find((b: any) => b.blockType === 'service_cards_block')
+  const servicios: ServicioItem[] = (block?.cards ?? []).map((c: any) => ({
+    icon: serviceIcon(c.icon),
+    title: c.title,
+    text: c.text,
+    badge: c.badge || undefined,
+    wide: Boolean(c.wide),
+    action: c.action_label && c.action_href ? { label: c.action_label, href: c.action_href } : undefined,
+  }))
+
+  const view = <ServiciosView hero={hero} servicios={servicios} session={session} sugerirLibroHref={sugerirLibroHref} />
+  return isDraft ? <LivePreviewListener exitPath={`/${SLUG}`}>{view}</LivePreviewListener> : view
+}
+
+async function LegacyServicios() {
   const payload = await getClient()
   const session = await getSession()
   // Sin sesión el botón de sugerir libro lleva al login en vez de a la página privada
@@ -62,6 +107,15 @@ export default async function Servicios() {
     },
   ]
 
+  return <ServiciosView hero={hero} servicios={servicios} session={session} sugerirLibroHref={sugerirLibroHref} />
+}
+
+function ServiciosView({ hero, servicios, session, sugerirLibroHref }: {
+  hero: any
+  servicios: ServicioItem[]
+  session: Awaited<ReturnType<typeof getSession>>
+  sugerirLibroHref: string
+}) {
   return (
     <div className="min-h-screen bg-background">
       <PageHero variant="split" hero={hero} />

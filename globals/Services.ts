@@ -1,12 +1,13 @@
 import { GlobalConfig } from "payload";
 import { layoutBlocks } from "@/blocks";
-import { sectionGlobal } from "@/lib/access";
+import { sectionGlobal, hideFromNonAdmins } from "@/lib/access";
 
 export const Services : GlobalConfig = {
     slug: "services",
     admin: {
-        group: 'Páginas',
-        description: 'Página de servicios: cabecera, carrusel y bloques de contenido.'
+        group: 'Piezas antiguas',
+        hidden: hideFromNonAdmins,
+        description: 'Obsoleto: Servicios ahora se edita en Páginas > Servicios.'
     },
     access: sectionGlobal('paginas'),
     label: "Servicios",

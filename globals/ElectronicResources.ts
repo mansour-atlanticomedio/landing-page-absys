@@ -1,12 +1,13 @@
 import type { GlobalConfig } from "payload";
-import { sectionGlobal } from "@/lib/access";
+import { sectionGlobal, hideFromNonAdmins } from "@/lib/access";
 import { enlaceFields } from "@/collections/fields/enlace";
 
 export const ElectronicResources: GlobalConfig = {
     slug: 'electronic_resources',
     admin: {
-        group: 'Páginas',
-        description: 'Página de recursos electrónicos: cabecera, acceso remoto y recursos por tipo.'
+        group: 'Piezas antiguas',
+        hidden: hideFromNonAdmins,
+        description: 'Obsoleto: Recursos electrónicos ahora se edita en Páginas > Recursos electrónicos.'
     },
     access: sectionGlobal('paginas'),
     label: 'Recursos Electrónicos',

@@ -1,60 +1,46 @@
 import { getClient } from "@/lib/payload";
 import { normalizeSubtitle } from '@/lib/rich-text'
 import InvestigationContent from "@/components/InvestigationContent";
+import { LivePreviewListener } from "@/components/blocks/LivePreviewListener";
+import { getPage, resolveIsDraft, type PageSearchParams } from "@/lib/page-data";
+
+import { ACCESOS_RAPIDOS_FALLBACK, TARJETAS_FALLBACK, CTA_FALLBACK, INVESTIGACION_SUBTITULO_FALLBACK } from "@/lib/page-fallbacks";
+
+const SLUG = "investigacion";
 import { DSPACE_URL_POR_DEFECTO, resolveEnlaceExterno } from "@/lib/links";
 
 export const dynamic = 'force-dynamic';
 
 const DSPACE_FALLBACK = DSPACE_URL_POR_DEFECTO;
 
-const ACCESOS_RAPIDOS_FALLBACK = [
-  { icon: "Search", title: "Buscar información" },
-  { icon: "Megaphone", title: "Publicar y difundir" },
-  { icon: "Lock", title: "Acceso abierto" },
-  { icon: "Fingerprint", title: "Perfiles académicos" },
-  { icon: "BarChart3", title: "Indicadores" },
-];
+export default async function Investigation({ searchParams }: { searchParams: PageSearchParams }) {
+  const isDraft = await resolveIsDraft(searchParams)
+  const page = await getPage(SLUG, isDraft)
+  if (!page) return <LegacyInvestigation />
 
-const TARJETAS_FALLBACK = [
-  {
-    icon: "Search",
-    title: "Buscar información científica",
-    description: "Accede a recursos para localizar publicaciones, revisar antecedentes y desarrollar búsquedas bibliográficas de forma sistemática.",
-    cta: "Acceder a Recursos electrónicos",
-    link: "/recursos/recursos-electronicos",
-  },
-  {
-    icon: "Megaphone",
-    title: "Publicar y difundir",
-    description: "Consulta orientaciones para seleccionar revistas, revisar sus características, conocer sus condiciones de publicación y mejorar la difusión de los resultados.",
-  },
-  {
-    icon: "Lock",
-    title: "Acceso abierto y repositorio",
-    description: "Encuentra información sobre repositorios, versiones de los documentos, licencias, derechos de autor y posibilidades de difusión en acceso abierto.",
-    cta: "Acceder al Repositorio institucional",
-    link: DSPACE_FALLBACK,
-  },
-  {
-    icon: "Fingerprint",
-    title: "Firma, ORCID y perfiles académicos",
-    description: "Consulta recomendaciones para utilizar una firma coherente, indicar correctamente la afiliación institucional y mantener actualizados los identificadores y perfiles académicos.",
-  },
-  {
-    icon: "BarChart3",
-    title: "Indicadores y evaluación de la investigación",
-    description: "Accede a fuentes de información relacionadas con citación, impacto, acreditaciones y sexenios. La Biblioteca ofrece orientación sobre los recursos disponibles, pero no interpreta convocatorias ni garantiza resultados en los procesos de evaluación.",
-  },
-];
+  const hero = typeof page.hero === "object" && page.hero ? page.hero : null
+  const block = (page.layout ?? []).find((b: any) => b.blockType === "investigation_content_block") ?? {}
 
-const CTA_FALLBACK = {
-  title: "Solicitar apoyo",
-  subtitle: "Puedes contactar con la Biblioteca para realizar consultas sobre búsqueda bibliográfica, acceso a bases de datos y utilización de los recursos disponibles.",
-  button_cta: "Solicitar apoyo",
-  button_link: "/biblioteca/conocenos/horarios-ubicacion-y-contacto",
-};
+  const content = (
+    <InvestigationContent
+      title={hero?.title || "Apoyo a la investigación"}
+      subtitle={normalizeSubtitle(hero?.subtitle, INVESTIGACION_SUBTITULO_FALLBACK)}
+      imageUrl={hero?.background_image?.url || "/img/investigacion-hero.jpg"}
+      accesosRapidos={(block.quick ?? []).map((a: any) => ({ icon: a.icon, title: a.title }))}
+      tarjetas={(block.cards ?? []).map((t: any) => ({ icon: t.icon, title: t.title, description: t.description || "", cta: t.cta, link: t.link }))}
+      cta={{
+        title: block.support_title || "",
+        subtitle: block.support_text || "",
+        button_cta: block.support_button_label || "",
+        button_link: block.support_button_link || "#",
+      }}
+    />
+  )
 
-export default async function Investigation() {
+  return isDraft ? <LivePreviewListener exitPath={`/${SLUG}`}>{content}</LivePreviewListener> : content
+}
+
+async function LegacyInvestigation() {
   const payload = await getClient()
   const homepage = await payload.findGlobal({
     slug: 'investigation' as never,
@@ -69,7 +55,7 @@ export default async function Investigation() {
   const subtitle =
     normalizeSubtitle(
     heroData?.subtitle,
-    "La Biblioteca reúne recursos y orientaciones para facilitar la búsqueda de información científica, la publicación y difusión de resultados, el acceso abierto y la gestión de la identidad investigadora. Este espacio se ampliará progresivamente con guías, documentos y enlaces adaptados a las necesidades del personal docente e investigador de la Universidad."
+    INVESTIGACION_SUBTITULO_FALLBACK
   );
   const imageUrl = heroData?.background_image?.url || "/img/investigacion-hero.jpg";
 

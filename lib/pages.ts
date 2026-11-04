@@ -27,6 +27,12 @@ export const HOME_SLUG = 'inicio'
 export const LOCKED_SLUGS = [
   HOME_SLUG,
   'repositorios',
+  'servicios',
+  'formacion',
+  'investigacion',
+  'biblioteca',
+  'adquisiciones/solicitud-compra',
+  'recursos/recursos-electronicos',
   'conocenos/quienes-somos',
   'conocenos/horarios-ubicacion-y-contacto',
   'conocenos/normativa-y-condiciones-de-uso',

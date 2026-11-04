@@ -6,6 +6,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { getClient } from "@/lib/payload"
 import { iconMap } from "@/lib/icons"
 import { resolveEnlace } from "@/lib/links"
+import { LivePreviewListener } from "@/components/blocks/LivePreviewListener"
+import { getPage, resolveIsDraft, type PageSearchParams } from "@/lib/page-data"
+
+const SLUG = "recursos/recursos-electronicos"
 
 // Ruta interna con Link, URL http externa con <a>
 function EnlaceFlexible({ href, className, newTab, children }: { href: string; className?: string; newTab?: boolean; children: React.ReactNode }) {
@@ -15,13 +19,44 @@ function EnlaceFlexible({ href, className, newTab, children }: { href: string; c
   return <Link href={href} className={className}>{children}</Link>
 }
 
-export default async function RecursosElectronicosPage() {
+export default async function RecursosElectronicosPage({ searchParams }: { searchParams: PageSearchParams }) {
   const payload = await getClient()
-  const electronicResources = await payload.findGlobal({
-    slug: 'electronic_resources' as never,
-    draft: false,
-    depth: 2
-  }) as any
+  const isDraft = await resolveIsDraft(searchParams)
+  const page = await getPage(SLUG, isDraft)
+
+  let electronicResources: any
+  if (page) {
+    const block = (page.layout ?? []).find((b: any) => b.blockType === 'eres_content_block') ?? {}
+    electronicResources = {
+      hero: typeof page.hero === 'object' ? page.hero : null,
+      accesos_titulo: block.featured_title,
+      accesos_destacados: {
+        accesos: (block.featured ?? []).map((a: any) => ({ icon: a.icon, title: a.title, description: a.description, cta: a.cta, link: a.link })),
+      },
+      acceso_remoto: block.remote && {
+        titulo: block.remote.title,
+        descripcion: block.remote.description,
+        puntos: (block.remote.points ?? []).map((p: any) => ({ id: p.id, texto: p.text })),
+        portal_titulo: block.remote.portal_title,
+        portal_descripcion: block.remote.portal_description,
+        portal_boton_texto: block.remote.portal_button_label,
+        portal_boton_enlace: block.remote.portal_button_link,
+      },
+      problema_acceso: block.problem && { ...block.problem, texto: block.problem.text },
+      categorias_titulo: block.categories_title,
+      categorias: (block.cats ?? []).map((c: any) => ({
+        id: c.id,
+        nombre: c.name,
+        recursos: (c.items ?? []).map((r: any) => ({ id: r.id, nombre: r.name, descripcion: r.description, acceso: r.access, enlace: r.link })),
+      })),
+    }
+  } else {
+    electronicResources = await payload.findGlobal({
+      slug: 'electronic_resources' as never,
+      draft: false,
+      depth: 2
+    }) as any
+  }
 
   const layout = await payload.findGlobal({ slug: 'layout' as never, depth: 0 }) as any
   const hero = electronicResources?.hero || null
@@ -33,7 +68,7 @@ export default async function RecursosElectronicosPage() {
   const problemaEnlace = resolveEnlace(problema, layout?.enlaces_externos)
   const categorias = (electronicResources?.categorias || []).filter((c: any) => c?.nombre && c?.recursos?.length > 0)
 
-  return (
+  const view = (
     <div className="min-h-screen bg-white">
       <section className="mx-auto max-w-6xl px-6 py-10 md:py-14 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
         <div>
@@ -158,4 +193,6 @@ export default async function RecursosElectronicosPage() {
       </section>
     </div>
   );
+
+  return isDraft ? <LivePreviewListener exitPath={`/${SLUG}`}>{view}</LivePreviewListener> : view
 }

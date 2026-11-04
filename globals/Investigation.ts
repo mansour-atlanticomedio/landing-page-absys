@@ -1,12 +1,13 @@
 import { GlobalConfig } from "payload";
 import { layoutBlocks } from "@/blocks";
-import { sectionGlobal } from "@/lib/access";
+import { sectionGlobal, hideFromNonAdmins } from "@/lib/access";
 
 export const Investigation : GlobalConfig = {
     slug: 'investigation',
     admin: {
-        group: 'Páginas',
-        description: 'Página de investigación: cabecera, accesos rápidos y tarjetas.'
+        group: 'Piezas antiguas',
+        hidden: hideFromNonAdmins,
+        description: 'Obsoleto: Investigación ahora se edita en Páginas > Investigación.'
     },
     access: sectionGlobal('paginas'),
     label: "Investigación",

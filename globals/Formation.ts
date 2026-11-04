@@ -1,12 +1,13 @@
 import { GlobalConfig } from "payload";
 import { layoutBlocks } from "@/blocks";
-import { sectionGlobal } from "@/lib/access";
+import { sectionGlobal, hideFromNonAdmins } from "@/lib/access";
 
 export const Formation : GlobalConfig = {
     slug: "formation",
     admin: {
-        group: 'Páginas',
-        description: 'Página de formación: cabecera, textos, enlaces y guías.'
+        group: 'Piezas antiguas',
+        hidden: hideFromNonAdmins,
+        description: 'Obsoleto: Formación ahora se edita en Páginas > Formación.'
     },
     access: sectionGlobal('paginas'),
     label: "Formación",

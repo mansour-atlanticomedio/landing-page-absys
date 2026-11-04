@@ -1,29 +1,48 @@
 import { getClient } from "@/lib/payload";
 import { normalizeSubtitle } from '@/lib/rich-text'
 import FormationContent from "@/components/FormationContent";
+import { LivePreviewListener } from "@/components/blocks/LivePreviewListener";
+import { getPage, resolveIsDraft, type PageSearchParams } from "@/lib/page-data";
+
+import { ENLACES_RAPIDOS_FALLBACK, CITAR_CTA_FALLBACK, GUIA_TUTORIAL_FALLBACK, FORMACION_SUBTITULO_FALLBACK, FORMACION_BUSCAR_1_FALLBACK, FORMACION_BUSCAR_2_FALLBACK, FORMACION_ACTIVIDADES_TEXTO_FALLBACK, FORMACION_ACTIVIDADES_ESTADO_FALLBACK } from "@/lib/page-fallbacks";
+
+const SLUG = "formacion";
 
 export const dynamic = 'force-dynamic';
 
-const ENLACES_RAPIDOS_FALLBACK = [
-  { label: "Recomendaciones sobre búsqueda y evaluación", link: "#" },
-  { label: "Acceso a Recursos electrónicos", link: "/recursos/recursos-electronicos" },
-];
+export default async function Formation({ searchParams }: { searchParams: PageSearchParams }) {
+  const isDraft = await resolveIsDraft(searchParams)
+  const page = await getPage(SLUG, isDraft)
+  if (!page) return <LegacyFormation />
 
-const CITAR_CTA_FALLBACK = {
-  title: "Citar correctamente y evitar el plagio",
-  subtitle:
-    "Citar permite reconocer las ideas, datos y materiales procedentes de otras fuentes, diferenciar las aportaciones propias y facilitar que otras personas puedan localizar la información original.\nAnota los datos bibliográficos durante la búsqueda, utiliza el estilo de citación requerido y revisa que todas las citas aparezcan recogidas en la lista final de referencias.",
-  button_cta: "Recomendaciones sobre citación y plagio",
-  button_link: "#",
-};
+  const hero = typeof page.hero === "object" && page.hero ? page.hero : null
+  const block = (page.layout ?? []).find((b: any) => b.blockType === "formation_content_block") ?? {}
+  const quickLinks = (block.quick_links ?? []).filter((e: any) => e?.label)
 
-const GUIA_TUTORIAL_FALLBACK = {
-  title: "Acceder a guías y tutoriales disponibles",
-  description: "Colección de recursos de autoaprendizaje",
-  link: "#",
-};
+  const content = (
+    <FormationContent
+      title={hero?.title || "Formación"}
+      subtitle={normalizeSubtitle(hero?.subtitle, FORMACION_SUBTITULO_FALLBACK)}
+      imageUrl={hero?.background_image?.url || "/img/formacion-hero.jpg"}
+      buscarParrafo1={block.search_paragraph_1 || ""}
+      buscarParrafo2={block.search_paragraph_2 || ""}
+      enlacesRapidos={quickLinks.map((e: any) => ({ label: e.label, link: e.link }))}
+      citarCta={{
+        title: block.cite_title || "",
+        subtitle: block.cite_text || "",
+        button_cta: block.cite_button_label || "",
+        button_link: block.cite_button_link || "#",
+      }}
+      guiaTutorial={{ title: block.guide_title || "", description: block.guide_description || "", link: block.guide_link || "#" }}
+      actividadesTexto={block.activities_text || ""}
+      actividadesEstado={block.activities_status || ""}
+    />
+  )
 
-export default async function Formation() {
+  return isDraft ? <LivePreviewListener exitPath={`/${SLUG}`}>{content}</LivePreviewListener> : content
+}
+
+async function LegacyFormation() {
   const payload = await getClient()
   const homepage = await payload.findGlobal({
     slug: 'formation' as never,
@@ -36,16 +55,16 @@ export default async function Formation() {
   const subtitle =
     normalizeSubtitle(
     heroData?.subtitle,
-    "La Biblioteca ofrece recursos de apoyo para desarrollar las competencias necesarias para buscar, evaluar, utilizar y comunicar información académica de manera eficaz, crítica y responsable."
+    FORMACION_SUBTITULO_FALLBACK
   );
   const imageUrl = heroData?.background_image?.url || "/img/formacion-hero.jpg";
 
   const buscarParrafo1 =
     homepage?.buscar_parrafo_1 ||
-    "Una búsqueda eficaz comienza con la definición clara del tema, la selección de palabras clave y la elección del recurso más adecuado.";
+    FORMACION_BUSCAR_1_FALLBACK;
   const buscarParrafo2 =
     homepage?.buscar_parrafo_2 ||
-    "Antes de utilizar una fuente, revisa su autoría, actualidad, procedencia, finalidad y relación con el tema que estás trabajando.";
+    FORMACION_BUSCAR_2_FALLBACK;
 
   const enlacesRapidos = homepage?.enlaces_rapidos?.length ? homepage.enlaces_rapidos : ENLACES_RAPIDOS_FALLBACK;
   const citarCta = homepage?.citar_cta || CITAR_CTA_FALLBACK;
@@ -57,10 +76,10 @@ export default async function Formation() {
 
   const actividadesTexto =
     homepage?.actividades_texto ||
-    "La Biblioteca podrá organizar sesiones y talleres relacionados con el uso del catálogo, las bases de datos, la búsqueda de información y la citación académica.";
+    FORMACION_ACTIVIDADES_TEXTO_FALLBACK;
   const actividadesEstado =
     homepage?.actividades_estado ||
-    "Actualmente no hay actividades formativas programadas. Las nuevas sesiones se anunciarán en esta página.";
+    FORMACION_ACTIVIDADES_ESTADO_FALLBACK;
 
   return (
     <FormationContent

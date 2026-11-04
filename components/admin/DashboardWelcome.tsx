@@ -8,11 +8,11 @@ type Acceso = { label: string; description: string; href: string; slug: string; 
 const accesos: Acceso[] = [
   { label: 'Inicio', description: 'Portada, noticias y bloques', href: '/admin/globals/home', slug: 'home', type: 'globals', pageSlug: 'inicio' },
   { label: 'Repositorios', description: 'Repositorio institucional y recursos', href: '/admin/globals/repository', slug: 'repository', type: 'globals', pageSlug: 'repositorios' },
-  { label: 'Servicios', description: 'Servicios de la biblioteca', href: '/admin/globals/services', slug: 'services', type: 'globals' },
-  { label: 'Formación', description: 'Guías y actividades', href: '/admin/globals/formation', slug: 'formation', type: 'globals' },
-  { label: 'Investigación', description: 'Apoyo a la investigación', href: '/admin/globals/investigation', slug: 'investigation', type: 'globals' },
+  { label: 'Servicios', description: 'Servicios de la biblioteca', href: '/admin/globals/services', slug: 'services', type: 'globals', pageSlug: 'servicios' },
+  { label: 'Formación', description: 'Guías y actividades', href: '/admin/globals/formation', slug: 'formation', type: 'globals', pageSlug: 'formacion' },
+  { label: 'Investigación', description: 'Apoyo a la investigación', href: '/admin/globals/investigation', slug: 'investigation', type: 'globals', pageSlug: 'investigacion' },
   { label: 'Páginas', description: 'Quiénes somos, horarios, FAQ y más', href: '/admin/collections/pages', slug: 'pages', type: 'collections' },
-  { label: 'Recursos electrónicos', description: 'Accesos destacados y categorías', href: '/admin/globals/electronic_resources', slug: 'electronic_resources', type: 'globals' },
+  { label: 'Recursos electrónicos', description: 'Accesos destacados y categorías', href: '/admin/globals/electronic_resources', slug: 'electronic_resources', type: 'globals', pageSlug: 'recursos/recursos-electronicos' },
   { label: 'Plantilla', description: 'Encabezamiento, pie de página y enlaces externos', href: '/admin/globals/layout', slug: 'layout', type: 'globals' },
   { label: 'Textos de cookies', description: 'Aviso de cookies y preferencias', href: '/admin/globals/cookies', slug: 'cookies', type: 'globals' },
 ]
@@ -88,7 +88,7 @@ export default async function DashboardWelcome({ payload, user, i18n, initPageRe
   const adminGroups = ['Usuarios', 'Sistema', 'Piezas antiguas', 'Servicios internos']
   const pageIds = canRead('collections', 'pages')
     ? await payload
-        .find({ collection: 'pages', where: { slug: { in: accesos.flatMap((a) => (a.pageSlug ? [a.pageSlug] : [])) } }, limit: 10, depth: 0, pagination: false, user: user as never, overrideAccess: false })
+        .find({ collection: 'pages', where: { slug: { in: accesos.flatMap((a) => (a.pageSlug ? [a.pageSlug] : [])) } }, limit: 20, depth: 0, pagination: false, user: user as never, overrideAccess: false })
         .then((r) => new Map(r.docs.map((d) => [d.slug as string, d.id])))
         .catch(() => new Map<string, number | string>())
     : new Map<string, number | string>()

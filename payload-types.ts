@@ -295,6 +295,10 @@ export interface Page {
         | CtaInlineBlock
         | FaqInlineBlock
         | InputInlineBlock
+        | ServiceCardsBlock
+        | FormationContentBlock
+        | InvestigationContentBlock
+        | ElectronicResourcesContentBlock
       )[]
     | null;
   updatedAt: string;
@@ -1057,6 +1061,252 @@ export interface InputInlineBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'input_inline_block';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ServiceCardsBlock".
+ */
+export interface ServiceCardsBlock {
+  cards?:
+    | {
+        icon: 'Search' | 'BookOpen' | 'RefreshCw' | 'Bookmark' | 'Headphones' | 'BookPlus' | 'User' | 'Library';
+        title: string;
+        text: string;
+        /**
+         * Ej. "Próximamente".
+         */
+        badge?: string | null;
+        action_label?: string | null;
+        /**
+         * Ruta de la web (/recursos/catalogo) o una URL completa.
+         */
+        action_href?: string | null;
+        wide?: boolean | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'service_cards_block';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FormationContentBlock".
+ */
+export interface FormationContentBlock {
+  search_paragraph_1?: string | null;
+  search_paragraph_2?: string | null;
+  quick_links?:
+    | {
+        label: string;
+        link: string;
+        id?: string | null;
+      }[]
+    | null;
+  cite_title?: string | null;
+  cite_text?: string | null;
+  cite_button_label?: string | null;
+  cite_button_link?: string | null;
+  guide_title?: string | null;
+  guide_description?: string | null;
+  guide_link?: string | null;
+  activities_text?: string | null;
+  activities_status?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'formation_content_block';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "InvestigationContentBlock".
+ */
+export interface InvestigationContentBlock {
+  quick?:
+    | {
+        icon:
+          | 'Lightbulb'
+          | 'BookOpen'
+          | 'Microscope'
+          | 'Star'
+          | 'User'
+          | 'Briefcase'
+          | 'Phone'
+          | 'Mail'
+          | 'MapPin'
+          | 'Calendar'
+          | 'Search'
+          | 'Megaphone'
+          | 'Lock'
+          | 'Fingerprint'
+          | 'BarChart3'
+          | 'HeartHandshake'
+          | 'BookOpenCheck'
+          | 'Landmark'
+          | 'Users'
+          | 'FileText'
+          | 'Library'
+          | 'Monitor'
+          | 'AlertTriangle';
+        title: string;
+        id?: string | null;
+      }[]
+    | null;
+  cards?:
+    | {
+        icon:
+          | 'Lightbulb'
+          | 'BookOpen'
+          | 'Microscope'
+          | 'Star'
+          | 'User'
+          | 'Briefcase'
+          | 'Phone'
+          | 'Mail'
+          | 'MapPin'
+          | 'Calendar'
+          | 'Search'
+          | 'Megaphone'
+          | 'Lock'
+          | 'Fingerprint'
+          | 'BarChart3'
+          | 'HeartHandshake'
+          | 'BookOpenCheck'
+          | 'Landmark'
+          | 'Users'
+          | 'FileText'
+          | 'Library'
+          | 'Monitor'
+          | 'AlertTriangle';
+        title: string;
+        description?: string | null;
+        cta?: string | null;
+        link?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  support_title?: string | null;
+  support_text?: string | null;
+  support_button_label?: string | null;
+  support_button_link?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'investigation_content_block';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ElectronicResourcesContentBlock".
+ */
+export interface ElectronicResourcesContentBlock {
+  featured_title?: string | null;
+  featured?:
+    | {
+        icon?:
+          | (
+              | 'Lightbulb'
+              | 'BookOpen'
+              | 'Microscope'
+              | 'Star'
+              | 'User'
+              | 'Briefcase'
+              | 'Phone'
+              | 'Mail'
+              | 'MapPin'
+              | 'Calendar'
+              | 'Search'
+              | 'Megaphone'
+              | 'Lock'
+              | 'Fingerprint'
+              | 'BarChart3'
+              | 'HeartHandshake'
+              | 'BookOpenCheck'
+              | 'Landmark'
+              | 'Users'
+              | 'FileText'
+              | 'Library'
+              | 'Monitor'
+              | 'AlertTriangle'
+            )
+          | null;
+        title: string;
+        description?: string | null;
+        cta?: string | null;
+        link?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  remote?: {
+    title?: string | null;
+    description?: string | null;
+    /**
+     * Frases cortas que se muestran con un check verde.
+     */
+    points?:
+      | {
+          text: string;
+          id?: string | null;
+        }[]
+      | null;
+    portal_title?: string | null;
+    portal_description?: string | null;
+    portal_button_label?: string | null;
+    portal_button_link?: string | null;
+  };
+  /**
+   * Botón al final de la página. Si no tiene texto, no se muestra.
+   */
+  problem?: {
+    text?: string | null;
+    tipo?: ('interno' | 'ancla' | 'registro' | 'externo') | null;
+    to?: string | null;
+    ancla?: ('home-noticias' | 'investigacion-apoyo') | null;
+    enlace_key?:
+      | (
+          | 'opac'
+          | 'dspace'
+          | 'campus'
+          | 'facebook'
+          | 'twitter'
+          | 'instagram'
+          | 'linkedin'
+          | 'youtube'
+          | 'tiktok'
+          | 'soporte_recursos'
+        )
+      | null;
+    url?: string | null;
+    /**
+     * Por defecto se abre en pestaña nueva solo si es externo
+     */
+    nueva_pestana?: boolean | null;
+  };
+  /**
+   * Encabezado de la sección con pestañas (por ejemplo "Recursos por tipo").
+   */
+  categories_title?: string | null;
+  /**
+   * Cada categoría es una pestaña. Si no hay ninguna con recursos, la sección no aparece.
+   */
+  cats?:
+    | {
+        name: string;
+        items?:
+          | {
+              name: string;
+              description?: string | null;
+              access?: ('subscription' | 'open') | null;
+              /**
+               * Opcional. Si se rellena, el nombre del recurso se convierte en enlace.
+               */
+              link?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'eres_content_block';
 }
 /**
  * Bloques de noticias con imagen, etiqueta y enlace.
@@ -2140,6 +2390,10 @@ export interface PagesSelect<T extends boolean = true> {
         cta_inline_block?: T | CtaInlineBlockSelect<T>;
         faq_inline_block?: T | FaqInlineBlockSelect<T>;
         input_inline_block?: T | InputInlineBlockSelect<T>;
+        service_cards_block?: T | ServiceCardsBlockSelect<T>;
+        formation_content_block?: T | FormationContentBlockSelect<T>;
+        investigation_content_block?: T | InvestigationContentBlockSelect<T>;
+        eres_content_block?: T | ElectronicResourcesContentBlockSelect<T>;
       };
   updatedAt?: T;
   createdAt?: T;
@@ -2495,6 +2749,143 @@ export interface FaqInlineBlockSelect<T extends boolean = true> {
 export interface InputInlineBlockSelect<T extends boolean = true> {
   title?: T;
   placeholder?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ServiceCardsBlock_select".
+ */
+export interface ServiceCardsBlockSelect<T extends boolean = true> {
+  cards?:
+    | T
+    | {
+        icon?: T;
+        title?: T;
+        text?: T;
+        badge?: T;
+        action_label?: T;
+        action_href?: T;
+        wide?: T;
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "FormationContentBlock_select".
+ */
+export interface FormationContentBlockSelect<T extends boolean = true> {
+  search_paragraph_1?: T;
+  search_paragraph_2?: T;
+  quick_links?:
+    | T
+    | {
+        label?: T;
+        link?: T;
+        id?: T;
+      };
+  cite_title?: T;
+  cite_text?: T;
+  cite_button_label?: T;
+  cite_button_link?: T;
+  guide_title?: T;
+  guide_description?: T;
+  guide_link?: T;
+  activities_text?: T;
+  activities_status?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "InvestigationContentBlock_select".
+ */
+export interface InvestigationContentBlockSelect<T extends boolean = true> {
+  quick?:
+    | T
+    | {
+        icon?: T;
+        title?: T;
+        id?: T;
+      };
+  cards?:
+    | T
+    | {
+        icon?: T;
+        title?: T;
+        description?: T;
+        cta?: T;
+        link?: T;
+        id?: T;
+      };
+  support_title?: T;
+  support_text?: T;
+  support_button_label?: T;
+  support_button_link?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ElectronicResourcesContentBlock_select".
+ */
+export interface ElectronicResourcesContentBlockSelect<T extends boolean = true> {
+  featured_title?: T;
+  featured?:
+    | T
+    | {
+        icon?: T;
+        title?: T;
+        description?: T;
+        cta?: T;
+        link?: T;
+        id?: T;
+      };
+  remote?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+        points?:
+          | T
+          | {
+              text?: T;
+              id?: T;
+            };
+        portal_title?: T;
+        portal_description?: T;
+        portal_button_label?: T;
+        portal_button_link?: T;
+      };
+  problem?:
+    | T
+    | {
+        text?: T;
+        tipo?: T;
+        to?: T;
+        ancla?: T;
+        enlace_key?: T;
+        url?: T;
+        nueva_pestana?: T;
+      };
+  categories_title?: T;
+  cats?:
+    | T
+    | {
+        name?: T;
+        items?:
+          | T
+          | {
+              name?: T;
+              description?: T;
+              access?: T;
+              link?: T;
+              id?: T;
+            };
+        id?: T;
+      };
   id?: T;
   blockName?: T;
 }
@@ -3250,7 +3641,7 @@ export interface Home {
   createdAt?: string | null;
 }
 /**
- * Página de servicios: cabecera, carrusel y bloques de contenido.
+ * Obsoleto: Servicios ahora se edita en Páginas > Servicios.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "services".
@@ -3336,7 +3727,7 @@ export interface Service {
   createdAt?: string | null;
 }
 /**
- * Página de formación: cabecera, textos, enlaces y guías.
+ * Obsoleto: Formación ahora se edita en Páginas > Formación.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "formation".
@@ -3435,7 +3826,7 @@ export interface Formation {
   createdAt?: string | null;
 }
 /**
- * Página de investigación: cabecera, accesos rápidos y tarjetas.
+ * Obsoleto: Investigación ahora se edita en Páginas > Investigación.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "investigation".
@@ -3524,7 +3915,7 @@ export interface Investigation {
   createdAt?: string | null;
 }
 /**
- * Página de recursos electrónicos: cabecera, acceso remoto y recursos por tipo.
+ * Obsoleto: Recursos electrónicos ahora se edita en Páginas > Recursos electrónicos.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "electronic_resources".
@@ -3617,7 +4008,7 @@ export interface ElectronicResource {
   createdAt?: string | null;
 }
 /**
- * Página de la biblioteca: cabecera.
+ * Obsoleto: Biblioteca ahora se edita en Páginas > Biblioteca.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "library".
@@ -3711,7 +4102,7 @@ export interface Repository {
   createdAt?: string | null;
 }
 /**
- * Cabecera de la página de solicitud de compra de libros.
+ * Obsoleto: Solicitud de compra ahora se edita en Páginas > Solicitud de compra.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "solicitud_compra".

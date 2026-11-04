@@ -4,6 +4,10 @@ import SolicitudCompraForm from "@/components/SolicitudCompraForm";
 import { getClient } from "@/lib/payload";
 import { HERO_FALLBACK_IMAGE } from "@/lib/images";
 import { requireSession } from "@/lib/auth/session";
+import { LivePreviewListener } from "@/components/blocks/LivePreviewListener";
+import { getPage, resolveIsDraft, type PageSearchParams } from "@/lib/page-data";
+
+const SLUG = "adquisiciones/solicitud-compra";
 
 export const dynamic = 'force-dynamic';
 
@@ -12,17 +16,24 @@ export const metadata = {
   description: "Propón a la Biblioteca la adquisición de libros y obras de referencia para la docencia, el estudio o la investigación.",
 };
 
-export default async function SolicitudCompra() {
+export default async function SolicitudCompra({ searchParams }: { searchParams: PageSearchParams }) {
   const session = await requireSession("/adquisiciones/solicitud-compra")
 
-  const payload = await getClient()
-  const page = await payload.findGlobal({
-    slug: 'solicitud_compra' as never,
-    draft: false,
-    depth: 2
-  }) as any
+  const isDraft = await resolveIsDraft(searchParams)
+  const cmsPage = await getPage(SLUG, isDraft)
 
-  const heroData = page?.hero
+  let heroData: any
+  if (cmsPage) {
+    heroData = typeof cmsPage.hero === "object" ? cmsPage.hero : null
+  } else {
+    const payload = await getClient()
+    const legacy = await payload.findGlobal({
+      slug: 'solicitud_compra' as never,
+      draft: false,
+      depth: 2
+    }) as any
+    heroData = legacy?.hero
+  }
 
   const pretitle = heroData?.pretitle || "Adquisiciones";
   const title = heroData?.title || "Solicitud de compra";
@@ -32,7 +43,7 @@ export default async function SolicitudCompra() {
     ? heroData.background_image.url
     : HERO_FALLBACK_IMAGE;
 
-  return (
+  const view = (
     <>
       <Hero
         pretitle={pretitle}
@@ -48,4 +59,6 @@ export default async function SolicitudCompra() {
       </section>
     </>
   );
+
+  return isDraft ? <LivePreviewListener exitPath={`/${SLUG}`}>{view}</LivePreviewListener> : view
 }

@@ -47,8 +47,14 @@ describe("validatePageSlug", () => {
   it("rechaza el primer segmento reservado o biblioteca", () => {
     expect(validatePageSlug("admin")).not.toBe(true);
     expect(validatePageSlug("api/pages")).not.toBe(true);
-    expect(validatePageSlug("biblioteca")).not.toBe(true);
     expect(validatePageSlug("biblioteca/equipo")).not.toBe(true);
+  });
+
+  it("permite un slug reservado solo si es una página bloqueada", () => {
+    expect(validatePageSlug("biblioteca")).toBe(true);
+    expect(validatePageSlug("recursos/recursos-electronicos")).toBe(true);
+    expect(validatePageSlug("recursos/otra")).not.toBe(true);
+    expect(validatePageSlug("servicios/otra")).not.toBe(true);
   });
 
   it("permite un segmento reservado que no es el primero", () => {
