@@ -11,7 +11,8 @@ export const DownloadBlock: Block = {
             label: 'Documento PDF',
             type: 'upload',
             relationTo: 'media',
-            admin: { description: 'Si no hay documento, el botón no se muestra.' },
+            filterOptions: { mimeType: { equals: 'application/pdf' } },
+            admin: { description: 'Solo PDF. Al pulsar el botón se descarga con el nombre que tenga el fichero al subirlo. Si no hay documento, el botón no se muestra.' },
         },
     ],
 }
