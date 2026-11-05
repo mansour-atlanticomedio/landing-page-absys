@@ -8,6 +8,7 @@ import { getSession } from '@/lib/auth/session'
 import { resolveCookieTexts } from '@/lib/cookie-texts'
 import BackToTop from "@/components/BackToTop";
 import CookieConsent from '@/components/cookies/CookieConsent'
+import Breadcrumbs from '@/components/layout/Breadcrumbs'
 
 import '../styles.css'
 import { montserrat } from '@/lib/fonts'
@@ -49,6 +50,11 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
     Object.assign(cookiePolicy, { href: fallback, external, newTab: external })
   }
 
+  const publishedPages = await payload
+    .find({ collection: 'pages' as never, where: { _status: { equals: 'published' } }, limit: 200, depth: 0, pagination: false, select: { title: true, slug: true } } as any)
+    .catch(() => ({ docs: [] as any[] }))
+  const pageTitles: Record<string, string> = Object.fromEntries((publishedPages.docs as any[]).map((d) => [d.slug, d.title]))
+
   const session = await getSession()
   const account = session ? { email: session.email, nombre: session.nombre } : null
 
@@ -57,6 +63,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
       <body className="min-h-screen flex flex-col bg-background">
         <Toaster />
         {headerData && <Header {...headerData} account={account} />}
+        {headerData && <Breadcrumbs navbar={headerData.navbar} pageTitles={pageTitles} />}
         <main>{children}</main>
         {footerData && <Footer {...footerData} />}
         <BackToTop />
