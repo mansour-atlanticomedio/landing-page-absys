@@ -315,10 +315,10 @@ export default function Header({ phone, email, navbar, logoLink, account }: Head
                     </nav>
                 )}
             </header>
-            <div className="hidden lg:flex border-t border-border bg-primary text-primary-foreground items-center justify-center">
-                <div className="w-10/12 flex items-center justify-center">
+            <div className="hidden lg:block border-t border-border bg-primary text-primary-foreground">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-stretch">
                     {navbarMenu.map((section, index) => {
-                        const triggerClasses = "flex h-12 items-center gap-1 px-5 md:px-10 xl:px-14 text-sm font-bold tracking-wide transition cursor-pointer group-hover:bg-primary-foreground/10 group-focus-within:bg-primary-foreground/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset";
+                        const triggerClasses = "flex h-12 w-full items-center justify-center gap-1 whitespace-nowrap px-3 xl:px-6 text-sm font-bold tracking-wide transition cursor-pointer group-hover:bg-primary-foreground/10 group-focus-within:bg-primary-foreground/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset";
                         const content = (
                             <>
                                 {section.name}
@@ -331,7 +331,7 @@ export default function Header({ phone, email, navbar, logoLink, account }: Head
                         );
 
                         return (
-                            <div key={section.name + section.href + index} className="group relative">
+                            <div key={section.name + section.href + index} className="group relative flex-1">
                                 {section.href ? (
                                     <NavAnchor href={section.href} external={section.external} newTab={section.newTab} className={triggerClasses}>
                                         {content}
@@ -343,7 +343,7 @@ export default function Header({ phone, email, navbar, logoLink, account }: Head
                                 )}
                                 {section.items.length > 0 &&
 
-                                    <div className="invisible bg-white absolute -left-6/12 top-full z-30 w-72 -translate-y-1 border border-border bg-card text-card-foreground opacity-0 shadow-xl transition-all duration-150 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100">
+                                    <div className="invisible bg-white absolute left-1/2 -translate-x-1/2 top-full z-30 w-72 -translate-y-1 border border-border bg-card text-card-foreground opacity-0 shadow-xl transition-all duration-150 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:visible group-focus-within:translate-y-0 group-focus-within:opacity-100">
                                         <ul className="py-2">
                                             {section.items.map((it, itemIndex) => {
                                                 const isActive = pathname === it.href?.split("#")[0] && !it.href?.includes("#");
