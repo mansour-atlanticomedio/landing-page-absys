@@ -916,3 +916,7 @@ todos los casos).
 
 ## 2026-11-05 – botón de descarga de la normativa
 - `DownloadSection` abría el PDF en otra pestaña porque Payload lo sirve sin `Content-Disposition`; ahora usa el atributo `download` (mismo origen) con el nombre del fichero. El selector del bloque solo ofrece PDF (`filterOptions`, sin cambio de esquema). Verificado: el HTML lleva `download` y el fichero responde 200 con `application/pdf`; no probado pulsando en un navegador. Ojo: en dev el botón apunta a `20261101-Revision_de_la_pagina_web.pdf`, la revisión del compañero, no a una normativa; hay que sustituirlo antes de publicar.
+
+## 2026-11-05 – auditoría del panel de admin (solo diagnóstico)
+- Cuatro subagentes (permisos, componentes, esquema, pruebas HTTP en vivo). Resultado en un informe aparte: 5 graves, 20 medios, 24 menores. Sin cambios de código; nada corregido todavía. Graves: cola de jobs abierta a cualquier autenticado, `/first-register` abierto en collections de lectores vacías, XSS en el JSON-LD de `FaqSection`, bloqueo de páginas sorteable con un borrador, migración de los últimos bloques sin generar. Sin navegador ni lector real.
+- Incidente: el agente de pruebas borró la página real `servicios` en la BD de dev y la restauró desde su volcado; comprobado después (publicada, 11 tarjetas, solo `admin@admin.com`). Lección: en pruebas destructivas, usar solo documentos creados para la prueba o una BD temporal.
