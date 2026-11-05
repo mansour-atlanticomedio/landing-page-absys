@@ -10,6 +10,7 @@ import { SERVICIOS_SUBTITULO_FALLBACK } from "@/lib/page-fallbacks";
 import type { LucideIcon } from "lucide-react";
 import { Bookmark, BookOpen, Headphones, RefreshCw, Search, BookPlus, User } from "lucide-react";
 import Link from "next/link";
+import SmartLink from "@/components/SmartLink";
 
 export const dynamic = 'force-dynamic';
 
@@ -139,12 +140,12 @@ function ServiciosView({ hero, servicios, session, sugerirLibroHref }: {
                 <h2 className="mb-2 font-display font-bold text-primary">{title}</h2>
                 <p className="text-sm text-muted-foreground">{text}</p>
                 {action && (
-                  <Link
+                  <SmartLink
                     href={action.href}
                     className="inline-flex items-center justify-center rounded-lg font-medium text-sm transition-colors mt-4 h-10 self-start bg-primary px-4 text-primary-foreground hover:bg-primary/90"
                   >
                     {action.label}
-                  </Link>
+                  </SmartLink>
                 )}
               </div>
             ))}

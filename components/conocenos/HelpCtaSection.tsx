@@ -1,4 +1,5 @@
-import Link from "next/link"
+import SmartLink from "@/components/SmartLink"
+import { cleanHref } from "@/lib/href"
 import { CircleHelp } from "lucide-react"
 
 export function HelpCtaSection({ block }: { block: any }) {
@@ -16,13 +17,13 @@ export function HelpCtaSection({ block }: { block: any }) {
             {cta.subtitle && <p className="text-sm text-slate-600">{cta.subtitle}</p>}
           </div>
         </div>
-        {cta.button_link && cta.button_cta && (
-          <Link
+        {cleanHref(cta.button_link) && cta.button_cta && (
+          <SmartLink
             href={cta.button_link}
             className="border rounded-md px-5 py-2.5 font-medium text-slate-800 transition-colors hover:bg-slate-700 hover:text-white"
           >
             {cta.button_cta}
-          </Link>
+          </SmartLink>
         )}
       </div>
     </section>
