@@ -12,8 +12,7 @@ export function DownloadSection({ block }: { block: any }) {
       <div className="flex justify-center">
         <a
           href={url}
-          target="_blank"
-          rel="noopener noreferrer"
+          download={block.file.filename || true}
           className="bg-slate-800 text-white rounded-md px-6 py-3 font-medium flex items-center gap-2 transition-transform hover:scale-[1.02]"
         >
           <Download className="h-4 w-4" /> {block.button_label}

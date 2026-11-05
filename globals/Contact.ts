@@ -1,10 +1,11 @@
 import type { GlobalConfig } from "payload";
-import { sectionGlobal } from "@/lib/access";
+import { sectionGlobal, hideFromNonAdmins } from "@/lib/access";
 
 export const Contact: GlobalConfig = {
     slug: 'contact',
     admin: {
-        group: 'Páginas',
+        group: 'Piezas antiguas',
+        hidden: hideFromNonAdmins,
         description: 'Página de contacto: cabecera.'
     },
     access: sectionGlobal('paginas'),
@@ -12,7 +13,7 @@ export const Contact: GlobalConfig = {
     fields: [
         {
             name: 'hero',
-            label: 'Seccion Principal',
+            label: 'Sección principal',
             type: 'relationship',
             relationTo: 'hero',
             hasMany: false

@@ -1,11 +1,12 @@
 import type { CollectionConfig } from "payload";
 import { appIcons } from "./Icons.ts";
-import { sectionAccess } from "@/lib/access";
+import { sectionAccess, hideFromNonAdmins } from "@/lib/access";
 
 export const Statistics: CollectionConfig = {
     slug: 'statistics',
     admin: {
-        group: 'Bloques de contenido',
+        group: 'Piezas antiguas',
+        hidden: hideFromNonAdmins,
         description: 'Cifras destacadas con icono y descripción.'
     },
     access: sectionAccess('bloques'),
@@ -21,6 +22,7 @@ export const Statistics: CollectionConfig = {
                 plural: 'Estadistica',
             },
             type: 'array',
+            admin: { components: { RowLabel: { path: '/components/admin/ItemRowLabel', clientProps: { field: 'description', singular: 'Estadística' } } } },
             label: 'Listado de estadisticas',
             minRows: 1,
             maxRows: 4,
@@ -39,7 +41,7 @@ export const Statistics: CollectionConfig = {
                 },
                 {
                     name: 'description',
-                    label: 'Descripcion',
+                    label: 'Descripción',
                     type: 'text',
                 },
             ]

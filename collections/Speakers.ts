@@ -1,11 +1,12 @@
 import type { CollectionConfig } from "payload";
 import { iconsSocialMedia } from "./Icons.ts";
-import { sectionAccess } from "@/lib/access";
+import { sectionAccess, hideFromNonAdmins } from "@/lib/access";
 
 export const Speakers: CollectionConfig = {
     slug: 'speakers',
     admin: {
-        group: 'Bloques de contenido',
+        group: 'Piezas antiguas',
+        hidden: hideFromNonAdmins,
         description: 'Personas ponentes con foto, cargo y redes sociales.',
         useAsTitle: 'title'
     },
@@ -17,7 +18,7 @@ export const Speakers: CollectionConfig = {
     fields: [
         {
             name: 'title',
-            label: 'Titulo',
+            label: 'Título',
             type: 'text'
         },
         {
@@ -62,13 +63,14 @@ export const Speakers: CollectionConfig = {
                 },
                 {
                     name: 'description',
-                    label: 'Descripcion',
+                    label: 'Descripción',
                     type: 'richText'
                 },
                 {
                     name: 'socials',
                     label: 'Redes Sociales',
                     type: 'array',
+                    admin: { components: { RowLabel: { path: '/components/admin/ItemRowLabel', clientProps: { field: 'url', singular: 'Red social' } } } },
                     fields: [
                         {
                             type: 'row',

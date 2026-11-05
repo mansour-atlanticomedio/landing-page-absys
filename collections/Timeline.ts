@@ -1,10 +1,11 @@
 import type { CollectionConfig } from "payload";
-import { sectionAccess } from "@/lib/access";
+import { sectionAccess, hideFromNonAdmins } from "@/lib/access";
 
 export const Timeline: CollectionConfig = {
     slug: 'timeline',
     admin: {
-        group: 'Bloques de contenido',
+        group: 'Piezas antiguas',
+        hidden: hideFromNonAdmins,
         description: 'Calendarios o líneas del tiempo con días y eventos.',
         useAsTitle: 'title'
     },
@@ -59,7 +60,7 @@ export const Timeline: CollectionConfig = {
                         },
                         {
                             name: 'description',
-                            label: 'Descripcion',
+                            label: 'Descripción',
                             type: 'richText'
                         },
                     ]

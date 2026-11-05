@@ -1,4 +1,5 @@
 // seeds/pages.seed.ts
+import { lexicalFromText } from '@/lib/rich-text'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import { findOrCreateMedia } from './lib/media'
@@ -20,7 +21,7 @@ try {
       background_image: quienesImg.id,
       title: 'Quiénes somos',
       subtitle:
-        'La Biblioteca Universitaria es un servicio de apoyo al aprendizaje, la docencia y la investigación, comprometido con la excelencia académica y el desarrollo integral de nuestra comunidad.',
+        lexicalFromText('La Biblioteca Universitaria es un servicio de apoyo al aprendizaje, la docencia y la investigación, comprometido con la excelencia académica y el desarrollo integral de nuestra comunidad.'),
     },
   })
 
@@ -84,7 +85,7 @@ try {
       background_image: horariosImg.id,
       title: 'Horarios, ubicación y contacto',
       subtitle:
-        'Encuentra toda la información necesaria para visitar nuestras instalaciones o ponerte en contacto con el equipo de la Biblioteca Universitaria.',
+        lexicalFromText('Encuentra toda la información necesaria para visitar nuestras instalaciones o ponerte en contacto con el equipo de la Biblioteca Universitaria.'),
     },
   })
 
@@ -106,7 +107,7 @@ try {
       title: '¿Necesitas ayuda adicional?',
       subtitle: 'Consulta nuestras preguntas frecuentes o solicita una cita con un bibliotecario.',
       button_cta: 'Ver FAQs',
-      button_link: '/conocenos/horarios-ubicacion-y-contacto',
+      button_link: '/preguntas-frecuentes',
     },
   })
 
@@ -116,7 +117,7 @@ try {
       background_image: normativaImg.id,
       title: 'Normativa y condiciones de uso',
       subtitle:
-        'La Biblioteca Universitaria proporciona espacios, colecciones y servicios para apoyar el aprendizaje, la docencia y la investigación. El uso responsable de estos recursos garantiza un entorno óptimo para toda la comunidad académica.',
+        lexicalFromText('La Biblioteca Universitaria proporciona espacios, colecciones y servicios para apoyar el aprendizaje, la docencia y la investigación. El uso responsable de estos recursos garantiza un entorno óptimo para toda la comunidad académica.'),
     },
   })
 
@@ -142,10 +143,10 @@ try {
     hero: horariosHero.id,
     layout: [
           {
-            blockType: 'contact_info_block',
+            blockType: 'location_block',
             title: 'Información general',
-            building_name: 'Edificio EMU de Usos Múltiples',
-            building_subtitle: '🏛 Campus Universitario',
+            schedule_title: 'Horario de atención',
+            schedule: horario.id,
             location_title: 'Ubicación',
             address_line1: 'Edificio EMU de Usos Múltiples',
             address_line2: 'Carretera de Quilmes, 37',
@@ -154,11 +155,9 @@ try {
             phone: '+34 828 019 019',
             email: 'biblioteca@atlanticomedio.es',
             contact_button_label: 'Contactar con la Biblioteca',
-          },
-          { blockType: 'schedule_block', title: 'Horario de atención', schedule: horario.id },
-          {
-            blockType: 'map_block',
-            title: 'Ubicación',
+            image: horariosImg.id,
+            building_name: 'Edificio EMU de Usos Múltiples',
+            building_subtitle: 'Campus Universitario',
             map_url:
               'https://www.google.com/maps?ll=28.069492,-15.451801&z=16&t=m&hl=es&gl=ES&mapclient=embed&cid=2474455529394761746',
             map_embed_url:
@@ -185,7 +184,6 @@ try {
               {
                 icon: 'FileText',
                 title: 'Préstamos y renovaciones',
-                badge: 'Próximamente',
                 description:
                   'Información detallada sobre plazos, límites de ejemplares y procesos de renovación estará disponible en esta sección en la próxima actualización de la normativa.',
               },

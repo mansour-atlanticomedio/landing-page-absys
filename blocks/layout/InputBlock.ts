@@ -6,6 +6,7 @@ export const InputBlock: Block = {
     fields: [
         {
             name: 'input_relation',
+            label: 'Buscador',
             type: 'relationship',
             relationTo: 'input',
             hasMany: true,

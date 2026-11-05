@@ -6,13 +6,13 @@ import { sectionAccess } from "@/lib/access";
 export const Footer: CollectionConfig = {
     slug: 'footer',
     admin: {
-        group: 'Navegación y pie',
+        group: 'Configuración del sitio',
         description: 'Pie de página: logo, redes sociales y secciones de información.'
     },
     access: sectionAccess('navegacion'),
     labels: {
-        singular: 'Pie de pagina',
-        plural: 'Pie de pagina'
+        singular: 'Pie de página',
+        plural: 'Pie de página'
     },
     fields: [
         {
@@ -53,6 +53,7 @@ export const Footer: CollectionConfig = {
                 plural: 'redes sociales'
             },
             type: 'array',
+            admin: { components: { RowLabel: { path: '/components/admin/ItemRowLabel', clientProps: { field: 'link', singular: 'Red social' } } } },
             fields: [
                 {
                     name: 'icon',
@@ -65,8 +66,9 @@ export const Footer: CollectionConfig = {
         },
         {
             name: 'seccion_info',
-            label: 'Seccion de Informacion',
+            label: 'Sección de información',
             type: 'array',
+            admin: { components: { RowLabel: { path: '/components/admin/ItemRowLabel', clientProps: { field: 'title', singular: 'Sección' } } } },
             fields: [
                 {
                     name: 'title',
@@ -75,8 +77,9 @@ export const Footer: CollectionConfig = {
                 },
                 {
                     name: 'information',
-                    label: 'Informacion',
+                    label: 'Información',
                     type: 'array',
+                    admin: { components: { RowLabel: { path: '/components/admin/ItemRowLabel', clientProps: { field: 'label', singular: 'Enlace' } } } },
                     fields: [
                         {
                             name: 'icon',

@@ -1,10 +1,11 @@
 import type { CollectionConfig } from "payload";
-import { sectionAccess } from "@/lib/access";
+import { sectionAccess, hideFromNonAdmins } from "@/lib/access";
 
 export const PartnersCollection : CollectionConfig = {
     slug: 'partners',
     admin: {
-        group: 'Bloques de contenido',
+        group: 'Piezas antiguas',
+        hidden: hideFromNonAdmins,
         description: 'Logotipos de entidades colaboradoras y patrocinadores.'
     },
     access: sectionAccess('bloques'),
@@ -21,6 +22,7 @@ export const PartnersCollection : CollectionConfig = {
                 plural: 'patrocinadores',
             },
             type: 'array',
+            admin: { components: { RowLabel: { path: '/components/admin/ItemRowLabel', clientProps: { field: 'name', singular: 'Patrocinador' } } } },
             fields: [
                 {
                     name: 'name',

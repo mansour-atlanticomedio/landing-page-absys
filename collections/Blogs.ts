@@ -1,10 +1,11 @@
 import type { CollectionConfig } from "payload";
-import { sectionAccess } from "@/lib/access";
+import { sectionAccess, hideFromNonAdmins } from "@/lib/access";
 
 export const BlogsCollection: CollectionConfig = {
     slug: 'blogs',
     admin: {
-        group: 'Bloques de contenido',
+        group: 'Piezas antiguas',
+        hidden: hideFromNonAdmins,
         description: 'Listados de artículos o entradas de blog.',
         useAsTitle: 'title'
     },
@@ -31,6 +32,7 @@ export const BlogsCollection: CollectionConfig = {
                 plural: 'Artículos'
             },
             type: 'array',
+            admin: { components: { RowLabel: { path: '/components/admin/ItemRowLabel', clientProps: { field: 'title', singular: 'Blog' } } } },
             minRows: 1,
             maxRows: 10,
             fields: [

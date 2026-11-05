@@ -1,6 +1,15 @@
 import { C, Img, Line, Stack, ThumbFrame, displayFont, pick, previewFont, type PreviewProps, type ThumbProps } from './shared'
 
 export function HeroVariantThumb({ value }: ThumbProps) {
+  if (value === 'banner')
+    return (
+      <ThumbFrame bg={C.navy}>
+        <Stack gap={3} style={{ alignItems: 'center', paddingTop: 8 }}>
+          <Line w="60%" h={5} color={C.white} />
+          <Line w="45%" h={3} color={C.white} />
+        </Stack>
+      </ThumbFrame>
+    )
   if (value === 'split')
     return (
       <ThumbFrame bg={C.muted}>
@@ -28,6 +37,13 @@ export function HeroVariantThumb({ value }: ThumbProps) {
 export function HeroVariantPreview({ value, content }: PreviewProps) {
   const title = pick(content, 'title', 'Quiénes somos')
   const subtitle = 'Conoce los servicios, espacios y recursos de la Biblioteca de la Universidad Atlántico Medio.'
+  if (value === 'banner')
+    return (
+      <div style={{ ...previewFont, background: C.navy, padding: '48px 24px', textAlign: 'center' }}>
+        <h1 style={{ ...displayFont, margin: 0, fontSize: 24, fontWeight: 800, color: C.white, textTransform: 'uppercase' }}>{title}</h1>
+        <p style={{ margin: '10px auto 0', color: C.white, maxWidth: 480 }}>{subtitle}</p>
+      </div>
+    )
   if (value === 'split')
     return (
       <div style={{ ...previewFont, background: `linear-gradient(to bottom, ${C.muted}, ${C.white})`, padding: '28px 24px', display: 'grid', gridTemplateColumns: 'repeat(2, minmax(0, 1fr))', gap: 24, alignItems: 'center' }}>

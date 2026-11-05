@@ -5,7 +5,7 @@ import { sectionAccess } from "@/lib/access";
 export const ElectronicResourcesAccess: CollectionConfig = {
     slug: 'electronic_resources_access',
     admin: {
-        group: 'Bloques de contenido',
+        group: 'Contenido',
         description: 'Conjuntos de accesos directos con icono, texto y enlace.',
         useAsTitle: 'title'
     },
@@ -28,6 +28,7 @@ export const ElectronicResourcesAccess: CollectionConfig = {
                 plural: 'Accesos'
             },
             type: 'array',
+            admin: { components: { RowLabel: { path: '/components/admin/ItemRowLabel', clientProps: { field: 'title', singular: 'Acceso' } } } },
             minRows: 1,
             maxRows: 6,
             fields: [

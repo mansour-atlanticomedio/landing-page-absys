@@ -122,6 +122,7 @@ export const Pages: CollectionConfig = {
             options: [
                 { label: 'Cabecera simple', value: 'simple' },
                 { label: 'Cabecera dividida (texto + imagen)', value: 'split' },
+                { label: 'Cabecera con imagen de fondo a toda anchura', value: 'banner' },
             ],
             admin: {
                 components: {
@@ -133,6 +134,7 @@ export const Pages: CollectionConfig = {
                             options: [
                                 { value: 'simple', title: 'Simple', description: 'Título y subtítulo sobre fondo blanco' },
                                 { value: 'split', title: 'Dividida', description: 'Texto a la izquierda e imagen a la derecha' },
+                                { value: 'banner', title: 'Imagen de fondo', description: 'Imagen a toda anchura con el título y el subtítulo encima' },
                             ],
                         },
                     },

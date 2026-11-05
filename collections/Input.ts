@@ -1,10 +1,11 @@
 import { CollectionConfig } from "payload";
-import { sectionAccess } from "@/lib/access";
+import { sectionAccess, hideFromNonAdmins } from "@/lib/access";
 
 export const Input: CollectionConfig = {
     slug: 'input',
     admin: {
-        group: 'Bloques de contenido',
+        group: 'Piezas antiguas',
+        hidden: hideFromNonAdmins,
         description: 'Buscadores o campos de texto con título y texto de ejemplo.',
         useAsTitle: 'title'
     },
@@ -16,7 +17,7 @@ export const Input: CollectionConfig = {
     fields: [
         {
             name: 'title',
-            label: 'Titulo',
+            label: 'Título',
             type: 'text'
         },
         {

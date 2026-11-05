@@ -5,7 +5,7 @@ export const CTA: CollectionConfig = {
     slug: 'cta',
     access: sectionAccess('bloques'),
     admin: {
-        group: 'Bloques de contenido',
+        group: 'Contenido',
         description: 'Llamadas a la acción: título, subtítulo y botón con enlace.',
         useAsTitle: 'title'
     },
@@ -16,7 +16,7 @@ export const CTA: CollectionConfig = {
     fields: [
         {
             name: 'title',
-            label: 'Titulo',
+            label: 'Título',
             type: 'text'
         },
         {

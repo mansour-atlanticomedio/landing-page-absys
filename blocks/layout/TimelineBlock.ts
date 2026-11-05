@@ -6,6 +6,7 @@ export const TimelineBlock: Block = {
     fields: [
         {
             name: 'timeline_relation',
+            label: 'Línea del tiempo a mostrar',
             type: 'relationship',
             relationTo: 'timeline',
             hasMany: true,

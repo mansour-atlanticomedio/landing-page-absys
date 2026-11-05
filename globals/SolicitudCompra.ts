@@ -1,18 +1,19 @@
 import type { GlobalConfig } from "payload";
-import { sectionGlobal } from "@/lib/access";
+import { sectionGlobal, hideFromNonAdmins } from "@/lib/access";
 
 export const SolicitudCompra: GlobalConfig = {
     slug: 'solicitud_compra',
     admin: {
-        group: 'Páginas',
-        description: 'Cabecera de la página de solicitud de compra de libros.'
+        group: 'Piezas antiguas',
+        hidden: hideFromNonAdmins,
+        description: 'Obsoleto: Solicitud de compra ahora se edita en Páginas > Solicitud de compra.'
     },
     access: sectionGlobal('paginas'),
     label: 'Solicitud de compra',
     fields: [
         {
             name: 'hero',
-            label: 'Seccion Principal',
+            label: 'Sección principal',
             type: 'relationship',
             relationTo: 'hero',
             hasMany: false

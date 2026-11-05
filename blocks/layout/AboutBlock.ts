@@ -6,6 +6,7 @@ export const AboutBlock: Block = {
     fields: [
         {
             name: 'about_relation',
+            label: 'Información a mostrar',
             type: 'relationship',
             relationTo: 'about',
             hasMany: true,

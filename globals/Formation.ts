@@ -1,12 +1,13 @@
 import { GlobalConfig } from "payload";
 import { layoutBlocks } from "@/blocks";
-import { sectionGlobal } from "@/lib/access";
+import { sectionGlobal, hideFromNonAdmins } from "@/lib/access";
 
 export const Formation : GlobalConfig = {
     slug: "formation",
     admin: {
-        group: 'Páginas',
-        description: 'Página de formación: cabecera, textos, enlaces y guías.'
+        group: 'Piezas antiguas',
+        hidden: hideFromNonAdmins,
+        description: 'Obsoleto: Formación ahora se edita en Páginas > Formación.'
     },
     access: sectionGlobal('paginas'),
     label: "Formación",
@@ -19,7 +20,7 @@ export const Formation : GlobalConfig = {
           fields: [
     {
       name: 'hero',
-      label: 'Seccion Principal',
+      label: 'Sección principal',
       admin: { description: 'Cabecera con imagen, título y subtítulo de la página.' },
       type: 'relationship',
       relationTo: 'hero',
@@ -27,7 +28,7 @@ export const Formation : GlobalConfig = {
     },
     {
       name: 'hero_carrusel',
-      label: 'Seccion de Carrusel Principal',
+      label: 'Carrusel principal',
       type: 'relationship',
       relationTo: 'hero_carrusel',
       hasMany: false,
@@ -55,6 +56,7 @@ export const Formation : GlobalConfig = {
         plural: 'Enlaces',
       },
       type: 'array',
+      admin: { components: { RowLabel: { path: '/components/admin/ItemRowLabel', clientProps: { field: 'label', singular: 'Enlace' } } } },
       minRows: 0,
       maxRows: 4,
       fields: [

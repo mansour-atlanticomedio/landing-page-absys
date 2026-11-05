@@ -1,7 +1,10 @@
 "use client"
 
+import HeroSubtitle from '@/components/HeroSubtitle'
+import type { RichValue } from '@/lib/rich-text'
 import Image from "next/image";
-import Link from "next/link";
+import SmartLink from "@/components/SmartLink";
+import { cleanHref } from "@/lib/href";
 import { motion } from "framer-motion";
 import { HeartHandshake, Mail, Search } from "lucide-react";
 import { iconMap } from "@/lib/icons";
@@ -28,11 +31,12 @@ interface CTAData {
 
 interface InvestigationContentProps {
   title: string;
-  subtitle: string;
+  subtitle?: RichValue;
   imageUrl: string;
   accesosRapidos: AccesoRapido[];
   tarjetas: Tarjeta[];
   cta: CTAData;
+  quickTitle?: string | null;
 }
 
 export default function InvestigationContent({
@@ -42,6 +46,7 @@ export default function InvestigationContent({
   accesosRapidos,
   tarjetas,
   cta,
+  quickTitle,
 }: InvestigationContentProps) {
   return (
     <div className="min-h-screen bg-white">
@@ -55,7 +60,7 @@ export default function InvestigationContent({
       >
         <div>
           <h1 className="text-3xl md:text-4xl font-extrabold text-slate-800">{title}</h1>
-          <p className="mt-4 text-slate-600">{subtitle}</p>
+          <HeroSubtitle value={subtitle} className="mt-4 text-slate-600" />
         </div>
         <div className="relative h-56 sm:h-72 rounded-lg overflow-hidden">
           <Image src={imageUrl} alt="" fill className="object-cover" />
@@ -69,7 +74,7 @@ export default function InvestigationContent({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.1, ease: "easeInOut" }}
         >
-          <h2 className="font-bold text-slate-800 mb-4">Accesos rápidos</h2>
+          <h2 className="font-bold text-slate-800 mb-4">{quickTitle || "Accesos rápidos"}</h2>
           <div className="flex flex-wrap gap-3">
             {accesosRapidos.map((a, index) => {
               const IconComponent = iconMap[a.icon] || Search;
@@ -83,12 +88,14 @@ export default function InvestigationContent({
                 </a>
               );
             })}
-            <a
-              href="/biblioteca/conocenos/horarios-ubicacion-y-contacto"
-              className="bg-slate-800 text-white rounded-md px-4 py-2 text-sm font-medium flex items-center gap-2 transition-colors hover:bg-slate-700"
-            >
-              <HeartHandshake className="h-4 w-4" /> Solicitar apoyo
-            </a>
+            {cleanHref(cta.button_link) && (
+              <SmartLink
+                href={cta.button_link}
+                className="bg-slate-800 text-white rounded-md px-4 py-2 text-sm font-medium flex items-center gap-2 transition-colors hover:bg-slate-700"
+              >
+                <HeartHandshake className="h-4 w-4" /> {cta.button_cta || "Solicitar apoyo"}
+              </SmartLink>
+            )}
           </div>
         </motion.div>
 
@@ -110,13 +117,16 @@ export default function InvestigationContent({
                 <h3 className="flex items-center gap-2 font-bold text-teal-700 mb-2">
                   <IconComponent className="h-4 w-4" /> {t.title}
                 </h3>
-                <p className={`text-sm text-slate-600 ${t.link ? "mb-4" : ""}`}>{t.description}</p>
-                {t.link && (
-                  <Link href={t.link}>
-                    <button className="w-full bg-slate-100 rounded-md py-2.5 text-sm font-medium text-slate-700 flex items-center justify-center gap-2 cursor-pointer transition-colors hover:bg-primary hover:text-white">
+                <p className={`text-sm text-slate-600 ${cleanHref(t.link) ? "mb-4" : ""}`}>{t.description}</p>
+                {cleanHref(t.link) && (
+                  <SmartLink
+                    href={t.link}
+                    className="w-full bg-slate-100 rounded-md py-2.5 text-sm font-medium text-slate-700 flex items-center justify-center gap-2 cursor-pointer transition-colors hover:bg-primary hover:text-white"
+                  >
+                    <>
                       <IconComponent className="h-4 w-4" /> {t.cta || "Acceder"}
-                    </button>
-                  </Link>
+                    </>
+                  </SmartLink>
                 )}
               </motion.div>
             );
@@ -134,11 +144,14 @@ export default function InvestigationContent({
               <HeartHandshake className="h-4 w-4" /> {cta.title}
             </h3>
             <p className="text-sm text-slate-600 mb-4">{cta.subtitle}</p>
-            <Link href={cta.button_link || "/conocenos/horarios-ubicacion-y-contacto"}>
-              <button className="bg-teal-700 text-white rounded-md px-5 py-2.5 text-sm font-medium flex items-center gap-2 cursor-pointer transition-colors hover:bg-teal-800">
+            <SmartLink
+              href={cta.button_link}
+              className="bg-teal-700 text-white rounded-md px-5 py-2.5 text-sm font-medium inline-flex items-center gap-2 cursor-pointer transition-colors hover:bg-teal-800"
+            >
+              <>
                 <Mail className="h-4 w-4" /> {cta.button_cta}
-              </button>
-            </Link>
+              </>
+            </SmartLink>
           </motion.div>
         </div>
       </section>

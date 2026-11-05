@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import SmartLink from '@/components/SmartLink'
+import { cleanHref } from '@/lib/href'
 
 interface NewsProps {
     tag: string,
@@ -137,10 +139,12 @@ export default function News({ title, visible_cards, style, newsItems }: NewsBox
 
 function NewsCard({ new: { tag, link, title, description, image }, style }: { new: NewsProps, style: number }) {
     const imageUrl = typeof image === 'object' ? image?.url : image;
+    const hasLink = Boolean(cleanHref(link));
+    const linkHint = hasLink ? <span className="mt-3 inline-block text-sm font-semibold text-accent transition-transform group-hover:translate-x-1">Acceder →</span> : null;
     // Estilo 0: Diseño con imagen superior pegada al borde y tag superior
     if (style === 0) {
         return (
-            <a href={link} className="block h-full">
+            <SmartLink href={link} className="block h-full">
                 <article className="group flex h-[23rem] flex-col overflow-hidden rounded-lg border border-border bg-card transition hover:shadow-lg sm:h-[25rem]">
                     <div className="h-44 shrink-0 overflow-hidden bg-linear-to-br sm:h-52 from-primary/30 via-primary/10 to-accent/20" >
                         {imageUrl && (
@@ -151,21 +155,22 @@ function NewsCard({ new: { tag, link, title, description, image }, style }: { ne
                             />
                         )}
                     </div>
-                    <div className="min-h-0 flex-1 overflow-hidden p-4 sm:p-5">
+                    <div className="min-h-0 flex-1 overflow-hidden p-4 sm:p-5 flex flex-col items-center text-center">
                         <span className="text-[11px] font-bold uppercase tracking-widest text-primary">{tag}</span>
-                        <h3 className="mt-2 line-clamp-2 text-lg font-bold leading-snug text-foreground group-hover:text-primary">{title}</h3>
+                        <h3 className="mt-2 line-clamp-2 text-lg text-center font-bold leading-snug text-foreground group-hover:text-primary">{title}</h3>
                         <p className="mt-2 line-clamp-3 text-sm text-muted-foreground">{description}</p>
+                        {linkHint}
                     </div>
                 </article>
 
-            </a>
+            </SmartLink>
         );
     }
 
     // Estilo 1: Diseño con imagen redondeada (flotante) y sin tag visible
     if (style === 1) {
         return (
-            <a href={link} className="block h-full">
+            <SmartLink href={link} className="block h-full">
                 <article className="group flex h-[23rem] flex-col overflow-hidden rounded-lg border border-border bg-card p-4 transition hover:border-primary hover:shadow-md sm:h-[26rem] sm:p-6">
                     <div className="mb-4 h-44 shrink-0 rounded-lg sm:h-52 bg-linear-to-br from-accent/30 to-primary/20 overflow-hidden">
                         {imageUrl && (
@@ -178,14 +183,15 @@ function NewsCard({ new: { tag, link, title, description, image }, style }: { ne
                     </div>
                     <h3 className="line-clamp-2 text-lg font-bold leading-snug text-foreground">{title}</h3>
                     <p className="mt-2 line-clamp-3 text-sm text-muted-foreground">{description}</p>
+                    {linkHint}
                 </article>
-            </a>
+            </SmartLink>
         );
     }
 
     if (style === 2) {
         return (
-            <a href={link} className="block h-full">
+            <SmartLink href={link} className="block h-full">
                 <article className="group flex h-[26rem] w-full flex-col gap-6 overflow-hidden rounded-xl border border-border bg-card p-4 transition hover:bg-accent/5 md:h-60 md:flex-row md:items-center">
                     <div className="h-40 w-full shrink-0 overflow-hidden rounded-lg md:h-full bg-linear-to-br from-primary/20 to-accent/30 md:w-60">
                         {imageUrl && (
@@ -200,15 +206,16 @@ function NewsCard({ new: { tag, link, title, description, image }, style }: { ne
                         <span className="inline-block rounded-full bg-primary/10 px-3 py-1 text-[10px] font-bold text-primary">{tag}</span>
                         <h3 className="mt-3 line-clamp-2 text-lg font-bold text-foreground sm:text-xl group-hover:text-primary">{title}</h3>
                         <p className="mt-2 line-clamp-3 text-muted-foreground">{description}</p>
+                        {linkHint}
                     </div>
                 </article>
-            </a>
+            </SmartLink>
         );
     }
 
     if (style === 3) {
         return (
-            <a href={link} className="block h-full">
+            <SmartLink href={link} className="block h-full">
                 <article className="group relative h-64 sm:h-80 bg-slate-900 rounded-xl overflow-hidden">
                     {/* Capa de "Imagen" de fondo */}
                     <div className="absolute inset-0 overflow-hidden bg-linear-to-t from-black via-black/40 to-transparent opacity-80">
@@ -226,16 +233,16 @@ function NewsCard({ new: { tag, link, title, description, image }, style }: { ne
                     <div className="absolute h-4/12 inset-0 flex flex-col justify-end px-6 py-2 mt-auto">
 
                         <div className='absolute bg-foreground z-0 opacity-80 w-full h-full inset-0' />
-                        <div className='z-4 w-full h-full flex justify-start items-start' >
+                        <div className='z-4 w-full h-full flex justify-center items-start' >
                             {/* { tag !== null && <span className="text-xs font-medium text-primary-foreground/80">{tag}</span>} */}
-                            <h3 className="mt-4 text-xl font-bold text-white line-clamp-2">{title}</h3>
+                            <h3 className="mt-4 text-xl text-center font-bold text-white line-clamp-2">{title}</h3>
                             {/* <p className="text-sm text-slate-200 opacity-0 transition-all duration-300 group-hover:opacity-100">{description}</p> */}
                         </div>
 
                     </div>
                 </article>
 
-            </a>
+            </SmartLink>
         );
     }
 

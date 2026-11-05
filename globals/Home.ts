@@ -1,18 +1,19 @@
 import type { GlobalConfig } from "payload";
 import { layoutBlocks } from "@/blocks";
-import { sectionGlobal } from "@/lib/access";
+import { sectionGlobal, hideFromNonAdmins } from "@/lib/access";
 
 export const Home: GlobalConfig = {
   slug: 'home',
     admin: {
-        group: 'Páginas',
-        description: 'Página de inicio: cabecera, carrusel y bloques de contenido.',
+        group: 'Piezas antiguas',
+        hidden: hideFromNonAdmins,
+        description: 'Obsoleto: el inicio ahora se edita en Páginas > Inicio.',
         components: {
             elements: {
                 Description: {
                     path: '/components/admin/PageEditTips',
                     clientProps: {
-                        description: 'Página de inicio: cabecera, carrusel y bloques de contenido.',
+                        description: 'Obsoleto: el inicio ahora se edita en Páginas > Inicio.',
                         tips: 'Esta es la portada de la web. Cada pestaña edita una zona; guarda antes de salir y comprueba el resultado en la web.',
                     },
                 },
@@ -30,7 +31,7 @@ export const Home: GlobalConfig = {
           fields: [
     {
       name: 'hero',
-      label: 'Seccion Principal',
+      label: 'Sección principal',
       admin: { description: 'Cabecera con imagen, título y subtítulo de la página.' },
       type: 'relationship',
       relationTo: 'hero',
@@ -38,7 +39,7 @@ export const Home: GlobalConfig = {
     },
     {
       name: 'hero_carrusel',
-      label: 'Seccion de Carrusel Principal',
+      label: 'Carrusel principal',
       type: 'relationship',
       relationTo: 'hero_carrusel',
       hasMany: false,

@@ -6,6 +6,7 @@ export const PartnersBlock: Block = {
     fields: [
         {
             name: 'partners_relation',
+            label: 'Patrocinadores a mostrar',
             type: 'relationship',
             relationTo: 'partners',
             hasMany: true,

@@ -2,7 +2,7 @@ import { draftMode } from "next/headers";
 import { getPayload } from "payload";
 import config from "@payload-config";
 import { redirectResponse, safeNextPath } from "@/lib/auth/redirects";
-import { normalizePageSlug, validatePageSlug } from "@/lib/pages";
+import { normalizePageSlug, pagePath, validatePageSlug } from "@/lib/pages";
 
 export const dynamic = "force-dynamic";
 
@@ -19,7 +19,7 @@ export async function GET(request: Request) {
     return redirectResponse("/auth/error");
   }
 
-  const target = safeNextPath(`/${slug}`, "");
+  const target = safeNextPath(pagePath(slug), "");
   if (!target) {
     return redirectResponse("/auth/error");
   }

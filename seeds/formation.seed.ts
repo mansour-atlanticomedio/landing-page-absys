@@ -1,4 +1,5 @@
 // seeds/formation.seed.ts
+import { lexicalFromText } from '@/lib/rich-text'
 import { getPayload } from 'payload'
 import config from '@payload-config'
 import { findOrCreateMedia } from './lib/media'
@@ -14,7 +15,7 @@ const heroDoc = await upsertDoc(payload, {
     background_image: heroImage.id,
     title: 'Formación',
     subtitle:
-      'La Biblioteca ofrece recursos de apoyo para desarrollar las competencias necesarias para buscar, evaluar, utilizar y comunicar información académica de manera eficaz, crítica y responsable.',
+      lexicalFromText('La Biblioteca ofrece recursos de apoyo para desarrollar las competencias necesarias para buscar, evaluar, utilizar y comunicar información académica de manera eficaz, crítica y responsable.'),
   },
 })
 

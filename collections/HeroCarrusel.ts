@@ -4,13 +4,13 @@ import { sectionAccess } from "@/lib/access";
 export const HeroCarrusel : CollectionConfig = {
     slug: 'hero_carrusel',
     admin: {
-        group: 'Bloques de contenido',
+        group: 'Contenido',
         description: 'Carruseles de diapositivas con imagen, título y descripción para la parte superior de una página.'
     },
     access: sectionAccess('bloques'),
     labels: {
-        singular: 'Seccion de Carrusel Principal',
-        plural: 'Seccion de Carrusel Principal'
+        singular: 'Carrusel principal',
+        plural: 'Carrusel principal'
     },
     fields: [
         {
@@ -21,15 +21,16 @@ export const HeroCarrusel : CollectionConfig = {
                 plural: 'items'
             },
             type: 'array',
+            admin: { components: { RowLabel: { path: '/components/admin/ItemRowLabel', clientProps: { field: 'title', singular: 'Diapositiva' } } } },
             fields: [
                 {
                     name: 'title',
-                    label: 'Titulo',
+                    label: 'Título',
                     type: 'text'
                 },
                 {
                     name: 'description',
-                    label: 'Descripcion',
+                    label: 'Descripción',
                     type: 'text'
                 },
                 {

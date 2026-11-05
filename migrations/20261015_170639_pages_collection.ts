@@ -1,26 +1,8 @@
 import { MigrateUpArgs, MigrateDownArgs, sql } from '@payloadcms/db-postgres'
 
-const CONOCENOS_PAGES = [
-  { tab: 'quienes_somos', slug: 'conocenos/quienes-somos', title: 'Quiénes somos', hero_variant: 'split' },
-  { tab: 'horarios', slug: 'conocenos/horarios-ubicacion-y-contacto', title: 'Horarios, ubicación y contacto', hero_variant: 'simple' },
-  { tab: 'normativa', slug: 'conocenos/normativa-y-condiciones-de-uso', title: 'Normativa y condiciones de uso', hero_variant: 'simple' },
-] as const
+import { createLocationBlockTables } from './20261029_115856_bloque_horario_contacto_mapa'
 
-const stripIds = (value: any, key?: string): any => {
-  if (key === 'text') return value
-  if (Array.isArray(value)) return value.map((item) => stripIds(item))
-  if (value && typeof value === 'object') {
-    const out: Record<string, any> = {}
-    for (const [k, v] of Object.entries(value)) {
-      if (k === 'id') continue
-      out[k] = stripIds(v, k)
-    }
-    return out
-  }
-  return value
-}
-
-export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
+export async function up({ db, payload }: MigrateUpArgs): Promise<void> {
   await db.execute(sql`
    CREATE TYPE "public"."enum_pages_blocks_cards_features_block_style" AS ENUM('default', 'muted');
   CREATE TYPE "public"."enum_pages_blocks_image_text_block_image_position" AS ENUM('left', 'right');
@@ -442,55 +424,19 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   ALTER TABLE "payload_locked_documents_rels" ADD CONSTRAINT "payload_locked_documents_rels_pages_fk" FOREIGN KEY ("pages_id") REFERENCES "public"."pages"("id") ON DELETE cascade ON UPDATE no action;
   CREATE INDEX "payload_locked_documents_rels_pages_id_idx" ON "payload_locked_documents_rels" USING btree ("pages_id");`)
 
-  const hasAboutUs = payload.config.globals.some((g) => g.slug === 'about_us')
-  const hasPages = payload.config.collections.some((c) => c.slug === 'pages')
-  if (!hasAboutUs || !hasPages) {
-    payload.logger.warn('pages_collection: about_us o pages no están en la config, se omite la migración de datos')
-    return
-  }
+  await createLocationBlockTables(db)
 
-  const aboutUs: any = await payload.findGlobal({ slug: 'about_us' as any, depth: 0, req })
-
-  for (const page of CONOCENOS_PAGES) {
-    const existing = await payload.find({
-      collection: 'pages' as any,
-      where: { slug: { equals: page.slug } },
-      limit: 1,
-      depth: 0,
-      req,
-    })
-    if (existing.docs.length > 0) {
-      payload.logger.info(`pages_collection: ${page.slug} ya existe, se omite`)
-      continue
-    }
-
-    const source = aboutUs?.[page.tab] ?? {}
-    const hero = source.hero && typeof source.hero === 'object' ? source.hero.id : source.hero
-
-    await payload.create({
-      collection: 'pages' as any,
-      data: {
-        title: page.title,
-        slug: page.slug,
-        hero: hero ?? null,
-        hero_variant: page.hero_variant,
-        layout: stripIds(source.layout ?? []),
-        _status: 'published',
-      } as any,
-      draft: false,
-      req,
-    })
+  const result: any = await db.execute(sql`SELECT COUNT(*)::int AS n FROM "about_us"`).catch(() => null)
+  const rows = Number(result?.rows?.[0]?.n ?? 0)
+  if (rows > 0) {
+    payload.logger.warn(
+      'pages_collection: about_us tiene datos. Cuando terminen todas las migraciones ejecuta `npm run content:conocenos-desde-about-us` para copiarlos a pages (la copia necesita el esquema final, por eso no se hace aquí).',
+    )
   }
 }
 
-export async function down({ db, payload, req }: MigrateDownArgs): Promise<void> {
-  if (payload.config.collections.some((c) => c.slug === 'pages')) {
-    await payload.delete({
-      collection: 'pages' as any,
-      where: { slug: { in: CONOCENOS_PAGES.map((page) => page.slug) } },
-      req,
-    })
-  }
+export async function down({ db }: MigrateDownArgs): Promise<void> {
+  await db.execute(sql`DELETE FROM "pages" WHERE "slug" IN ('conocenos/quienes-somos', 'conocenos/horarios-ubicacion-y-contacto', 'conocenos/normativa-y-condiciones-de-uso')`).catch(() => null)
 
   await db.execute(sql`
    ALTER TABLE "pages_blocks_cards_features_block" DISABLE ROW LEVEL SECURITY;

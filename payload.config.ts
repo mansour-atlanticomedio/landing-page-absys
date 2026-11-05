@@ -23,6 +23,7 @@ import { ElectronicResources } from "./globals/ElectronicResources.ts";
 import { SolicitudCompra } from "./globals/SolicitudCompra.ts";
 import { QuienesSomos } from "./globals/QuienesSomos.ts";
 import { HorariosContacto } from "./globals/HorariosContacto.ts";
+import { CookieTextsGlobal } from "./globals/CookieTexts.ts";
 
 import { Users } from "./collections/Users.ts";
 import { Media } from "./collections/Media.ts";
@@ -53,7 +54,7 @@ import { AuthorService } from "./collections/Author.service.ts";
 import { LoginAbsysService } from "./collections/LoginAbsys.service.ts";
 import { decryptTestEndpoints, LoginCampusService } from "./collections/LoginCampus.service.ts";
 import { Login } from "./collections/Login.ts";
-import { adminOnly } from "./lib/access.ts";
+import { adminOnly, hideFromNonAdmins } from "./lib/access.ts";
 
 const filename = fileURLToPath(import.meta.url);
 const dirname = path.dirname(filename);
@@ -70,6 +71,14 @@ const importExportSlugs = [
   'partners',
   'pages',
   'media',
+  'hero',
+  'hero_carrusel',
+  'cta',
+  'about',
+  'timeline',
+  'statistics',
+  'header',
+  'footer',
 ] as const
 
 export default buildConfig({
@@ -88,7 +97,10 @@ export default buildConfig({
         Logo: '/components/admin/AdminLogo',
         Icon: '/components/admin/AdminIcon',
       },
-      beforeDashboard: ['/components/admin/DashboardWelcome'],
+      views: {
+        dashboard: { Component: '/components/admin/DashboardWelcome' },
+      },
+      providers: ['/components/admin/ApiBasePathFix'],
       header: ['/components/admin/ViewerBanner'],
       afterNavLinks: ['/components/admin/NavHelp'],
     },
@@ -105,48 +117,49 @@ export default buildConfig({
     },
   },
   collections: [
-    Users,
-    Media,
-    Hero,
-    Header,
-    HeroCarrusel,
-    Speakers,
-    Statistics,
-    About,
-    Features,
-    Timeline,
-    Input,
-    CTA,
-    FAQ,
-    Email,
-    BlogsCollection,
-    PartnersCollection,
+    Pages,
     NewsCollection,
+    ElectronicResourcesAccess,
+    Schedule,
+    FAQ,
+    PartnersCollection,
+    Hero,
+    HeroCarrusel,
+    Features,
+    CTA,
+    Media,
+    Header,
     Footer,
     Login,
+    Users,
+    LoginCampusService,
+    Statistics,
+    About,
+    Timeline,
+    Input,
+    BlogsCollection,
+    Speakers,
+    Email,
     AbsysService,
     BookCoverService,
     AuthorService,
     LoginAbsysService,
-    ElectronicResourcesAccess,
-    Schedule,
-    LoginCampusService,
-    Pages
   ],
   globals: [
     Home,
-    LibraryGlobal,
-    Layout,
     Services,
-    Investigation,
-    Repositories,
     Formation,
+    Investigation,
+    ElectronicResources,
+    LibraryGlobal,
+    Repositories,
+    SolicitudCompra,
+    Layout,
+    CookieTextsGlobal,
     Contact,
     AboutUs,
-    ElectronicResources,
     QuienesSomos,
     HorariosContacto,
-    SolicitudCompra
   ],
   endpoints: [...decryptTestEndpoints],
   editor: lexicalEditor(),
@@ -173,13 +186,13 @@ export default buildConfig({
         ...collection,
         labels: { singular: 'Exportación', plural: 'Exportaciones' },
         access: { ...adminOnly },
-        admin: { ...collection.admin, group: 'Usuarios y accesos' },
+        admin: { ...collection.admin, group: 'Sistema', hidden: hideFromNonAdmins },
       }),
       overrideImportCollection: ({ collection }) => ({
         ...collection,
         labels: { singular: 'Importación', plural: 'Importaciones' },
         access: { ...adminOnly },
-        admin: { ...collection.admin, group: 'Usuarios y accesos' },
+        admin: { ...collection.admin, group: 'Sistema', hidden: hideFromNonAdmins },
       }),
     }),
   ],

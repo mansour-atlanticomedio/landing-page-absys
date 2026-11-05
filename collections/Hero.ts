@@ -4,14 +4,14 @@ import { sectionAccessPublic } from "@/lib/access";
 export const Hero: CollectionConfig = {
     slug: 'hero',
     admin: {
-        group: 'Bloques de contenido',
+        group: 'Contenido',
         description: 'Cabeceras con imagen de fondo, título y botón que se reutilizan en las páginas.',
         useAsTitle: 'title'
     },
     access: sectionAccessPublic('bloques'),
     labels: {
-        singular: 'Seccion Principal',
-        plural: 'Seccion Principal'
+        singular: 'Sección principal',
+        plural: 'Sección principal'
     },
     fields: [
         {
@@ -35,8 +35,8 @@ export const Hero: CollectionConfig = {
         },
         {
             name: 'subtitle',
-            label: 'Subtitulo',
-            type: 'text',
+            label: 'Subtítulo',
+            type: 'richText',
         },
         {
             name: 'button_cta',

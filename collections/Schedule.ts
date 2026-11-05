@@ -4,7 +4,7 @@ import { sectionAccess } from "@/lib/access";
 export const Schedule: CollectionConfig = {
     slug: 'schedule',
     admin: {
-        group: 'Bloques de contenido',
+        group: 'Contenido',
         description: 'Horarios de apertura por días y franjas.',
         useAsTitle: 'title'
     },
@@ -27,6 +27,7 @@ export const Schedule: CollectionConfig = {
                 plural: 'Franjas',
             },
             type: 'array',
+            admin: { components: { RowLabel: { path: '/components/admin/ItemRowLabel', clientProps: { field: 'day', singular: 'Día' } } } },
             minRows: 1,
             maxRows: 7,
             fields: [

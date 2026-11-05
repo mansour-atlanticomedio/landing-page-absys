@@ -17,6 +17,12 @@ import * as migration_20261021_100000_permisos_usuarios from './20261021_100000_
 import * as migration_20261026_100000_lectores_campus from './20261026_100000_lectores_campus';
 import * as migration_20261027_141832_logo_cabecera from './20261027_141832_logo_cabecera';
 import * as migration_20261027_144150_recursos_electronicos from './20261027_144150_recursos_electronicos';
+import * as migration_20261029_115856_bloque_horario_contacto_mapa from './20261029_115856_bloque_horario_contacto_mapa';
+import * as migration_20261103_160918_textos_cookies from './20261103_160918_textos_cookies';
+import * as migration_20261103_164007_cookies_enlace_politica from './20261103_164007_cookies_enlace_politica';
+import * as migration_20261103_175519_hero_subtitulo_richtext from './20261103_175519_hero_subtitulo_richtext';
+import * as migration_20261103_180509_bloque_faq_paginas from './20261103_180509_bloque_faq_paginas';
+import * as migration_20261103_192009_paginas_bloques_en_linea from './20261103_192009_paginas_bloques_en_linea';
 
 export const migrations = [
   {
@@ -113,5 +119,35 @@ export const migrations = [
     up: migration_20261027_144150_recursos_electronicos.up,
     down: migration_20261027_144150_recursos_electronicos.down,
     name: '20261027_144150_recursos_electronicos',
+  },
+  {
+    up: migration_20261029_115856_bloque_horario_contacto_mapa.up,
+    down: migration_20261029_115856_bloque_horario_contacto_mapa.down,
+    name: '20261029_115856_bloque_horario_contacto_mapa',
+  },
+  {
+    up: migration_20261103_160918_textos_cookies.up,
+    down: migration_20261103_160918_textos_cookies.down,
+    name: '20261103_160918_textos_cookies',
+  },
+  {
+    up: migration_20261103_164007_cookies_enlace_politica.up,
+    down: migration_20261103_164007_cookies_enlace_politica.down,
+    name: '20261103_164007_cookies_enlace_politica',
+  },
+  {
+    up: migration_20261103_175519_hero_subtitulo_richtext.up,
+    down: migration_20261103_175519_hero_subtitulo_richtext.down,
+    name: '20261103_175519_hero_subtitulo_richtext',
+  },
+  {
+    up: migration_20261103_180509_bloque_faq_paginas.up,
+    down: migration_20261103_180509_bloque_faq_paginas.down,
+    name: '20261103_180509_bloque_faq_paginas',
+  },
+  {
+    up: migration_20261103_192009_paginas_bloques_en_linea.up,
+    down: migration_20261103_192009_paginas_bloques_en_linea.down,
+    name: '20261103_192009_paginas_bloques_en_linea'
   },
 ];

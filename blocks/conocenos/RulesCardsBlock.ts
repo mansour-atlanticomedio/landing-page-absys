@@ -11,7 +11,7 @@ export const RulesCardsBlock: Block = {
             label: 'Tarjetas',
             type: 'array',
             maxRows: 6,
-            admin: { description: 'Hasta 6 tarjetas con las normas principales.', initCollapsed: true },
+            admin: { components: { RowLabel: { path: '/components/admin/ItemRowLabel', clientProps: { field: 'title', singular: 'Tarjeta' } } }, description: 'Hasta 6 tarjetas con las normas principales.', initCollapsed: true },
             fields: [
                 { name: 'icon', label: 'Icono', type: 'select', options: appIcons, required: true },
                 { name: 'title', label: 'Título', type: 'text', required: true },
@@ -26,7 +26,7 @@ export const RulesCardsBlock: Block = {
                     name: 'points',
                     label: 'Lista de puntos',
                     type: 'array',
-                    admin: { initCollapsed: true },
+                    admin: { components: { RowLabel: { path: '/components/admin/ItemRowLabel', clientProps: { field: 'text', singular: 'Punto' } } }, initCollapsed: true },
                     fields: [{ name: 'text', label: 'Texto', type: 'text', required: true }],
                 },
                 { name: 'note_title', label: 'Título de la nota destacada', type: 'text' },

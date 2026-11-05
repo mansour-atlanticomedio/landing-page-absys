@@ -1,10 +1,11 @@
 import type { CollectionConfig } from "payload";
-import { sectionAccess } from "@/lib/access";
+import { sectionAccess, hideFromNonAdmins } from "@/lib/access";
 
 export const NewsCollection: CollectionConfig = {
     slug: 'news',
     admin: {
-        group: 'Bloques de contenido',
+        group: 'Piezas antiguas',
+        hidden: hideFromNonAdmins,
         description: 'Bloques de noticias con imagen, etiqueta y enlace.',
         components: {
             beforeList: ['/components/admin/NewsListHelp'],
@@ -19,7 +20,7 @@ export const NewsCollection: CollectionConfig = {
     fields: [
         {
             name: 'title',
-            label: 'Titulo',
+            label: 'Título',
             type: 'text'
         },
         {

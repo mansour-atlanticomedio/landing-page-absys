@@ -6,6 +6,7 @@ export const CtaBlock: Block = {
     fields: [
         {
             name: 'cta_relation',
+            label: 'Sección de inscripción a mostrar',
             type: 'relationship',
             relationTo: 'cta',
             hasMany: true,

@@ -1,12 +1,13 @@
 import { GlobalConfig } from "payload";
 import { layoutBlocks } from "@/blocks";
-import { sectionGlobal } from "@/lib/access";
+import { sectionGlobal, hideFromNonAdmins } from "@/lib/access";
 
 export const Services : GlobalConfig = {
     slug: "services",
     admin: {
-        group: 'Páginas',
-        description: 'Página de servicios: cabecera, carrusel y bloques de contenido.'
+        group: 'Piezas antiguas',
+        hidden: hideFromNonAdmins,
+        description: 'Obsoleto: Servicios ahora se edita en Páginas > Servicios.'
     },
     access: sectionGlobal('paginas'),
     label: "Servicios",
@@ -19,7 +20,7 @@ export const Services : GlobalConfig = {
           fields: [
     {
       name: 'hero',
-      label: 'Seccion Principal',
+      label: 'Sección principal',
       admin: { description: 'Cabecera con imagen, título y subtítulo de la página.' },
       type: 'relationship',
       relationTo: 'hero',
@@ -27,7 +28,7 @@ export const Services : GlobalConfig = {
     },
     {
       name: 'hero_carrusel',
-      label: 'Seccion de Carrusel Principal',
+      label: 'Carrusel principal',
       type: 'relationship',
       relationTo: 'hero_carrusel',
       hasMany: false,

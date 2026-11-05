@@ -4,7 +4,7 @@ import { sectionAccess } from "@/lib/access";
 export const FAQ : CollectionConfig = {
     slug: 'faq',
     admin: {
-        group: 'Bloques de contenido',
+        group: 'Contenido',
         description: 'Listados de preguntas frecuentes con sus respuestas.',
         useAsTitle: 'title'
     },
@@ -16,7 +16,7 @@ export const FAQ : CollectionConfig = {
     fields: [
         {
             name: 'title',
-            label: 'Titulo',
+            label: 'Título',
             type: 'text'
         },
         {
