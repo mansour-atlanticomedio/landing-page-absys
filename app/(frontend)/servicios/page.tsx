@@ -50,7 +50,7 @@ export default async function Servicios({ searchParams }: { searchParams: PageSe
     action: c.action_label && c.action_href ? { label: c.action_label, href: c.action_href } : undefined,
   }))
 
-  const view = <ServiciosView hero={hero} servicios={servicios} session={session} sugerirLibroHref={sugerirLibroHref} />
+  const view = <ServiciosView hero={hero} servicios={servicios} session={session} sugerirLibroHref={sugerirLibroHref} panel={block} />
   return isDraft ? <LivePreviewListener exitPath={`/${SLUG}`}>{view}</LivePreviewListener> : view
 }
 
@@ -111,11 +111,12 @@ async function LegacyServicios() {
   return <ServiciosView hero={hero} servicios={servicios} session={session} sugerirLibroHref={sugerirLibroHref} />
 }
 
-function ServiciosView({ hero, servicios, session, sugerirLibroHref }: {
+function ServiciosView({ hero, servicios, session, sugerirLibroHref, panel }: {
   hero: any
   servicios: ServicioItem[]
   session: Awaited<ReturnType<typeof getSession>>
   sugerirLibroHref: string
+  panel?: any
 }) {
   return (
     <div className="min-h-screen bg-background">
@@ -154,37 +155,39 @@ function ServiciosView({ hero, servicios, session, sugerirLibroHref }: {
           <aside className="space-y-4 sm:space-y-6">
             <div className="rounded-lg bg-primary p-5 text-primary-foreground sm:p-6">
               <h3 className="mb-2 flex items-center gap-2 font-display font-bold">
-                <User className="h-4 w-4" /> Mi cuenta
+                <User className="h-4 w-4" /> {panel?.account_title || "Mi cuenta"}
               </h3>
               <p className="mb-4 text-sm text-primary-foreground/80">
                 {session
-                  ? "Consulta tu perfil, tus préstamos y tus reservas."
-                  : "Accede a tu perfil para gestionar tus préstamos y renovaciones."}
+                  ? panel?.account_text_in || "Consulta tu perfil, tus préstamos y tus reservas."
+                  : panel?.account_text_out || "Accede a tu perfil para gestionar tus préstamos y renovaciones."}
               </p>
               <Link
                 href={session ? "/perfil" : "/login"}
                 className="inline-flex items-center justify-center rounded-lg font-medium text-sm transition-colors h-11 w-full bg-accent text-primary-foreground hover:bg-accent/90"
               >
-                {session ? "Ir a mi perfil" : "Iniciar sesión"}
+                {session ? panel?.account_button_in || "Ir a mi perfil" : panel?.account_button_out || "Iniciar sesión"}
               </Link>
             </div>
+            {panel?.show_suggestion !== false && (
             <div className="rounded-lg border border-border bg-card p-5 sm:p-6">
               <h3 className="mb-2 flex items-center gap-2 font-display font-bold text-primary">
-                <BookPlus className="h-4 w-4" /> Solicitud de compra
+                <BookPlus className="h-4 w-4" /> {panel?.suggestion_title || "Solicitud de compra"}
               </h3>
               <p className="mb-4 text-sm text-muted-foreground">
-                Propón la adquisición de libros u obras que necesites para tu docencia, estudio o investigación.
+                {panel?.suggestion_text || "Propón la adquisición de libros u obras que necesites para tu docencia, estudio o investigación."}
               </p>
               <Link
                 href={sugerirLibroHref}
                 className="inline-flex items-center justify-center rounded-lg font-medium text-sm transition-colors h-11 w-full border-2 border-accent text-accent hover:bg-accent/10"
               >
-                Sugerir libro
+                {panel?.suggestion_button || "Sugerir libro"}
               </Link>
               {!session && (
-                <p className="mt-2 text-center text-xs text-muted-foreground">Identifícate con tu cuenta para acceder</p>
+                <p className="mt-2 text-center text-xs text-muted-foreground">{panel?.suggestion_hint || "Identifícate con tu cuenta para acceder"}</p>
               )}
             </div>
+            )}
           </aside>
         </div>
       </section>

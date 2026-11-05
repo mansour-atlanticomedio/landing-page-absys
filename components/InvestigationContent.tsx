@@ -36,6 +36,7 @@ interface InvestigationContentProps {
   accesosRapidos: AccesoRapido[];
   tarjetas: Tarjeta[];
   cta: CTAData;
+  quickTitle?: string | null;
 }
 
 export default function InvestigationContent({
@@ -45,6 +46,7 @@ export default function InvestigationContent({
   accesosRapidos,
   tarjetas,
   cta,
+  quickTitle,
 }: InvestigationContentProps) {
   return (
     <div className="min-h-screen bg-white">
@@ -72,7 +74,7 @@ export default function InvestigationContent({
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, delay: 0.1, ease: "easeInOut" }}
         >
-          <h2 className="font-bold text-slate-800 mb-4">Accesos rápidos</h2>
+          <h2 className="font-bold text-slate-800 mb-4">{quickTitle || "Accesos rápidos"}</h2>
           <div className="flex flex-wrap gap-3">
             {accesosRapidos.map((a, index) => {
               const IconComponent = iconMap[a.icon] || Search;

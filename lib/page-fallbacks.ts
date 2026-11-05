@@ -65,7 +65,7 @@ export const CTA_FALLBACK = {
   title: "Solicitar apoyo",
   subtitle: "Puedes contactar con la Biblioteca para realizar consultas sobre búsqueda bibliográfica, acceso a bases de datos y utilización de los recursos disponibles.",
   button_cta: "Solicitar apoyo",
-  button_link: "/biblioteca/conocenos/horarios-ubicacion-y-contacto",
+  button_link: "mailto:biblioteca@atlanticomedio.es",
 };
 
 export const FORMACION_SUBTITULO_FALLBACK = "La Biblioteca ofrece recursos de apoyo para desarrollar las competencias necesarias para buscar, evaluar, utilizar y comunicar información académica de manera eficaz, crítica y responsable.";

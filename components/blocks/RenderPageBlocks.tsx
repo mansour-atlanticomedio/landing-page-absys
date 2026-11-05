@@ -37,6 +37,8 @@ import { RulesCardsSection } from "@/components/conocenos/RulesCardsSection"
 import { NoticeSection } from "@/components/conocenos/NoticeSection"
 import { DownloadSection } from "@/components/conocenos/DownloadSection"
 import { FaqSection } from "@/components/conocenos/FaqSection"
+import { RichTextSection } from "@/components/conocenos/RichTextSection"
+import { TableSection } from "@/components/conocenos/TableSection"
 import { FaqSearchBox, FaqSearchProvider } from "@/components/conocenos/FaqSearch"
 
 export function RenderPageBlocks({ layout }: { layout?: any[] | null }) {
@@ -79,6 +81,10 @@ export function RenderPageBlocks({ layout }: { layout?: any[] | null }) {
                 <FaqSection block={block} />
               </Fragment>
             )
+          case "rich_text_block":
+            return <RichTextSection key={key} block={block} />
+          case "table_block":
+            return <TableSection key={key} block={block} />
           default: {
             const Inline = inlineComponents[block.blockType]
             if (!Inline) return null

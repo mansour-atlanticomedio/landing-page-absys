@@ -88,7 +88,7 @@ const ctaDoc = await upsertDoc(payload, {
     subtitle:
       'Puedes contactar con la Biblioteca para realizar consultas sobre búsqueda bibliográfica, acceso a bases de datos y utilización de los recursos disponibles.',
     button_cta: 'Solicitar apoyo',
-    button_link: '/biblioteca/conocenos/horarios-ubicacion-y-contacto',
+    button_link: 'mailto:biblioteca@atlanticomedio.es',
   },
 })
 

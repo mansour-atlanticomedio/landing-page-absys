@@ -36,6 +36,7 @@ export default async function Formation({ searchParams }: { searchParams: PageSe
       guiaTutorial={{ title: block.guide_title || "", description: block.guide_description || "", link: block.guide_link || "#" }}
       actividadesTexto={block.activities_text || ""}
       actividadesEstado={block.activities_status || ""}
+      textos={block}
     />
   )
 

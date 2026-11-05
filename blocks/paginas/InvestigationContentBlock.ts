@@ -10,6 +10,7 @@ export const InvestigationContentBlock: Block = {
     interfaceName: 'InvestigationContentBlock',
     labels: { singular: 'Contenido de Investigación', plural: 'Contenido de Investigación' },
     fields: [
+        { name: 'quick_title', label: 'Accesos rápidos: título', type: 'text' },
         {
             name: 'quick',
             label: 'Accesos rápidos',

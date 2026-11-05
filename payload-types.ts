@@ -299,6 +299,8 @@ export interface Page {
         | FormationContentBlock
         | InvestigationContentBlock
         | ElectronicResourcesContentBlock
+        | RichTextBlock
+        | TableBlock
       )[]
     | null;
   updatedAt: string;
@@ -1069,7 +1071,20 @@ export interface InputInlineBlock {
 export interface ServiceCardsBlock {
   cards?:
     | {
-        icon: 'Search' | 'BookOpen' | 'RefreshCw' | 'Bookmark' | 'Headphones' | 'BookPlus' | 'User' | 'Library';
+        icon:
+          | 'Search'
+          | 'BookOpen'
+          | 'RefreshCw'
+          | 'Bookmark'
+          | 'Headphones'
+          | 'BookPlus'
+          | 'User'
+          | 'Library'
+          | 'GraduationCap'
+          | 'FlaskConical'
+          | 'Laptop'
+          | 'Printer'
+          | 'Info';
         title: string;
         text: string;
         /**
@@ -1085,6 +1100,16 @@ export interface ServiceCardsBlock {
         id?: string | null;
       }[]
     | null;
+  account_title?: string | null;
+  account_text_in?: string | null;
+  account_text_out?: string | null;
+  account_button_in?: string | null;
+  account_button_out?: string | null;
+  show_suggestion?: boolean | null;
+  suggestion_title?: string | null;
+  suggestion_text?: string | null;
+  suggestion_button?: string | null;
+  suggestion_hint?: string | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'service_cards_block';
@@ -1094,6 +1119,8 @@ export interface ServiceCardsBlock {
  * via the `definition` "FormationContentBlock".
  */
 export interface FormationContentBlock {
+  intro_note?: string | null;
+  search_title?: string | null;
   search_paragraph_1?: string | null;
   search_paragraph_2?: string | null;
   quick_links?:
@@ -1107,10 +1134,14 @@ export interface FormationContentBlock {
   cite_text?: string | null;
   cite_button_label?: string | null;
   cite_button_link?: string | null;
+  guides_heading?: string | null;
+  guides_text?: string | null;
   guide_title?: string | null;
   guide_description?: string | null;
   guide_link?: string | null;
+  activities_title?: string | null;
   activities_text?: string | null;
+  activities_status_label?: string | null;
   activities_status?: string | null;
   id?: string | null;
   blockName?: string | null;
@@ -1121,6 +1152,7 @@ export interface FormationContentBlock {
  * via the `definition` "InvestigationContentBlock".
  */
 export interface InvestigationContentBlock {
+  quick_title?: string | null;
   quick?:
     | {
         icon:
@@ -1307,6 +1339,64 @@ export interface ElectronicResourcesContentBlock {
   id?: string | null;
   blockName?: string | null;
   blockType: 'eres_content_block';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "RichTextBlock".
+ */
+export interface RichTextBlock {
+  title?: string | null;
+  content: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  };
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'rich_text_block';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TableBlock".
+ */
+export interface TableBlock {
+  title?: string | null;
+  /**
+   * Encabezados de la tabla, de izquierda a derecha.
+   */
+  columns?:
+    | {
+        label: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Cada fila lleva una celda por columna, en el mismo orden.
+   */
+  rows?:
+    | {
+        cells?:
+          | {
+              text?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'table_block';
 }
 /**
  * Bloques de noticias con imagen, etiqueta y enlace.
@@ -2394,6 +2484,8 @@ export interface PagesSelect<T extends boolean = true> {
         formation_content_block?: T | FormationContentBlockSelect<T>;
         investigation_content_block?: T | InvestigationContentBlockSelect<T>;
         eres_content_block?: T | ElectronicResourcesContentBlockSelect<T>;
+        rich_text_block?: T | RichTextBlockSelect<T>;
+        table_block?: T | TableBlockSelect<T>;
       };
   updatedAt?: T;
   createdAt?: T;
@@ -2769,6 +2861,16 @@ export interface ServiceCardsBlockSelect<T extends boolean = true> {
         wide?: T;
         id?: T;
       };
+  account_title?: T;
+  account_text_in?: T;
+  account_text_out?: T;
+  account_button_in?: T;
+  account_button_out?: T;
+  show_suggestion?: T;
+  suggestion_title?: T;
+  suggestion_text?: T;
+  suggestion_button?: T;
+  suggestion_hint?: T;
   id?: T;
   blockName?: T;
 }
@@ -2777,6 +2879,8 @@ export interface ServiceCardsBlockSelect<T extends boolean = true> {
  * via the `definition` "FormationContentBlock_select".
  */
 export interface FormationContentBlockSelect<T extends boolean = true> {
+  intro_note?: T;
+  search_title?: T;
   search_paragraph_1?: T;
   search_paragraph_2?: T;
   quick_links?:
@@ -2790,10 +2894,14 @@ export interface FormationContentBlockSelect<T extends boolean = true> {
   cite_text?: T;
   cite_button_label?: T;
   cite_button_link?: T;
+  guides_heading?: T;
+  guides_text?: T;
   guide_title?: T;
   guide_description?: T;
   guide_link?: T;
+  activities_title?: T;
   activities_text?: T;
+  activities_status_label?: T;
   activities_status?: T;
   id?: T;
   blockName?: T;
@@ -2803,6 +2911,7 @@ export interface FormationContentBlockSelect<T extends boolean = true> {
  * via the `definition` "InvestigationContentBlock_select".
  */
 export interface InvestigationContentBlockSelect<T extends boolean = true> {
+  quick_title?: T;
   quick?:
     | T
     | {
@@ -2882,6 +2991,42 @@ export interface ElectronicResourcesContentBlockSelect<T extends boolean = true>
               description?: T;
               access?: T;
               link?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "RichTextBlock_select".
+ */
+export interface RichTextBlockSelect<T extends boolean = true> {
+  title?: T;
+  content?: T;
+  id?: T;
+  blockName?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "TableBlock_select".
+ */
+export interface TableBlockSelect<T extends boolean = true> {
+  title?: T;
+  columns?:
+    | T
+    | {
+        label?: T;
+        id?: T;
+      };
+  rows?:
+    | T
+    | {
+        cells?:
+          | T
+          | {
+              text?: T;
               id?: T;
             };
         id?: T;

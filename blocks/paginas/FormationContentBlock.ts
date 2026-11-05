@@ -5,6 +5,8 @@ export const FormationContentBlock: Block = {
     interfaceName: 'FormationContentBlock',
     labels: { singular: 'Contenido de Formación', plural: 'Contenido de Formación' },
     fields: [
+        { name: 'intro_note', label: 'Nota bajo el subtítulo de la cabecera', type: 'textarea' },
+        { name: 'search_title', label: 'Buscar y evaluar información: título', type: 'text' },
         { name: 'search_paragraph_1', label: 'Buscar y evaluar información: párrafo 1', type: 'textarea' },
         { name: 'search_paragraph_2', label: 'Buscar y evaluar información: párrafo 2', type: 'textarea' },
         {
@@ -27,10 +29,14 @@ export const FormationContentBlock: Block = {
         { name: 'cite_text', label: 'Citar correctamente: texto', type: 'textarea' },
         { name: 'cite_button_label', label: 'Citar correctamente: texto del botón', type: 'text' },
         { name: 'cite_button_link', label: 'Citar correctamente: enlace del botón', type: 'text' },
+        { name: 'guides_heading', label: 'Guías y tutoriales: título de la sección', type: 'text' },
+        { name: 'guides_text', label: 'Guías y tutoriales: texto de la sección', type: 'textarea' },
         { name: 'guide_title', label: 'Guías y tutoriales: título de la tarjeta', type: 'text' },
         { name: 'guide_description', label: 'Guías y tutoriales: descripción', type: 'text' },
         { name: 'guide_link', label: 'Guías y tutoriales: enlace', type: 'text' },
+        { name: 'activities_title', label: 'Actividades formativas: título', type: 'text' },
         { name: 'activities_text', label: 'Actividades formativas: texto', type: 'textarea' },
+        { name: 'activities_status_label', label: 'Actividades formativas: etiqueta del estado', type: 'text' },
         { name: 'activities_status', label: 'Actividades formativas: estado actual', type: 'text' },
     ],
 }

@@ -26,6 +26,7 @@ export default async function Investigation({ searchParams }: { searchParams: Pa
       title={hero?.title || "Apoyo a la investigación"}
       subtitle={normalizeSubtitle(hero?.subtitle, INVESTIGACION_SUBTITULO_FALLBACK)}
       imageUrl={hero?.background_image?.url || "/img/investigacion-hero.jpg"}
+      quickTitle={block.quick_title}
       accesosRapidos={(block.quick ?? []).map((a: any) => ({ icon: a.icon, title: a.title }))}
       tarjetas={(block.cards ?? []).map((t: any) => ({ icon: t.icon, title: t.title, description: t.description || "", cta: t.cta, link: t.link }))}
       cta={{

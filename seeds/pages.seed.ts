@@ -184,7 +184,6 @@ try {
               {
                 icon: 'FileText',
                 title: 'Préstamos y renovaciones',
-                badge: 'Próximamente',
                 description:
                   'Información detallada sobre plazos, límites de ejemplares y procesos de renovación estará disponible en esta sección en la próxima actualización de la normativa.',
               },
