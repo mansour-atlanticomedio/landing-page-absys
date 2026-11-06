@@ -1,6 +1,19 @@
 import { C, Img, Line, Stack, ThumbFrame, displayFont, pick, previewFont, type PreviewProps, type ThumbProps } from './shared'
 
 export function HeroVariantThumb({ value }: ThumbProps) {
+  if (value === 'carousel')
+    return (
+      <ThumbFrame bg={C.navy}>
+        <Stack gap={3} style={{ alignItems: 'center', paddingTop: 8 }}>
+          <Line w="55%" h={5} color={C.white} />
+          <div style={{ display: 'flex', gap: 3, marginTop: 6 }}>
+            <Line w={10} h={3} color={C.white} />
+            <Line w={4} h={3} color={C.white} />
+            <Line w={4} h={3} color={C.white} />
+          </div>
+        </Stack>
+      </ThumbFrame>
+    )
   if (value === 'banner')
     return (
       <ThumbFrame bg={C.navy}>
@@ -37,6 +50,18 @@ export function HeroVariantThumb({ value }: ThumbProps) {
 export function HeroVariantPreview({ value, content }: PreviewProps) {
   const title = pick(content, 'title', 'Quiénes somos')
   const subtitle = 'Conoce los servicios, espacios y recursos de la Biblioteca de la Universidad Atlántico Medio.'
+  if (value === 'carousel')
+    return (
+      <div style={{ ...previewFont, background: C.navy, padding: '48px 24px 20px', textAlign: 'center' }}>
+        <h1 style={{ ...displayFont, margin: 0, fontSize: 24, fontWeight: 800, color: C.white }}>Imagen 1 de 3</h1>
+        <p style={{ margin: '10px auto 16px', color: C.white, maxWidth: 480 }}>Cada imagen del carrusel lleva su propio título y texto, y pasan solas.</p>
+        <div style={{ display: 'flex', gap: 6, justifyContent: 'center' }}>
+          <span style={{ width: 22, height: 6, borderRadius: 3, background: C.white }} />
+          <span style={{ width: 6, height: 6, borderRadius: 3, background: C.white, opacity: 0.5 }} />
+          <span style={{ width: 6, height: 6, borderRadius: 3, background: C.white, opacity: 0.5 }} />
+        </div>
+      </div>
+    )
   if (value === 'banner')
     return (
       <div style={{ ...previewFont, background: C.navy, padding: '48px 24px', textAlign: 'center' }}>

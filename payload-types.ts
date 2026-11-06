@@ -266,7 +266,11 @@ export interface Page {
    */
   meta_description?: string | null;
   hero?: (number | null) | Hero;
-  hero_variant: 'simple' | 'split' | 'banner';
+  hero_variant: 'simple' | 'split' | 'banner' | 'carousel';
+  /**
+   * Elige el carrusel (sus imágenes y textos se editan en Contenido > Carrusel principal).
+   */
+  hero_carousel?: (number | null) | HeroCarrusel;
   /**
    * Añade, ordena y elimina los bloques de contenido de esta página.
    */
@@ -368,6 +372,25 @@ export interface Media {
       filename?: string | null;
     };
   };
+}
+/**
+ * Carruseles de diapositivas con imagen, título y descripción para la parte superior de una página.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "hero_carrusel".
+ */
+export interface HeroCarrusel {
+  id: number;
+  items?:
+    | {
+        title?: string | null;
+        description?: string | null;
+        image?: (number | null) | Media;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -1490,25 +1513,6 @@ export interface Partner {
   createdAt: string;
 }
 /**
- * Carruseles de diapositivas con imagen, título y descripción para la parte superior de una página.
- *
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "hero_carrusel".
- */
-export interface HeroCarrusel {
-  id: number;
-  items?:
-    | {
-        title?: string | null;
-        description?: string | null;
-        image?: (number | null) | Media;
-        id?: string | null;
-      }[]
-    | null;
-  updatedAt: string;
-  createdAt: string;
-}
-/**
  * Cabecera del sitio: logo, teléfono, correo y menú de navegación.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -2454,6 +2458,7 @@ export interface PagesSelect<T extends boolean = true> {
   meta_description?: T;
   hero?: T;
   hero_variant?: T;
+  hero_carousel?: T;
   layout?:
     | T
     | {

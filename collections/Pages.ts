@@ -112,6 +112,7 @@ export const Pages: CollectionConfig = {
             type: 'relationship',
             relationTo: 'hero',
             hasMany: false,
+            admin: { condition: (data) => data?.hero_variant !== 'carousel' },
         },
         {
             name: 'hero_variant',
@@ -123,6 +124,7 @@ export const Pages: CollectionConfig = {
                 { label: 'Cabecera simple', value: 'simple' },
                 { label: 'Cabecera dividida (texto + imagen)', value: 'split' },
                 { label: 'Cabecera con imagen de fondo a toda anchura', value: 'banner' },
+                { label: 'Carrusel de imágenes', value: 'carousel' },
             ],
             admin: {
                 components: {
@@ -135,10 +137,22 @@ export const Pages: CollectionConfig = {
                                 { value: 'simple', title: 'Simple', description: 'Título y subtítulo sobre fondo blanco' },
                                 { value: 'split', title: 'Dividida', description: 'Texto a la izquierda e imagen a la derecha' },
                                 { value: 'banner', title: 'Imagen de fondo', description: 'Imagen a toda anchura con el título y el subtítulo encima' },
+                                { value: 'carousel', title: 'Carrusel', description: 'Varias imágenes que pasan solas, cada una con su título y texto' },
                             ],
                         },
                     },
                 },
+            },
+        },
+        {
+            name: 'hero_carousel',
+            label: 'Carrusel de cabecera',
+            type: 'relationship',
+            relationTo: 'hero_carrusel',
+            hasMany: false,
+            admin: {
+                condition: (data) => data?.hero_variant === 'carousel',
+                description: 'Elige el carrusel (sus imágenes y textos se editan en Contenido > Carrusel principal).',
             },
         },
         {

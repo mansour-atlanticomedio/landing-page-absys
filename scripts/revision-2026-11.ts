@@ -64,6 +64,23 @@ await editPage('conocenos/quienes-somos', (page) => {
   return { layout: [{ blockType: 'rich_text_block', content: lexicalFromText(QUIENES_SOMOS) }, ...page.layout] }
 })
 
+await editPage('inicio', async (page) => {
+  if (page.hero_variant === 'carousel' && page.hero_carousel) return null
+  const inline = (page.layout ?? []).find((b: any) => b.blockType === 'hero_carousel_inline_block')
+  const home: any = await payload.findGlobal({ slug: 'home' as never, depth: 0 }).catch(() => null)
+  let carouselId = home?.hero_carrusel ?? null
+  if (!carouselId && inline?.items?.length) {
+    const items = inline.items.map(({ id, ...item }: any) => item)
+    carouselId = (await payload.create({ collection: 'hero_carrusel', data: { title: 'Carrusel de inicio', items } as any })).id
+  }
+  if (!carouselId) return null
+  return {
+    hero_variant: 'carousel',
+    hero_carousel: carouselId,
+    layout: (page.layout ?? []).filter((b: any) => b.blockType !== 'hero_carousel_inline_block'),
+  }
+})
+
 await editPage('conocenos/normativa-y-condiciones-de-uso', (page) => {
   let changed = false
   const layout = (page.layout ?? []).map((b: any) => {
