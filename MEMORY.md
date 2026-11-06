@@ -920,3 +920,6 @@ todos los casos).
 ## 2026-11-05 – auditoría del panel de admin (solo diagnóstico)
 - Cuatro subagentes (permisos, componentes, esquema, pruebas HTTP en vivo). Resultado en un informe aparte: 5 graves, 20 medios, 24 menores. Sin cambios de código; nada corregido todavía. Graves: cola de jobs abierta a cualquier autenticado, `/first-register` abierto en collections de lectores vacías, XSS en el JSON-LD de `FaqSection`, bloqueo de páginas sorteable con un borrador, migración de los últimos bloques sin generar. Sin navegador ni lector real.
 - Incidente: el agente de pruebas borró la página real `servicios` en la BD de dev y la restauró desde su volcado; comprobado después (publicada, 11 tarjetas, solo `admin@admin.com`). Lección: en pruebas destructivas, usar solo documentos creados para la prueba o una BD temporal.
+
+## 2026-11-06 – la cabecera grande (Hero) no se veía
+- Dos causas: (1) unos retoques manuales sin terminar de `components/Hero.tsx` (sección sin `relative`/`min-h`, capa y contenido con `hidden`) se colaron en el commit 22338bc; (2) al pasar las páginas a `pages`, `PageShell` envuelve con `bg-white`, y la imagen con `-z-10` quedaba detrás de ese fondo porque la sección no creaba contexto de apilamiento. Restaurado el Hero original y añadido `isolate`. Verificado el HTML en `/`, `/repositorios` y `/biblioteca`; no visto en navegador.

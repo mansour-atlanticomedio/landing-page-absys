@@ -21,7 +21,7 @@ export default function Hero({ pretitle, title, subtitle, image, buttonText, inp
   const imageAlt = typeof image === "object" ? image?.alt : "Imagen de fondo";
 
   return (
-    <section className="flex items-center justify-center text-center text-primary-foreground overflow-hidden">
+    <section className="relative isolate min-h-105 md:min-h-130 flex items-center justify-center text-center text-primary-foreground overflow-hidden">
 
       {imageUrl && imageUrl !== '' && (
         <Image
@@ -34,8 +34,8 @@ export default function Hero({ pretitle, title, subtitle, image, buttonText, inp
         />
       )}
 
-      <div className="hidden absolute inset-0 hero-overlay -z-10" />
-      <div className="hidden relative z-10 max-w-4xl px-4 sm:px-6 py-14 md:py-20">
+      <div className="absolute inset-0 hero-overlay -z-10" />
+      <div className="relative z-10 max-w-4xl px-4 sm:px-6 py-14 md:py-20">
         {pretitle && pretitle !== '' && (
           <p className="text-md md:text-lg text-primary-foreground/90 mb-4">
             {pretitle}
