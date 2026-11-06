@@ -24,6 +24,7 @@ import * as migration_20261103_175519_hero_subtitulo_richtext from './20261103_1
 import * as migration_20261103_180509_bloque_faq_paginas from './20261103_180509_bloque_faq_paginas';
 import * as migration_20261103_192009_paginas_bloques_en_linea from './20261103_192009_paginas_bloques_en_linea';
 import * as migration_20261106_172554_bloques_paginas_y_revision from './20261106_172554_bloques_paginas_y_revision';
+import * as migration_20261106_175035_cabecera_carrusel from './20261106_175035_cabecera_carrusel';
 
 export const migrations = [
   {
@@ -154,6 +155,11 @@ export const migrations = [
   {
     up: migration_20261106_172554_bloques_paginas_y_revision.up,
     down: migration_20261106_172554_bloques_paginas_y_revision.down,
-    name: '20261106_172554_bloques_paginas_y_revision'
+    name: '20261106_172554_bloques_paginas_y_revision',
+  },
+  {
+    up: migration_20261106_175035_cabecera_carrusel.up,
+    down: migration_20261106_175035_cabecera_carrusel.down,
+    name: '20261106_175035_cabecera_carrusel'
   },
 ];

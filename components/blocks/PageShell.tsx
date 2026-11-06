@@ -15,7 +15,12 @@ export function PageShell({
 }) {
   const content = (
     <div className="min-h-screen bg-white">
-      <PageHero variant={page.hero_variant} hero={typeof page.hero === "object" ? page.hero : null} fallbackTitle={page.title} />
+      <PageHero
+        variant={page.hero_variant}
+        hero={typeof page.hero === "object" ? page.hero : null}
+        carousel={typeof page.hero_carousel === "object" ? page.hero_carousel : null}
+        fallbackTitle={page.title}
+      />
       {children}
     </div>
   )

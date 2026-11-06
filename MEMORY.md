@@ -923,3 +923,6 @@ todos los casos).
 
 ## 2026-11-06 – la cabecera grande (Hero) no se veía
 - Dos causas: (1) unos retoques manuales sin terminar de `components/Hero.tsx` (sección sin `relative`/`min-h`, capa y contenido con `hidden`) se colaron en el commit 22338bc; (2) al pasar las páginas a `pages`, `PageShell` envuelve con `bg-white`, y la imagen con `-z-10` quedaba detrás de ese fondo porque la sección no creaba contexto de apilamiento. Restaurado el Hero original y añadido `isolate`. Verificado el HTML en `/`, `/repositorios` y `/biblioteca`; no visto en navegador.
+
+## 2026-11-06 – cabecera simple o carrusel, no las dos
+- En Inicio se veían la cabecera `banner` (vacía, con la imagen por defecto) y el carrusel, que iba como bloque en línea. Ahora `hero_variant` tiene la opción `carousel` y el campo `hero_carousel` (relación a `hero_carrusel`); `PageHero` pinta solo una. `globals-a-paginas` deja Inicio en `carousel` y `revision-2026-11` corrige las páginas ya creadas (quita el bloque del carrusel). Migración `20261106_175035_cabecera_carrusel` (`ADD VALUE IF NOT EXISTS` + columna), probada desde cero en BD temporal. Verificado en dev: la portada empieza por el carrusel y no lleva la cabecera simple; sin ver en navegador.

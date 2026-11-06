@@ -18,14 +18,14 @@ type Source = {
   global: string
   slug: string
   title: string
-  variant: 'banner' | 'split' | 'simple'
+  variant: 'banner' | 'split' | 'simple' | 'carousel'
   carousel?: boolean
   wrappers?: boolean
   build?: (global: any, helpers: { doc: (collection: string, id: any) => Promise<any> }) => Promise<any[]>
 }
 
 const SOURCES: Source[] = [
-  { global: 'home', slug: 'inicio', title: 'Inicio', variant: 'banner', carousel: true, wrappers: true },
+  { global: 'home', slug: 'inicio', title: 'Inicio', variant: 'carousel', carousel: true, wrappers: true },
   { global: 'repository', slug: 'repositorios', title: 'Repositorios', variant: 'banner', wrappers: true },
   { global: 'library', slug: 'biblioteca', title: 'Biblioteca', variant: 'banner' },
   { global: 'solicitud_compra', slug: 'adquisiciones/solicitud-compra', title: 'Solicitud de compra', variant: 'banner' },
@@ -194,10 +194,6 @@ for (const source of SOURCES) {
     const helpers = { doc: (collection: string, id: any) => payload.findByID({ collection: collection as never, id: idOf(id), depth: 0 }) }
     if (source.build) layout.push(...(await source.build(global, helpers)))
 
-    if (source.carousel && global.hero_carrusel) {
-      const carousel: any = await payload.findByID({ collection: 'hero_carrusel', id: idOf(global.hero_carrusel), depth: 0 })
-      layout.push({ blockType: 'hero_carousel_inline_block', ...clean(carousel) })
-    }
 
     for (const block of source.wrappers ? global.layout ?? [] : []) {
       const wrapper = WRAPPERS[block.blockType]
@@ -217,6 +213,7 @@ for (const source of SOURCES) {
       slug: source.slug,
       hero: idOf(global.hero) ?? undefined,
       hero_variant: source.variant,
+      hero_carousel: source.carousel ? idOf(global.hero_carrusel) ?? undefined : undefined,
       layout,
       _status: 'published',
     }

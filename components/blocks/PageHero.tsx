@@ -1,12 +1,13 @@
 import Image from "next/image"
 import type { PayloadImage } from "@/types/common.type"
 import Hero from "@/components/Hero"
+import HeroCarrousel from "@/components/heroCarrusel"
 import HeroSubtitle from "@/components/HeroSubtitle"
 import { HERO_FALLBACK_IMAGE } from "@/lib/images"
 import type { RichValue } from "@/lib/rich-text"
 
 interface PageHeroProps {
-  variant?: "simple" | "split" | "banner" | null
+  variant?: "simple" | "split" | "banner" | "carousel" | null
   hero?: {
     title?: string | null
     subtitle?: RichValue | null
@@ -15,12 +16,18 @@ interface PageHeroProps {
     button_cta?: string | null
     input_placeholder?: string | null
   } | null
+  carousel?: { items?: any[] | null } | null
   fallbackTitle?: string | null
 }
 
-export function PageHero({ variant, hero, fallbackTitle }: PageHeroProps) {
+export function PageHero({ variant, hero, carousel, fallbackTitle }: PageHeroProps) {
   const image = hero?.background_image
   const title = hero?.title || fallbackTitle
+
+  if (variant === "carousel") {
+    const items = (carousel?.items ?? []).filter(Boolean)
+    return items.length ? <HeroCarrousel title="" items={items} /> : null
+  }
 
   if (variant === "banner") {
     return (
