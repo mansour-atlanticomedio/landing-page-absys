@@ -646,7 +646,7 @@ export interface DownloadBlock {
    */
   button_label?: string | null;
   /**
-   * Si no hay documento, el botón no se muestra.
+   * Solo PDF. Al pulsar el botón se descarga con el nombre que tenga el fichero al subirlo. Si no hay documento, el botón no se muestra.
    */
   file?: (number | null) | Media;
   id?: string | null;

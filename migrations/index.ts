@@ -23,6 +23,7 @@ import * as migration_20261103_164007_cookies_enlace_politica from './20261103_1
 import * as migration_20261103_175519_hero_subtitulo_richtext from './20261103_175519_hero_subtitulo_richtext';
 import * as migration_20261103_180509_bloque_faq_paginas from './20261103_180509_bloque_faq_paginas';
 import * as migration_20261103_192009_paginas_bloques_en_linea from './20261103_192009_paginas_bloques_en_linea';
+import * as migration_20261106_172554_bloques_paginas_y_revision from './20261106_172554_bloques_paginas_y_revision';
 
 export const migrations = [
   {
@@ -148,6 +149,11 @@ export const migrations = [
   {
     up: migration_20261103_192009_paginas_bloques_en_linea.up,
     down: migration_20261103_192009_paginas_bloques_en_linea.down,
-    name: '20261103_192009_paginas_bloques_en_linea'
+    name: '20261103_192009_paginas_bloques_en_linea',
+  },
+  {
+    up: migration_20261106_172554_bloques_paginas_y_revision.up,
+    down: migration_20261106_172554_bloques_paginas_y_revision.down,
+    name: '20261106_172554_bloques_paginas_y_revision'
   },
 ];
