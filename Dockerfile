@@ -41,6 +41,7 @@ COPY --from=builder /app/migrations ./migrations
 COPY --from=builder /app/types ./types
 COPY --from=builder /app/lib ./lib
 COPY --from=builder /app/seeds ./seeds
+COPY --from=builder /app/scripts ./scripts
 COPY --from=builder /app/payload-types.ts ./
 COPY --from=builder /app/.next/static ./.next/standalone/.next/static
 COPY --from=builder /app/public ./.next/standalone/public
